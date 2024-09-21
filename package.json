@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint:check": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "lint:fix": "prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
@@ -30,6 +31,7 @@
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.13",
+    "husky": "^8.0.0",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
