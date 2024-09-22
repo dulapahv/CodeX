@@ -1,17 +1,16 @@
 {
   "version": 2,
-  "outputDirectory": "server",
   "builds": [
     {
-      "src": "server/dist/index.js",
+      "src": "dist/index.js",
       "use": "@vercel/node",
-      "config": { "includeFiles": ["server/dist/**"] }
+      "config": { "includeFiles": ["dist/**"] }
     }
   ],
   "routes": [
     {
-      "src": "server/(.*)",
-      "dest": "server/dist/index.js"
+      "src": "/(.*)",
+      "dest": "dist/index.js"
     }
   ]
 }
