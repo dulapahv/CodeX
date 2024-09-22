@@ -2,3 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 cd web && pnpm lint:check
+cd ..
+cd server && pnpm build
