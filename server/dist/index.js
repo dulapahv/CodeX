@@ -7,12 +7,17 @@ const cors_1 = __importDefault(require("cors"));
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://occp.dulapahv.dev',
+    'https://dev-occp.dulapahv.dev',
+];
+app.use((0, cors_1.default)({ origin: allowedOrigins }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3001;
 app.get('/', (_req, res) => {
-    res.status(200).json({ message: 'Hello from the server!' });
+    res.status(200).json({ message: 'Hello from occp-server!' });
 });
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
