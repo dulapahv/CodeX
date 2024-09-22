@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "server",
   "builds": [
     {
       "src": "server/dist/index.js",
