@@ -37,11 +37,18 @@ export default function Room({ params }: RoomProps) {
   const router = useRouter();
 
   useEffect(() => {
-    window.addEventListener("popstate", () => {
-      console.log("Disconnecting from socket");
-      socket().disconnect();
-    });
+    window.addEventListener("popstate", disconnect);
   }, []);
+
+  function disconnect() {
+    console.log("Disconnecting from socket");
+    socket().disconnect();
+  }
+
+  function handleLeave() {
+    disconnect();
+    router.push("/");
+  }
 
   const participants = Array.from({ length: 50 }).map(
     (_, i) => `Participant #${i + 1}`,
@@ -95,14 +102,13 @@ export default function Room({ params }: RoomProps) {
                     Are you sure you want to leave this room?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    You can always rejoin this room using the same Room ID. If
-                    you are the last person in the room, the room will be
-                    deleted.
+                    You can always rejoin this room using the same Room ID. This
+                    room will be deleted if you are the last participant.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => router.back()}>
+                  <AlertDialogAction onClick={handleLeave}>
                     Leave
                   </AlertDialogAction>
                 </AlertDialogFooter>
