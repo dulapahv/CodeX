@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 import { GeistSans } from "geist/font/sans";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
@@ -19,8 +21,11 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={GeistSans.className}>
-        <ThemeProvider attribute="class">{children}</ThemeProvider>
+      <body className={cn("h-dvh", GeistSans.className)}>
+        <ThemeProvider attribute="class">
+          {children}
+          <Toaster richColors className="whitespace-pre-line" />
+        </ThemeProvider>
       </body>
     </html>
   );
