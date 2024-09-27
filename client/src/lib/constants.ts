@@ -1,7 +1,7 @@
 export const BASE_SERVER_URL =
   process.env.VERCEL_ENV === "development" ||
   process.env.NEXT_PUBLIC_ENV === "development"
-    ? "http://localhost:3001"
-    : "https://occp-server.dulapahv.dev";
+    ? "ws://localhost:3001"
+    : "ws://occp-server.dulapahv.workers.dev/";
 
 export const NAME_MAX_LENGTH = 255;
