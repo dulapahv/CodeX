@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { socket } from "@/lib/socket";
+import { send } from "@/lib/socket";
 
 interface RoomProps {
   params: {
@@ -42,7 +42,7 @@ export default function Room({ params }: RoomProps) {
 
   function disconnect() {
     console.log("Disconnecting from socket");
-    socket().disconnect();
+    send({ type: "leave" });
   }
 
   function handleLeave() {

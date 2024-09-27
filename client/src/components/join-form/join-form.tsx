@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowRight, CirclePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { createRoom, joinRoom, parseError } from "@/lib/utils";
+import { createRoomAndJoin, joinRoom, parseError } from "@/lib/utils";
 import { CreateRoomForm, JoinRoomForm } from "@/types/types";
 
 import { createRoomSchema, joinRoomSchema } from "./validator";
@@ -50,6 +51,7 @@ export function JoinForm() {
 
   async function onSubmitJoinRoom(data: JoinRoomForm) {
     const { name, roomId } = data;
+
     toast.promise(joinRoom(roomId, name), {
       loading: "Joining room, please wait...",
       success: () => {
@@ -62,12 +64,14 @@ export function JoinForm() {
 
   function onSubmitCreateRoom(data: CreateRoomForm) {
     const { name } = data;
-    toast.promise(createRoom(name), {
+    const roomId = uuidv4().slice(0, 8);
+
+    toast.promise(createRoomAndJoin(roomId, name), {
       loading: "Creating room, please wait...",
-      success: (roomId) => {
+      success: () => {
         router.push(`/room/${roomId}`);
         navigator.clipboard.writeText(roomId);
-        return "Successfully created room. Room ID has been copied to clipboard.";
+        return "Successfully created room! Room ID has been copied to clipboard.";
       },
       error: (error) => `Failed to create room.\n${parseError(error)}`,
     });
