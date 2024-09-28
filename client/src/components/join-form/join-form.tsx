@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowRight, CirclePlus } from "lucide-react";
@@ -83,103 +82,98 @@ export function JoinForm() {
   }
 
   return (
-    <Suspense>
-      <Card className="w-[480px]">
-        <CardHeader>
-          <CardTitle>Online Code Collaboration Platform</CardTitle>
-          <CardDescription>
-            Create or join a room to start coding.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid w-full items-center gap-6">
-            {!room && (
-              <>
-                {/* Section for creating a collab room */}
-                <form
-                  onSubmit={handleSubmitCreate(
-                    onSubmitCreateRoom,
-                    onSubmitErrorHandler,
-                  )}
-                >
-                  <div className="flex flex-col space-y-4">
-                    <h3 className="text-lg font-medium">Create a Room</h3>
-                    <div className="flex flex-col space-y-1.5">
-                      <Label htmlFor="name-create">Name</Label>
-                      <Input
-                        id="name-create"
-                        placeholder="Enter your name"
-                        {...registerCreate("name")}
-                      />
-                      {errorsCreate.name && (
-                        <p className="text-sm text-red-500">
-                          {errorsCreate.name.message}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      type="submit"
-                      className="bg-primary"
-                      disabled={isSubmittingCreate}
-                    >
-                      <CirclePlus className="mr-2 h-4 w-4" />
-                      {isSubmittingCreate ? "Creating..." : "Create Room"}
-                    </Button>
+    <Card className="w-[480px]">
+      <CardHeader>
+        <CardTitle>Online Code Collaboration Platform</CardTitle>
+        <CardDescription>
+          Create or join a room to start coding.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid w-full items-center gap-6">
+          {!room && (
+            <>
+              {/* Section for creating a collab room */}
+              <form
+                onSubmit={handleSubmitCreate(
+                  onSubmitCreateRoom,
+                  onSubmitErrorHandler,
+                )}
+              >
+                <div className="flex flex-col space-y-4">
+                  <h3 className="text-lg font-medium">Create a Room</h3>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name-create">Name</Label>
+                    <Input
+                      id="name-create"
+                      placeholder="Enter your name"
+                      {...registerCreate("name")}
+                    />
+                    {errorsCreate.name && (
+                      <p className="text-sm text-red-500">
+                        {errorsCreate.name.message}
+                      </p>
+                    )}
                   </div>
-                </form>
-
-                <Separator />
-              </>
-            )}
-
-            {/* Section for joining a collab room */}
-            <form
-              onSubmit={handleSubmitJoin(
-                onSubmitJoinRoom,
-                onSubmitErrorHandler,
-              )}
-            >
-              <div className="flex flex-col space-y-4">
-                <h3 className="text-lg font-medium">Join a Room</h3>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="room-id">Room ID</Label>
-                  <Input
-                    id="room-id"
-                    placeholder="Enter room ID"
-                    {...registerJoin("roomId")}
-                  />
-                  {errorsJoin.roomId && (
-                    <p className="text-sm text-red-500">
-                      {errorsJoin.roomId.message}
-                    </p>
-                  )}
+                  <Button
+                    type="submit"
+                    className="bg-primary"
+                    disabled={isSubmittingCreate}
+                  >
+                    <CirclePlus className="mr-2 h-4 w-4" />
+                    {isSubmittingCreate ? "Creating..." : "Create Room"}
+                  </Button>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name-join">Name</Label>
-                  <Input
-                    id="name-join"
-                    placeholder="Enter your name"
-                    {...registerJoin("name")}
-                  />
-                  {errorsJoin.name && (
-                    <p className="text-sm text-red-500">
-                      {errorsJoin.name.message}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="bg-primary"
-                  disabled={isSubmittingJoin}
-                >
-                  {isSubmittingJoin ? "Joining..." : "Join Room"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+              </form>
+
+              <Separator />
+            </>
+          )}
+
+          {/* Section for joining a collab room */}
+          <form
+            onSubmit={handleSubmitJoin(onSubmitJoinRoom, onSubmitErrorHandler)}
+          >
+            <div className="flex flex-col space-y-4">
+              <h3 className="text-lg font-medium">Join a Room</h3>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="room-id">Room ID</Label>
+                <Input
+                  id="room-id"
+                  placeholder="Enter room ID"
+                  {...registerJoin("roomId")}
+                />
+                {errorsJoin.roomId && (
+                  <p className="text-sm text-red-500">
+                    {errorsJoin.roomId.message}
+                  </p>
+                )}
               </div>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
-    </Suspense>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="name-join">Name</Label>
+                <Input
+                  id="name-join"
+                  placeholder="Enter your name"
+                  {...registerJoin("name")}
+                />
+                {errorsJoin.name && (
+                  <p className="text-sm text-red-500">
+                    {errorsJoin.name.message}
+                  </p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                className="bg-primary"
+                disabled={isSubmittingJoin}
+              >
+                {isSubmittingJoin ? "Joining..." : "Join Room"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
