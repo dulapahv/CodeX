@@ -1,139 +1,74 @@
-import cors from "cors";
-import express from "express";
-import { createServer } from "http";
-import { v4 as uuidv4 } from "uuid";
-import { Server, Socket } from "socket.io";
+import { createServer } from 'http';
+import dotenv from 'dotenv';
+import express from 'express';
+import { Server } from 'socket.io';
 
-import "dotenv/config";
+import { RoomServiceMsg, UserServiceMsg } from '../../common/types/message';
+import * as roomService from './service/room-service';
+import * as userService from './service/user-service';
+
+dotenv.config();
 
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://occp.dulapahv.dev",
-  "https://dev-occp.dulapahv.dev",
+  'http://localhost:3000',
+  'https://occp.dulapahv.dev',
+  'https://dev-occp.dulapahv.dev',
 ];
-
-// app.use(cors({ origin: allowedOrigins }));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
-    methods: ["GET", "POST"],
+    methods: ['GET', 'POST'],
   },
 });
 
-app.get("/", (_req, res) => {
-  res.status(200).json({ message: "Hello from occp-server!" });
+app.get('/', (_req, res) => {
+  res.status(200).json({ message: 'Hello from occp-server!' });
 });
-interface SocketIDToUsersMapType {
-  [key: string]: string;
-}
 
-interface RoomIDToCodeMapType {
-  [key: string]: string;
-}
+// interface UpdateUsersListAndCodeMapParams {
+//   io: Server;
+//   socket: Socket;
+//   roomID: string;
+// }
 
-// Store the mapping of socket ID to username
-const socketIDToUsersMap: SocketIDToUsersMapType = {};
+// async function updateUserslistAndCodeMap({
+//   io,
+//   socket,
+//   roomID,
+// }: UpdateUsersListAndCodeMapParams): Promise<void> {
+//   socket
+//     .in(roomID)
+//     .emit('member left', { username: socketIDToUsersMap[socket.id] });
 
-// Store the mapping of room ID to code
-const roomIDToCodeMap: RoomIDToCodeMapType = {};
+//   // update the user list
+//   delete socketIDToUsersMap[socket.id];
+//   const userslist: string[] = await getUsersInRoom({ io, roomID });
+//   socket.in(roomID).emit('updating client list', { userslist });
 
-interface GetUsersInRoomParams {
-  io: Server;
-  roomID: string;
-}
+//   if (userslist.length === 0) {
+//     delete roomIDToCodeMap[roomID];
+//   }
+// }
 
-async function getUsersInRoom({
-  io,
-  roomID,
-}: GetUsersInRoomParams): Promise<string[]> {
-  const socketList = await io.in(roomID).fetchSockets();
-  const userslist: string[] = [];
-  socketList.forEach((socket) => {
-    if (socket.id in socketIDToUsersMap) {
-      userslist.push(socketIDToUsersMap[socket.id]);
-    }
-  });
-  return userslist;
-}
-
-interface UpdateUsersListAndCodeMapParams {
-  io: Server;
-  socket: Socket;
-  roomID: string;
-}
-
-async function updateUserslistAndCodeMap({
-  io,
-  socket,
-  roomID,
-}: UpdateUsersListAndCodeMapParams): Promise<void> {
-  socket
-    .in(roomID)
-    .emit("member left", { username: socketIDToUsersMap[socket.id] });
-
-  // update the user list
-  delete socketIDToUsersMap[socket.id];
-  const userslist: string[] = await getUsersInRoom({ io, roomID });
-  socket.in(roomID).emit("updating client list", { userslist });
-
-  if (userslist.length === 0) {
-    delete roomIDToCodeMap[roomID];
-  }
-}
-
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on("create-room", async (name) => {
-    // create a new room
-    const roomID = uuidv4().replace(/-/g, "");
-    socketIDToUsersMap[socket.id] = name; // store the mapping of socket ID to username
-    console.log(`User ${name} created room ${roomID}`);
-
-    // join the room
-    socket.join(roomID);
-    socket.emit("room-created", roomID);
-    console.log(`User ${name} joined room ${roomID}`);
-    console.log(await getUsersInRoom({ io, roomID }));
-  });
-
-  // when users join a room
-  socket.on("join-room", async (roomID, name) => {
-    // check if room exists
-    if (!io.sockets.adapter.rooms.has(roomID)) {
-      // if room does not exist, emit room-not-found event
-      console.log(`Room ${roomID} does not exist`);
-      socket.emit("room-not-found", roomID);
-      return;
-    }
-
-    // join the room
-    socket.join(roomID);
-    socketIDToUsersMap[socket.id] = name; // store the mapping of socket ID to username
-    socket.emit("room-joined", name);
-    console.log(`User ${name} joined room ${roomID}`);
-
-    const userslist = await getUsersInRoom({ io, roomID });
-    console.log(userslist);
-  });
-
-  // when users leave a room
-  socket.on("disconnect", function () {
-    socket.emit("user-disconnected", socketIDToUsersMap[socket.id]);
-    console.log(`User disconnected: ${socketIDToUsersMap[socket.id]}`);
-    delete socketIDToUsersMap[socket.id];
-
-    if (Object.keys(socketIDToUsersMap).length === 0) {
-      console.log("No more users in the room. Room is now deleted.");
-    } else {
-      console.log(`Remaining users: ${Object.values(socketIDToUsersMap)}`);
-    }
+io.on('connection', (socket) => {
+  socket.on(RoomServiceMsg.CREATE_ROOM, async (name) =>
+    roomService.createAndJoin(socket, io, name)
+  );
+  socket.on(RoomServiceMsg.JOIN_ROOM, async (roomID, name) =>
+    roomService.join(socket, io, roomID, name)
+  );
+  socket.on(RoomServiceMsg.LEAVE_ROOM, async (roomID) =>
+    roomService.leave(socket, io, roomID)
+  );
+  socket.on(UserServiceMsg.DISCONNECT, async () =>
+    userService.disconnect(socket)
+  );
+  socket.on(RoomServiceMsg.GET_USERS, async (roomID) => {
+    await roomService.getUsersInRoom(socket, io, roomID);
   });
 });
 
