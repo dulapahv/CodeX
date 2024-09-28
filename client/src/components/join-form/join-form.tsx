@@ -1,11 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowRight, CirclePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,25 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { createRoomAndJoin, joinRoom, parseError } from "@/lib/utils";
+import { createRoom, joinRoom, parseError } from "@/lib/utils";
 import { CreateRoomForm, JoinRoomForm } from "@/types/types";
 
 import { createRoomSchema, joinRoomSchema } from "./validator";
 
 export function JoinForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const {
-    register: registerJoin,
-    handleSubmit: handleSubmitJoin,
-    formState: { errors: errorsJoin, isSubmitting: isSubmittingJoin },
-  } = useForm<JoinRoomForm>({
-    resolver: yupResolver(joinRoomSchema),
-    defaultValues: {
-      name: "",
-      roomId: "",
-    },
-  });
+  const room = searchParams.get("room") || "";
 
   const {
     register: registerCreate,
@@ -49,9 +39,20 @@ export function JoinForm() {
     },
   });
 
+  const {
+    register: registerJoin,
+    handleSubmit: handleSubmitJoin,
+    formState: { errors: errorsJoin, isSubmitting: isSubmittingJoin },
+  } = useForm<JoinRoomForm>({
+    resolver: yupResolver(joinRoomSchema),
+    defaultValues: {
+      name: "",
+      roomId: room,
+    },
+  });
+
   async function onSubmitJoinRoom(data: JoinRoomForm) {
     const { name, roomId } = data;
-
     toast.promise(joinRoom(roomId, name), {
       loading: "Joining room, please wait...",
       success: () => {
@@ -64,14 +65,12 @@ export function JoinForm() {
 
   function onSubmitCreateRoom(data: CreateRoomForm) {
     const { name } = data;
-    const roomId = uuidv4().slice(0, 8);
-
-    toast.promise(createRoomAndJoin(roomId, name), {
+    toast.promise(createRoom(name), {
       loading: "Creating room, please wait...",
-      success: () => {
+      success: (roomId) => {
         router.push(`/room/${roomId}`);
         navigator.clipboard.writeText(roomId);
-        return "Successfully created room! Room ID has been copied to clipboard.";
+        return "Successfully created room. Room ID has been copied to clipboard.";
       },
       error: (error) => `Failed to create room.\n${parseError(error)}`,
     });
@@ -92,40 +91,44 @@ export function JoinForm() {
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-6">
-          {/* Section for creating a collab room */}
-          <form
-            onSubmit={handleSubmitCreate(
-              onSubmitCreateRoom,
-              onSubmitErrorHandler,
-            )}
-          >
-            <div className="flex flex-col space-y-4">
-              <h3 className="text-lg font-medium">Create a Room</h3>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name-create">Name</Label>
-                <Input
-                  id="name-create"
-                  placeholder="Enter your name"
-                  {...registerCreate("name")}
-                />
-                {errorsCreate.name && (
-                  <p className="text-sm text-red-500">
-                    {errorsCreate.name.message}
-                  </p>
+          {!room && (
+            <>
+              {/* Section for creating a collab room */}
+              <form
+                onSubmit={handleSubmitCreate(
+                  onSubmitCreateRoom,
+                  onSubmitErrorHandler,
                 )}
-              </div>
-              <Button
-                type="submit"
-                className="bg-primary"
-                disabled={isSubmittingCreate}
               >
-                <CirclePlus className="mr-2 h-4 w-4" />
-                {isSubmittingCreate ? "Creating..." : "Create Room"}
-              </Button>
-            </div>
-          </form>
+                <div className="flex flex-col space-y-4">
+                  <h3 className="text-lg font-medium">Create a Room</h3>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name-create">Name</Label>
+                    <Input
+                      id="name-create"
+                      placeholder="Enter your name"
+                      {...registerCreate("name")}
+                    />
+                    {errorsCreate.name && (
+                      <p className="text-sm text-red-500">
+                        {errorsCreate.name.message}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    className="bg-primary"
+                    disabled={isSubmittingCreate}
+                  >
+                    <CirclePlus className="mr-2 h-4 w-4" />
+                    {isSubmittingCreate ? "Creating..." : "Create Room"}
+                  </Button>
+                </div>
+              </form>
 
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Section for joining a collab room */}
           <form

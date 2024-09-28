@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, LogOut, UsersRound } from "lucide-react";
 import { toast } from "sonner";
@@ -25,7 +25,10 @@ import {
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { send } from "@/lib/socket";
+import { socket } from "@/lib/socket";
+import { leaveRoom } from "@/lib/utils";
+
+import { RoomServiceMsg } from "../../../../../common/types/message";
 
 interface RoomProps {
   params: {
@@ -36,23 +39,33 @@ interface RoomProps {
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
 
-  useEffect(() => {
-    window.addEventListener("popstate", disconnect);
-  }, []);
+  const [users, setUsers] = useState<string[]>([]);
+  const disconnect = useCallback(() => {
+    leaveRoom(params.roomId);
+  }, [params.roomId]);
 
-  function disconnect() {
-    console.log("Disconnecting from socket");
-    send({ type: "leave" });
-  }
+  useEffect(() => {
+    if (!socket().connected) {
+      router.push(`/?room=${params.roomId}`);
+    }
+
+    socket().emit(RoomServiceMsg.GET_USERS, params.roomId);
+    socket().on(RoomServiceMsg.UPDATE_CLIENT_LIST, (users: string[]) => {
+      setUsers(users);
+    });
+
+    window.addEventListener("popstate", disconnect);
+
+    return () => {
+      window.removeEventListener("popstate", disconnect);
+      socket().off(RoomServiceMsg.UPDATE_CLIENT_LIST);
+    };
+  }, []);
 
   function handleLeave() {
     disconnect();
     router.push("/");
   }
-
-  const participants = Array.from({ length: 50 }).map(
-    (_, i) => `Participant #${i + 1}`,
-  );
 
   return (
     <main className="flex h-full">
@@ -69,9 +82,9 @@ export default function Room({ params }: RoomProps) {
           </div>
           <ScrollArea className="grow rounded-md">
             <div className="px-2 pr-4">
-              {participants.map((participant) => (
+              {users.map((participant, index) => (
                 <>
-                  <div key={participant} className="text-sm">
+                  <div key={index} className="text-sm">
                     {participant}
                   </div>
                   <Separator className="my-2" />
