@@ -120,7 +120,7 @@ export function JoinForm() {
                     className="bg-primary"
                     disabled={isSubmittingCreate}
                   >
-                    <CirclePlus className="mr-2 h-4 w-4" />
+                    <CirclePlus className="mr-2 size-4" />
                     {isSubmittingCreate ? "Creating..." : "Create Room"}
                   </Button>
                 </div>
@@ -168,7 +168,7 @@ export function JoinForm() {
                 disabled={isSubmittingJoin}
               >
                 {isSubmittingJoin ? "Joining..." : "Join Room"}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 size-4" />
               </Button>
             </div>
           </form>

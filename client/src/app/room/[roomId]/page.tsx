@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, LogOut, UsersRound } from "lucide-react";
+import { Copy, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
-import { Ide } from "@/components/ide";
+import { Avatar } from "@/components/avatar";
+import { Monaco } from "@/components/monaco";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,13 +19,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { socket } from "@/lib/socket";
 import { leaveRoom } from "@/lib/utils";
 
@@ -68,72 +68,68 @@ export default function Room({ params }: RoomProps) {
   }
 
   return (
-    <main className="flex h-full">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel
-          defaultSize={20}
-          minSize={15}
-          collapsible
-          className="flex flex-col"
-        >
-          <div className="m-2 flex">
-            <UsersRound className="mr-2 size-5" />
-            <h2 className="font-medium">Participants</h2>
-          </div>
-          <ScrollArea className="grow rounded-md">
-            <div className="px-2 pr-4">
-              {users.map((participant, index) => (
-                <>
-                  <div key={index} className="text-sm">
-                    {participant}
-                  </div>
-                  <Separator className="my-2" />
-                </>
+    <main className="flex h-full min-w-[375px] flex-col">
+      <div className="bg-[#dddddd] dark:bg-[#3c3c3c]">
+        <div className="m-2 flex items-center justify-end gap-x-2">
+          <ScrollArea>
+            <div className="mr-2 flex gap-x-2">
+              {users.map((user, index) => (
+                <Avatar key={index} name={user} />
               ))}
             </div>
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <div className="m-2 flex flex-col gap-y-4">
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(params.roomId);
-                toast.info("Room ID copied to clipboard.");
-              }}
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              Copy Room ID
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Leave Room
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(params.roomId);
+                  toast.info("Room ID copied to clipboard.");
+                }}
+              >
+                <Copy className="mr-2 size-4" />
+                Room ID
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Copy Room ID</p>
+            </TooltipContent>
+          </Tooltip>
+          <AlertDialog>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="destructive">
+                    <LogOut className="size-4" />
+                  </Button>
+                </AlertDialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Leave Room</p>
+              </TooltipContent>
+            </Tooltip>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Are you sure you want to leave this room?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  You can always rejoin this room using the same Room ID. This
+                  room will be deleted if you are the last participant.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button variant="destructive" onClick={handleLeave} asChild>
+                  <AlertDialogAction>Leave</AlertDialogAction>
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Are you sure you want to leave this room?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    You can always rejoin this room using the same Room ID. This
-                    room will be deleted if you are the last participant.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleLeave}>
-                    Leave
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={80} minSize={50}>
-          <Ide />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+      <Monaco />
     </main>
   );
 }
