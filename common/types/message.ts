@@ -12,3 +12,8 @@ export enum RoomServiceMsg {
 export enum UserServiceMsg {
   DISCONNECT = 'disconnect',
 }
+
+export enum EditServiceMsg {
+  SEND_EDIT = 'SEND_EDIT',
+  RECEIVE_EDIT = 'RECEIVE_EDIT',
+}

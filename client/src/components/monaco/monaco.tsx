@@ -8,6 +8,21 @@ import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { socket } from "@/lib/socket";
+
+import {
+  applyOperation,
+  DeleteOp,
+  InsertOp,
+  isDelete,
+  isInsert,
+  Tdd,
+  Tdi,
+  Tid,
+  Tii,
+} from "../../../../common/transform/ot";
+import { EditServiceMsg } from "../../../../common/types/message";
+import { OperationType, TextOperation } from "../../../../common/types/ot";
 
 export function Monaco() {
   const { resolvedTheme } = useTheme();
@@ -17,13 +32,9 @@ export function Monaco() {
   const [selected, setSelected] = useState(0);
 
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const skipUpdateRef = useRef(false); // Use a ref to track if updates should be skipped
 
-  function handleEditorWillMount(monaco: Monaco) {
-    // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    //   noSemanticValidation: true,
-    //   noSyntaxValidation: true,
-    // });
-  }
+  function handleEditorWillMount(monaco: Monaco) {}
 
   function handleEditorDidMount(
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -54,14 +65,72 @@ export function Monaco() {
         }
       },
     );
+
+    // Handle incoming changes from the server
+    socket().on(EditServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
+      if (operation) {
+        // Prevent triggering `handleOnChange` when applying received updates
+        skipUpdateRef.current = true;
+        const model = editor.getModel();
+        if (model) {
+          const currentCode = model.getValue();
+          const updatedCode = applyOperation(currentCode, operation);
+          editor.setValue(updatedCode);
+        }
+        skipUpdateRef.current = false;
+      } else {
+        // Sync the entire document if necessary
+        skipUpdateRef.current = true;
+        editor.setValue(updatedCode);
+        skipUpdateRef.current = false;
+      }
+    });
+  }
+
+  /**
+   * Converts Monaco Editor change event into a corresponding OT operation.
+   * @param change The change object from Monaco Editor.
+   * @returns An OT operation object.
+   */
+  function monacoChangeToOperation(change: any): TextOperation {
+    const { range, text, rangeOffset, rangeLength } = change;
+
+    if (rangeLength === 0) {
+      // This is an Insert operation
+      return {
+        type: OperationType.Insert,
+        pos: rangeOffset, // Position in terms of the document index
+        text, // The text to insert
+      };
+    } else if (text === "") {
+      // This is a Delete operation
+      return {
+        type: OperationType.Delete,
+        pos: rangeOffset, // Position in terms of the document index
+        length: rangeLength, // Number of characters to delete
+      };
+    }
+
+    // Handle any other case as necessary
+    return null as any;
   }
 
   function handleOnChange(
     value: string | undefined,
     ev: monaco.editor.IModelContentChangedEvent,
   ) {
-    const editor = editorRef.current;
-    if (!editor) return;
+    if (skipUpdateRef.current) return; // Skip sending if it's a remote change
+
+    ev.changes.forEach((change) => {
+      const operation = monacoChangeToOperation(change);
+      if (operation) {
+        socket().emit(
+          EditServiceMsg.SEND_EDIT,
+          sessionStorage.getItem("roomId"),
+          operation,
+        );
+      }
+    });
   }
 
   return (
@@ -85,7 +154,9 @@ export function Monaco() {
       <section className="w-full bg-[#2678ca] py-1">
         <div className="flex justify-end text-xs text-neutral-100">
           <div className="px-2">
-            {`Ln ${line}, Col ${column} ${selected ? `(${selected} selected)` : ""}`}
+            {`Ln ${line}, Col ${column} ${
+              selected ? `(${selected} selected)` : ""
+            }`}
           </div>
         </div>
       </section>

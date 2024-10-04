@@ -7,7 +7,6 @@ import * as userService from './user-service';
 
 export async function createAndJoin(
   socket: Socket,
-  io: Server,
   name: string
 ): Promise<void> {
   userService.connect(socket, name);
