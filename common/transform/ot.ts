@@ -69,6 +69,8 @@ export function Tdi(del: DeleteOp, ins: InsertOp): DeleteOp {
     return { ...del }; // No position change
   } else if (del.pos >= ins.pos) {
     return { ...del, pos: del.pos + ins.text.length }; // Shift position forward by the length of the inserted text
+  } else {
+    return { ...del }; // No position change
   }
 }
 
