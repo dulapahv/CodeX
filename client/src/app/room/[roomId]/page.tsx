@@ -49,6 +49,8 @@ export default function Room({ params }: RoomProps) {
       router.push(`/?room=${params.roomId}`);
     }
 
+    sessionStorage.setItem("roomId", params.roomId);
+
     socket().emit(RoomServiceMsg.GET_USERS, params.roomId);
     socket().on(RoomServiceMsg.UPDATE_CLIENT_LIST, (users: string[]) => {
       setUsers(users);
