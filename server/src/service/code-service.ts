@@ -1,12 +1,6 @@
 import { Server, Socket } from 'socket.io';
 
 import {
-  EditServiceMsg,
-  RoomServiceMsg,
-  UserServiceMsg,
-} from '../../../common/types/message';
-import * as OTType from '../../../common/types/ot';
-import {
   applyOperation,
   DeleteOp,
   InsertOp,
@@ -18,6 +12,12 @@ import {
   Tid,
   Tii,
 } from '../../../common/transform/ot';
+import {
+  CodeServiceMsg,
+  RoomServiceMsg,
+  UserServiceMsg,
+} from '../../../common/types/message';
+import * as OTType from '../../../common/types/ot';
 
 // Import transformation functions and types
 
@@ -31,6 +31,11 @@ const roomID_to_Code_Map: { [key: string]: string } = {};
  */
 export function getCode(roomID: string): string {
   return roomID_to_Code_Map[roomID] || '';
+}
+
+export function syncCode(socket: Socket, io: Server, roomID: string): void {
+  const code = getCode(roomID);
+  io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, code);
 }
 
 export function updateCode(
@@ -48,5 +53,5 @@ export function updateCode(
   roomID_to_Code_Map[roomID] = updatedCode;
 
   // Broadcast the operation to all clients in the room
-  socket.to(roomID).emit(EditServiceMsg.RECEIVE_EDIT, operation, updatedCode);
+  socket.to(roomID).emit(CodeServiceMsg.RECEIVE_EDIT, operation, updatedCode);
 }

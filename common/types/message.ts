@@ -13,7 +13,9 @@ export enum UserServiceMsg {
   DISCONNECT = 'disconnect',
 }
 
-export enum EditServiceMsg {
-  SEND_EDIT = 'SEND_EDIT',
-  RECEIVE_EDIT = 'RECEIVE_EDIT',
+export enum CodeServiceMsg {
+  GET_CODE = 'get-code',
+  RECEIVE_CODE = 'receive-code',
+  SEND_EDIT = 'send-edit',
+  RECEIVE_EDIT = 'receive-edit',
 }

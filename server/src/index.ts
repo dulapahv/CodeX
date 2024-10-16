@@ -4,7 +4,7 @@ import express from 'express';
 import { Server } from 'socket.io';
 
 import {
-  EditServiceMsg,
+  CodeServiceMsg,
   RoomServiceMsg,
   UserServiceMsg,
 } from '../../common/types/message';
@@ -51,7 +51,10 @@ io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.GET_USERS, async (roomID) => {
     await roomService.getUsersInRoom(socket, io, roomID);
   });
-  socket.on(EditServiceMsg.SEND_EDIT, (roomID, operation: TextOperation) => {
+  socket.on(CodeServiceMsg.GET_CODE, (roomID) => {
+    codeService.syncCode(socket, io, roomID);
+  });
+  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: TextOperation) => {
     codeService.updateCode(socket, roomID, operation);
   });
 });

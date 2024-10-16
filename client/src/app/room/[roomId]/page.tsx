@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, LogOut } from "lucide-react";
+import { Braces, Copy, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 import { Avatar } from "@/components/avatar";
 import { Monaco } from "@/components/monaco";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,10 @@ import {
 import { socket } from "@/lib/socket";
 import { leaveRoom } from "@/lib/utils";
 
-import { RoomServiceMsg } from "../../../../../common/types/message";
+import {
+  CodeServiceMsg,
+  RoomServiceMsg,
+} from "../../../../../common/types/message";
 
 interface RoomProps {
   params: {
@@ -40,6 +44,8 @@ export default function Room({ params }: RoomProps) {
   const router = useRouter();
 
   const [users, setUsers] = useState<string[]>([]);
+  const [defaultCode, setDefaultCode] = useState<string | null>(null);
+
   const disconnect = useCallback(() => {
     leaveRoom(params.roomId);
   }, [params.roomId]);
@@ -56,11 +62,17 @@ export default function Room({ params }: RoomProps) {
       setUsers(users);
     });
 
+    socket().emit(CodeServiceMsg.GET_CODE, params.roomId);
+    socket().on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
+      setDefaultCode(code);
+    });
+
     window.addEventListener("popstate", disconnect);
 
     return () => {
       window.removeEventListener("popstate", disconnect);
       socket().off(RoomServiceMsg.UPDATE_CLIENT_LIST);
+      socket().off(CodeServiceMsg.RECEIVE_CODE);
     };
   }, []);
 
@@ -131,7 +143,19 @@ export default function Room({ params }: RoomProps) {
           </AlertDialog>
         </div>
       </div>
-      <Monaco />
+      {defaultCode !== null ? (
+        <Monaco defaultCode={defaultCode} />
+      ) : (
+        <div className="flex h-full items-center justify-center">
+          <Alert className="max-w-md">
+            <Braces className="size-4" />
+            <AlertTitle>Fetching Code</AlertTitle>
+            <AlertDescription>
+              Fetching the code for this room. Please wait...
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
     </main>
   );
 }
