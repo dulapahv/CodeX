@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ArrowRight, CirclePlus } from "lucide-react";
+import { ArrowRight, CirclePlus, LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -82,7 +82,7 @@ export function JoinForm() {
   }
 
   return (
-    <Card className="w-[480px]">
+    <Card className="animate-fade-in w-[480px]">
       <CardHeader>
         <CardTitle>Online Code Collaboration Platform</CardTitle>
         <CardDescription>
@@ -118,9 +118,13 @@ export function JoinForm() {
                   <Button
                     type="submit"
                     className="bg-primary"
-                    disabled={isSubmittingCreate}
+                    disabled={isSubmittingCreate || isSubmittingJoin}
                   >
-                    <CirclePlus className="mr-2 size-4" />
+                    {isSubmittingCreate ? (
+                      <LoaderCircle className="mr-2 size-4 animate-spin" />
+                    ) : (
+                      <CirclePlus className="mr-2 size-4" />
+                    )}
                     {isSubmittingCreate ? "Creating..." : "Create Room"}
                   </Button>
                 </div>
@@ -165,10 +169,13 @@ export function JoinForm() {
               <Button
                 type="submit"
                 className="bg-primary"
-                disabled={isSubmittingJoin}
+                disabled={isSubmittingJoin || isSubmittingCreate}
               >
+                {isSubmittingJoin && (
+                  <LoaderCircle className="mr-2 size-4 animate-spin" />
+                )}
                 {isSubmittingJoin ? "Joining..." : "Join Room"}
-                <ArrowRight className="ml-2 size-4" />
+                {!isSubmittingJoin && <ArrowRight className="ml-2 size-4" />}
               </Button>
             </div>
           </form>

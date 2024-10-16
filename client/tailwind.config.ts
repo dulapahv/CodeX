@@ -56,6 +56,30 @@ const config: Config = {
           "5": "hsl(var(--chart-5))",
         },
       },
+      animation: {
+        "scale-up-center":
+          "scale-up-center 0.4s cubic-bezier(0.190, 1.000, 0.220, 1.000)   both",
+        "fade-in":
+          "fade-in 0.4s cubic-bezier(0.190, 1.000, 0.220, 1.000)   both",
+      },
+      keyframes: {
+        "scale-up-center": {
+          "0%": {
+            transform: "scale(.5)",
+          },
+          to: {
+            transform: "scale(1)",
+          },
+        },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+          },
+          to: {
+            opacity: "1",
+          },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

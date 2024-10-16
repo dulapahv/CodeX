@@ -168,16 +168,16 @@ export function Monaco({ defaultCode }: MonacoProps) {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="animate-fade-in flex h-full flex-col">
       <Editor
         defaultLanguage="javascript"
         theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
         loading={
           <Alert className="max-w-md">
             <Pencil className="size-4" />
-            <AlertTitle>Loading Editor</AlertTitle>
+            <AlertTitle>Setting up editor</AlertTitle>
             <AlertDescription>
-              Setting up the editor. Please wait...
+              Setting up the editor for you. Please wait...
             </AlertDescription>
           </Alert>
         }
