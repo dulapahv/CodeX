@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { Braces } from "lucide-react";
+import { Pencil } from "lucide-react";
 import * as monaco from "monaco-editor";
 import { useTheme } from "next-themes";
 
@@ -21,10 +21,14 @@ import {
   Tid,
   Tii,
 } from "../../../../common/transform/ot";
-import { EditServiceMsg } from "../../../../common/types/message";
+import { CodeServiceMsg } from "../../../../common/types/message";
 import { OperationType, TextOperation } from "../../../../common/types/ot";
 
-export function Monaco() {
+interface MonacoProps {
+  defaultCode?: string;
+}
+
+export function Monaco({ defaultCode }: MonacoProps) {
   const { resolvedTheme } = useTheme();
 
   const [line, setLine] = useState(1);
@@ -41,6 +45,10 @@ export function Monaco() {
     monaco: Monaco,
   ) {
     editorRef.current = editor;
+
+    if (defaultCode) {
+      editor.setValue(defaultCode);
+    }
 
     editor.focus();
 
@@ -67,7 +75,7 @@ export function Monaco() {
     );
 
     // Handle incoming changes from the server
-    socket().on(EditServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
+    socket().on(CodeServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
       if (operation) {
         // Prevent triggering `handleOnChange` when applying received updates
         skipUpdateRef.current = true;
@@ -151,7 +159,7 @@ export function Monaco() {
       const operation = monacoChangeToOperation(change);
       if (operation) {
         socket().emit(
-          EditServiceMsg.SEND_EDIT,
+          CodeServiceMsg.SEND_EDIT,
           sessionStorage.getItem("roomId"),
           operation,
         );
@@ -166,10 +174,10 @@ export function Monaco() {
         theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
         loading={
           <Alert className="max-w-md">
-            <Braces className="size-4" />
+            <Pencil className="size-4" />
             <AlertTitle>Loading Editor</AlertTitle>
             <AlertDescription>
-              Setting up the editor, please wait...
+              Setting up the editor. Please wait...
             </AlertDescription>
           </Alert>
         }

@@ -120,12 +120,12 @@ export function applyOperation(
   }
 }
 
-const ins1: InsertOp = { type: OperationType.Insert, pos: 3, text: 'abc' };
-const ins2: InsertOp = { type: OperationType.Insert, pos: 4, text: 'xyz' };
-const del1: DeleteOp = { type: OperationType.Delete, pos: 3, length: 2 };
-const del2: DeleteOp = { type: OperationType.Delete, pos: 1, length: 1 };
+// const ins1: InsertOp = { type: OperationType.Insert, pos: 3, text: 'abc' };
+// const ins2: InsertOp = { type: OperationType.Insert, pos: 4, text: 'xyz' };
+// const del1: DeleteOp = { type: OperationType.Delete, pos: 3, length: 2 };
+// const del2: DeleteOp = { type: OperationType.Delete, pos: 1, length: 1 };
 
-console.log(Tii(ins1, ins2)); // Insert shifts forward by length of ins2: { type: 'Insert', pos: 3, text: 'abc' }
-console.log(Tid(ins1, del2)); // Insert shifts to the left: { type: 'Insert', pos: 2, text: 'abc' }
-console.log(Tdi(del1, ins2)); // Delete shifts forward: { type: 'Delete', pos: 6, length: 2 }
-console.log(Tdd(del1, del2)); // Delete shifts back: { type: 'Delete', pos: 2, length: 2 }
+// console.log(Tii(ins1, ins2)); // Insert shifts forward by length of ins2: { type: 'Insert', pos: 3, text: 'abc' }
+// console.log(Tid(ins1, del2)); // Insert shifts to the left: { type: 'Insert', pos: 2, text: 'abc' }
+// console.log(Tdi(del1, ins2)); // Delete shifts forward: { type: 'Delete', pos: 6, length: 2 }
+// console.log(Tdd(del1, del2)); // Delete shifts back: { type: 'Delete', pos: 2, length: 2 }
