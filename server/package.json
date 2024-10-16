@@ -16,7 +16,7 @@
     "@vercel/kv": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
     "socket.io": "^4.8.0",
     "uuid": "^10.0.0"
   },
@@ -24,11 +24,11 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^22.7.4",
+    "@types/node": "^22.7.5",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

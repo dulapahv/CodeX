@@ -73,9 +73,35 @@ export function Monaco() {
         skipUpdateRef.current = true;
         const model = editor.getModel();
         if (model) {
-          const currentCode = model.getValue();
-          const updatedCode = applyOperation(currentCode, operation);
-          editor.setValue(updatedCode);
+          // const currentCode = model.getValue();
+          // const updatedCode = applyOperation(currentCode, operation);
+          // editor.setValue(updatedCode);
+
+          const ops: monaco.editor.IIdentifiedSingleEditOperation[] = [];
+          if (isInsert(operation)) {
+            ops.push({
+              forceMoveMarkers: true,
+              range: {
+                startLineNumber: 1,
+                startColumn: operation.pos + 1,
+                endLineNumber: 1,
+                endColumn: operation.pos + 1,
+              },
+              text: operation.text,
+            });
+          } else if (isDelete(operation)) {
+            ops.push({
+              forceMoveMarkers: true,
+              range: {
+                startLineNumber: 1,
+                startColumn: operation.pos + 1,
+                endLineNumber: 1,
+                endColumn: operation.pos + 1 + operation.length,
+              },
+              text: "",
+            });
+          }
+          model.pushEditOperations([], ops, () => []);
         }
         skipUpdateRef.current = false;
       } else {
