@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Braces } from "lucide-react";
+import * as monaco from "monaco-editor";
 
+import type { Monaco } from "@monaco-editor/react";
 import { LeaveButton } from "@/components/leave-button";
-import { Monaco } from "@/components/monaco";
+import { Monaco as MonacoEditor } from "@/components/monaco";
 import { SettingSheet } from "@/components/settings-sheet";
 import { ShareButton } from "@/components/share-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,17 +29,22 @@ interface RoomProps {
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
 
+  const [monaco, setMonaco] = useState<Monaco | null>(null);
+  const [editor, setEditor] =
+    useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+
   const [users, setUsers] = useState<string[]>([]);
   const [defaultCode, setDefaultCode] = useState<string | null>(null);
 
   const disconnect = useCallback(() => {
     leaveRoom(params.roomId);
+    socket().disconnect();
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket().connected) {
-      router.push(`/?room=${params.roomId}`);
-    }
+    // if (!socket().connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     sessionStorage.setItem("roomId", params.roomId);
 
@@ -58,7 +65,7 @@ export default function Room({ params }: RoomProps) {
       socket().off(RoomServiceMsg.UPDATE_CLIENT_LIST);
       socket().off(CodeServiceMsg.RECEIVE_CODE);
     };
-  }, []);
+  }, [disconnect, params.roomId, router]);
 
   return (
     <main className="flex h-full min-w-[375px] flex-col">
@@ -66,14 +73,18 @@ export default function Room({ params }: RoomProps) {
         <div className="m-2 flex items-center justify-end gap-x-2">
           <UserList users={users} />
           <ShareButton roomId={params.roomId} />
-          <SettingSheet />
+          <SettingSheet monaco={monaco} editor={editor} />
           <LeaveButton roomId={params.roomId} />
         </div>
       </div>
       {defaultCode !== null ? (
-        <Monaco defaultCode={defaultCode} />
+        <MonacoEditor
+          monacoRef={setMonaco}
+          editorRef={setEditor}
+          defaultCode={defaultCode}
+        />
       ) : (
-        <div className="animate-fade-in flex h-full items-center justify-center">
+        <div className="flex h-full animate-fade-in items-center justify-center">
           <Alert className="max-w-md">
             <Braces className="size-4" />
             <AlertTitle>Loading session</AlertTitle>

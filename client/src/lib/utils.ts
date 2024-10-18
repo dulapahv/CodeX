@@ -19,11 +19,7 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     socket().emit(RoomServiceMsg.JOIN_ROOM, roomId, name);
     socket().on(RoomServiceMsg.ROOM_NOT_FOUND, (roomID: string) => {
-      reject(
-        new Error(
-          `Room does not exist. Please check the room ID and try again.`,
-        ),
-      );
+      reject("Room does not exist. Please check the room ID and try again.");
     });
     socket().on(RoomServiceMsg.ROOM_JOINED, () => {
       resolve(true);
