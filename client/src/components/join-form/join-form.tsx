@@ -31,7 +31,11 @@ export function JoinForm() {
   const {
     register: registerCreate,
     handleSubmit: handleSubmitCreate,
-    formState: { errors: errorsCreate, isSubmitting: isSubmittingCreate },
+    formState: {
+      errors: errorsCreate,
+      isSubmitting: isSubmittingCreate,
+      isSubmitSuccessful: isSubmitSuccessfulCreate,
+    },
   } = useForm<CreateRoomForm>({
     resolver: yupResolver(createRoomSchema),
     defaultValues: {
@@ -42,7 +46,11 @@ export function JoinForm() {
   const {
     register: registerJoin,
     handleSubmit: handleSubmitJoin,
-    formState: { errors: errorsJoin, isSubmitting: isSubmittingJoin },
+    formState: {
+      errors: errorsJoin,
+      isSubmitting: isSubmittingJoin,
+      isSubmitSuccessful: isSubmitSuccessfulJoin,
+    },
   } = useForm<JoinRoomForm>({
     resolver: yupResolver(joinRoomSchema),
     defaultValues: {
@@ -53,7 +61,10 @@ export function JoinForm() {
 
   async function onSubmitJoinRoom(data: JoinRoomForm) {
     const { name, roomId } = data;
-    toast.promise(joinRoom(roomId, name), {
+
+    const joinPromise = joinRoom(roomId, name);
+
+    toast.promise(joinPromise, {
       loading: "Joining room, please wait...",
       success: () => {
         router.push(`/room/${roomId}`);
@@ -61,11 +72,16 @@ export function JoinForm() {
       },
       error: (error) => `Failed to join room.\n${parseError(error)}`,
     });
+
+    return joinPromise; // Return the promise to handle the isSubmitting state
   }
 
   function onSubmitCreateRoom(data: CreateRoomForm) {
     const { name } = data;
-    toast.promise(createRoom(name), {
+
+    const createPromise = createRoom(name);
+
+    toast.promise(createPromise, {
       loading: "Creating room, please wait...",
       success: (roomId) => {
         router.push(`/room/${roomId}`);
@@ -74,6 +90,8 @@ export function JoinForm() {
       },
       error: (error) => `Failed to create room.\n${parseError(error)}`,
     });
+
+    return createPromise; // Return the promise to handle the isSubmitting state
   }
 
   function onSubmitErrorHandler() {
@@ -81,8 +99,21 @@ export function JoinForm() {
     return;
   }
 
+  if (isSubmitSuccessfulCreate || isSubmitSuccessfulJoin) {
+    return (
+      <Card className="w-[480px] animate-fade-in">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-center text-base font-normal">
+            <LoaderCircle className="mr-2 size-5 animate-spin" />
+            You will be redirected to the room shortly.
+          </CardTitle>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="animate-fade-in w-[480px]">
+    <Card className="w-[480px] animate-fade-in">
       <CardHeader>
         <CardTitle>Online Code Collaboration Platform</CardTitle>
         <CardDescription>

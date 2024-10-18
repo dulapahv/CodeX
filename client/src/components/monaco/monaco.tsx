@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Pencil } from "lucide-react";
 import * as monaco from "monaco-editor";
@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { MONACO_THEMES } from "@/lib/constants";
 import { socket } from "@/lib/socket";
 
 import {
@@ -25,101 +26,115 @@ import { CodeServiceMsg } from "../../../../common/types/message";
 import { OperationType, TextOperation } from "../../../../common/types/ot";
 
 interface MonacoProps {
+  monacoRef: (monaco: Monaco) => void;
+  editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   defaultCode?: string;
 }
 
-export function Monaco({ defaultCode }: MonacoProps) {
+export function Monaco({ monacoRef, editorRef, defaultCode }: MonacoProps) {
   const { resolvedTheme } = useTheme();
 
   const [line, setLine] = useState(1);
   const [column, setColumn] = useState(1);
   const [selected, setSelected] = useState(0);
 
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const EditorInternalRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
+    null,
+  );
+  const MonacoInternalRef = useRef<Monaco | null>(null);
   const skipUpdateRef = useRef(false); // Use a ref to track if updates should be skipped
 
   function handleEditorWillMount(monaco: Monaco) {}
 
-  function handleEditorDidMount(
-    editor: monaco.editor.IStandaloneCodeEditor,
-    monaco: Monaco,
-  ) {
-    editorRef.current = editor;
+  const handleEditorDidMount = useCallback(
+    (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+      editorRef(editor);
+      monacoRef(monaco);
 
-    if (defaultCode) {
-      editor.setValue(defaultCode);
-    }
+      EditorInternalRef.current = editor;
+      MonacoInternalRef.current = monaco;
 
-    editor.focus();
-
-    // Handle cursor position and selection
-    editor.onDidChangeCursorPosition(
-      (ev: monaco.editor.ICursorPositionChangedEvent) => {
-        setLine(ev.position.lineNumber);
-        setColumn(ev.position.column);
-      },
-    );
-
-    // Handle selected text
-    editor.onDidChangeCursorSelection(
-      (ev: monaco.editor.ICursorSelectionChangedEvent) => {
-        const selection = editor
-          .getModel()
-          ?.getValueLengthInRange(ev.selection);
-        if (selection) {
-          setSelected(selection);
-        } else {
-          setSelected(0);
-        }
-      },
-    );
-
-    // Handle incoming changes from the server
-    socket().on(CodeServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
-      if (operation) {
-        // Prevent triggering `handleOnChange` when applying received updates
-        skipUpdateRef.current = true;
-        const model = editor.getModel();
-        if (model) {
-          // const currentCode = model.getValue();
-          // const updatedCode = applyOperation(currentCode, operation);
-          // editor.setValue(updatedCode);
-
-          const ops: monaco.editor.IIdentifiedSingleEditOperation[] = [];
-          if (isInsert(operation)) {
-            ops.push({
-              forceMoveMarkers: true,
-              range: {
-                startLineNumber: 1,
-                startColumn: operation.pos + 1,
-                endLineNumber: 1,
-                endColumn: operation.pos + 1,
-              },
-              text: operation.text,
-            });
-          } else if (isDelete(operation)) {
-            ops.push({
-              forceMoveMarkers: true,
-              range: {
-                startLineNumber: 1,
-                startColumn: operation.pos + 1,
-                endLineNumber: 1,
-                endColumn: operation.pos + 1 + operation.length,
-              },
-              text: "",
-            });
-          }
-          model.pushEditOperations([], ops, () => []);
-        }
-        skipUpdateRef.current = false;
-      } else {
-        // Sync the entire document if necessary
-        skipUpdateRef.current = true;
-        editor.setValue(updatedCode);
-        skipUpdateRef.current = false;
+      if (defaultCode) {
+        editor.setValue(defaultCode);
       }
-    });
-  }
+
+      editor.focus();
+
+      // Handle cursor position and selection
+      editor.onDidChangeCursorPosition(
+        (ev: monaco.editor.ICursorPositionChangedEvent) => {
+          setLine(ev.position.lineNumber);
+          setColumn(ev.position.column);
+        },
+      );
+
+      // Handle selected text
+      editor.onDidChangeCursorSelection(
+        (ev: monaco.editor.ICursorSelectionChangedEvent) => {
+          const selection = editor
+            .getModel()
+            ?.getValueLengthInRange(ev.selection);
+          if (selection) {
+            setSelected(selection);
+          } else {
+            setSelected(0);
+          }
+        },
+      );
+
+      MONACO_THEMES.forEach((theme) => {
+        const json = require(`monaco-themes/themes/${theme.label}.json`);
+        monaco.editor.defineTheme(theme.value, json);
+      });
+
+      // Handle incoming changes from the server
+      socket().on(CodeServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
+        if (operation) {
+          // Prevent triggering `handleOnChange` when applying received updates
+          skipUpdateRef.current = true;
+          const model = editor.getModel();
+          if (model) {
+            // const currentCode = model.getValue();
+            // const updatedCode = applyOperation(currentCode, operation);
+            // editor.setValue(updatedCode);
+
+            const ops: monaco.editor.IIdentifiedSingleEditOperation[] = [];
+            if (isInsert(operation)) {
+              ops.push({
+                forceMoveMarkers: true,
+                range: {
+                  startLineNumber: 1,
+                  startColumn: operation.pos + 1,
+                  endLineNumber: 1,
+                  endColumn: operation.pos + 1,
+                },
+                text: operation.text,
+              });
+            } else if (isDelete(operation)) {
+              ops.push({
+                forceMoveMarkers: true,
+                range: {
+                  startLineNumber: 1,
+                  startColumn: operation.pos + 1,
+                  endLineNumber: 1,
+                  endColumn: operation.pos + 1 + operation.length,
+                },
+                text: "",
+              });
+            }
+            model.pushEditOperations([], ops, () => []);
+          }
+          skipUpdateRef.current = false;
+        } else {
+          // Sync the entire document if necessary
+          skipUpdateRef.current = true;
+          editor.setValue(updatedCode);
+          skipUpdateRef.current = false;
+        }
+      });
+    },
+    [editorRef, monacoRef],
+  );
 
   /**
    * Converts Monaco Editor change event into a corresponding OT operation.
@@ -168,7 +183,7 @@ export function Monaco({ defaultCode }: MonacoProps) {
   }
 
   return (
-    <div className="animate-fade-in flex h-full flex-col">
+    <div className="flex h-full animate-fade-in flex-col">
       <Editor
         defaultLanguage="javascript"
         theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
