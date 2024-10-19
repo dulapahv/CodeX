@@ -8,7 +8,7 @@ import {
   RoomServiceMsg,
   UserServiceMsg,
 } from '../../common/types/message';
-import { TextOperation } from '../../common/types/ot';
+import { ChangeOp, TextOperation } from '../../common/types/ot';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.GET_CODE, (roomID) => {
     codeService.syncCode(socket, io, roomID);
   });
-  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: TextOperation) => {
+  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: ChangeOp) => {
     codeService.updateCode(socket, roomID, operation);
   });
 });

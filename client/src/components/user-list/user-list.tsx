@@ -8,7 +8,7 @@ interface UserListProps {
 export function UserList({ users }: UserListProps) {
   return (
     <ScrollArea>
-      <div className="mr-2 flex gap-x-2">
+      <div className="mr-2 flex justify-end gap-x-2">
         {users.map((user, index) => (
           <Avatar key={index} name={user} />
         ))}

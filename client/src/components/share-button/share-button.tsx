@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Check, Copy, Share } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,24 +43,24 @@ export function ShareButton({ roomId }: RoomProps) {
   }
 
   return (
-    <AlertDialog>
+    <Dialog>
       <Tooltip>
         <TooltipTrigger asChild>
-          <AlertDialogTrigger asChild>
+          <DialogTrigger asChild>
             <Button size="sm">
               <Share className="mr-2 size-4" />
               Share
             </Button>
-          </AlertDialogTrigger>
+          </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
           <p>Share Room</p>
         </TooltipContent>
       </Tooltip>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Share Room</AlertDialogTitle>
-          <AlertDialogDescription asChild>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share Room</DialogTitle>
+          <DialogDescription asChild>
             <div className="space-y-4">
               {/* Room ID Section */}
               <h2>
@@ -78,9 +78,9 @@ export function ShareButton({ roomId }: RoomProps) {
                     className="aspect-square"
                   >
                     {copyStatus.roomIdCopied ? (
-                      <Check className="animate-scale-up-center size-4" />
+                      <Check className="size-4 animate-scale-up-center" />
                     ) : (
-                      <Copy className="animate-fade-in size-4" />
+                      <Copy className="size-4 animate-fade-in" />
                     )}
                   </Button>
                 </div>
@@ -107,22 +107,22 @@ export function ShareButton({ roomId }: RoomProps) {
                     className="aspect-square"
                   >
                     {copyStatus.roomLinkCopied ? (
-                      <Check className="animate-scale-up-center size-4" />
+                      <Check className="size-4 animate-scale-up-center" />
                     ) : (
-                      <Copy className="animate-fade-in size-4" />
+                      <Copy className="size-4 animate-fade-in" />
                     )}
                   </Button>
                 </div>
               </div>
             </div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
           <Button asChild>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <DialogClose>Close</DialogClose>
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
