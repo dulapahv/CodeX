@@ -28,18 +28,20 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
   const [open, setOpen] = useState(false);
   const [editorTheme, setEditorTheme] = useState("");
 
-  if (!monaco) return null;
-
   const handleThemeChange = useCallback(
     (currentValue: string) => {
       setEditorTheme(currentValue === editorTheme ? "" : currentValue);
       localStorage.setItem("editorTheme", currentValue);
       setOpen(false);
 
-      monaco.editor.setTheme(currentValue);
+      if (monaco) {
+        monaco.editor.setTheme(currentValue);
+      }
     },
     [monaco, editorTheme],
   );
+
+  if (!monaco) return null;
 
   const themes = Object.entries(themeList);
 
