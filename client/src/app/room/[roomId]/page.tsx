@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Braces } from "lucide-react";
 import * as monaco from "monaco-editor";
@@ -10,6 +10,7 @@ import { LeaveButton } from "@/components/leave-button";
 import { Monaco as MonacoEditor } from "@/components/monaco";
 import { SettingSheet } from "@/components/settings-sheet";
 import { ShareButton } from "@/components/share-button";
+import { Toolbar } from "@/components/toolbar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { UserList } from "@/components/user-list";
 import { socket } from "@/lib/socket";
@@ -69,13 +70,18 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main className="flex h-full min-w-[375px] flex-col">
-      <div className="bg-[#dddddd] dark:bg-[#3c3c3c]">
-        <div className="m-2 flex items-center justify-end gap-x-2">
-          <UserList users={users} />
-          <ShareButton roomId={params.roomId} />
-          <SettingSheet monaco={monaco} editor={editor} />
-          <LeaveButton roomId={params.roomId} />
-        </div>
+      <div className="h-10">
+        {monaco && editor && (
+          <div className="flex items-center gap-x-2 bg-[#dddddd] dark:bg-[#3c3c3c]">
+            <Toolbar monaco={monaco} editor={editor} />
+            <div className="grow">
+              <UserList users={users} />
+            </div>
+            <ShareButton roomId={params.roomId} />
+            <SettingSheet monaco={monaco} editor={editor} />
+            <LeaveButton roomId={params.roomId} />
+          </div>
+        )}
       </div>
       {defaultCode !== null ? (
         <MonacoEditor

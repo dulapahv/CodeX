@@ -1,14 +1,14 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Pencil } from "lucide-react";
 import * as monaco from "monaco-editor";
+import themeList from "monaco-themes/themes/themelist.json";
 import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { MONACO_THEMES } from "@/lib/constants";
 import { socket } from "@/lib/socket";
 
 import {
@@ -23,7 +23,11 @@ import {
   Tii,
 } from "../../../../common/transform/ot";
 import { CodeServiceMsg } from "../../../../common/types/message";
-import { OperationType, TextOperation } from "../../../../common/types/ot";
+import {
+  ChangeOp,
+  OperationType,
+  TextOperation,
+} from "../../../../common/types/ot";
 
 interface MonacoProps {
   monacoRef: (monaco: Monaco) => void;
@@ -82,87 +86,53 @@ export function Monaco({ monacoRef, editorRef, defaultCode }: MonacoProps) {
         },
       );
 
-      MONACO_THEMES.forEach((theme) => {
-        const json = require(`monaco-themes/themes/${theme.label}.json`);
-        monaco.editor.defineTheme(theme.value, json);
+      // Register themes
+      Object.entries(themeList).forEach(([key, value]) => {
+        const json = require(`monaco-themes/themes/${value}.json`);
+        monaco.editor.defineTheme(key, json);
       });
 
       // Handle incoming changes from the server
-      socket().on(CodeServiceMsg.RECEIVE_EDIT, (operation, updatedCode) => {
-        if (operation) {
-          // Prevent triggering `handleOnChange` when applying received updates
-          skipUpdateRef.current = true;
-          const model = editor.getModel();
-          if (model) {
-            // const currentCode = model.getValue();
-            // const updatedCode = applyOperation(currentCode, operation);
-            // editor.setValue(updatedCode);
-
-            const ops: monaco.editor.IIdentifiedSingleEditOperation[] = [];
-            if (isInsert(operation)) {
-              ops.push({
-                forceMoveMarkers: true,
-                range: {
-                  startLineNumber: 1,
-                  startColumn: operation.pos + 1,
-                  endLineNumber: 1,
-                  endColumn: operation.pos + 1,
-                },
-                text: operation.text,
-              });
-            } else if (isDelete(operation)) {
-              ops.push({
-                forceMoveMarkers: true,
-                range: {
-                  startLineNumber: 1,
-                  startColumn: operation.pos + 1,
-                  endLineNumber: 1,
-                  endColumn: operation.pos + 1 + operation.length,
-                },
-                text: "",
-              });
-            }
-            model.pushEditOperations([], ops, () => []);
-          }
-          skipUpdateRef.current = false;
-        } else {
-          // Sync the entire document if necessary
-          skipUpdateRef.current = true;
-          editor.setValue(updatedCode);
-          skipUpdateRef.current = false;
+      socket().on(CodeServiceMsg.RECEIVE_EDIT, (op: ChangeOp, updatedCode) => {
+        // Prevent triggering `handleOnChange` when applying received updates
+        skipUpdateRef.current = true;
+        const model = editor.getModel();
+        if (model) {
+          const ops: monaco.editor.IIdentifiedSingleEditOperation[] = [];
+          ops.push({
+            forceMoveMarkers: true,
+            range: {
+              startLineNumber: op.range.startLineNumber,
+              startColumn: op.range.startColumn,
+              endLineNumber: op.range.endLineNumber,
+              endColumn: op.range.endColumn,
+            },
+            text: op.text,
+          });
+          model.pushEditOperations([], ops, () => []);
         }
+        skipUpdateRef.current = false;
       });
+
+      // Add window resize event listener
+      window.addEventListener("resize", handleResize);
     },
     [editorRef, monacoRef],
   );
 
-  /**
-   * Converts Monaco Editor change event into a corresponding OT operation.
-   * @param change The change object from Monaco Editor.
-   * @returns An OT operation object.
-   */
-  function monacoChangeToOperation(change: any): TextOperation {
-    const { range, text, rangeOffset, rangeLength } = change;
-
-    if (rangeLength === 0) {
-      // This is an Insert operation
-      return {
-        type: OperationType.Insert,
-        pos: rangeOffset, // Position in terms of the document index
-        text, // The text to insert
-      };
-    } else if (text === "") {
-      // This is a Delete operation
-      return {
-        type: OperationType.Delete,
-        pos: rangeOffset, // Position in terms of the document index
-        length: rangeLength, // Number of characters to delete
-      };
+  // Function to handle window resize
+  const handleResize = () => {
+    if (EditorInternalRef.current) {
+      EditorInternalRef.current.layout();
     }
+  };
 
-    // Handle any other case as necessary
-    return null as any;
-  }
+  // Cleanup function to remove event listener
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   function handleOnChange(
     value: string | undefined,
@@ -171,7 +141,7 @@ export function Monaco({ monacoRef, editorRef, defaultCode }: MonacoProps) {
     if (skipUpdateRef.current) return; // Skip sending if it's a remote change
 
     ev.changes.forEach((change) => {
-      const operation = monacoChangeToOperation(change);
+      const operation = change;
       if (operation) {
         socket().emit(
           CodeServiceMsg.SEND_EDIT,

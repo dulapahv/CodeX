@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Online Code Collaboration Platform",
+  title: "Kasca - Code Collaboration Platform",
   description:
-    "Web-based platform with which 2 colleagues can remotely, but seamlessly, collaborate on software development tasks.",
+    "Kasca is a code collaboration platform that allows you to code with others in real-time.",
 };
 
 interface RootLayoutProps {
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("h-dvh", GeistSans.className)}>
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />
         </ThemeProvider>

@@ -1,23 +1,11 @@
 import { Server, Socket } from 'socket.io';
 
 import {
-  applyOperation,
-  DeleteOp,
-  InsertOp,
-  isDelete,
-  isInsert,
-  Tdd,
-  Tdi,
-  TextOperation,
-  Tid,
-  Tii,
-} from '../../../common/transform/ot';
-import {
   CodeServiceMsg,
   RoomServiceMsg,
   UserServiceMsg,
 } from '../../../common/types/message';
-import * as OTType from '../../../common/types/ot';
+import { ChangeOp } from '../../../common/types/ot';
 
 // Import transformation functions and types
 
@@ -41,13 +29,43 @@ export function syncCode(socket: Socket, io: Server, roomID: string): void {
 export function updateCode(
   socket: Socket,
   roomID: string,
-  operation: TextOperation
+  operation: ChangeOp
 ): void {
   const currentCode = getCode(roomID);
   let updatedCode = currentCode;
 
   // Apply the operation to the current code
-  updatedCode = applyOperation(currentCode, operation);
+  const lines = currentCode.split('\n');
+  const { range, text } = operation;
+  const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
+
+  // Handle multi-line changes
+  if (startLineNumber === endLineNumber) {
+    // Single line change
+    const line = lines[startLineNumber - 1];
+    const newLine =
+      line.substring(0, startColumn - 1) + text + line.substring(endColumn - 1);
+    lines[startLineNumber - 1] = newLine;
+  } else {
+    // Multi-line change
+    const startLine = lines[startLineNumber - 1];
+    const endLine = lines[endLineNumber - 1];
+    const newStartLine =
+      startLine.substring(0, startColumn - 1) + text.split('\n')[0];
+    const newEndLine =
+      text.split('\n').pop() + endLine.substring(endColumn - 1);
+
+    // Remove the old lines and insert the new ones
+    lines.splice(
+      startLineNumber - 1,
+      endLineNumber - startLineNumber + 1,
+      newStartLine,
+      ...text.split('\n').slice(1, -1),
+      newEndLine
+    );
+  }
+
+  updatedCode = lines.join('\n');
 
   // Update the room's code
   roomID_to_Code_Map[roomID] = updatedCode;
