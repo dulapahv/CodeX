@@ -14,7 +14,7 @@ export function UserList({ users }: UserListProps) {
   return (
     <ScrollArea className="max-w-52">
       <div className="flex -space-x-2">
-        {users.reverse().map((user, index) => (
+        {users.map((user, index) => (
           <Avatar key={index} name={user} />
         ))}
       </div>
