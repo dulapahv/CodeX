@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Braces } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import * as monaco from "monaco-editor";
 
 import type { Monaco } from "@monaco-editor/react";
@@ -43,9 +43,9 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket().connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket().connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     sessionStorage.setItem("roomId", params.roomId);
 
@@ -69,14 +69,14 @@ export default function Room({ params }: RoomProps) {
   }, [disconnect, params.roomId, router]);
 
   return (
-    <main className="flex h-full min-w-[375px] flex-col">
-      <div className="h-10">
+    <main className="flex h-full min-w-[425px] flex-col overflow-clip">
+      <div className="h-9">
         {monaco && editor && (
-          <div className="flex items-center gap-x-2 bg-[#dddddd] dark:bg-[#3c3c3c]">
-            <Toolbar monaco={monaco} editor={editor} />
+          <div className="flex items-center gap-x-2 bg-[#dddddd] p-1 dark:bg-[#3c3c3c]">
             <div className="grow">
-              <UserList users={users} />
+              <Toolbar monaco={monaco} editor={editor} />
             </div>
+            <UserList users={users} />
             <ShareButton roomId={params.roomId} />
             <SettingSheet monaco={monaco} editor={editor} />
             <LeaveButton roomId={params.roomId} />
@@ -84,15 +84,17 @@ export default function Room({ params }: RoomProps) {
         )}
       </div>
       {defaultCode !== null ? (
-        <MonacoEditor
-          monacoRef={setMonaco}
-          editorRef={setEditor}
-          defaultCode={defaultCode}
-        />
+        <div className="relative h-[calc(100%-36px)]">
+          <MonacoEditor
+            monacoRef={setMonaco}
+            editorRef={setEditor}
+            defaultCode={defaultCode}
+          />
+        </div>
       ) : (
-        <div className="flex h-full animate-fade-in items-center justify-center">
+        <div className="flex h-full -translate-y-3 animate-fade-in items-center justify-center">
           <Alert className="max-w-md">
-            <Braces className="size-4" />
+            <LoaderCircle className="size-5 animate-spin" />
             <AlertTitle>Loading session</AlertTitle>
             <AlertDescription>
               Loading your coding session. Please wait...

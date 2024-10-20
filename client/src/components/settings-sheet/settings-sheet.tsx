@@ -33,7 +33,7 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <SheetTrigger asChild>
-            <Button size="icon" className="size-9">
+            <Button variant="ghost" size="icon" className="size-7 p-0">
               <Settings className="size-4" />
             </Button>
           </SheetTrigger>

@@ -47,7 +47,7 @@ export function ShareButton({ roomId }: RoomProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button size="sm">
+            <Button variant="ghost" size="sm" className="h-7 px-2">
               <Share className="mr-2 size-4" />
               Share
             </Button>

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import themeList from "monaco-themes/themes/themelist.json";
 
@@ -28,6 +28,13 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
   const [open, setOpen] = useState(false);
   const [editorTheme, setEditorTheme] = useState("");
 
+  useEffect(() => {
+    const theme = localStorage.getItem("editorTheme");
+    if (theme) {
+      setEditorTheme(theme);
+    }
+  }, []);
+
   const handleThemeChange = useCallback(
     (currentValue: string) => {
       setEditorTheme(currentValue === editorTheme ? "" : currentValue);
@@ -43,7 +50,12 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
 
   if (!monaco) return null;
 
-  const themes = Object.entries(themeList);
+  const defaultTheme = {
+    "vs-dark": "Dark (Visual Studio)",
+    light: "Light (Visual Studio)",
+  };
+
+  const themes = Object.entries({ ...defaultTheme, ...themeList });
 
   return (
     <div className="flex flex-col gap-y-2">
