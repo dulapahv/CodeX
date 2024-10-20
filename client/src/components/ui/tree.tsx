@@ -70,7 +70,6 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
         targetId: string,
       ) {
         if (items instanceof Array) {
-          // eslint-disable-next-line @typescript-eslint/prefer-for-of
           for (let i = 0; i < items.length; i++) {
             ids.push(items[i]!.id);
             if (walkTreeItems(items[i]!, targetId) && !expandAll) {
@@ -111,6 +110,7 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
     );
   },
 );
+Tree.displayName = "Tree";
 
 type TreeItemProps = TreeProps & {
   selectedItemId?: string;
@@ -205,6 +205,7 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
     );
   },
 );
+TreeItem.displayName = "TreeItem";
 
 const Leaf = React.forwardRef<
   HTMLDivElement,
@@ -241,6 +242,7 @@ const Leaf = React.forwardRef<
     </div>
   );
 });
+Leaf.displayName = "Leaf";
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
