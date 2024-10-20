@@ -23,7 +23,7 @@ export function Avatar({ name }: AvatarProps) {
       <TooltipTrigger asChild>
         <div
           className={cn(
-            "flex h-8 w-8 cursor-default items-center justify-center rounded-full text-[#fff]",
+            "flex size-7 cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 text-sm text-[#fff] dark:border-black/50",
           )}
           style={{ backgroundColor: color }}
         >
