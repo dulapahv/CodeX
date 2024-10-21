@@ -4,7 +4,10 @@ export const BASE_SERVER_URL =
     ? "http://localhost:3001"
     : "https://occp-server.dulapahv.dev";
 
-export const NAME_MAX_LENGTH = 255;
+export const GITHUB_OAUTH_URL = "https://github.com/login/oauth";
+export const GITHUB_CLIENT_ID = "Ov23liuy4d9jGnpy9t6j";
+
+export const NAME_MAX_LENGTH = 128;
 
 export const COLORS = [
   "#F94144",

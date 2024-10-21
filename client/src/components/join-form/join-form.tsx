@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ArrowRight, CirclePlus, LoaderCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CirclePlus, LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -115,9 +115,11 @@ export function JoinForm() {
   return (
     <Card className="w-[480px] animate-fade-in">
       <CardHeader>
-        <CardTitle>Online Code Collaboration Platform</CardTitle>
+        <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
         <CardDescription>
-          Create or join a room to start coding.
+          {room
+            ? "You have been invited to a room. Enter your name to join."
+            : "Create or join a room to start coding."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -138,6 +140,7 @@ export function JoinForm() {
                     <Input
                       id="name-create"
                       placeholder="Enter your name"
+                      disabled={isSubmittingCreate || isSubmittingJoin}
                       {...registerCreate("name")}
                     />
                     {errorsCreate.name && (
@@ -165,6 +168,19 @@ export function JoinForm() {
             </>
           )}
 
+          {room && (
+            <Button
+              variant="link"
+              className="size-fit p-0 text-foreground"
+              size="sm"
+              onClick={() => router.push("/")}
+              disabled={isSubmittingJoin}
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Back to create/join room
+            </Button>
+          )}
+
           {/* Section for joining a collab room */}
           <form
             onSubmit={handleSubmitJoin(onSubmitJoinRoom, onSubmitErrorHandler)}
@@ -176,6 +192,7 @@ export function JoinForm() {
                 <Input
                   id="room-id"
                   placeholder="Enter room ID"
+                  disabled={!!room || isSubmittingCreate || isSubmittingJoin}
                   {...registerJoin("roomId")}
                 />
                 {errorsJoin.roomId && (
@@ -189,6 +206,7 @@ export function JoinForm() {
                 <Input
                   id="name-join"
                   placeholder="Enter your name"
+                  disabled={isSubmittingCreate || isSubmittingJoin}
                   {...registerJoin("name")}
                 />
                 {errorsJoin.name && (
