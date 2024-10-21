@@ -35,9 +35,18 @@ export function LeaveButton({ roomId }: RoomProps) {
   return (
     <AlertDialog>
       <Tooltip>
-        <TooltipTrigger asChild>
+        <TooltipTrigger
+          onFocus={(e) => {
+            e.preventDefault();
+          }}
+          asChild
+        >
           <AlertDialogTrigger asChild>
-            <Button size="icon" variant="ghost" className="size-7 p-0">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-7 rounded-sm p-0"
+            >
               <LogOut className="size-4 text-red-600" strokeWidth={2.5} />
             </Button>
           </AlertDialogTrigger>

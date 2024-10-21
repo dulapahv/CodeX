@@ -47,9 +47,14 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
     console.log("Open file");
   }
 
-  function handleSaveFile() {
+  function handleSaveFileToLocal() {
     // Open save file dialog
-    console.log("Save file");
+    console.log("Save file to local");
+  }
+
+  function handleSaveFileToGitHub() {
+    // Open save file dialog
+    console.log("Save file to GitHub");
   }
 
   const actions = {
@@ -80,8 +85,12 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
       editor.trigger("keyboard", "editor.action.insertCursorAbove", null),
     addCursorBelow: () =>
       editor.trigger("keyboard", "editor.action.insertCursorBelow", null),
-    commandPalette: () =>
-      editor.trigger("anyString", "editor.action.quickCommand", {}),
+    commandPalette: () => {
+      // Timeout to prevent command palette triggered after editor is focused
+      setTimeout(() => {
+        editor.trigger("keyboard", "editor.action.quickCommand", null);
+      }, 1);
+    },
     minimap: () => {
       editor.updateOptions({ minimap: { enabled: !miniMap } });
       setMiniMap(!miniMap);
@@ -102,7 +111,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
         className="hidden h-fit animate-fade-in border-none bg-transparent p-0 sm:flex"
       >
         <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal">
+          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             File
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
@@ -112,8 +121,11 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
             <MenubarItem onSelect={handleOpenFile}>
               Open File... <MenubarShortcut>Ctrl+O</MenubarShortcut>
             </MenubarItem>
-            <MenubarItem onSelect={handleSaveFile}>
-              Save <MenubarShortcut>Ctrl+S</MenubarShortcut>
+            <MenubarItem onSelect={handleSaveFileToLocal}>
+              Save to local <MenubarShortcut>Ctrl+S</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem onSelect={handleSaveFileToGitHub}>
+              Save to GitHub <MenubarShortcut>Ctrl+Shift+S</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem>
@@ -129,7 +141,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal">
+          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             Edit
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
@@ -159,7 +171,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal">
+          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             Selection
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
@@ -192,7 +204,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal">
+          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             View
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
@@ -216,7 +228,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal">
+          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             Help
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
@@ -233,7 +245,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarTrigger>
           <MenubarContent className="ml-1">
             <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
+              <MenubarSubTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
                 File
               </MenubarSubTrigger>
               <MenubarSubContent>
@@ -241,7 +253,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
                 <MenubarItem onSelect={handleOpenFile}>
                   Open File...
                 </MenubarItem>
-                <MenubarItem onSelect={handleSaveFile}>Save</MenubarItem>
+                <MenubarItem onSelect={handleSaveFileToLocal}>Save</MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem>Settings</MenubarItem>
                 <MenubarSeparator />

@@ -85,8 +85,13 @@ export function ShareButton({ roomId }: RoomProps) {
     <Dialog>
       <Tooltip>
         <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-7 px-2">
+          <DialogTrigger
+            onFocus={(e) => {
+              e.preventDefault();
+            }}
+            asChild
+          >
+            <Button variant="ghost" size="sm" className="h-7 rounded-sm px-2">
               <Share className="mr-2 size-4" />
               Share
             </Button>
@@ -97,87 +102,82 @@ export function ShareButton({ roomId }: RoomProps) {
         </TooltipContent>
       </Tooltip>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="text-left">
           <DialogTitle>Share Room</DialogTitle>
-          <DialogDescription asChild>
-            <div className="space-y-4">
-              <h2>
-                Anyone with this Room ID or link can join and edit code in this
-                room.
-              </h2>
-              {/* Room ID Section */}
-              <div className="flex flex-col space-y-1.5">
-                <Label>Room ID</Label>
-                <div className="flex gap-x-2">
-                  <Input value={roomId} readOnly />
-                  <Button
-                    onClick={() => handleCopy(roomId, "roomIdCopied")}
-                    size="icon"
-                    variant="secondary"
-                    className="aspect-square"
-                  >
-                    {copyStatus.roomIdCopied ? (
-                      <Check className="size-4 animate-scale-up-center" />
-                    ) : (
-                      <Copy className="size-4 animate-fade-in" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              {/* Room Link Section */}
-              <div className="flex flex-col space-y-1.5">
-                <Label>Room Link</Label>
-                <div className="flex gap-x-2">
-                  {typeof window !== "undefined" && (
-                    <Input
-                      value={`${window.location.origin}/room/${roomId}`}
-                      readOnly
-                    />
-                  )}
-                  <Button
-                    onClick={() =>
-                      handleCopy(
-                        `${window.location.origin}/room/${roomId}`,
-                        "roomLinkCopied",
-                      )
-                    }
-                    size="icon"
-                    variant="secondary"
-                    className="aspect-square"
-                  >
-                    {copyStatus.roomLinkCopied ? (
-                      <Check className="size-4 animate-scale-up-center" />
-                    ) : (
-                      <Copy className="size-4 animate-fade-in" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              {/* QR Code Section */}
-              <div className="flex flex-col space-y-1.5">
-                <Label>QR Code</Label>
-                <div className="flex flex-col items-center space-y-2">
-                  <QRCode
-                    value={`${window.location.origin}/room/${roomId}`}
-                    id="qr-code"
-                  />
-                  <Button
-                    onClick={handleCopyQRCode}
-                    size="sm"
-                    variant="secondary"
-                  >
-                    {copyStatus.qrCodeCopied ? (
-                      <Check className="mr-2 size-4 animate-scale-up-center" />
-                    ) : (
-                      <LuImage className="mr-2 size-4 animate-fade-in" />
-                    )}
-                    Copy QR Code as Image
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <DialogDescription>
+            Anyone with this Room ID or link can join and edit code in this
+            room.
           </DialogDescription>
         </DialogHeader>
+        <div className="space-y-4">
+          {/* Room ID Section */}
+          <div className="flex flex-col space-y-1.5">
+            <Label>Room ID</Label>
+            <div className="flex gap-x-2">
+              <Input value={roomId} readOnly />
+              <Button
+                onClick={() => handleCopy(roomId, "roomIdCopied")}
+                size="icon"
+                variant="secondary"
+                className="aspect-square"
+              >
+                {copyStatus.roomIdCopied ? (
+                  <Check className="size-4 animate-scale-up-center" />
+                ) : (
+                  <Copy className="size-4 animate-fade-in" />
+                )}
+              </Button>
+            </div>
+          </div>
+          {/* Room Link Section */}
+          <div className="flex flex-col space-y-1.5">
+            <Label>Room Link</Label>
+            <div className="flex gap-x-2">
+              {typeof window !== "undefined" && (
+                <Input
+                  value={`${window.location.origin}/room/${roomId}`}
+                  readOnly
+                />
+              )}
+              <Button
+                onClick={() =>
+                  handleCopy(
+                    `${window.location.origin}/room/${roomId}`,
+                    "roomLinkCopied",
+                  )
+                }
+                size="icon"
+                variant="secondary"
+                className="aspect-square"
+              >
+                {copyStatus.roomLinkCopied ? (
+                  <Check className="size-4 animate-scale-up-center" />
+                ) : (
+                  <Copy className="size-4 animate-fade-in" />
+                )}
+              </Button>
+            </div>
+          </div>
+          {/* QR Code Section */}
+          <div className="flex flex-col space-y-1.5">
+            <Label>QR Code</Label>
+            <div className="flex flex-col items-center space-y-2">
+              <QRCode
+                value={`${window.location.origin}/room/${roomId}`}
+                size={256}
+                id="qr-code"
+              />
+              <Button onClick={handleCopyQRCode} size="sm" variant="secondary">
+                {copyStatus.qrCodeCopied ? (
+                  <Check className="mr-2 size-4 animate-scale-up-center" />
+                ) : (
+                  <LuImage className="mr-2 size-4 animate-fade-in" />
+                )}
+                Copy QR Code as Image
+              </Button>
+            </div>
+          </div>
+        </div>
         <DialogFooter>
           <Button asChild>
             <DialogClose>Close</DialogClose>
