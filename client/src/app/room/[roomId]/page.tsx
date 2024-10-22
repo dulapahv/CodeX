@@ -43,9 +43,9 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket().connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket().connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     sessionStorage.setItem("roomId", params.roomId);
 

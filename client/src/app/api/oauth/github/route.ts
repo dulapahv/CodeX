@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
-import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from "@/lib/constants";
+import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL, IS_DEV_ENV } from "@/lib/constants";
 
 interface GithubSuccessResponse {
   access_token: string;
@@ -32,8 +32,12 @@ export async function GET(req: NextRequest) {
     redirect(`/oauth/github?status=${error}&description=${error_description}`);
   }
 
+  const GITHUB_CLIENT_SECRET = IS_DEV_ENV
+    ? process.env.GITHUB_CLIENT_SECRET_DEV
+    : process.env.GITHUB_CLIENT_SECRET_PROD;
+
   const res = await fetch(
-    `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}`,
+    `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
     {
       method: "POST",
       headers: {

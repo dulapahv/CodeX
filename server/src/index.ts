@@ -8,7 +8,7 @@ import {
   RoomServiceMsg,
   UserServiceMsg,
 } from '../../common/types/message';
-import { ChangeOp, TextOperation } from '../../common/types/ot';
+import { Cursor, EditOp } from '../../common/types/operation';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
@@ -19,8 +19,8 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://occp.dulapahv.dev',
-  'https://dev-occp.dulapahv.dev',
+  'https://kasca.dulapahv.dev',
+  'https://dev-kasca.dulapahv.dev',
 ];
 
 const server = createServer(app);
@@ -32,7 +32,7 @@ const io = new Server(server, {
 });
 
 app.get('/', (_req, res) => {
-  res.status(200).json({ message: 'Hello from occp-server!' });
+  res.status(200).json({ message: 'Hello from kasca-server!' });
 });
 
 io.on('connection', (socket) => {
@@ -54,13 +54,16 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.GET_CODE, (roomID) => {
     codeService.syncCode(socket, io, roomID);
   });
-  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: ChangeOp) => {
+  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: EditOp) => {
     codeService.updateCode(socket, roomID, operation);
+  });
+  socket.on(UserServiceMsg.SEND_CURSOR, (roomID, cursor: Cursor) => {
+    userService.updateCursor(socket, io, roomID, cursor);
   });
 });
 
 const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, function () {
-  console.log(`occp-server listening on port: ${PORT}`);
+  console.log(`kasca-server listening on port: ${PORT}`);
 });

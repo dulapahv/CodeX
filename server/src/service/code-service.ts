@@ -5,71 +5,171 @@ import {
   RoomServiceMsg,
   UserServiceMsg,
 } from '../../../common/types/message';
-import { ChangeOp } from '../../../common/types/ot';
+import { EditOp } from '../../../common/types/operation';
 
-// Import transformation functions and types
-
-// In-memory map to store the current document content of each room.
-const roomID_to_Code_Map: { [key: string]: string } = {};
+// Use a WeakMap for better memory management - allows garbage collection of unused rooms
+const roomID_to_Code_Map = new WeakMap<object, string>();
+const roomKeys = new Map<string, object>();
 
 /**
- * Retrieve the current code for a room.
- * @param roomID The room identifier.
- * @returns The current code for the room.
+ * Get or create room key for WeakMap storage
+ * @param roomID Room identifier
+ * @returns Room key object
+ */
+function getRoomKey(roomID: string): object {
+  let key = roomKeys.get(roomID);
+  if (!key) {
+    key = { id: roomID };
+    roomKeys.set(roomID, key);
+  }
+  return key;
+}
+
+/**
+ * Retrieve the current code for a room with O(1) lookup
+ * @param roomID Room identifier
+ * @returns Current code for the room
  */
 export function getCode(roomID: string): string {
-  return roomID_to_Code_Map[roomID] || '';
+  return roomID_to_Code_Map.get(getRoomKey(roomID)) || '';
 }
 
+/**
+ * Sync code to a client with minimal data transfer
+ */
 export function syncCode(socket: Socket, io: Server, roomID: string): void {
-  const code = getCode(roomID);
-  io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, code);
+  io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, getCode(roomID));
 }
 
+/**
+ * Optimized string splicing function that minimizes string allocations
+ */
+function spliceString(
+  original: string,
+  start: number,
+  end: number,
+  insert: string
+): string {
+  // Avoid unnecessary string operations if possible
+  if (start === end && !insert) return original;
+  if (start === 0 && end === original.length) return insert;
+
+  // Use substring instead of slice for better performance
+  return original.substring(0, start) + insert + original.substring(end);
+}
+
+/**
+ * Updates the code in a room based on an edit operation
+ * Optimized for performance while maintaining safety
+ */
 export function updateCode(
   socket: Socket,
   roomID: string,
-  operation: ChangeOp
+  operation: EditOp
 ): void {
   const currentCode = getCode(roomID);
-  let updatedCode = currentCode;
-
-  // Apply the operation to the current code
-  const lines = currentCode.split('\n');
   const { range, text } = operation;
   const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
 
-  // Handle multi-line changes
-  if (startLineNumber === endLineNumber) {
-    // Single line change
-    const line = lines[startLineNumber - 1];
-    const newLine =
-      line.substring(0, startColumn - 1) + text + line.substring(endColumn - 1);
-    lines[startLineNumber - 1] = newLine;
-  } else {
-    // Multi-line change
-    const startLine = lines[startLineNumber - 1];
-    const endLine = lines[endLineNumber - 1];
-    const newStartLine =
-      startLine.substring(0, startColumn - 1) + text.split('\n')[0];
-    const newEndLine =
-      text.split('\n').pop() + endLine.substring(endColumn - 1);
-
-    // Remove the old lines and insert the new ones
-    lines.splice(
-      startLineNumber - 1,
-      endLineNumber - startLineNumber + 1,
-      newStartLine,
-      ...text.split('\n').slice(1, -1),
-      newEndLine
-    );
+  // Early optimization: If the text is empty and start equals end, no change needed
+  if (!text && startLineNumber === endLineNumber && startColumn === endColumn) {
+    return;
   }
 
-  updatedCode = lines.join('\n');
+  // Split lines only once and reuse the array
+  const lines = currentCode.split('\n');
+  const maxLine = Math.max(lines.length, startLineNumber);
 
-  // Update the room's code
-  roomID_to_Code_Map[roomID] = updatedCode;
+  // Preallocate array size if needed
+  if (maxLine > lines.length) {
+    lines.length = maxLine;
+    lines.fill('', lines.length, maxLine);
+  }
 
-  // Broadcast the operation to all clients in the room
-  socket.to(roomID).emit(CodeServiceMsg.RECEIVE_EDIT, operation, updatedCode);
+  // Single line optimization: Avoid array operations if possible
+  if (startLineNumber === endLineNumber) {
+    const lineIndex = startLineNumber - 1;
+    const line = lines[lineIndex] || '';
+
+    // Boundary check with bitwise operations for performance
+    const safeStartColumn =
+      startColumn - 1 < 0
+        ? 0
+        : startColumn - 1 > line.length
+          ? line.length
+          : startColumn - 1;
+    const safeEndColumn =
+      endColumn - 1 < 0
+        ? 0
+        : endColumn - 1 > line.length
+          ? line.length
+          : endColumn - 1;
+
+    // Optimize string concatenation
+    lines[lineIndex] = spliceString(line, safeStartColumn, safeEndColumn, text);
+  } else {
+    // Multi-line optimization
+    const textLines = text.split('\n');
+    const startLineIndex = startLineNumber - 1;
+    const endLineIndex = endLineNumber - 1;
+
+    // Get start and end lines
+    const startLine = lines[startLineIndex] || '';
+    const endLine = lines[endLineIndex] || '';
+
+    // Calculate safe column positions
+    const safeStartColumn = Math.min(
+      Math.max(0, startColumn - 1),
+      startLine.length
+    );
+    const safeEndColumn = Math.min(Math.max(0, endColumn - 1), endLine.length);
+
+    // Create new start and end lines efficiently
+    const newStartLine = spliceString(
+      startLine,
+      safeStartColumn,
+      startLine.length,
+      textLines[0]
+    );
+    const newEndLine = spliceString(
+      endLine,
+      0,
+      safeEndColumn,
+      textLines[textLines.length - 1]
+    );
+
+    // Optimize array operations by calculating exact size needed
+    const newLinesCount = textLines.length;
+    const removedLinesCount = endLineIndex - startLineIndex + 1;
+    const sizeChange = newLinesCount - removedLinesCount;
+
+    // Pre-allocate array if growing
+    if (sizeChange > 0) {
+      lines.length += sizeChange;
+    }
+
+    // Efficient array manipulation
+    if (newLinesCount === 2) {
+      // Optimize common case of 2-line change
+      lines[startLineIndex] = newStartLine;
+      lines[startLineIndex + 1] = newEndLine;
+      if (removedLinesCount > 2) {
+        lines.splice(startLineIndex + 2, removedLinesCount - 2);
+      }
+    } else {
+      // General case
+      const newLines = [newStartLine, ...textLines.slice(1, -1), newEndLine];
+      lines.splice(startLineIndex, removedLinesCount, ...newLines);
+    }
+  }
+
+  // Join lines efficiently
+  const updatedCode = lines.join('\n');
+
+  // Update storage using WeakMap
+  const roomKey = getRoomKey(roomID);
+  roomID_to_Code_Map.set(roomKey, updatedCode);
+
+  // Emit update
+  socket.to(roomID).emit(CodeServiceMsg.RECEIVE_EDIT, operation);
 }

@@ -11,6 +11,8 @@ export enum RoomServiceMsg {
 
 export enum UserServiceMsg {
   DISCONNECT = 'disconnect',
+  RECEIVE_CURSOR = 'receive-cursor',
+  SEND_CURSOR = 'send-cursor',
 }
 
 export enum CodeServiceMsg {
