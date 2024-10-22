@@ -5,16 +5,6 @@ export enum OperationType {
   Identity = 'Identity',
 }
 
-export interface ChangeOp {
-  range: {
-    startLineNumber: number;
-    startColumn: number;
-    endLineNumber: number;
-    endColumn: number;
-  };
-  text: string;
-}
-
 // Define the interface for Insert operation
 export interface InsertOp {
   type: OperationType.Insert;
