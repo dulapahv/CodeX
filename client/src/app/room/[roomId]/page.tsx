@@ -7,7 +7,7 @@ import * as monaco from "monaco-editor";
 
 import type { Monaco } from "@monaco-editor/react";
 import { LeaveButton } from "@/components/leave-button";
-import { Monaco as MonacoEditor } from "@/components/monaco";
+import { MonacoEditor } from "@/components/monaco";
 import { SettingSheet } from "@/components/settings-sheet";
 import { ShareButton } from "@/components/share-button";
 import { Toolbar } from "@/components/toolbar";

@@ -77,12 +77,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@keyframes cursorFadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
