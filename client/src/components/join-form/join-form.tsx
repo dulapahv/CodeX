@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, CirclePlus, LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -37,7 +37,7 @@ export function JoinForm() {
       isSubmitSuccessful: isSubmitSuccessfulCreate,
     },
   } = useForm<CreateRoomForm>({
-    resolver: yupResolver(createRoomSchema),
+    resolver: zodResolver(createRoomSchema),
     defaultValues: {
       name: "",
     },
@@ -52,7 +52,7 @@ export function JoinForm() {
       isSubmitSuccessful: isSubmitSuccessfulJoin,
     },
   } = useForm<JoinRoomForm>({
-    resolver: yupResolver(joinRoomSchema),
+    resolver: zodResolver(joinRoomSchema),
     defaultValues: {
       name: "",
       roomId: room,
