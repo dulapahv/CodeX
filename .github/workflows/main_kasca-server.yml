@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js project to Azure Function App - kasca-server
 
 on:
@@ -10,8 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '22.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'server' # Set to your project directory
+  NODE_VERSION: '22.x' # Set the Node.js version
 
 jobs:
   build-and-deploy:
@@ -25,16 +22,17 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      - name: 'Install PNPM'
+        run: npm install -g pnpm
+
+      - name: 'Install Dependencies and Build Project with PNPM'
         shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          pnpm install --frozen-lockfile
+          pnpm run build
           popd
-
-      - name: 'Run Azure Functions Action'
+      - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         id: fa
         with:
