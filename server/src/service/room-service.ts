@@ -2,32 +2,37 @@ import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 
 import { RoomServiceMsg } from '../../../common/types/message';
-import { get } from '../lib/vercel-kv';
 import * as userService from './user-service';
 
-export async function createAndJoin(
-  socket: Socket,
-  name: string
-): Promise<void> {
+/**
+ * Creates a new room and joins the socket to it
+ * @param socket Socket instance
+ * @param name Username
+ */
+export function createAndJoin(socket: Socket, name: string): void {
   userService.connect(socket, name);
 
   const roomID = uuidv4().slice(0, 8);
-  console.log(`User ${name} created room ${roomID}`);
 
   socket.join(roomID);
   socket.emit(RoomServiceMsg.ROOM_CREATED, roomID);
-  console.log(`User ${name} joined room ${roomID}`);
 }
 
-export async function join(
+/**
+ * Joins an existing room
+ * @param socket Socket instance
+ * @param io Server instance
+ * @param roomID Room identifier
+ * @param name Username
+ */
+export function join(
   socket: Socket,
   io: Server,
   roomID: string,
   name: string
-): Promise<void> {
+): void {
   // check if room exists
   if (!io.sockets.adapter.rooms.has(roomID)) {
-    console.log(`Room ${roomID} does not exist`);
     socket.emit(RoomServiceMsg.ROOM_NOT_FOUND, roomID);
     return;
   }
@@ -35,48 +40,49 @@ export async function join(
   userService.connect(socket, name);
   socket.join(roomID);
   socket.emit(RoomServiceMsg.ROOM_JOINED, name);
-  console.log(`User ${name} joined room ${roomID}`);
 
   // tell all clients in the room to update their client list
-  socket
-    .in(roomID)
-    .emit(
-      RoomServiceMsg.UPDATE_CLIENT_LIST,
-      await getUsersInRoom(socket, io, roomID)
-    );
+  const users = getUsersInRoom(socket, io, roomID);
+  socket.in(roomID).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, users);
 }
 
-export async function leave(
-  socket: Socket,
-  io: Server,
-  roomID: string
-): Promise<void> {
+/**
+ * Leaves a room and updates other clients
+ * @param socket Socket instance
+ * @param io Server instance
+ * @param roomID Room identifier
+ */
+export function leave(socket: Socket, io: Server, roomID: string): void {
   socket.leave(roomID);
-  console.log(`User ${socket.id} left room ${roomID}`);
   userService.disconnect(socket);
+
   // tell all clients in the room to update their client list
-  socket
-    .in(roomID)
-    .emit(
-      RoomServiceMsg.UPDATE_CLIENT_LIST,
-      await getUsersInRoom(socket, io, roomID)
-    );
+  const users = getUsersInRoom(socket, io, roomID);
+  socket.in(roomID).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, users);
 }
 
-export async function getUsersInRoom(
+/**
+ * Gets list of usernames for all users in a room
+ * @param socket Socket instance
+ * @param io Server instance
+ * @param roomID Room identifier
+ * @returns Array of usernames
+ */
+export function getUsersInRoom(
   socket: Socket,
   io: Server,
   roomID: string
-): Promise<string[]> {
-  // get all socket in room
-  const socketList = await io.in(roomID).fetchSockets();
+): string[] {
+  // get all sockets in room
+  const room = io.sockets.adapter.rooms.get(roomID);
+  if (!room) return [];
 
-  // get all users in the room
-  const userslist = await Promise.all(
-    socketList.map((socket) => get(socket.id))
-  );
+  // Convert Set to Array and map socket IDs to usernames
+  const usersList = Array.from(room)
+    .map((socketId) => userService.getUsername(socketId))
+    .filter((name): name is string => name !== undefined); // Type guard to filter out undefined
 
   // tell the client who joined the room
-  io.to(socket.id).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, userslist);
-  return userslist;
+  io.to(socket.id).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, usersList);
+  return usersList;
 }

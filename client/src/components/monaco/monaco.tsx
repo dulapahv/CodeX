@@ -23,7 +23,6 @@ interface MonacoEditorProps {
   defaultCode?: string;
 }
 
-// Moved styles to a separate constant to avoid recreation
 const CURSOR_STYLES = `
 .cursor-widget {
   width: 2px;
@@ -48,7 +47,6 @@ const CURSOR_STYLES = `
   to { opacity: 0; }
 }`;
 
-// Memoized loading component
 const LoadingAlert = memo(() => (
   <Alert className="max-w-md">
     <LoaderCircle className="size-5 animate-spin" />
@@ -61,7 +59,6 @@ const LoadingAlert = memo(() => (
 
 LoadingAlert.displayName = "LoadingAlert";
 
-// Helper functions moved outside component to avoid recreation
 const createSafeClassName = (name: string) =>
   `cursor-${name.replace(/[^a-zA-Z0-9]/g, "-")}`;
 
