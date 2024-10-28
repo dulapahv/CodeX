@@ -36,20 +36,18 @@ app.get('/', (_req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on(RoomServiceMsg.CREATE_ROOM, async (name) =>
+  socket.on(RoomServiceMsg.CREATE_ROOM, (name) =>
     roomService.createAndJoin(socket, name)
   );
-  socket.on(RoomServiceMsg.JOIN_ROOM, async (roomID, name) =>
+  socket.on(RoomServiceMsg.JOIN_ROOM, (roomID, name) =>
     roomService.join(socket, io, roomID, name)
   );
-  socket.on(RoomServiceMsg.LEAVE_ROOM, async (roomID) =>
+  socket.on(RoomServiceMsg.LEAVE_ROOM, (roomID) =>
     roomService.leave(socket, io, roomID)
   );
-  socket.on(UserServiceMsg.DISCONNECT, async () =>
-    userService.disconnect(socket)
-  );
-  socket.on(RoomServiceMsg.GET_USERS, async (roomID) => {
-    await roomService.getUsersInRoom(socket, io, roomID);
+  socket.on(UserServiceMsg.DISCONNECT, () => userService.disconnect(socket));
+  socket.on(RoomServiceMsg.GET_USERS, (roomID) => {
+    roomService.getUsersInRoom(socket, io, roomID);
   });
   socket.on(CodeServiceMsg.GET_CODE, (roomID) => {
     codeService.syncCode(socket, io, roomID);
@@ -58,7 +56,7 @@ io.on('connection', (socket) => {
     codeService.updateCode(socket, roomID, operation);
   });
   socket.on(UserServiceMsg.SEND_CURSOR, (roomID, cursor: Cursor) => {
-    userService.updateCursor(socket, io, roomID, cursor);
+    userService.updateCursor(socket, roomID, cursor);
   });
 });
 
