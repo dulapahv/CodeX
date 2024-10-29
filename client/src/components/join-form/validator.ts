@@ -1,19 +1,20 @@
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
 import { NAME_MAX_LENGTH } from "@/lib/constants";
-import { CreateRoomForm, JoinRoomForm } from "@/types/types";
 
-export const joinRoomSchema: ZodType<JoinRoomForm> = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(NAME_MAX_LENGTH, `Name must not exceed ${NAME_MAX_LENGTH} characters`),
+const nameSchema = z
+  .string()
+  .min(1, "Name is required")
+  .max(NAME_MAX_LENGTH, `Name must not exceed ${NAME_MAX_LENGTH} characters`);
+
+export const joinRoomSchema = z.object({
+  name: nameSchema,
   roomId: z.string().min(1, "Room ID is required"),
 });
 
-export const createRoomSchema: ZodType<CreateRoomForm> = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(NAME_MAX_LENGTH, `Name must not exceed ${NAME_MAX_LENGTH} characters`),
+export const createRoomSchema = z.object({
+  name: nameSchema,
 });
+
+export type JoinRoomFormSchema = z.infer<typeof joinRoomSchema>;
+export type CreateRoomFormSchema = z.infer<typeof createRoomSchema>;

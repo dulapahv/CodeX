@@ -261,6 +261,7 @@ export const MonacoEditor = memo(function MonacoEditor({
         editor.setValue(defaultCode);
       }
       editor.focus();
+      editor.updateOptions({ cursorSmoothCaretAnimation: "on" });
 
       // Setup Monaco event listeners
       const cursorPositionDisposable = editor.onDidChangeCursorPosition(
@@ -327,19 +328,17 @@ export const MonacoEditor = memo(function MonacoEditor({
           onChange={handleChange}
         />
       </div>
-      {monacoInstanceRef.current && editorInstanceRef.current && (
-        <section className="absolute bottom-0 h-6 w-full animate-fade-in bg-[#2678ca] py-1">
-          <div className="flex justify-end text-xs text-neutral-100">
-            <div className="px-2">
-              {`Ln ${cursorPosition.line}, Col ${cursorPosition.column} ${
-                cursorPosition.selected
-                  ? `(${cursorPosition.selected} selected)`
-                  : ""
-              }`}
-            </div>
+      <section className="absolute bottom-0 h-6 w-full animate-fade-in bg-[#2678ca] py-1">
+        <div className="flex justify-end text-xs text-neutral-100">
+          <div className="px-2">
+            {`Ln ${cursorPosition.line}, Col ${cursorPosition.column} ${
+              cursorPosition.selected
+                ? `(${cursorPosition.selected} selected)`
+                : ""
+            }`}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </>
   );
 });
