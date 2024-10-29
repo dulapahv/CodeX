@@ -2,7 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
-import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL, IS_DEV_ENV } from "@/lib/constants";
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_OAUTH_URL,
+  IS_DEV_ENV,
+} from "@/lib/constants";
 
 interface GithubSuccessResponse {
   access_token: string;
