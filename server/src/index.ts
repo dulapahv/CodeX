@@ -36,26 +36,28 @@ app.get('/', (_req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on(RoomServiceMsg.CREATE_ROOM, (name) =>
+  socket.on(RoomServiceMsg.CREATE_ROOM, async (name) =>
     roomService.createAndJoin(socket, name)
   );
-  socket.on(RoomServiceMsg.JOIN_ROOM, (roomID, name) =>
+  socket.on(RoomServiceMsg.JOIN_ROOM, async (roomID, name) =>
     roomService.join(socket, io, roomID, name)
   );
-  socket.on(RoomServiceMsg.LEAVE_ROOM, (roomID) =>
+  socket.on(RoomServiceMsg.LEAVE_ROOM, async (roomID) =>
     roomService.leave(socket, io, roomID)
   );
-  socket.on(UserServiceMsg.DISCONNECT, () => userService.disconnect(socket));
-  socket.on(RoomServiceMsg.GET_USERS, (roomID) => {
+  socket.on(UserServiceMsg.DISCONNECT, async () =>
+    userService.disconnect(socket)
+  );
+  socket.on(RoomServiceMsg.GET_USERS, async (roomID) => {
     roomService.getUsersInRoom(socket, io, roomID);
   });
-  socket.on(CodeServiceMsg.GET_CODE, (roomID) => {
+  socket.on(CodeServiceMsg.GET_CODE, async (roomID) => {
     codeService.syncCode(socket, io, roomID);
   });
-  socket.on(CodeServiceMsg.SEND_EDIT, (roomID, operation: EditOp) => {
+  socket.on(CodeServiceMsg.SEND_EDIT, async (roomID, operation: EditOp) => {
     codeService.updateCode(socket, roomID, operation);
   });
-  socket.on(UserServiceMsg.SEND_CURSOR, (roomID, cursor: Cursor) => {
+  socket.on(UserServiceMsg.SEND_CURSOR, async (roomID, cursor: Cursor) => {
     userService.updateCursor(socket, roomID, cursor);
   });
 });
