@@ -62,7 +62,12 @@ LoadingAlert.displayName = "LoadingAlert";
 const createSafeClassName = (name: string) =>
   `cursor-${name.replace(/[^a-zA-Z0-9]/g, "-")}`;
 
-const createCursorStyle = (className: string, color: string, name: string) => `
+const createCursorStyle = (
+  className: string,
+  color: string,
+  name: string,
+  isFirstLine: boolean = false,
+) => `
   .${className} {
     background-color: ${color} !important;
     width: 2px !important;
@@ -71,7 +76,7 @@ const createCursorStyle = (className: string, color: string, name: string) => `
     content: "${name.replace(/"/g, '\\"')}";
     background-color: ${color};
     position: absolute;
-    top: -18px;
+    top: ${isFirstLine ? "18px" : "-18px"};
     left: 4px;
     font-size: 12px;
     padding: 0 4px;
@@ -202,6 +207,7 @@ export const MonacoEditor = memo(function MonacoEditor({
 
     const color = COLORS[hashString(name) % COLORS.length];
     const safeClassName = createSafeClassName(name);
+    const isFirstLine = cursor.line === 1;
 
     // Create cursor decoration
     const cursorDecoration = editor.createDecorationsCollection([
@@ -233,7 +239,12 @@ export const MonacoEditor = memo(function MonacoEditor({
       styleElement.id = styleId;
       document.head.appendChild(styleElement);
     }
-    styleElement.textContent = createCursorStyle(safeClassName, color, name);
+    styleElement.textContent = createCursorStyle(
+      safeClassName,
+      color,
+      name,
+      isFirstLine,
+    );
 
     // Store decoration and setup cleanup
     cursorDecorationsRef.current[name] = cursorDecoration;
