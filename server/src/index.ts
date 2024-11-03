@@ -1,5 +1,4 @@
 import { createServer } from 'http';
-import dotenv from 'dotenv';
 import express from 'express';
 import { Server } from 'socket.io';
 
@@ -12,8 +11,6 @@ import { Cursor, EditOp } from '../../common/types/operation';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
-
-dotenv.config();
 
 const app = express();
 

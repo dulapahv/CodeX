@@ -9,6 +9,10 @@ export interface EditOp {
 }
 
 export interface Cursor {
-  line: number;
-  column: number;
+  positionLineNumber: number;
+  positionColumn: number;
+  startLineNumber?: number;
+  startColumn?: number;
+  endLineNumber?: number;
+  endColumn?: number;
 }

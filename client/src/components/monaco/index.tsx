@@ -1,30 +1,81 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { LoaderCircle } from "lucide-react";
 import * as monaco from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
+import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { COLORS } from "@/lib/constants";
 import { socket } from "@/lib/socket";
+import { hashString } from "@/lib/utils";
 
-import type { Cursor } from "../../../../common/types/operation";
-import type { CursorPosition, MonacoEditorProps } from "./types";
 import {
   CodeServiceMsg,
   UserServiceMsg,
 } from "../../../../common/types/message";
-import { EditOp } from "../../../../common/types/operation";
-import { LoadingAlert } from "./components/LoadingAlert";
-import { CURSOR_STYLES } from "./constants";
-import { useMonacoCursors } from "./hooks/useMonacoCursors";
-import { useMonacoTheme } from "./hooks/useMonacoTheme";
+import { Cursor, EditOp } from "../../../../common/types/operation";
+
+interface MonacoEditorProps {
+  monacoRef: (monaco: Monaco) => void;
+  editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  defaultCode?: string;
+}
+
+const LoadingAlert = memo(() => (
+  <Alert className="max-w-md">
+    <LoaderCircle className="size-5 animate-spin" />
+    <AlertTitle>Setting up editor</AlertTitle>
+    <AlertDescription>
+      Setting up the editor for you. Please wait...
+    </AlertDescription>
+  </Alert>
+));
+
+LoadingAlert.displayName = "LoadingAlert";
+
+const createSafeClassName = (name: string) =>
+  `cursor-${name.replace(/[^a-zA-Z0-9]/g, "-")}`;
+
+const createCursorStyle = (
+  className: string,
+  color: string,
+  name: string,
+  isFirstLine: boolean = false,
+) => `
+  .${className} {
+    background-color: ${color} !important;
+    width: 2px !important;
+  }
+  .${className}::after {
+    content: "${name.replace(/"/g, '\\"')}";
+    background-color: ${color};
+    position: absolute;
+    top: ${isFirstLine ? "18px" : "-18px"};
+    left: 4px;
+    font-size: 12px;
+    padding: 0 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    color: white;
+    z-index: 100;
+    animation: cursorFadeOut 0.2s ease-in forwards;
+    animation-delay: 2.7s;
+  }
+  .${className}-selection {
+    background-color: ${color}40 !important;
+    border: 1px solid ${color}80;
+  }`;
 
 export const MonacoEditor = memo(function MonacoEditor({
   monacoRef,
   editorRef,
   defaultCode,
 }: MonacoEditorProps) {
-  const { theme, setTheme } = useMonacoTheme();
-  const [cursorPosition, setCursorPosition] = useState<CursorPosition>({
+  const { resolvedTheme } = useTheme();
+  const [theme, setTheme] = useState<string>("vs-dark");
+  const [cursorPosition, setCursorPosition] = useState({
     line: 1,
     column: 1,
     selected: 0,
@@ -35,22 +86,27 @@ export const MonacoEditor = memo(function MonacoEditor({
   );
   const monacoInstanceRef = useRef<Monaco | null>(null);
   const skipUpdateRef = useRef(false);
+  const cursorDecorationsRef = useRef<
+    Record<string, monaco.editor.IEditorDecorationsCollection>
+  >({});
+  const cleanupTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
   const disposablesRef = useRef<monaco.IDisposable[]>([]);
 
-  const { handleCursorUpdate, cursorDecorationsRef, cleanupTimeoutsRef } =
-    useMonacoCursors();
+  // Initialize editor theme
+  useEffect(() => {
+    const storedTheme =
+      localStorage.getItem("editorTheme") ||
+      (resolvedTheme === "dark" ? "vs-dark" : "light");
+    setTheme(storedTheme);
+    localStorage.setItem("editorTheme", storedTheme);
+  }, [resolvedTheme]);
 
+  // Apply theme changes
   useEffect(() => {
     editorInstanceRef.current?.updateOptions({ theme });
   }, [theme]);
 
-  useEffect(() => {
-    const styleElement = document.createElement("style");
-    styleElement.textContent = CURSOR_STYLES;
-    document.head.appendChild(styleElement);
-    return () => styleElement.remove();
-  }, []);
-
+  // Setup socket event listeners
   useEffect(() => {
     const socketInstance = socket();
 
@@ -58,69 +114,149 @@ export const MonacoEditor = memo(function MonacoEditor({
       const editor = editorInstanceRef.current;
       if (!editor) return;
 
-      try {
-        skipUpdateRef.current = true;
-        const model = editor.getModel();
-        if (model) {
-          model.pushEditOperations(
-            [],
-            [
-              {
-                forceMoveMarkers: true,
-                range: op.range,
-                text: op.text,
-              },
-            ],
-            () => [],
-          );
-        }
-      } catch (error) {
-        console.error("Error applying edit operation:", error);
-      } finally {
-        skipUpdateRef.current = false;
+      skipUpdateRef.current = true;
+      const model = editor.getModel();
+      if (model) {
+        model.pushEditOperations(
+          [],
+          [
+            {
+              forceMoveMarkers: true,
+              range: op.range,
+              text: op.text,
+            },
+          ],
+          () => [],
+        );
       }
+      skipUpdateRef.current = false;
     });
 
-    socketInstance.on(
-      UserServiceMsg.CURSOR_RX,
-      (name: string, cursor: Cursor) => {
-        const editor = editorInstanceRef.current;
-        const monacoInstance = monacoInstanceRef.current;
-        if (editor && monacoInstance) {
-          handleCursorUpdate(name, cursor, editor, monacoInstance);
-        }
-      },
-    );
+    socketInstance.on(UserServiceMsg.CURSOR_RX, handleCursorUpdate);
 
+    // Cleanup socket listeners
     return () => {
       socketInstance.off(CodeServiceMsg.CODE_RX);
       socketInstance.off(UserServiceMsg.CURSOR_RX);
     };
-  }, [handleCursorUpdate]);
+  }, []);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Clean up Monaco disposables
       disposablesRef.current.forEach((disposable) => disposable.dispose());
       disposablesRef.current = [];
 
+      // Clean up decorations
       Object.values(cursorDecorationsRef.current).forEach((decoration) =>
         decoration.clear(),
       );
+      cursorDecorationsRef.current = {};
+
+      // Clean up timeouts
       Object.values(cleanupTimeoutsRef.current).forEach((timeout) =>
         clearTimeout(timeout),
       );
+      cleanupTimeoutsRef.current = {};
     };
   }, []);
 
   const handleEditorWillMount = useCallback((monaco: Monaco) => {
-    try {
-      Object.entries(themeList).forEach(([key, value]) => {
-        const themeData = require(`monaco-themes/themes/${value}.json`);
-        monaco.editor.defineTheme(key, themeData);
+    Object.entries(themeList).forEach(([key, value]) => {
+      const themeData = require(`monaco-themes/themes/${value}.json`);
+      monaco.editor.defineTheme(key, themeData);
+    });
+  }, []);
+
+  const handleCursorUpdate = useCallback((name: string, cursor: Cursor) => {
+    const editor = editorInstanceRef.current;
+    const monacoInstance = monacoInstanceRef.current;
+    if (!editor || !monacoInstance) return;
+
+    // Clean up previous decoration
+    cursorDecorationsRef.current[name]?.clear();
+
+    const color = COLORS[hashString(name) % COLORS.length];
+    const safeClassName = createSafeClassName(name);
+    const isFirstLine = cursor.positionLineNumber === 1;
+
+    const decorations = [];
+
+    // Add cursor decoration
+    decorations.push({
+      range: new monacoInstance.Range(
+        cursor.positionLineNumber,
+        cursor.positionColumn,
+        cursor.positionLineNumber,
+        cursor.positionColumn,
+      ),
+      options: {
+        className: safeClassName,
+        beforeContentClassName: "cursor-widget",
+        stickiness:
+          monacoInstance.editor.TrackedRangeStickiness
+            .NeverGrowsWhenTypingAtEdges,
+      },
+    });
+
+    // Add selection decoration if there is a selection
+    if (
+      cursor.startLineNumber &&
+      cursor.startColumn &&
+      cursor.endLineNumber &&
+      cursor.endColumn &&
+      (cursor.startLineNumber !== cursor.endLineNumber ||
+        cursor.startColumn !== cursor.endColumn)
+    ) {
+      decorations.push({
+        range: new monacoInstance.Range(
+          cursor.startLineNumber,
+          cursor.startColumn,
+          cursor.endLineNumber,
+          cursor.endColumn,
+        ),
+        options: {
+          className: `${safeClassName}-selection`,
+          stickiness:
+            monacoInstance.editor.TrackedRangeStickiness
+              .NeverGrowsWhenTypingAtEdges,
+          hoverMessage: { value: `${name}'s selection` },
+        },
       });
-    } catch (error) {
-      console.error("Error loading editor themes:", error);
     }
+
+    // Create decorations collection
+    const cursorDecoration = editor.createDecorationsCollection(decorations);
+
+    // Update styles
+    const styleId = `cursor-style-${safeClassName}`;
+    let styleElement = document.getElementById(styleId);
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
+    }
+    styleElement.textContent = createCursorStyle(
+      safeClassName,
+      color,
+      name,
+      isFirstLine,
+    );
+
+    // Store decoration and setup cleanup
+    cursorDecorationsRef.current[name] = cursorDecoration;
+
+    if (cleanupTimeoutsRef.current[name]) {
+      clearTimeout(cleanupTimeoutsRef.current[name]);
+    }
+
+    cleanupTimeoutsRef.current[name] = setTimeout(() => {
+      cursorDecoration.clear();
+      delete cursorDecorationsRef.current[name];
+      styleElement?.remove();
+      delete cleanupTimeoutsRef.current[name];
+    }, 3000);
   }, []);
 
   const handleEditorDidMount = useCallback(
@@ -137,35 +273,46 @@ export const MonacoEditor = memo(function MonacoEditor({
         editor.focus();
         editor.updateOptions({ cursorSmoothCaretAnimation: "on" });
 
-        const cursorPositionDisposable = editor.onDidChangeCursorPosition(
-          (ev) => {
-            setCursorPosition((prev) => ({
-              ...prev,
-              line: ev.position.lineNumber,
-              column: ev.position.column,
-            }));
-            console.log(ev)
-            socket().emit(
-              UserServiceMsg.CURSOR_TX,
-              sessionStorage.getItem("roomId"),
-              {
-                line: ev.position.lineNumber,
-                column: ev.position.column,
-              },
-            );
-          },
-        );
-
         const cursorSelectionDisposable = editor.onDidChangeCursorSelection(
           (ev) => {
-            console.log(ev);
+            setCursorPosition({
+              line: ev.selection.positionLineNumber,
+              column: ev.selection.positionColumn,
+              selected:
+                editor.getModel()?.getValueLengthInRange(ev.selection) || 0,
+            });
+
+            // If the selection is empty, send only the cursor position
+            if (
+              ev.selection.startLineNumber === ev.selection.endLineNumber &&
+              ev.selection.startColumn === ev.selection.endColumn
+            ) {
+              socket().emit(
+                UserServiceMsg.CURSOR_TX,
+                sessionStorage.getItem("roomId"),
+                {
+                  positionLineNumber: ev.selection.positionLineNumber,
+                  positionColumn: ev.selection.positionColumn,
+                } as Cursor,
+              );
+            } else {
+              socket().emit(
+                UserServiceMsg.CURSOR_TX,
+                sessionStorage.getItem("roomId"),
+                {
+                  positionLineNumber: ev.selection.positionLineNumber,
+                  positionColumn: ev.selection.positionColumn,
+                  startLineNumber: ev.selection.startLineNumber,
+                  startColumn: ev.selection.startColumn,
+                  endLineNumber: ev.selection.endLineNumber,
+                  endColumn: ev.selection.endColumn,
+                } as Cursor,
+              );
+            }
           },
         );
 
-        disposablesRef.current.push(
-          cursorPositionDisposable,
-          cursorSelectionDisposable,
-        );
+        disposablesRef.current.push(cursorSelectionDisposable);
       } catch (error) {
         console.error("Error mounting editor:", error);
       }
@@ -179,17 +326,13 @@ export const MonacoEditor = memo(function MonacoEditor({
       ev: monaco.editor.IModelContentChangedEvent,
     ) => {
       if (skipUpdateRef.current) return;
-      try {
-        ev.changes.forEach((change) => {
-          socket().emit(
-            CodeServiceMsg.CODE_TX,
-            sessionStorage.getItem("roomId"),
-            change,
-          );
-        });
-      } catch (error) {
-        console.error("Error handling editor change:", error);
-      }
+      ev.changes.forEach((change) => {
+        socket().emit(
+          CodeServiceMsg.CODE_TX,
+          sessionStorage.getItem("roomId"),
+          change,
+        );
+      });
     },
     [],
   );
