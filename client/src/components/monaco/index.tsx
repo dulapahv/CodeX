@@ -52,11 +52,11 @@ const createCursorStyle = (
     content: "${name.replace(/"/g, '\\"')}";
     background-color: ${color};
     position: absolute;
-    top: ${isFirstLine ? "18px" : "-18px"};
-    left: 4px;
+    top: ${isFirstLine ? "19px" : "-19px"};
+    height: 19px;
     font-size: 12px;
     padding: 0 4px;
-    border-radius: 3px;
+    border-radius: 3px 3px 3px 0px;
     white-space: nowrap;
     color: white;
     z-index: 100;
@@ -64,8 +64,7 @@ const createCursorStyle = (
     animation-delay: 2.7s;
   }
   .${className}-selection {
-    background-color: ${color}40 !important;
-    border: 1px solid ${color}80;
+    background-color: ${color}50 !important;
   }`;
 
 export const MonacoEditor = memo(function MonacoEditor({
