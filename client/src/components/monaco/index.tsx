@@ -71,6 +71,7 @@ const createCursorStyle = (
   }
   .${className}-selection {
     background-color: ${color}50 !important;
+    min-width: 4px !important;
   }`;
 
 export const MonacoEditor = memo(function MonacoEditor({
@@ -224,11 +225,16 @@ export const MonacoEditor = memo(function MonacoEditor({
         ),
         options: {
           className: `${safeClassName}-selection`,
-          stickiness:
-            monacoInstance.editor.TrackedRangeStickiness
-              .NeverGrowsWhenTypingAtEdges,
           hoverMessage: { value: `${name}'s selection` },
-        },
+          minimap: {
+            color: color,
+            position: monacoInstance.editor.MinimapPosition.Inline,
+          } as monaco.editor.IModelDecorationMinimapOptions,
+          overviewRuler: {
+            color: color,
+            position: monacoInstance.editor.OverviewRulerLane.Center,
+          } as monaco.editor.IModelDecorationOverviewRulerOptions,
+        } as monaco.editor.IModelDecorationOptions,
       });
     }
 
