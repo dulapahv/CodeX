@@ -43,6 +43,7 @@ const createCursorStyle = (
   color: string,
   name: string,
   isFirstLine: boolean = false,
+  hasSelection: boolean = false,
 ) => `
   .${className} {
     background-color: ${color} !important;
@@ -56,12 +57,17 @@ const createCursorStyle = (
     height: 19px;
     font-size: 12px;
     padding: 0 4px;
-    border-radius: 3px 3px 3px 0px;
+    ${isFirstLine ? "border-radius: 0px 3px 3px 3px;" : "border-radius: 3px 3px 3px 0px;"}
     white-space: nowrap;
     color: white;
     z-index: 100;
+    ${
+      !hasSelection
+        ? `
     animation: cursorFadeOut 0.2s ease-in forwards;
-    animation-delay: 2.7s;
+    animation-delay: 2.7s;`
+        : ""
+    }
   }
   .${className}-selection {
     background-color: ${color}50 !important;
@@ -200,20 +206,21 @@ export const MonacoEditor = memo(function MonacoEditor({
     });
 
     // Add selection decoration if there is a selection
-    if (
-      cursor.startLineNumber &&
-      cursor.startColumn &&
-      cursor.endLineNumber &&
-      cursor.endColumn &&
+    const hasSelection =
+      cursor.startLineNumber !== undefined &&
+      cursor.startColumn !== undefined &&
+      cursor.endLineNumber !== undefined &&
+      cursor.endColumn !== undefined &&
       (cursor.startLineNumber !== cursor.endLineNumber ||
-        cursor.startColumn !== cursor.endColumn)
-    ) {
+        cursor.startColumn !== cursor.endColumn);
+
+    if (hasSelection) {
       decorations.push({
         range: new monacoInstance.Range(
-          cursor.startLineNumber,
-          cursor.startColumn,
-          cursor.endLineNumber,
-          cursor.endColumn,
+          cursor.startLineNumber ?? 1,
+          cursor.startColumn ?? 1,
+          cursor.endLineNumber ?? 1,
+          cursor.endColumn ?? 1,
         ),
         options: {
           className: `${safeClassName}-selection`,
@@ -241,21 +248,27 @@ export const MonacoEditor = memo(function MonacoEditor({
       color,
       name,
       isFirstLine,
+      hasSelection,
     );
 
-    // Store decoration and setup cleanup
+    // Store decoration
     cursorDecorationsRef.current[name] = cursorDecoration;
 
+    // Remove any existing timeout if present
     if (cleanupTimeoutsRef.current[name]) {
       clearTimeout(cleanupTimeoutsRef.current[name]);
+      delete cleanupTimeoutsRef.current[name];
     }
 
-    cleanupTimeoutsRef.current[name] = setTimeout(() => {
-      cursorDecoration.clear();
-      delete cursorDecorationsRef.current[name];
-      styleElement?.remove();
-      delete cleanupTimeoutsRef.current[name];
-    }, 3000);
+    // Set cleanup timeout only if there's no selection
+    if (!hasSelection) {
+      cleanupTimeoutsRef.current[name] = setTimeout(() => {
+        cursorDecoration.clear();
+        delete cursorDecorationsRef.current[name];
+        styleElement?.remove();
+        delete cleanupTimeoutsRef.current[name];
+      }, 3000);
+    }
   }, []);
 
   const handleEditorDidMount = useCallback(
