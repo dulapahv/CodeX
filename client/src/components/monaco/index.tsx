@@ -187,16 +187,16 @@ export const MonacoEditor = memo(function MonacoEditor({
     const safeClassName = createSafeClassName(name);
     const isFirstLine = cursor.positionLineNumber === 1;
 
-    const decorations = [];
+    const decorations: monaco.editor.IModelDeltaDecoration[] = [];
 
     // Add cursor decoration
     decorations.push({
-      range: new monacoInstance.Range(
-        cursor.positionLineNumber,
-        cursor.positionColumn,
-        cursor.positionLineNumber,
-        cursor.positionColumn,
-      ),
+      range: {
+        startLineNumber: cursor.positionLineNumber,
+        startColumn: cursor.positionColumn,
+        endLineNumber: cursor.positionLineNumber,
+        endColumn: cursor.positionColumn,
+      },
       options: {
         className: safeClassName,
         beforeContentClassName: "cursor-widget",
@@ -217,24 +217,24 @@ export const MonacoEditor = memo(function MonacoEditor({
 
     if (hasSelection) {
       decorations.push({
-        range: new monacoInstance.Range(
-          cursor.startLineNumber ?? 1,
-          cursor.startColumn ?? 1,
-          cursor.endLineNumber ?? 1,
-          cursor.endColumn ?? 1,
-        ),
+        range: {
+          startLineNumber: cursor.startLineNumber ?? 1,
+          startColumn: cursor.startColumn ?? 1,
+          endLineNumber: cursor.endLineNumber ?? 1,
+          endColumn: cursor.endColumn ?? 1,
+        },
         options: {
           className: `${safeClassName}-selection`,
           hoverMessage: { value: `${name}'s selection` },
           minimap: {
             color: color,
             position: monacoInstance.editor.MinimapPosition.Inline,
-          } as monaco.editor.IModelDecorationMinimapOptions,
+          },
           overviewRuler: {
             color: color,
             position: monacoInstance.editor.OverviewRulerLane.Center,
-          } as monaco.editor.IModelDecorationOverviewRulerOptions,
-        } as monaco.editor.IModelDecorationOptions,
+          },
+        },
       });
     }
 
