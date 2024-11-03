@@ -9,7 +9,7 @@ import * as userService from './user-service';
  * @param socket Socket instance
  * @param name Username
  */
-export function createAndJoin(socket: Socket, name: string): void {
+export function create(socket: Socket, name: string): void {
   userService.connect(socket, name);
 
   const roomID = uuidv4().slice(0, 8);
@@ -43,7 +43,7 @@ export function join(
 
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
-  socket.in(roomID).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, users);
+  socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
 }
 
 /**
@@ -58,7 +58,7 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
 
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
-  socket.in(roomID).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, users);
+  socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
 }
 
 /**
@@ -83,6 +83,6 @@ export function getUsersInRoom(
     .filter((name): name is string => name !== undefined); // Type guard to filter out undefined
 
   // tell the client who joined the room
-  io.to(socket.id).emit(RoomServiceMsg.UPDATE_CLIENT_LIST, usersList);
+  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersList);
   return usersList;
 }

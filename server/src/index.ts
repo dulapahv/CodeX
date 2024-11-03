@@ -37,7 +37,7 @@ app.get('/', (_req, res) => {
 
 io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.CREATE_ROOM, async (name) =>
-    roomService.createAndJoin(socket, name)
+    roomService.create(socket, name)
   );
   socket.on(RoomServiceMsg.JOIN_ROOM, async (roomID, name) =>
     roomService.join(socket, io, roomID, name)
@@ -54,10 +54,10 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.GET_CODE, async (roomID) => {
     codeService.syncCode(socket, io, roomID);
   });
-  socket.on(CodeServiceMsg.SEND_EDIT, async (roomID, operation: EditOp) => {
+  socket.on(CodeServiceMsg.CODE_TX, async (roomID, operation: EditOp) => {
     codeService.updateCode(socket, roomID, operation);
   });
-  socket.on(UserServiceMsg.SEND_CURSOR, async (roomID, cursor: Cursor) => {
+  socket.on(UserServiceMsg.CURSOR_TX, async (roomID, cursor: Cursor) => {
     userService.updateCursor(socket, roomID, cursor);
   });
 });

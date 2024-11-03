@@ -43,14 +43,14 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket().connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket().connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     sessionStorage.setItem("roomId", params.roomId);
 
     socket().emit(RoomServiceMsg.GET_USERS, params.roomId);
-    socket().on(RoomServiceMsg.UPDATE_CLIENT_LIST, (users: string[]) => {
+    socket().on(RoomServiceMsg.UPDATE_USERS, (users: string[]) => {
       setUsers(users);
     });
 
@@ -63,7 +63,7 @@ export default function Room({ params }: RoomProps) {
 
     return () => {
       window.removeEventListener("popstate", disconnect);
-      socket().off(RoomServiceMsg.UPDATE_CLIENT_LIST);
+      socket().off(RoomServiceMsg.UPDATE_USERS);
       socket().off(CodeServiceMsg.RECEIVE_CODE);
     };
   }, [disconnect, params.roomId, router]);

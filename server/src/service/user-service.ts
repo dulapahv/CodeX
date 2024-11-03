@@ -64,5 +64,5 @@ export function updateCursor(
   if (!name) return;
 
   // Update cursor for all users in the room except the sender
-  socket.to(roomID).emit(UserServiceMsg.RECEIVE_CURSOR, name, cursor);
+  socket.to(roomID).emit(UserServiceMsg.CURSOR_RX, name, cursor);
 }
