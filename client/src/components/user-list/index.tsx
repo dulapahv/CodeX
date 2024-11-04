@@ -13,17 +13,12 @@ interface UserListProps {
 
 export function UserList({ users }: UserListProps) {
   const { resolvedTheme } = useTheme();
-  const currentUserId = storage.getUserId();
-
-  const getDisplayName = (user: User) => {
-    return user.id === currentUserId ? `${user.username} (you)` : user.username;
-  };
 
   return (
     <ScrollArea className="max-w-52">
       <div className="flex -space-x-2">
         {users.map((user) => (
-          <Avatar key={user.id} name={getDisplayName(user)} />
+          <Avatar key={user.id} user={user} />
         ))}
       </div>
       <ScrollBar

@@ -4,10 +4,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { COLORS } from "@/lib/constants";
+import { storage } from "@/lib/services/storage";
 import { cn, hashString } from "@/lib/utils";
 
+import type { User } from "../../../../common/types/user";
+
 interface AvatarProps {
-  readonly name: string;
+  readonly user: User;
   readonly size?: "sm" | "md" | "lg";
   readonly className?: string;
   readonly showTooltip?: boolean;
@@ -35,6 +38,16 @@ const getBackgroundColor = (name: string): string => {
   return COLORS[colorIndex];
 };
 
+/**
+ * Gets display name with "you" suffix
+ * @param user - User object
+ * @param currentUserId - Current user's ID
+ * @returns Display name
+ */
+const getDisplayName = (user: User, currentUserId: string) => {
+  return user.id === currentUserId ? `${user.username} (you)` : user.username;
+};
+
 const sizeClasses = {
   sm: "size-6 text-xs",
   md: "size-7 text-sm",
@@ -42,13 +55,14 @@ const sizeClasses = {
 } as const;
 
 export function Avatar({
-  name,
+  user,
   size = "md",
   className,
   showTooltip = true,
 }: AvatarProps) {
-  const initials = getInitials(name);
-  const backgroundColor = getBackgroundColor(name);
+  const initials = getInitials(user.username);
+  const backgroundColor = getBackgroundColor(user.username);
+  const currentUserId = storage.getUserId() ?? "";
 
   const AvatarContent = (
     <div
@@ -71,7 +85,7 @@ export function Avatar({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{AvatarContent}</TooltipTrigger>
-      <TooltipContent>{name}</TooltipContent>
+      <TooltipContent>{getDisplayName(user, currentUserId)}</TooltipContent>
     </Tooltip>
   );
 }
