@@ -15,7 +15,7 @@ export function create(socket: Socket, name: string): void {
   const roomID = uuidv4().slice(0, 8);
 
   socket.join(roomID);
-  socket.emit(RoomServiceMsg.ROOM_CREATED, roomID);
+  socket.emit(RoomServiceMsg.ROOM_CREATED, roomID, socket.id);
 }
 
 /**
@@ -39,7 +39,8 @@ export function join(
 
   userService.connect(socket, name);
   socket.join(roomID);
-  socket.emit(RoomServiceMsg.ROOM_JOINED, name);
+  // tell the client they joined the room
+  socket.emit(RoomServiceMsg.ROOM_JOINED, socket.id);
 
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
@@ -62,27 +63,34 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
 }
 
 /**
- * Gets list of usernames for all users in a room
+ * Gets a mapping of socket IDs to usernames for all users in a room
  * @param socket Socket instance
  * @param io Server instance
  * @param roomID Room identifier
- * @returns Array of usernames
+ * @returns Object mapping socket IDs to usernames
  */
 export function getUsersInRoom(
   socket: Socket,
   io: Server,
   roomID: string
-): string[] {
+): Record<string, string> {
   // get all sockets in room
   const room = io.sockets.adapter.rooms.get(roomID);
-  if (!room) return [];
+  if (!room) return {};
 
-  // Convert Set to Array and map socket IDs to usernames
-  const usersList = Array.from(room)
-    .map((socketId) => userService.getUsername(socketId))
-    .filter((name): name is string => name !== undefined); // Type guard to filter out undefined
+  // Create a dictionary of socket IDs to usernames
+  const usersDict = Array.from(room).reduce(
+    (acc: Record<string, string>, socketId) => {
+      const username = userService.getUsername(socketId);
+      if (username !== undefined) {
+        acc[socketId] = username;
+      }
+      return acc;
+    },
+    {}
+  );
 
   // tell the client who joined the room
-  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersList);
-  return usersList;
+  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersDict);
+  return usersDict;
 }

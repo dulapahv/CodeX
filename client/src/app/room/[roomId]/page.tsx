@@ -13,9 +13,11 @@ import { ShareButton } from "@/components/share-button";
 import { Toolbar } from "@/components/toolbar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { UserList } from "@/components/user-list";
+import { userMap } from "@/lib/services/user-map";
 import { socket } from "@/lib/socket";
 import { leaveRoom } from "@/lib/utils";
 
+import type { User } from "../../../../../common/types/user";
 import {
   CodeServiceMsg,
   RoomServiceMsg,
@@ -34,7 +36,7 @@ export default function Room({ params }: RoomProps) {
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [defaultCode, setDefaultCode] = useState<string | null>(null);
 
   const disconnect = useCallback(() => {
@@ -47,12 +49,15 @@ export default function Room({ params }: RoomProps) {
       router.replace(`/?room=${params.roomId}`);
     }
 
-    sessionStorage.setItem("roomId", params.roomId);
-
+    // Request users and listen for updates
     socket().emit(RoomServiceMsg.GET_USERS, params.roomId);
-    socket().on(RoomServiceMsg.UPDATE_USERS, (users: string[]) => {
-      setUsers(users);
-    });
+    socket().on(
+      RoomServiceMsg.UPDATE_USERS,
+      (usersDict: Record<string, string>) => {
+        userMap.addBulk(usersDict);
+        setUsers(userMap.getAll());
+      },
+    );
 
     socket().emit(CodeServiceMsg.GET_CODE, params.roomId);
     socket().on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
@@ -65,6 +70,7 @@ export default function Room({ params }: RoomProps) {
       window.removeEventListener("popstate", disconnect);
       socket().off(RoomServiceMsg.UPDATE_USERS);
       socket().off(CodeServiceMsg.RECEIVE_CODE);
+      userMap.clear();
     };
   }, [disconnect, params.roomId, router]);
 

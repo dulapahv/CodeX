@@ -5,23 +5,33 @@ import { twMerge } from "tailwind-merge";
 import { socket } from "@/lib/socket";
 
 import { RoomServiceMsg } from "../../../common/types/message";
+import { storage } from "./services/storage";
 
 export function createRoom(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
     socket().emit(RoomServiceMsg.CREATE_ROOM, name);
-    socket().on(RoomServiceMsg.ROOM_CREATED, (roomId: string) => {
-      resolve(roomId);
-    });
+    socket().on(
+      RoomServiceMsg.ROOM_CREATED,
+      (roomId: string, userID: string) => {
+        storage.setRoomId(roomId);
+        storage.setUserId(userID);
+
+        resolve(roomId);
+      },
+    );
   });
 }
 
 export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     socket().emit(RoomServiceMsg.JOIN_ROOM, roomId, name);
-    socket().on(RoomServiceMsg.ROOM_NOT_FOUND, (roomID: string) => {
+    socket().on(RoomServiceMsg.ROOM_NOT_FOUND, () => {
       reject("Room does not exist. Please check the room ID and try again.");
     });
-    socket().on(RoomServiceMsg.ROOM_JOINED, () => {
+    socket().on(RoomServiceMsg.ROOM_JOINED, (userID: string) => {
+      storage.setRoomId(roomId);
+      storage.setUserId(userID);
+
       resolve(true);
     });
   });
@@ -30,6 +40,7 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
 export function leaveRoom(roomId: string): Promise<void> {
   return new Promise((resolve, reject) => {
     socket().emit(RoomServiceMsg.LEAVE_ROOM, roomId);
+    storage.clear();
   });
 }
 

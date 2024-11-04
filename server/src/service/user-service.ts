@@ -60,9 +60,6 @@ export function updateCursor(
   roomID: string,
   cursor: Cursor
 ): void {
-  const name = getUsername(socket.id);
-  if (!name) return;
-
   // Update cursor for all users in the room except the sender
-  socket.to(roomID).emit(UserServiceMsg.CURSOR_RX, name, cursor);
+  socket.to(roomID).emit(UserServiceMsg.CURSOR_RX, socket.id, cursor);
 }
