@@ -5,6 +5,21 @@ import { RoomServiceMsg } from '../../../common/types/message';
 import * as userService from './user-service';
 
 /**
+ * Get the room ID that a user is currently in
+ * @param socket Socket instance
+ * @returns Room ID if user is in a room, undefined otherwise
+ */
+export function getUserRoom(socket: Socket): string | undefined {
+  // Socket.IO stores rooms in socket.rooms Set
+  // First entry is always the socket ID, any subsequent entries are room IDs
+  const rooms = Array.from(socket.rooms);
+
+  // If user is in a room, it will be the second entry
+  // (first entry is always the socket's own room/ID)
+  return rooms.length > 1 ? rooms[1] : undefined;
+}
+
+/**
  * Creates a new room and joins the socket to it
  * @param socket Socket instance
  * @param name Username
@@ -60,6 +75,9 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
   socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
+
+  // tell all clients in the room who left
+  socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, socket.id);
 }
 
 /**
@@ -72,10 +90,11 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
 export function getUsersInRoom(
   socket: Socket,
   io: Server,
-  roomID: string
+  roomID: string = getUserRoom(socket)
 ): Record<string, string> {
   // get all sockets in room
   const room = io.sockets.adapter.rooms.get(roomID);
+
   if (!room) return {};
 
   // Create a dictionary of socket IDs to usernames

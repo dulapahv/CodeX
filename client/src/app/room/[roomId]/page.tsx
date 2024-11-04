@@ -50,16 +50,26 @@ export default function Room({ params }: RoomProps) {
     }
 
     // Request users and listen for updates
-    socket().emit(RoomServiceMsg.GET_USERS, params.roomId);
+    socket().emit(RoomServiceMsg.GET_USERS);
     socket().on(
       RoomServiceMsg.UPDATE_USERS,
       (usersDict: Record<string, string>) => {
+        userMap.clear();
         userMap.addBulk(usersDict);
         setUsers(userMap.getAll());
       },
     );
 
-    socket().emit(CodeServiceMsg.GET_CODE, params.roomId);
+    socket().on(RoomServiceMsg.USER_LEFT, (userID: string) => {
+      const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
+      cursorElements.forEach((el) => el.remove());
+      const selectionElements = document.querySelectorAll(
+        `.cursor-${userID}-selection`,
+      );
+      selectionElements.forEach((el) => el.remove());
+    });
+
+    socket().emit(CodeServiceMsg.GET_CODE);
     socket().on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
       setDefaultCode(code);
     });

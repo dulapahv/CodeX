@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 
 import { CodeServiceMsg } from '../../../common/types/message';
 import { EditOp } from '../../../common/types/operation';
+import { getUserRoom } from './room-service';
 
 // Use a WeakMap for better memory management - allows garbage collection of unused rooms
 const roomID_to_Code_Map = new WeakMap<object, string>();
@@ -33,8 +34,11 @@ export function getCode(roomID: string): string {
 /**
  * Sync code to a client with minimal data transfer
  */
-export function syncCode(socket: Socket, io: Server, roomID: string): void {
-  io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, getCode(roomID));
+export function syncCode(socket: Socket, io: Server): void {
+  io.to(socket.id).emit(
+    CodeServiceMsg.RECEIVE_CODE,
+    getCode(getUserRoom(socket))
+  );
 }
 
 /**
@@ -60,9 +64,9 @@ function spliceString(
  */
 export function updateCode(
   socket: Socket,
-  roomID: string,
   operation: EditOp
 ): void {
+  const roomID = getUserRoom(socket);
   const currentCode = getCode(roomID);
   const { range, text } = operation;
   const { startLineNumber, startColumn, endLineNumber, endColumn } = range;

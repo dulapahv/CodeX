@@ -7,11 +7,9 @@ import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { COLORS } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
 import { userMap } from "@/lib/services/user-map";
 import { socket } from "@/lib/socket";
-import { hashString } from "@/lib/utils";
 
 import {
   CodeServiceMsg,
@@ -39,26 +37,28 @@ LoadingAlert.displayName = "LoadingAlert";
 
 const createCursorStyle = (
   userID: string,
+  bgColor: string,
   color: string,
   name: string,
   isFirstLine: boolean = false,
   hasSelection: boolean = false,
 ) => `
   .cursor-${userID} {
-    background-color: ${color} !important;
+    background-color: ${bgColor} !important;
     width: 2px !important;
   }
   .cursor-${userID}::after {
     content: "${name.replace(/"/g, '\\"')}";
-    background-color: ${color};
+    background-color: ${bgColor};
+    color: ${color};
     position: absolute;
+    font-weight: bold;
     top: ${isFirstLine ? "19px" : "-19px"};
     height: 19px;
     font-size: 12px;
     padding: 0 4px;
     ${isFirstLine ? "border-radius: 0px 3px 3px 3px;" : "border-radius: 3px 3px 3px 0px;"}
     white-space: nowrap;
-    color: white;
     z-index: 100;
     ${
       !hasSelection
@@ -69,8 +69,8 @@ const createCursorStyle = (
     }
   }
   .cursor-${userID}-selection {
-    background-color: ${color}50 !important;
-    min-width: 4px !important;
+    background-color: ${bgColor}75;
+    min-width: 4px;
   }`;
 
 export const MonacoEditor = memo(function MonacoEditor({
@@ -184,7 +184,7 @@ export const MonacoEditor = memo(function MonacoEditor({
     // Clean up previous decoration
     cursorDecorationsRef.current[name]?.clear();
 
-    const color = COLORS[hashString(name) % COLORS.length];
+    const { backgroundColor, color } = userMap.getColors(userID);
     const isFirstLine = cursor.positionLineNumber === 1;
 
     const decorations: monaco.editor.IModelDeltaDecoration[] = [];
@@ -227,11 +227,11 @@ export const MonacoEditor = memo(function MonacoEditor({
           className: `cursor-${userID}-selection`,
           hoverMessage: { value: `${name}'s selection` },
           minimap: {
-            color: color,
+            color: backgroundColor,
             position: monacoInstance.editor.MinimapPosition.Inline,
           },
           overviewRuler: {
-            color: color,
+            color: backgroundColor,
             position: monacoInstance.editor.OverviewRulerLane.Center,
           },
         },
@@ -251,6 +251,7 @@ export const MonacoEditor = memo(function MonacoEditor({
     }
     styleElement.textContent = createCursorStyle(
       userID,
+      backgroundColor,
       color,
       name,
       isFirstLine,
@@ -305,12 +306,12 @@ export const MonacoEditor = memo(function MonacoEditor({
               ev.selection.startLineNumber === ev.selection.endLineNumber &&
               ev.selection.startColumn === ev.selection.endColumn
             ) {
-              socket().emit(UserServiceMsg.CURSOR_TX, storage.getRoomId(), {
+              socket().emit(UserServiceMsg.CURSOR_TX, {
                 positionLineNumber: ev.selection.positionLineNumber,
                 positionColumn: ev.selection.positionColumn,
               } as Cursor);
             } else {
-              socket().emit(UserServiceMsg.CURSOR_TX, storage.getRoomId(), {
+              socket().emit(UserServiceMsg.CURSOR_TX, {
                 positionLineNumber: ev.selection.positionLineNumber,
                 positionColumn: ev.selection.positionColumn,
                 startLineNumber: ev.selection.startLineNumber,
@@ -337,7 +338,7 @@ export const MonacoEditor = memo(function MonacoEditor({
     ) => {
       if (skipUpdateRef.current) return;
       ev.changes.forEach((change) => {
-        socket().emit(CodeServiceMsg.CODE_TX, storage.getRoomId(), change);
+        socket().emit(CodeServiceMsg.CODE_TX, change);
       });
     },
     [],

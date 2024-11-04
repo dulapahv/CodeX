@@ -58,13 +58,88 @@ export const parseError = (error: unknown): string => {
   return "An unknown error occurred";
 };
 
-// Hashing function to generate a unique number from a string
-export function hashString(str: string): number {
+/**
+ * Fast color generation for real-time collaboration
+ * Uses a combination of hash and golden ratio for quick but good distribution
+ */
+export const getBackgroundColor = (name: string): string => {
+  // Fast hash - just use first and last few characters
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0; // Convert to 32bit integer
+  const len = name.length;
+  // Use first 2 and last 2 chars for speed
+  const chars = [
+    name.charCodeAt(0),
+    name.charCodeAt(Math.min(1, len - 1)),
+    name.charCodeAt(Math.max(len - 2, 0)),
+    name.charCodeAt(len - 1),
+  ];
+
+  for (let i = 0; i < chars.length; i++) {
+    hash = ((hash << 5) - hash + chars[i]) >>> 0;
   }
-  return Math.abs(hash);
-}
+
+  // Use golden ratio for better distribution
+  // This creates a more pleasing spread of colors
+  const golden_ratio = 0.618033988749895;
+  const hue = ((hash * golden_ratio) % 1) * 360;
+
+  // Use fixed saturation and lightness for consistent readability
+  const saturation = 60; // More muted colors
+  const lightness = 65; // Not too dark, not too light
+
+  return hslToHex(hue, saturation, lightness);
+};
+
+/**
+ * Simplified HSL to Hex conversion
+ */
+const hslToHex = (h: number, s: number, l: number): string => {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h * 12) % 12;
+    return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+
+  const rgb = [f(0), f(8), f(4)].map((x) =>
+    Math.round(x * 255)
+      .toString(16)
+      .padStart(2, "0"),
+  );
+
+  return `#${rgb.join("")}`;
+};
+
+/**
+ * Calculates relative luminance of a color
+ * @param hexColor - Color in hex format
+ * @returns Luminance value between 0 and 1
+ */
+const getLuminance = (hexColor: string): number => {
+  // Remove # if present
+  const hex = hexColor.replace("#", "");
+
+  // Convert hex to rgb
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+  // Calculate luminance using relative luminance formula
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  return luminance;
+};
+
+/**
+ * Determines text color based on background luminance
+ * @param backgroundColor - Background color in hex format
+ * @returns Either black or white depending on contrast
+ */
+export const getTextColor = (backgroundColor: string): string => {
+  const luminance = getLuminance(backgroundColor);
+  // Use white text on dark backgrounds (luminance < 0.7)
+  return luminance < 0.7 ? "#fff" : "#000";
+};

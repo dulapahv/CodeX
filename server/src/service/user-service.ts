@@ -1,7 +1,8 @@
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 
 import { UserServiceMsg } from '../../../common/types/message';
 import { Cursor } from '../../../common/types/operation';
+import { getUserRoom } from './room-service';
 
 // Use WeakMap for better memory management of user data
 const userID_to_Username_Map = new WeakMap<object, string>();
@@ -55,11 +56,8 @@ export function disconnect(socket: Socket): void {
  * @param roomID Room identifier
  * @param cursor Cursor position data
  */
-export function updateCursor(
-  socket: Socket,
-  roomID: string,
-  cursor: Cursor
-): void {
+export function updateCursor(socket: Socket, cursor: Cursor): void {
+  const roomID = getUserRoom(socket);
   // Update cursor for all users in the room except the sender
   socket.to(roomID).emit(UserServiceMsg.CURSOR_RX, socket.id, cursor);
 }

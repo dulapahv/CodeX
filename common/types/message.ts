@@ -7,6 +7,7 @@ export enum RoomServiceMsg {
   ROOM_NOT_FOUND = 'room-not-found',
   UPDATE_USERS = 'update-client-list',
   GET_USERS = 'get-users',
+  USER_LEFT = 'user-left',
 }
 
 export enum UserServiceMsg {

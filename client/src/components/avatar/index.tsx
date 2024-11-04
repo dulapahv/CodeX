@@ -3,9 +3,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { COLORS } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
-import { cn, hashString } from "@/lib/utils";
+import { userMap } from "@/lib/services/user-map";
+import { cn } from "@/lib/utils";
 
 import type { User } from "../../../../common/types/user";
 
@@ -26,16 +26,6 @@ const getInitials = (name: string): string => {
   const firstInitial = firstName?.[0] ?? "";
   const secondInitial = secondName?.[0] ?? firstName?.[1] ?? "";
   return (firstInitial + secondInitial).toUpperCase();
-};
-
-/**
- * Gets background color based on name
- * @param name - User's name
- * @returns Hex color code
- */
-const getBackgroundColor = (name: string): string => {
-  const colorIndex = hashString(name) % COLORS.length;
-  return COLORS[colorIndex];
 };
 
 /**
@@ -61,7 +51,7 @@ export function Avatar({
   showTooltip = true,
 }: AvatarProps) {
   const initials = getInitials(user.username);
-  const backgroundColor = getBackgroundColor(user.username);
+  const colors = userMap.getColors(user.id);
   const currentUserId = storage.getUserId() ?? "";
 
   const AvatarContent = (
@@ -71,7 +61,7 @@ export function Avatar({
         sizeClasses[size],
         className,
       )}
-      style={{ backgroundColor }}
+      style={colors}
       data-testid="avatar"
     >
       {initials}

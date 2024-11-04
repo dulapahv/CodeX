@@ -45,17 +45,17 @@ io.on('connection', (socket) => {
   socket.on(UserServiceMsg.DISCONNECT, async () =>
     userService.disconnect(socket)
   );
-  socket.on(RoomServiceMsg.GET_USERS, async (roomID) => {
-    roomService.getUsersInRoom(socket, io, roomID);
+  socket.on(RoomServiceMsg.GET_USERS, async () => {
+    roomService.getUsersInRoom(socket, io);
   });
-  socket.on(CodeServiceMsg.GET_CODE, async (roomID) => {
-    codeService.syncCode(socket, io, roomID);
+  socket.on(CodeServiceMsg.GET_CODE, async () => {
+    codeService.syncCode(socket, io);
   });
-  socket.on(CodeServiceMsg.CODE_TX, async (roomID, operation: EditOp) => {
-    codeService.updateCode(socket, roomID, operation);
+  socket.on(CodeServiceMsg.CODE_TX, async (operation: EditOp) => {
+    codeService.updateCode(socket, operation);
   });
-  socket.on(UserServiceMsg.CURSOR_TX, async (roomID, cursor: Cursor) => {
-    userService.updateCursor(socket, roomID, cursor);
+  socket.on(UserServiceMsg.CURSOR_TX, async (cursor: Cursor) => {
+    userService.updateCursor(socket, cursor);
   });
 });
 

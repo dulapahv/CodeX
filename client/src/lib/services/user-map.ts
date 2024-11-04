@@ -1,15 +1,32 @@
+import { getBackgroundColor, getTextColor } from "@/lib/utils";
+
 import type { User } from "../../../../common/types/user";
 
+interface UserData {
+  username: string;
+  backgroundColor: string;
+  textColor: string;
+}
+
 export class UserMap {
-  private users: Map<string, string>;
+  private users: Map<string, UserData>;
 
   constructor() {
     this.users = new Map();
   }
 
+  // Calculate and cache colors when adding a user
+  private calculateUserData(username: string): UserData {
+    return {
+      username,
+      backgroundColor: getBackgroundColor(username),
+      textColor: getTextColor(getBackgroundColor(username)),
+    };
+  }
+
   // Add a new user or update existing user
   add(id: string, username: string): void {
-    this.users.set(id, username);
+    this.users.set(id, this.calculateUserData(username));
   }
 
   // Add multiple users at once
@@ -21,7 +38,7 @@ export class UserMap {
 
   // Get username by ID
   get(id: string): string | undefined {
-    return this.users.get(id);
+    return this.users.get(id)?.username;
   }
 
   // Delete a user by ID
@@ -34,17 +51,40 @@ export class UserMap {
     this.users.clear();
   }
 
+  // Get cached background color by ID
+  getBackgroundColor(id: string): string {
+    return this.users.get(id)?.backgroundColor ?? getBackgroundColor("");
+  }
+
+  // Get cached text color by ID
+  getTextColor(id: string): string {
+    return this.users.get(id)?.textColor ?? getTextColor("");
+  }
+
+  // Get all colors for a user
+  getColors(id: string): { backgroundColor: string; color: string } {
+    const userData = this.users.get(id);
+    return {
+      backgroundColor: userData?.backgroundColor ?? getBackgroundColor(""),
+      color: userData?.textColor ?? getTextColor(""),
+    };
+  }
+
   // Get all users as an array of User objects
   getAll(): User[] {
-    return Array.from(this.users.entries()).map(([id, username]) => ({
+    return Array.from(this.users.entries()).map(([id, data]) => ({
       id,
-      username,
+      username: data.username,
     }));
   }
 
   // Get raw map of id -> username
   getRawMap(): Record<string, string> {
-    return Object.fromEntries(this.users);
+    const rawMap: Record<string, string> = {};
+    this.users.forEach((data, id) => {
+      rawMap[id] = data.username;
+    });
+    return rawMap;
   }
 
   // Get total number of users
