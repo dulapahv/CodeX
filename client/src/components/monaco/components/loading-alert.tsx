@@ -12,3 +12,5 @@ export const LoadingAlert = memo(() => (
     </AlertDescription>
   </Alert>
 ));
+
+LoadingAlert.displayName = "LoadingAlert";

@@ -22,8 +22,6 @@ interface MonacoEditorProps {
   defaultCode?: string;
 }
 
-LoadingAlert.displayName = "LoadingAlert";
-
 export const MonacoEditor = memo(function MonacoEditor({
   monacoRef,
   editorRef,
