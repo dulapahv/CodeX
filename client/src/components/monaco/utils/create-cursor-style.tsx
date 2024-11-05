@@ -33,6 +33,6 @@ export const createCursorStyle = (
   }
   .cursor-${userID}-selection {
     background-color: ${bgColor};
-    opacity: 0.75;
+    opacity: 0.5;
     min-width: 4px;
   }`;
