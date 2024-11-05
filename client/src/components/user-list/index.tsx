@@ -2,7 +2,6 @@ import { useTheme } from "next-themes";
 
 import { Avatar } from "@/components/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { storage } from "@/lib/services/storage";
 import { cn } from "@/lib/utils";
 
 import type { User } from "../../../../common/types/user";

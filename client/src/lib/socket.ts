@@ -6,15 +6,15 @@ import { BASE_SERVER_URL } from "./constants";
 let socketInstance: Socket | null = null;
 
 /**
- * Returns a socket instance
+ * Returns a singleton socket instance
  * @returns {Socket}
  */
-export function socket() {
+export const socket: Socket = (() => {
   if (!socketInstance) {
     socketInstance = io(BASE_SERVER_URL);
-  }
-  if (!socketInstance.connected) {
-    socketInstance.connect();
+    if (!socketInstance.connected) {
+      socketInstance.connect();
+    }
   }
   return socketInstance;
-}
+})();

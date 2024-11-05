@@ -1,24 +1,24 @@
-export enum RoomServiceMsg {
-  CREATE_ROOM = 'create-room',
-  JOIN_ROOM = 'join-room',
-  LEAVE_ROOM = 'leave-room',
-  ROOM_CREATED = 'room-created',
-  ROOM_JOINED = 'room-joined',
-  ROOM_NOT_FOUND = 'room-not-found',
-  UPDATE_USERS = 'update-client-list',
-  GET_USERS = 'get-users',
-  USER_LEFT = 'user-left',
+export enum UserServiceMsg {
+  DISC = 'dc',
+  CURSOR_RX = 'curRx',
+  CURSOR_TX = 'curTx',
 }
 
-export enum UserServiceMsg {
-  DISCONNECT = 'disconnect',
-  CURSOR_RX = 'receive-cursor',
-  CURSOR_TX = 'send-cursor',
+export enum RoomServiceMsg {
+  CREATE = 'crRm',
+  JOIN = 'jnRm',
+  LEAVE = 'lvRm',
+  CREATED = 'rmCr',
+  JOINED = 'rmJn',
+  NOT_FOUND = 'rmNF',
+  UPDATE_USERS = 'updUsr',
+  GET_USERS = 'gtUsr',
+  USER_LEFT = 'usrLf',
 }
 
 export enum CodeServiceMsg {
-  GET_CODE = 'get-code',
-  RECEIVE_CODE = 'receive-code',
-  CODE_TX = 'send-edit',
-  CODE_RX = 'receive-edit',
+  GET_CODE = 'gtCd',
+  RECEIVE_CODE = 'rcCd',
+  CODE_TX = 'cdTx',
+  CODE_RX = 'cdRx',
 }

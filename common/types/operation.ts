@@ -1,18 +1,19 @@
 export interface EditOp {
-  text: string;
-  range: {
-    startLineNumber: number;
-    startColumn: number;
-    endLineNumber: number;
-    endColumn: number;
+  t: string; // text
+  r: {
+    // range
+    sL: number; // startLineNumber
+    sC: number; // startColumn
+    eL: number; // endLineNumber
+    eC: number; // endColumn
   };
 }
 
 export interface Cursor {
-  positionLineNumber: number;
-  positionColumn: number;
-  startLineNumber?: number;
-  startColumn?: number;
-  endLineNumber?: number;
-  endColumn?: number;
+  pL: number; // positionLineNumber
+  pC: number; // positionColumn
+  sL?: number; // startLineNumber
+  sC?: number; // startColumn
+  eL?: number; // endLineNumber
+  eC?: number; // endColumn
 }

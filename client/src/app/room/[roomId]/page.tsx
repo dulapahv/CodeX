@@ -41,17 +41,17 @@ export default function Room({ params }: RoomProps) {
 
   const disconnect = useCallback(() => {
     leaveRoom(params.roomId);
-    socket().disconnect();
+    socket.disconnect();
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket().connected) {
+    if (!socket.connected) {
       router.replace(`/?room=${params.roomId}`);
     }
 
     // Request users and listen for updates
-    socket().emit(RoomServiceMsg.GET_USERS);
-    socket().on(
+    socket.emit(RoomServiceMsg.GET_USERS);
+    socket.on(
       RoomServiceMsg.UPDATE_USERS,
       (usersDict: Record<string, string>) => {
         userMap.clear();
@@ -60,7 +60,7 @@ export default function Room({ params }: RoomProps) {
       },
     );
 
-    socket().on(RoomServiceMsg.USER_LEFT, (userID: string) => {
+    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) => {
       const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
       cursorElements.forEach((el) => el.remove());
       const selectionElements = document.querySelectorAll(
@@ -69,8 +69,8 @@ export default function Room({ params }: RoomProps) {
       selectionElements.forEach((el) => el.remove());
     });
 
-    socket().emit(CodeServiceMsg.GET_CODE);
-    socket().on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
+    socket.emit(CodeServiceMsg.GET_CODE);
+    socket.on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
       setDefaultCode(code);
     });
 
@@ -78,8 +78,8 @@ export default function Room({ params }: RoomProps) {
 
     return () => {
       window.removeEventListener("popstate", disconnect);
-      socket().off(RoomServiceMsg.UPDATE_USERS);
-      socket().off(CodeServiceMsg.RECEIVE_CODE);
+      socket.off(RoomServiceMsg.UPDATE_USERS);
+      socket.off(CodeServiceMsg.RECEIVE_CODE);
       userMap.clear();
     };
   }, [disconnect, params.roomId, router]);

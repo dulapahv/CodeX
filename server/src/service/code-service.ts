@@ -62,18 +62,15 @@ function spliceString(
  * Updates the code in a room based on an edit operation
  * Optimized for performance while maintaining safety
  */
-export function updateCode(
-  socket: Socket,
-  operation: EditOp
-): void {
+export function updateCode(socket: Socket, operation: EditOp): void {
   const roomID = getUserRoom(socket);
   const currentCode = getCode(roomID);
-  const { range, text } = operation;
-  const { startLineNumber, startColumn, endLineNumber, endColumn } = range;
+  const { r, t } = operation;
+  const { sL, sC, eL, eC } = r;
 
   // Split lines only once and reuse the array
   const lines = currentCode.split('\n');
-  const maxLine = Math.max(lines.length, startLineNumber);
+  const maxLine = Math.max(lines.length, sL);
 
   // Preallocate array size if needed
   if (maxLine > lines.length) {
@@ -82,54 +79,47 @@ export function updateCode(
   }
 
   // Handle empty line deletion specifically
-  const isEmptyLineDeletion =
-    text === '' &&
-    startLineNumber < endLineNumber &&
-    startColumn === 1 &&
-    endColumn === 1;
+  const isEmptyLineDeletion = t === '' && sL < eL && sC === 1 && eC === 1;
 
   if (isEmptyLineDeletion) {
     // Remove the empty lines
-    lines.splice(startLineNumber - 1, endLineNumber - startLineNumber);
-  } else if (startLineNumber === endLineNumber) {
+    lines.splice(sL - 1, eL - sL);
+  } else if (sL === eL) {
     // Single line change
-    const lineIndex = startLineNumber - 1;
+    const lineIndex = sL - 1;
     const line = lines[lineIndex] || '';
 
     // Boundary check with bitwise operations for performance
-    const safeStartColumn = Math.max(0, Math.min(startColumn - 1, line.length));
-    const safeEndColumn = Math.max(0, Math.min(endColumn - 1, line.length));
+    const safesC = Math.max(0, Math.min(sC - 1, line.length));
+    const safeeC = Math.max(0, Math.min(eC - 1, line.length));
 
     // Optimize string concatenation
-    lines[lineIndex] = spliceString(line, safeStartColumn, safeEndColumn, text);
+    lines[lineIndex] = spliceString(line, safesC, safeeC, t);
   } else {
     // Multi-line change
-    const textLines = text.split('\n');
-    const startLineIndex = startLineNumber - 1;
-    const endLineIndex = endLineNumber - 1;
+    const textLines = t.split('\n');
+    const startLineIndex = sL - 1;
+    const endLineIndex = eL - 1;
 
     // Get start and end lines
     const startLine = lines[startLineIndex] || '';
     const endLine = lines[endLineIndex] || '';
 
     // Calculate safe column positions
-    const safeStartColumn = Math.min(
-      Math.max(0, startColumn - 1),
-      startLine.length
-    );
-    const safeEndColumn = Math.min(Math.max(0, endColumn - 1), endLine.length);
+    const safesC = Math.min(Math.max(0, sC - 1), startLine.length);
+    const safeeC = Math.min(Math.max(0, eC - 1), endLine.length);
 
     // Create new start and end lines efficiently
     const newStartLine = spliceString(
       startLine,
-      safeStartColumn,
+      safesC,
       startLine.length,
       textLines[0]
     );
     const newEndLine = spliceString(
       endLine,
       0,
-      safeEndColumn,
+      safeeC,
       textLines[textLines.length - 1]
     );
 

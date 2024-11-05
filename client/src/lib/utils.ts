@@ -9,26 +9,23 @@ import { storage } from "./services/storage";
 
 export function createRoom(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    socket().emit(RoomServiceMsg.CREATE_ROOM, name);
-    socket().on(
-      RoomServiceMsg.ROOM_CREATED,
-      (roomId: string, userID: string) => {
-        storage.setRoomId(roomId);
-        storage.setUserId(userID);
+    socket.emit(RoomServiceMsg.CREATE, name);
+    socket.on(RoomServiceMsg.CREATED, (roomId: string, userID: string) => {
+      storage.setRoomId(roomId);
+      storage.setUserId(userID);
 
-        resolve(roomId);
-      },
-    );
+      resolve(roomId);
+    });
   });
 }
 
 export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    socket().emit(RoomServiceMsg.JOIN_ROOM, roomId, name);
-    socket().on(RoomServiceMsg.ROOM_NOT_FOUND, () => {
+    socket.emit(RoomServiceMsg.JOIN, roomId, name);
+    socket.on(RoomServiceMsg.NOT_FOUND, () => {
       reject("Room does not exist. Please check the room ID and try again.");
     });
-    socket().on(RoomServiceMsg.ROOM_JOINED, (userID: string) => {
+    socket.on(RoomServiceMsg.JOINED, (userID: string) => {
       storage.setRoomId(roomId);
       storage.setUserId(userID);
 
@@ -39,7 +36,7 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
 
 export function leaveRoom(roomId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    socket().emit(RoomServiceMsg.LEAVE_ROOM, roomId);
+    socket.emit(RoomServiceMsg.LEAVE, roomId);
     storage.clear();
   });
 }
@@ -61,8 +58,16 @@ export const parseError = (error: unknown): string => {
 /**
  * Fast color generation for real-time collaboration
  * Uses a combination of hash and golden ratio for quick but good distribution
+ * Caches results to improve performance
  */
+const colorCache = new Map();
+
 export const getBackgroundColor = (name: string): string => {
+  // Check if color is already in the cache
+  if (colorCache.has(name)) {
+    return colorCache.get(name);
+  }
+
   // Fast hash - just use first and last few characters
   let hash = 0;
   const len = name.length;
@@ -87,7 +92,12 @@ export const getBackgroundColor = (name: string): string => {
   const saturation = 60; // More muted colors
   const lightness = 65; // Not too dark, not too light
 
-  return hslToHex(hue, saturation, lightness);
+  const backgroundColor = hslToHex(hue, saturation, lightness);
+
+  // Cache the result
+  colorCache.set(name, backgroundColor);
+
+  return backgroundColor;
 };
 
 /**

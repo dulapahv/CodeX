@@ -30,7 +30,7 @@ export function create(socket: Socket, name: string): void {
   const roomID = uuidv4().slice(0, 8);
 
   socket.join(roomID);
-  socket.emit(RoomServiceMsg.ROOM_CREATED, roomID, socket.id);
+  socket.emit(RoomServiceMsg.CREATED, roomID, socket.id);
 }
 
 /**
@@ -48,14 +48,14 @@ export function join(
 ): void {
   // check if room exists
   if (!io.sockets.adapter.rooms.has(roomID)) {
-    socket.emit(RoomServiceMsg.ROOM_NOT_FOUND, roomID);
+    socket.emit(RoomServiceMsg.NOT_FOUND, roomID);
     return;
   }
 
   userService.connect(socket, name);
   socket.join(roomID);
   // tell the client they joined the room
-  socket.emit(RoomServiceMsg.ROOM_JOINED, socket.id);
+  socket.emit(RoomServiceMsg.JOINED, socket.id);
 
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
