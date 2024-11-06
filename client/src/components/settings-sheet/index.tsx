@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, LogOut } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { LoaderCircle, LogOut, Settings } from "lucide-react";
 import * as monaco from "monaco-editor";
-import type { Monaco } from "@monaco-editor/react";
 
+import type { Monaco } from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -29,46 +29,91 @@ interface SettingSheetProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
+async function checkAuthStatus() {
+  try {
+    const response = await fetch("/api/oauth/check/github", {
+      method: "GET",
+      credentials: "include", // Important for sending cookies
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.username;
+  } catch (error) {
+    console.error("Error checking auth status:", error);
+    return null;
+  }
+}
+
 export function SettingSheet({ monaco, editor }: SettingSheetProps) {
   const [githubUser, setGithubUser] = useState<string | null>(null);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check authentication status on component mount
+    checkAuthStatus().then((username) => {
+      setGithubUser(username);
+      setIsLoading(false);
+    });
+  }, []);
+
   useEffect(() => {
     // Listen for messages from the OAuth popup
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === 'github-oauth') {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data.type === "github-oauth") {
         if (event.data.success) {
-          setGithubUser(event.data.username);
+          // Verify auth status after successful OAuth
+          const username = await checkAuthStatus();
+          setGithubUser(username);
         }
         // Close the popup window if it exists
         if (window.authWindow) {
-          window.authWindow?.close();
+          window.authWindow.close();
+          window.authWindow = null;
         }
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
+
+  async function handleLogout() {
+    try {
+      const response = await fetch("/api/oauth/logout/github", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setGithubUser(null);
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }
 
   function loginWithGithub() {
     const width = 790;
-    const height = 640;
+    const height = 720;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
-    
-    const authWindow = window.open(
-      `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}`,
-      "_blank",
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
-    );
 
-    // Store reference to auth window
-    window.authWindow = authWindow;
-  }
-
-  function handleLogout() {
-    setGithubUser(null);
-    // Add any additional logout logic here
+    // Check if the auth window is already open
+    if (window.authWindow && !window.authWindow.closed) {
+      // Focus the existing window
+      window.authWindow.focus();
+    } else {
+      // Open a new window
+      window.authWindow = window.open(
+        `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}`,
+        "_blank",
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
+      );
+    }
   }
 
   return (
@@ -103,9 +148,13 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
         </SheetHeader>
         <div className="flex flex-col gap-y-4 py-4">
           <Label className="text-base">GitHub Connection</Label>
-          {githubUser ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-2">
+              <LoaderCircle className="size-4 animate-spin" />
+            </div>
+          ) : githubUser ? (
             <div className="flex items-center justify-between">
-              <span className="text-sm">
+              <span className="text-sm text-muted-foreground">
                 Connected as {githubUser}
               </span>
               <Button

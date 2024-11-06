@@ -3,12 +3,10 @@
 import { useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SearchParamsProps {
   status: string;
-  description: string;
-  username?: string;
 }
 
 export default function Page({
@@ -16,7 +14,7 @@ export default function Page({
 }: {
   searchParams: SearchParamsProps;
 }) {
-  const { status, username } = searchParams;
+  const { status } = searchParams;
   const isSuccessful = status === "success";
 
   useEffect(() => {
@@ -26,12 +24,11 @@ export default function Page({
         {
           type: "github-oauth",
           success: isSuccessful,
-          username: username,
         },
         "*",
       );
     }
-  }, [isSuccessful, username]);
+  }, [isSuccessful]);
 
   return (
     <div className="flex h-dvh animate-fade-in items-center justify-center">

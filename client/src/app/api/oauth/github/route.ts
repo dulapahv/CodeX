@@ -55,18 +55,15 @@ export async function GET(req: NextRequest) {
     | GithubErrorResponse;
 
   if ("error" in data) {
-    redirect(`/oauth/github`);
+    redirect(
+      `/oauth/github?status=${data.error}&description=${data.error_description}`,
+    );
   } else {
     cookieStore.set("access_token", data.access_token, {
       secure: true,
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
     });
-    const username = await fetch(`https://api.github.com/user`, {
-      headers: {
-        Authorization: `token ${data.access_token}`,
-      },
-    }).then((res) => res.json());
-    redirect(`/oauth/github?status=success&username=${username.login}`);
+    redirect(`/oauth/github?status=success`);
   }
 }
