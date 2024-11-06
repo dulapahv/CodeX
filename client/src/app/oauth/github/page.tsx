@@ -1,35 +1,45 @@
-import { Check, X } from "lucide-react";
+"use client";
+
+import { useEffect } from "react";
+import { LoaderCircle } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface searchParamsProps {
+interface SearchParamsProps {
   status: string;
   description: string;
+  username?: string;
 }
 
-export default async function Page({
+export default function Page({
   searchParams,
 }: {
-  searchParams: searchParamsProps;
+  searchParams: SearchParamsProps;
 }) {
-  const { status, description } = searchParams;
-
+  const { status, username } = searchParams;
   const isSuccessful = status === "success";
+
+  useEffect(() => {
+    if (window.opener) {
+      // Send message to parent window
+      window.opener.postMessage(
+        {
+          type: "github-oauth",
+          success: isSuccessful,
+          username: username,
+        },
+        "*",
+      );
+    }
+  }, [isSuccessful, username]);
 
   return (
     <div className="flex h-dvh animate-fade-in items-center justify-center">
       <Alert className="max-w-md">
-        {isSuccessful ? <Check className="size-5" /> : <X className="size-5" />}
-        <AlertTitle>
-          {isSuccessful
-            ? "Successfully connected to GitHub"
-            : "Error connecting to GitHub"}
-        </AlertTitle>
-        <AlertDescription className="whitespace-pre-line">
-          {isSuccessful
-            ? "You can now close this tab and return to the app."
-            : `${description}\nYou can close this tab and try again.`}
-        </AlertDescription>
+        <div className="flex items-center gap-2">
+          <LoaderCircle className="size-5 animate-spin" />
+          <AlertDescription>Processing authentication...</AlertDescription>
+        </div>
       </Alert>
     </div>
   );
