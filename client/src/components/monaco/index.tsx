@@ -1,13 +1,19 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+/**
+ * This component is responsible for rendering the Monaco Editor, which is a
+ * code editor that powers the code editing experience in the application.
+ *
+ * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ */
+
+import { memo, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import themeList from "monaco-themes/themes/themelist.json";
 import { useTheme } from "next-themes";
 
 import type { Monaco } from "@monaco-editor/react";
-import { userMap } from "@/lib/services/user-map";
 import { socket } from "@/lib/socket";
 
+import type { statusBar } from "./types/status-bar";
 import {
   CodeServiceMsg,
   RoomServiceMsg,
@@ -15,7 +21,9 @@ import {
 } from "../../../../common/types/message";
 import { Cursor, EditOp } from "../../../../common/types/operation";
 import { LoadingAlert } from "./components/loading-alert";
-import { createCursorStyle } from "./utils/create-cursor-style";
+import * as codeService from "./service/code-service";
+import * as cursorService from "./service/cursor-service";
+import * as editorService from "./service/editor-service";
 
 interface MonacoEditorProps {
   monacoRef: (monaco: Monaco) => void;
@@ -30,7 +38,7 @@ export const MonacoEditor = memo(function MonacoEditor({
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
   const [theme, setTheme] = useState<string>("vs-dark");
-  const [cursorPosition, setCursorPosition] = useState({
+  const [cursorPosition, setCursorPosition] = useState<statusBar>({
     line: 1,
     column: 1,
     selected: 0,
@@ -63,45 +71,24 @@ export const MonacoEditor = memo(function MonacoEditor({
 
   // Setup socket event listeners
   useEffect(() => {
-    socket.on(CodeServiceMsg.CODE_RX, (op: EditOp) => {
-      const editor = editorInstanceRef.current;
-      if (!editor) return;
+    socket.on(CodeServiceMsg.CODE_RX, (op: EditOp) =>
+      codeService.updateCode(op, editorInstanceRef, skipUpdateRef),
+    );
 
-      skipUpdateRef.current = true;
-      const model = editor.getModel();
-      if (model) {
-        model.pushEditOperations(
-          [],
-          [
-            {
-              forceMoveMarkers: true,
-              range: {
-                startLineNumber: op.r.sL,
-                startColumn: op.r.sC,
-                endLineNumber: op.r.eL,
-                endColumn: op.r.eC,
-              },
-              text: op.t,
-            },
-          ],
-          () => [],
-        );
-      }
-      skipUpdateRef.current = false;
-    });
+    socket.on(UserServiceMsg.CURSOR_RX, (userID: string, cursor: Cursor) =>
+      cursorService.updateCursor(
+        userID,
+        cursor,
+        editorInstanceRef,
+        monacoInstanceRef,
+        cursorDecorationsRef,
+        cleanupTimeoutsRef,
+      ),
+    );
 
-    socket.on(UserServiceMsg.CURSOR_RX, handleCursorUpdate);
-
-    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) => {
-      const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-      cursorElements.forEach((el) => el.remove());
-      const selectionElements = document.querySelectorAll(
-        `.cursor-${userID}-selection`,
-      );
-      selectionElements.forEach((el) => el.remove());
-
-      cursorDecorationsRef.current[userID]?.clear();
-    });
+    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) =>
+      cursorService.removeCursor(userID, cursorDecorationsRef),
+    );
 
     // Cleanup socket listeners
     return () => {
@@ -132,190 +119,6 @@ export const MonacoEditor = memo(function MonacoEditor({
     };
   }, []);
 
-  const handleEditorWillMount = useCallback((monaco: Monaco) => {
-    Object.entries(themeList).forEach(([key, value]) => {
-      const themeData = require(`monaco-themes/themes/${value}.json`);
-      monaco.editor.defineTheme(key, themeData);
-    });
-  }, []);
-
-  const handleCursorUpdate = useCallback((userID: string, cursor: Cursor) => {
-    const editor = editorInstanceRef.current;
-    const monacoInstance = monacoInstanceRef.current;
-    if (!editor || !monacoInstance) return;
-
-    const name = userMap.get(userID) || "Unknown";
-
-    // Clean up previous decoration
-    cursorDecorationsRef.current[userID]?.clear();
-
-    const { backgroundColor, color } = userMap.getColors(userID);
-    const isFirstLine = cursor.pL === 1;
-
-    const decorations: monaco.editor.IModelDeltaDecoration[] = [];
-
-    // Add cursor decoration
-    decorations.push({
-      range: {
-        startLineNumber: cursor.pL,
-        startColumn: cursor.pC,
-        endLineNumber: cursor.pL,
-        endColumn: cursor.pC,
-      },
-      options: {
-        className: `cursor-${userID}`,
-        beforeContentClassName: "cursor-widget",
-        stickiness:
-          monacoInstance.editor.TrackedRangeStickiness
-            .NeverGrowsWhenTypingAtEdges,
-      },
-    });
-
-    // Add selection decoration if there is a selection
-    const hasSelection =
-      cursor.sL !== undefined &&
-      cursor.sC !== undefined &&
-      cursor.eL !== undefined &&
-      cursor.eC !== undefined &&
-      (cursor.sL !== cursor.eL || cursor.sC !== cursor.eC);
-
-    if (hasSelection) {
-      decorations.push({
-        range: {
-          startLineNumber: cursor.sL ?? 1,
-          startColumn: cursor.sC ?? 1,
-          endLineNumber: cursor.eL ?? 1,
-          endColumn: cursor.eC ?? 1,
-        },
-        options: {
-          className: `cursor-${userID}-selection`,
-          hoverMessage: { value: `${name}'s selection` },
-          minimap: {
-            color: backgroundColor,
-            position: monacoInstance.editor.MinimapPosition.Inline,
-          },
-          overviewRuler: {
-            color: backgroundColor,
-            position: monacoInstance.editor.OverviewRulerLane.Center,
-          },
-        },
-      });
-    }
-
-    // Create decorations collection
-    const cursorDecoration = editor.createDecorationsCollection(decorations);
-
-    // Update styles
-    const styleId = `cursor-style-${userID}`;
-    let styleElement = document.getElementById(styleId);
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
-    }
-    styleElement.textContent = createCursorStyle(
-      userID,
-      backgroundColor,
-      color,
-      name,
-      isFirstLine,
-      hasSelection,
-    );
-
-    // Store decoration
-    cursorDecorationsRef.current[userID] = cursorDecoration;
-
-    // Remove any existing timeout if present
-    if (cleanupTimeoutsRef.current[userID]) {
-      clearTimeout(cleanupTimeoutsRef.current[userID]);
-      delete cleanupTimeoutsRef.current[userID];
-    }
-
-    // Set cleanup timeout only if there's no selection
-    if (!hasSelection) {
-      cleanupTimeoutsRef.current[userID] = setTimeout(() => {
-        cursorDecoration.clear();
-        delete cursorDecorationsRef.current[userID];
-        styleElement?.remove();
-        delete cleanupTimeoutsRef.current[userID];
-      }, 3000);
-    }
-  }, []);
-
-  const handleEditorDidMount = useCallback(
-    (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
-      try {
-        editorRef(editor);
-        monacoRef(monaco);
-        editorInstanceRef.current = editor;
-        monacoInstanceRef.current = monaco;
-
-        if (defaultCode) {
-          editor.setValue(defaultCode);
-        }
-        editor.focus();
-        editor.updateOptions({ cursorSmoothCaretAnimation: "on" });
-
-        const cursorSelectionDisposable = editor.onDidChangeCursorSelection(
-          (ev) => {
-            setCursorPosition({
-              line: ev.selection.positionLineNumber,
-              column: ev.selection.positionColumn,
-              selected:
-                editor.getModel()?.getValueLengthInRange(ev.selection) || 0,
-            });
-
-            // If the selection is empty, send only the cursor position
-            if (
-              ev.selection.startLineNumber === ev.selection.endLineNumber &&
-              ev.selection.startColumn === ev.selection.endColumn
-            ) {
-              socket.emit(UserServiceMsg.CURSOR_TX, {
-                pL: ev.selection.positionLineNumber,
-                pC: ev.selection.positionColumn,
-              } as Cursor);
-            } else {
-              socket.emit(UserServiceMsg.CURSOR_TX, {
-                pL: ev.selection.positionLineNumber,
-                pC: ev.selection.positionColumn,
-                sL: ev.selection.startLineNumber,
-                sC: ev.selection.startColumn,
-                eL: ev.selection.endLineNumber,
-                eC: ev.selection.endColumn,
-              } as Cursor);
-            }
-          },
-        );
-
-        disposablesRef.current.push(cursorSelectionDisposable);
-      } catch (error) {
-        console.error("Error mounting editor:", error);
-      }
-    },
-    [editorRef, monacoRef, defaultCode],
-  );
-
-  const handleChange = useCallback(
-    (
-      value: string | undefined,
-      ev: monaco.editor.IModelContentChangedEvent,
-    ) => {
-      if (skipUpdateRef.current) return;
-      ev.changes.forEach((change) => {
-        socket.emit(CodeServiceMsg.CODE_TX, {
-          t: change.text,
-          r: {
-            sL: change.range.startLineNumber,
-            sC: change.range.startColumn,
-            eL: change.range.endLineNumber,
-            eC: change.range.endColumn,
-          },
-        } as EditOp);
-      });
-    },
-    [],
-  );
-
   return (
     <>
       <div className="h-[calc(100%-24px)] animate-fade-in">
@@ -323,9 +126,27 @@ export const MonacoEditor = memo(function MonacoEditor({
           defaultLanguage="javascript"
           theme={theme}
           loading={<LoadingAlert />}
-          beforeMount={handleEditorWillMount}
-          onMount={handleEditorDidMount}
-          onChange={handleChange}
+          beforeMount={editorService.handleBeforeMount}
+          onMount={(
+            editor: monaco.editor.IStandaloneCodeEditor,
+            monaco: Monaco,
+          ) =>
+            editorService.handleOnMount(
+              editor,
+              monaco,
+              editorRef,
+              monacoRef,
+              editorInstanceRef,
+              monacoInstanceRef,
+              disposablesRef,
+              setCursorPosition,
+              defaultCode,
+            )
+          }
+          onChange={(
+            value: string | undefined,
+            ev: monaco.editor.IModelContentChangedEvent,
+          ) => editorService.handleOnChange(value, ev, skipUpdateRef)}
         />
       </div>
       <section className="absolute bottom-0 h-6 w-full animate-fade-in bg-[#2678ca] py-1">

@@ -1,6 +1,9 @@
 /**
- * Tree component by
- * https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
+ * Tree Component
+ *
+ * Edited from a comment on an issue in shadcn-ui/ui
+ * by WangLarry (https://github.com/WangLarry)
+ * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
  */
 
 "use client";

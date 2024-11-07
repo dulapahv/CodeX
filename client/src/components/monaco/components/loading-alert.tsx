@@ -1,3 +1,10 @@
+/**
+ * This component is responsible for rendering a loading alert that is displayed
+ * when the editor is being set up.
+ *
+ * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ */
+
 import { memo } from "react";
 import { LoaderCircle } from "lucide-react";
 

@@ -1,3 +1,20 @@
+/**
+ * Utility function to create a CSS style for a cursor, cursor selection, and
+ * cursor name.
+ *
+ * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ */
+
+/**
+ * Create a CSS style for a cursor, cursor selection, and cursor name.
+ * @param userID User identifier.
+ * @param bgColor Background color.
+ * @param color Text color.
+ * @param name User name.
+ * @param isFirstLine Is the cursor on the first line.
+ * @param hasSelection Has selection.
+ * @returns CSS style string.
+ */
 export const createCursorStyle = (
   userID: string,
   bgColor: string,
@@ -5,7 +22,7 @@ export const createCursorStyle = (
   name: string,
   isFirstLine: boolean = false,
   hasSelection: boolean = false,
-) => `
+): string => `
   .cursor-${userID} {
     background-color: ${bgColor} !important;
     width: 2px !important;
