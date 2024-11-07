@@ -60,15 +60,6 @@ export default function Room({ params }: RoomProps) {
       },
     );
 
-    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) => {
-      const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-      cursorElements.forEach((el) => el.remove());
-      const selectionElements = document.querySelectorAll(
-        `.cursor-${userID}-selection`,
-      );
-      selectionElements.forEach((el) => el.remove());
-    });
-
     socket.emit(CodeServiceMsg.GET_CODE);
     socket.on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
       setDefaultCode(code);

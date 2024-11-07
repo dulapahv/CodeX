@@ -10,6 +10,7 @@ import { socket } from "@/lib/socket";
 
 import {
   CodeServiceMsg,
+  RoomServiceMsg,
   UserServiceMsg,
 } from "../../../../common/types/message";
 import { Cursor, EditOp } from "../../../../common/types/operation";
@@ -91,10 +92,22 @@ export const MonacoEditor = memo(function MonacoEditor({
 
     socket.on(UserServiceMsg.CURSOR_RX, handleCursorUpdate);
 
+    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) => {
+      const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
+      cursorElements.forEach((el) => el.remove());
+      const selectionElements = document.querySelectorAll(
+        `.cursor-${userID}-selection`,
+      );
+      selectionElements.forEach((el) => el.remove());
+
+      cursorDecorationsRef.current[userID]?.clear();
+    });
+
     // Cleanup socket listeners
     return () => {
       socket.off(CodeServiceMsg.CODE_RX);
       socket.off(UserServiceMsg.CURSOR_RX);
+      socket.off(RoomServiceMsg.USER_LEFT);
     };
   }, []);
 
@@ -134,7 +147,7 @@ export const MonacoEditor = memo(function MonacoEditor({
     const name = userMap.get(userID) || "Unknown";
 
     // Clean up previous decoration
-    cursorDecorationsRef.current[name]?.clear();
+    cursorDecorationsRef.current[userID]?.clear();
 
     const { backgroundColor, color } = userMap.getColors(userID);
     const isFirstLine = cursor.pL === 1;
@@ -210,21 +223,21 @@ export const MonacoEditor = memo(function MonacoEditor({
     );
 
     // Store decoration
-    cursorDecorationsRef.current[name] = cursorDecoration;
+    cursorDecorationsRef.current[userID] = cursorDecoration;
 
     // Remove any existing timeout if present
-    if (cleanupTimeoutsRef.current[name]) {
-      clearTimeout(cleanupTimeoutsRef.current[name]);
-      delete cleanupTimeoutsRef.current[name];
+    if (cleanupTimeoutsRef.current[userID]) {
+      clearTimeout(cleanupTimeoutsRef.current[userID]);
+      delete cleanupTimeoutsRef.current[userID];
     }
 
     // Set cleanup timeout only if there's no selection
     if (!hasSelection) {
-      cleanupTimeoutsRef.current[name] = setTimeout(() => {
+      cleanupTimeoutsRef.current[userID] = setTimeout(() => {
         cursorDecoration.clear();
-        delete cursorDecorationsRef.current[name];
+        delete cursorDecorationsRef.current[userID];
         styleElement?.remove();
-        delete cleanupTimeoutsRef.current[name];
+        delete cleanupTimeoutsRef.current[userID];
       }, 3000);
     }
   }, []);
