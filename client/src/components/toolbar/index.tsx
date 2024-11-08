@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Monaco } from "@monaco-editor/react";
 import { Menu } from "lucide-react";
 import * as monaco from "monaco-editor";
 
+import LeaveDialog from "@/components/leave-dialog";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -17,14 +18,43 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 
+import { getOS } from "./utils/get-os";
+
 interface ToolbarProps {
   monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
+  roomId: string;
 }
 
-export function Toolbar({ monaco, editor }: ToolbarProps) {
+export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
   const [miniMap, setMiniMap] = useState(false);
   const [wordWrap, setWordWrap] = useState(false);
+
+  const leaveDialogRef = useRef<{
+    openDialog: () => void;
+    closeDialog: () => void;
+  }>(null);
+
+  const modKey = getOS() === "Mac" ? "⌘" : "Ctrl";
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "q":
+            event.preventDefault();
+            leaveDialogRef.current?.openDialog();
+            break;
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     if (editor && monaco) {
@@ -58,6 +88,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
   }
 
   const actions = {
+    leaveRoom: () => leaveDialogRef.current?.openDialog(),
     undo: () => editor.trigger("keyboard", "undo", null),
     redo: () => editor.trigger("keyboard", "redo", null),
     cut: () =>
@@ -116,27 +147,22 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
             <MenubarItem onSelect={handleNewFile}>
-              New File <MenubarShortcut>Ctrl+N</MenubarShortcut>
+              New File <MenubarShortcut>{modKey}+N</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={handleOpenFile}>
-              Open File... <MenubarShortcut>Ctrl+O</MenubarShortcut>
+              Open File... <MenubarShortcut>{modKey}+O</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={handleSaveFileToLocal}>
-              Save to local <MenubarShortcut>Ctrl+S</MenubarShortcut>
+              Save to local <MenubarShortcut>{modKey}+S</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={handleSaveFileToGitHub}>
-              Save to GitHub <MenubarShortcut>Ctrl+Shift+S</MenubarShortcut>
+              Save to GitHub
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem>
-              Settings <MenubarShortcut>Ctrl+,</MenubarShortcut>
-            </MenubarItem>
+            <MenubarItem>Settings</MenubarItem>
             <MenubarSeparator />
-            <MenubarItem>
-              Close File <MenubarShortcut>Ctrl+W</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>
-              Leave Room <MenubarShortcut>Ctrl+Q</MenubarShortcut>
+            <MenubarItem onSelect={actions.leaveRoom}>
+              Leave Room <MenubarShortcut>{modKey}+Q</MenubarShortcut>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -146,27 +172,27 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
             <MenubarItem onSelect={actions.undo}>
-              Undo <MenubarShortcut>Ctrl+Z</MenubarShortcut>
+              Undo <MenubarShortcut>{modKey}+Z</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.redo}>
-              Redo <MenubarShortcut>Ctrl+Y</MenubarShortcut>
+              Redo <MenubarShortcut>{modKey}+Y</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem onSelect={actions.cut}>
-              Cut <MenubarShortcut>Ctrl+X</MenubarShortcut>
+              Cut <MenubarShortcut>{modKey}+X</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.copy}>
-              Copy <MenubarShortcut>Ctrl+C</MenubarShortcut>
+              Copy <MenubarShortcut>{modKey}+C</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.paste}>
-              Paste <MenubarShortcut>Ctrl+V</MenubarShortcut>
+              Paste <MenubarShortcut>{modKey}+V</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem onSelect={actions.find}>
-              Find <MenubarShortcut>Ctrl+F</MenubarShortcut>
+              Find <MenubarShortcut>{modKey}+F</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.replace}>
-              Replace <MenubarShortcut>Ctrl+H</MenubarShortcut>
+              Replace <MenubarShortcut>{modKey}+H</MenubarShortcut>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -176,7 +202,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
             <MenubarItem onSelect={actions.selectAll}>
-              Select All <MenubarShortcut>Ctrl+A</MenubarShortcut>
+              Select All <MenubarShortcut>{modKey}+A</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem onSelect={actions.copyLineUp}>
@@ -196,10 +222,10 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem onSelect={actions.addCursorAbove}>
-              Add Cursor Above <MenubarShortcut>Ctrl+Alt+↑</MenubarShortcut>
+              Add Cursor Above <MenubarShortcut>{modKey}+Alt+↑</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.addCursorBelow}>
-              Add Cursor Below <MenubarShortcut>Ctrl+Alt+↓</MenubarShortcut>
+              Add Cursor Below <MenubarShortcut>{modKey}+Alt+↓</MenubarShortcut>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -346,6 +372,7 @@ export function Toolbar({ monaco, editor }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
+      <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
     </>
   );
 }

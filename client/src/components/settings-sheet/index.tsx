@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/tooltip";
 import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from "@/lib/constants";
 
-import { AppThemeSettings } from "./app-theme-settings";
-import { EditorThemeSettings } from "./editor-theme-settings";
+import { AppThemeSettings } from "./app-theme";
+import { EditorThemeSettings } from "./editor-theme";
 
 interface SettingSheetProps {
   monaco: Monaco | null;

@@ -21,6 +21,7 @@ import {
 } from "../../../../common/types/message";
 import { Cursor, EditOp } from "../../../../common/types/operation";
 import { LoadingAlert } from "./components/loading-alert";
+import { StatusBar } from "./components/status-bar";
 import * as codeService from "./service/code-service";
 import * as cursorService from "./service/cursor-service";
 import * as editorService from "./service/editor-service";
@@ -43,6 +44,7 @@ export const MonacoEditor = memo(function MonacoEditor({
     column: 1,
     selected: 0,
   });
+  const [isMonacoReady, setIsMonacoReady] = useState(false);
 
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
     null,
@@ -69,8 +71,10 @@ export const MonacoEditor = memo(function MonacoEditor({
     editorInstanceRef.current?.updateOptions({ theme });
   }, [theme]);
 
-  // Setup socket event listeners
+  // Setup socket event listeners after Monaco is ready
   useEffect(() => {
+    if (!isMonacoReady) return;
+
     socket.on(CodeServiceMsg.CODE_RX, (op: EditOp) =>
       codeService.updateCode(op, editorInstanceRef, skipUpdateRef),
     );
@@ -96,7 +100,7 @@ export const MonacoEditor = memo(function MonacoEditor({
       socket.off(UserServiceMsg.CURSOR_RX);
       socket.off(RoomServiceMsg.USER_LEFT);
     };
-  }, []);
+  }, [isMonacoReady]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -119,47 +123,55 @@ export const MonacoEditor = memo(function MonacoEditor({
     };
   }, []);
 
+  const handleEditorMount = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monaco: Monaco,
+  ) => {
+    // Set up refs first
+    editorInstanceRef.current = editor;
+    monacoInstanceRef.current = monaco;
+
+    // Call the provided ref callbacks
+    editorRef(editor);
+    monacoRef(monaco);
+
+    // Set up the editor with the default configuration
+    editorService.handleOnMount(
+      editor,
+      monaco,
+      editorRef,
+      monacoRef,
+      editorInstanceRef,
+      monacoInstanceRef,
+      disposablesRef,
+      setCursorPosition,
+      defaultCode,
+    );
+
+    // Mark Monaco as ready
+    setIsMonacoReady(true);
+  };
+
   return (
     <>
       <div className="h-[calc(100%-24px)] animate-fade-in">
         <Editor
-          defaultLanguage="javascript"
+          defaultLanguage="python"
           theme={theme}
           loading={<LoadingAlert />}
           beforeMount={editorService.handleBeforeMount}
-          onMount={(
-            editor: monaco.editor.IStandaloneCodeEditor,
-            monaco: Monaco,
-          ) =>
-            editorService.handleOnMount(
-              editor,
-              monaco,
-              editorRef,
-              monacoRef,
-              editorInstanceRef,
-              monacoInstanceRef,
-              disposablesRef,
-              setCursorPosition,
-              defaultCode,
-            )
-          }
+          onMount={handleEditorMount}
           onChange={(
             value: string | undefined,
             ev: monaco.editor.IModelContentChangedEvent,
           ) => editorService.handleOnChange(value, ev, skipUpdateRef)}
         />
       </div>
-      <section className="absolute bottom-0 h-6 w-full animate-fade-in bg-[#2678ca] py-1">
-        <div className="flex justify-end text-xs text-neutral-100">
-          <div className="px-2">
-            {`Ln ${cursorPosition.line}, Col ${cursorPosition.column} ${
-              cursorPosition.selected
-                ? `(${cursorPosition.selected} selected)`
-                : ""
-            }`}
-          </div>
-        </div>
-      </section>
+      <StatusBar
+        monaco={monacoInstanceRef.current}
+        editor={editorInstanceRef.current}
+        cursorPosition={cursorPosition}
+      />
     </>
   );
 });

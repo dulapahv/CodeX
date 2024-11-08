@@ -45,9 +45,9 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket.connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
@@ -81,7 +81,7 @@ export default function Room({ params }: RoomProps) {
         {monaco && editor && (
           <div className="flex items-center gap-x-2 bg-[#dddddd] p-1 dark:bg-[#3c3c3c]">
             <div className="grow">
-              <Toolbar monaco={monaco} editor={editor} />
+              <Toolbar monaco={monaco} editor={editor} roomId={params.roomId} />
             </div>
             <UserList users={users} />
             <ShareButton roomId={params.roomId} />
