@@ -1,17 +1,17 @@
+import type { User } from '@common/types/user';
+
+import { storage } from '@/lib/services/storage';
+import { userMap } from '@/lib/services/user-map';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { storage } from "@/lib/services/storage";
-import { userMap } from "@/lib/services/user-map";
-import { cn } from "@/lib/utils";
-
-import type { User } from "../../../../common/types/user";
+} from '@/components/ui/tooltip';
 
 interface AvatarProps {
   readonly user: User;
-  readonly size?: "sm" | "md" | "lg";
+  readonly size?: 'sm' | 'md' | 'lg';
   readonly className?: string;
   readonly showTooltip?: boolean;
 }
@@ -22,9 +22,9 @@ interface AvatarProps {
  * @returns Two-letter initials
  */
 const getInitials = (name: string): string => {
-  const [firstName, secondName = ""] = name.trim().split(/\s+/);
-  const firstInitial = firstName?.[0] ?? "";
-  const secondInitial = secondName?.[0] ?? firstName?.[1] ?? "";
+  const [firstName, secondName = ''] = name.trim().split(/\s+/);
+  const firstInitial = firstName?.[0] ?? '';
+  const secondInitial = secondName?.[0] ?? firstName?.[1] ?? '';
   return (firstInitial + secondInitial).toUpperCase();
 };
 
@@ -39,25 +39,25 @@ const getDisplayName = (user: User, currentUserId: string) => {
 };
 
 const sizeClasses = {
-  sm: "size-6 text-xs",
-  md: "size-7 text-sm",
-  lg: "size-8 text-base",
+  sm: 'size-6 text-xs',
+  md: 'size-7 text-sm',
+  lg: 'size-8 text-base',
 } as const;
 
 export function Avatar({
   user,
-  size = "md",
+  size = 'md',
   className,
   showTooltip = true,
 }: AvatarProps) {
   const initials = getInitials(user.username);
   const colors = userMap.getColors(user.id);
-  const currentUserId = storage.getUserId() ?? "";
+  const currentUserId = storage.getUserId() ?? '';
 
   const AvatarContent = (
     <div
       className={cn(
-        "flex cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 font-medium text-[#fff] dark:border-black/50",
+        'flex animate-scale-up-center cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 font-medium text-[#fff] dark:border-black/50',
         sizeClasses[size],
         className,
       )}

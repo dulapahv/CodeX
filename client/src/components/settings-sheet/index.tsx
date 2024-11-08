@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { LoaderCircle, LogOut, Settings } from "lucide-react";
-import * as monaco from "monaco-editor";
+import React, { useEffect, useState } from 'react';
+import type { Monaco } from '@monaco-editor/react';
+import { LoaderCircle, LogOut, Settings } from 'lucide-react';
+import * as monaco from 'monaco-editor';
 
-import type { Monaco } from "@monaco-editor/react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from '@/lib/constants';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -13,16 +14,15 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from "@/lib/constants";
+} from '@/components/ui/tooltip';
 
-import { AppThemeSettings } from "./app-theme";
-import { EditorThemeSettings } from "./editor-theme";
+import { AppThemeSettings } from './app-theme';
+import { EditorThemeSettings } from './editor-theme';
 
 interface SettingSheetProps {
   monaco: Monaco | null;
@@ -31,9 +31,9 @@ interface SettingSheetProps {
 
 async function checkAuthStatus() {
   try {
-    const response = await fetch("/api/oauth/check/github", {
-      method: "GET",
-      credentials: "include", // Important for sending cookies
+    const response = await fetch('/api/oauth/check/github', {
+      method: 'GET',
+      credentials: 'include', // Important for sending cookies
     });
 
     if (!response.ok) {
@@ -43,7 +43,7 @@ async function checkAuthStatus() {
     const data = await response.json();
     return data.username;
   } catch (error) {
-    console.error("Error checking auth status:", error);
+    console.error('Error checking auth status:', error);
     return null;
   }
 }
@@ -53,17 +53,20 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication status on component mount
-    checkAuthStatus().then((username) => {
-      setGithubUser(username);
-      setIsLoading(false);
-    });
+    // Check if "access-token" is in cookies
+    if (document.cookie.includes('access-token')) {
+      // Check authentication status
+      checkAuthStatus().then((username) => {
+        setGithubUser(username);
+      });
+    }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
     // Listen for messages from the OAuth popup
     const handleMessage = async (event: MessageEvent) => {
-      if (event.data.type === "github-oauth") {
+      if (event.data.type === 'github-oauth') {
         if (event.data.success) {
           // Verify auth status after successful OAuth
           const username = await checkAuthStatus();
@@ -77,22 +80,22 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
       }
     };
 
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
   async function handleLogout() {
     try {
-      const response = await fetch("/api/oauth/logout/github", {
-        method: "POST",
-        credentials: "include",
+      const response = await fetch('/api/oauth/logout/github', {
+        method: 'POST',
+        credentials: 'include',
       });
 
       if (response.ok) {
         setGithubUser(null);
       }
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error('Error logging out:', error);
     }
   }
 
@@ -110,7 +113,7 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
       // Open a new window
       window.authWindow = window.open(
         `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}`,
-        "_blank",
+        '_blank',
         `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
       );
     }
@@ -129,7 +132,7 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 rounded-sm p-0"
+              className="size-7 animate-swing-in-bottom-fwd rounded-sm p-0"
             >
               <Settings className="size-4" />
             </Button>

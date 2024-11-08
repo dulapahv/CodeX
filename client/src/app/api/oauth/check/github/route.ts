@@ -1,14 +1,14 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-import { GITHUB_API_URL } from "@/lib/constants";
+import { GITHUB_API_URL } from '@/lib/constants';
 
 export async function GET() {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get("access_token");
+  const accessToken = cookieStore.get('access_token');
 
   if (!accessToken) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
   try {
@@ -20,7 +20,7 @@ export async function GET() {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch user data");
+      throw new Error('Failed to fetch user data');
     }
 
     const userData = await response.json();
@@ -31,7 +31,7 @@ export async function GET() {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to verify authentication" },
+      { error: 'Failed to verify authentication' },
       { status: 401 },
     );
   }

@@ -1,14 +1,15 @@
+import { ArrowRight, LoaderCircle } from 'lucide-react';
 import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
-} from "react-hook-form";
-import { ArrowRight, LoaderCircle } from "lucide-react";
+} from 'react-hook-form';
 
-import type { JoinRoomForm } from "@/types/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import type { JoinRoomForm } from '@/types/types';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface JoinRoomSectionProps {
   register: UseFormRegister<JoinRoomForm>;
@@ -40,7 +41,7 @@ export const JoinRoomSection = ({
           id="room-id"
           placeholder="Enter room ID"
           disabled={!!room || isCreating || isSubmitting}
-          {...register("roomId")}
+          {...register('roomId')}
         />
         {errors.roomId && (
           <p className="text-sm text-red-500">{errors.roomId.message}</p>
@@ -52,7 +53,7 @@ export const JoinRoomSection = ({
           id="name-join"
           placeholder="Enter your name"
           disabled={isCreating || isSubmitting}
-          {...register("name")}
+          {...register('name')}
         />
         {errors.name && (
           <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -64,7 +65,7 @@ export const JoinRoomSection = ({
         disabled={isSubmitting || isCreating}
       >
         {isSubmitting && <LoaderCircle className="mr-2 size-4 animate-spin" />}
-        {isSubmitting ? "Joining..." : "Join Room"}
+        {isSubmitting ? 'Joining...' : 'Join Room'}
         {!isSubmitting && <ArrowRight className="ml-2 size-4" />}
       </Button>
     </div>

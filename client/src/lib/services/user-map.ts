@@ -1,6 +1,6 @@
-import { getBackgroundColor, getTextColor } from "@/lib/utils";
+import type { User } from '@common/types/user';
 
-import type { User } from "../../../../common/types/user";
+import { getBackgroundColor, getTextColor } from '@/lib/utils';
 
 interface UserData {
   username: string;
@@ -53,20 +53,20 @@ export class UserMap {
 
   // Get cached background color by ID
   getBackgroundColor(id: string): string {
-    return this.users.get(id)?.backgroundColor ?? getBackgroundColor("");
+    return this.users.get(id)?.backgroundColor ?? getBackgroundColor('');
   }
 
   // Get cached text color by ID
   getTextColor(id: string): string {
-    return this.users.get(id)?.textColor ?? getTextColor("");
+    return this.users.get(id)?.textColor ?? getTextColor('');
   }
 
   // Get all colors for a user
   getColors(id: string): { backgroundColor: string; color: string } {
     const userData = this.users.get(id);
     return {
-      backgroundColor: userData?.backgroundColor ?? getBackgroundColor(""),
-      color: userData?.textColor ?? getTextColor(""),
+      backgroundColor: userData?.backgroundColor ?? getBackgroundColor(''),
+      color: userData?.textColor ?? getTextColor(''),
     };
   }
 

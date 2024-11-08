@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import themeList from "monaco-themes/themes/themelist.json";
+import { useCallback, useEffect, useState } from 'react';
+import type { Monaco } from '@monaco-editor/react';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import themeList from 'monaco-themes/themes/themelist.json';
 
-import type { Monaco } from "@monaco-editor/react";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -11,14 +12,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/command';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/popover';
 
 interface EditorThemeSettingsProps {
   monaco: Monaco | null;
@@ -26,10 +26,10 @@ interface EditorThemeSettingsProps {
 
 export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
   const [open, setOpen] = useState(false);
-  const [editorTheme, setEditorTheme] = useState("");
+  const [editorTheme, setEditorTheme] = useState('');
 
   useEffect(() => {
-    const theme = localStorage.getItem("editorTheme");
+    const theme = localStorage.getItem('editorTheme');
     if (theme) {
       setEditorTheme(theme);
     }
@@ -37,8 +37,8 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
 
   const handleThemeChange = useCallback(
     (currentValue: string) => {
-      setEditorTheme(currentValue === editorTheme ? "" : currentValue);
-      localStorage.setItem("editorTheme", currentValue);
+      setEditorTheme(currentValue === editorTheme ? '' : currentValue);
+      localStorage.setItem('editorTheme', currentValue);
       setOpen(false);
 
       if (monaco) {
@@ -51,8 +51,8 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
   if (!monaco) return null;
 
   const defaultTheme = {
-    "vs-dark": "Dark (Visual Studio)",
-    light: "Light (Visual Studio)",
+    'vs-dark': 'Dark (Visual Studio)',
+    light: 'Light (Visual Studio)',
   };
 
   const themes = Object.entries({ ...defaultTheme, ...themeList });
@@ -70,7 +70,7 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
           >
             {editorTheme
               ? themes.find(([key]) => key === editorTheme)?.[1]
-              : "Select theme"}
+              : 'Select theme'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -88,8 +88,8 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        value === editorTheme ? "opacity-100" : "opacity-0",
+                        'mr-2 h-4 w-4',
+                        value === editorTheme ? 'opacity-100' : 'opacity-0',
                       )}
                     />
                     {value}

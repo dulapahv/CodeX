@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Check, Copy, Image as LuImage, Share } from "lucide-react";
-import QRCode from "react-qr-code";
+import { useState } from 'react';
+import { Check, Copy, Image as LuImage, Share } from 'lucide-react';
+import QRCode from 'react-qr-code';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -12,14 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 interface RoomProps {
   roomId: string;
@@ -41,12 +41,12 @@ export function ShareButton({ roomId }: RoomProps) {
   }
 
   async function handleCopyQRCode() {
-    const svg = document.getElementById("qr-code");
+    const svg = document.getElementById('qr-code');
     if (!svg) return;
 
     const svgData = new XMLSerializer().serializeToString(svg);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
     const img = new Image();
     img.onload = () => {
       // Increase resolution by scaling
@@ -59,7 +59,7 @@ export function ShareButton({ roomId }: RoomProps) {
       canvas.toBlob((blob) => {
         if (blob) {
           navigator.clipboard
-            .write([new ClipboardItem({ "image/png": blob })])
+            .write([new ClipboardItem({ 'image/png': blob })])
             .then(() => {
               setCopyStatus((prevState) => ({
                 ...prevState,
@@ -73,10 +73,10 @@ export function ShareButton({ roomId }: RoomProps) {
               }, 500);
             })
             .catch((error) => {
-              console.error("Failed to copy QR code:", error);
+              console.error('Failed to copy QR code:', error);
             });
         }
-      }, "image/png");
+      }, 'image/png');
     };
     img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   }
@@ -91,7 +91,11 @@ export function ShareButton({ roomId }: RoomProps) {
             }}
             asChild
           >
-            <Button variant="ghost" size="sm" className="h-7 rounded-sm px-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 animate-swing-in-bottom-fwd rounded-sm px-2"
+            >
               <Share className="mr-2 size-4" />
               Share
             </Button>
@@ -116,7 +120,7 @@ export function ShareButton({ roomId }: RoomProps) {
             <div className="flex gap-x-2">
               <Input value={roomId} readOnly />
               <Button
-                onClick={() => handleCopy(roomId, "roomIdCopied")}
+                onClick={() => handleCopy(roomId, 'roomIdCopied')}
                 size="icon"
                 variant="secondary"
                 className="aspect-square"
@@ -133,7 +137,7 @@ export function ShareButton({ roomId }: RoomProps) {
           <div className="flex flex-col space-y-1.5">
             <Label>Room Link</Label>
             <div className="flex gap-x-2">
-              {typeof window !== "undefined" && (
+              {typeof window !== 'undefined' && (
                 <Input
                   value={`${window.location.origin}/room/${roomId}`}
                   readOnly
@@ -143,7 +147,7 @@ export function ShareButton({ roomId }: RoomProps) {
                 onClick={() =>
                   handleCopy(
                     `${window.location.origin}/room/${roomId}`,
-                    "roomLinkCopied",
+                    'roomLinkCopied',
                   )
                 }
                 size="icon"

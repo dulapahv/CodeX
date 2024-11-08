@@ -1,14 +1,16 @@
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle } from 'lucide-react';
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const LoadingCard = () => (
-  <Card className="w-[480px] animate-fade-in">
-    <CardHeader>
-      <CardTitle className="flex items-center justify-center text-base font-normal">
-        <LoaderCircle className="mr-2 size-5 animate-spin" />
-        You will be redirected to the room shortly.
-      </CardTitle>
-    </CardHeader>
-  </Card>
+  <div className="flex h-dvh animate-fade-in items-center justify-center">
+    <Alert className="w-[448px]">
+      <div className="flex items-center gap-2">
+        <LoaderCircle className="size-5 animate-spin" />
+        <AlertDescription>
+          You will be redirected to the room shortly.
+        </AlertDescription>
+      </div>
+    </Alert>
+  </div>
 );

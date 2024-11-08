@@ -1,7 +1,6 @@
-import type { Socket } from "socket.io-client";
-import { io } from "socket.io-client";
+import { io, type Socket } from 'socket.io-client';
 
-import { BASE_SERVER_URL } from "./constants";
+import { BASE_SERVER_URL } from './constants';
 
 let socketInstance: Socket | null = null;
 

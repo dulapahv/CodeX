@@ -1,11 +1,11 @@
 /**
- * This file contains the type definition for the status bar.
+ * This file contains the types for the cursor position in the status bar.
  *
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-export type statusBar = {
-  line: number;
-  column: number;
-  selected: number;
+export type StatusBarCursorPosition = {
+  readonly line: number;
+  readonly column: number;
+  readonly selected?: number;
 };

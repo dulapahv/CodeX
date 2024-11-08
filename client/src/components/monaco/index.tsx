@@ -5,26 +5,26 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import { memo, useEffect, useRef, useState } from "react";
-import Editor from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
-import { useTheme } from "next-themes";
+import { memo, useEffect, useRef, useState } from 'react';
+import Editor, { type Monaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+import { useTheme } from 'next-themes';
 
-import type { Monaco } from "@monaco-editor/react";
-import { socket } from "@/lib/socket";
-
-import type { statusBar } from "./types/status-bar";
 import {
   CodeServiceMsg,
   RoomServiceMsg,
   UserServiceMsg,
-} from "../../../../common/types/message";
-import { Cursor, EditOp } from "../../../../common/types/operation";
-import { LoadingAlert } from "./components/loading-alert";
-import { StatusBar } from "./components/status-bar";
-import * as codeService from "./service/code-service";
-import * as cursorService from "./service/cursor-service";
-import * as editorService from "./service/editor-service";
+} from '@common/types/message';
+import { Cursor, EditOp } from '@common/types/operation';
+
+import { socket } from '@/lib/socket';
+
+import { LoadingAlert } from './components/loading-alert';
+import { StatusBar } from './components/status-bar';
+import * as codeService from './service/code-service';
+import * as cursorService from './service/cursor-service';
+import * as editorService from './service/editor-service';
+import type { StatusBarCursorPosition } from './types/status-bar';
 
 interface MonacoEditorProps {
   monacoRef: (monaco: Monaco) => void;
@@ -38,12 +38,14 @@ export const MonacoEditor = memo(function MonacoEditor({
   defaultCode,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
-  const [theme, setTheme] = useState<string>("vs-dark");
-  const [cursorPosition, setCursorPosition] = useState<statusBar>({
-    line: 1,
-    column: 1,
-    selected: 0,
-  });
+  const [theme, setTheme] = useState<string>('vs-dark');
+  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
+    {
+      line: 1,
+      column: 1,
+      selected: 0,
+    },
+  );
   const [isMonacoReady, setIsMonacoReady] = useState(false);
 
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
@@ -60,10 +62,10 @@ export const MonacoEditor = memo(function MonacoEditor({
   // Initialize editor theme
   useEffect(() => {
     const storedTheme =
-      localStorage.getItem("editorTheme") ||
-      (resolvedTheme === "dark" ? "vs-dark" : "light");
+      localStorage.getItem('editorTheme') ||
+      (resolvedTheme === 'dark' ? 'vs-dark' : 'light');
     setTheme(storedTheme);
-    localStorage.setItem("editorTheme", storedTheme);
+    localStorage.setItem('editorTheme', storedTheme);
   }, [resolvedTheme]);
 
   // Apply theme changes
@@ -139,10 +141,6 @@ export const MonacoEditor = memo(function MonacoEditor({
     editorService.handleOnMount(
       editor,
       monaco,
-      editorRef,
-      monacoRef,
-      editorInstanceRef,
-      monacoInstanceRef,
       disposablesRef,
       setCursorPosition,
       defaultCode,

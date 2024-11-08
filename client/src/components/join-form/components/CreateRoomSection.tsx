@@ -1,14 +1,15 @@
+import { CirclePlus, LoaderCircle } from 'lucide-react';
 import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
-} from "react-hook-form";
-import { CirclePlus, LoaderCircle } from "lucide-react";
+} from 'react-hook-form';
 
-import type { CreateRoomForm } from "@/types/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import type { CreateRoomForm } from '@/types/types';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface CreateRoomSectionProps {
   register: UseFormRegister<CreateRoomForm>;
@@ -38,7 +39,7 @@ export const CreateRoomSection = ({
           id="name-create"
           placeholder="Enter your name"
           disabled={isSubmitting || isJoining}
-          {...register("name")}
+          {...register('name')}
         />
         {errors.name && (
           <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -54,7 +55,7 @@ export const CreateRoomSection = ({
         ) : (
           <CirclePlus className="mr-2 size-4" />
         )}
-        {isSubmitting ? "Creating..." : "Create Room"}
+        {isSubmitting ? 'Creating...' : 'Create Room'}
       </Button>
     </div>
   </form>

@@ -1,12 +1,12 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { NextRequest } from 'next/server';
 
 import {
   GITHUB_CLIENT_ID,
   GITHUB_OAUTH_URL,
   IS_DEV_ENV,
-} from "@/lib/constants";
+} from '@/lib/constants';
 
 interface GithubSuccessResponse {
   access_token: string;
@@ -24,9 +24,9 @@ export async function GET(req: NextRequest) {
   const cookieStore = cookies();
 
   const url = new URL(req.url);
-  const code = url.searchParams.get("code");
-  const error = url.searchParams.get("error");
-  const error_description = url.searchParams.get("error_description");
+  const code = url.searchParams.get('code');
+  const error = url.searchParams.get('error');
+  const error_description = url.searchParams.get('error_description');
 
   /*
    * If error is present (likely user has denied),
@@ -43,9 +43,9 @@ export async function GET(req: NextRequest) {
   const res = await fetch(
     `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
     {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     },
   );
@@ -54,12 +54,12 @@ export async function GET(req: NextRequest) {
     | GithubSuccessResponse
     | GithubErrorResponse;
 
-  if ("error" in data) {
+  if ('error' in data) {
     redirect(
       `/oauth/github?status=${data.error}&description=${data.error_description}`,
     );
   } else {
-    cookieStore.set("access_token", data.access_token, {
+    cookieStore.set('access_token', data.access_token, {
       secure: true,
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours

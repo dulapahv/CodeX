@@ -1,6 +1,6 @@
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-import { JoinForm } from "@/components/join-form";
+import { JoinForm } from '@/components/join-form';
 
 export default function Home() {
   return (

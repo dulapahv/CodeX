@@ -13,15 +13,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 
-interface LeaveDialogProps {
+interface SaveLocalDialogProps {
   roomId: string;
 }
 
-const DEFAULT_TITLE = 'Are you sure you want to leave this room?';
-const DEFAULT_DESCRIPTION =
-  'You can always rejoin this room using the same Room ID. This room will be deleted if you are the last participant.';
+const DEFAULT_TITLE = 'SAVE_TITLE';
+const DEFAULT_DESCRIPTION = 'SAVE_DESCRIPTION';
 
-const LeaveDialog = forwardRef(({ roomId }: LeaveDialogProps, ref) => {
+const SaveLocalDialog = forwardRef(({ roomId }: SaveLocalDialogProps, ref) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { handleLeaveRoom } = useRoomActions(roomId);
@@ -53,6 +52,6 @@ const LeaveDialog = forwardRef(({ roomId }: LeaveDialogProps, ref) => {
   );
 });
 
-LeaveDialog.displayName = 'LeaveDialog';
+SaveLocalDialog.displayName = 'SaveLocalDialog';
 
-export { LeaveDialog };
+export { SaveLocalDialog };

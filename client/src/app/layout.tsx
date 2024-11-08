@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import { ReactNode } from "react";
-import { GeistSans } from "geist/font/sans";
+import { ReactNode } from 'react';
+import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
 
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
-import "./globals.css";
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Kasca - Code Collaboration Platform",
+  title: 'Kasca - Code Collaboration Platform',
   description:
-    "Kasca is a code collaboration platform that allows you to code with others in real-time.",
+    'Kasca is a code collaboration platform that allows you to code with others in real-time.',
 };
 
 interface RootLayoutProps {
@@ -22,7 +22,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("h-dvh", GeistSans.className)}>
+      <body className={cn('h-dvh', GeistSans.className)}>
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />

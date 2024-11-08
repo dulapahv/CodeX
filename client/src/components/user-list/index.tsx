@@ -1,10 +1,10 @@
-import { useTheme } from "next-themes";
+import { useTheme } from 'next-themes';
 
-import { Avatar } from "@/components/avatar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import type { User } from '@common/types/user';
 
-import type { User } from "../../../../common/types/user";
+import { cn } from '@/lib/utils';
+import { Avatar } from '@/components/avatar';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface UserListProps {
   users: User[];
@@ -24,10 +24,10 @@ export function UserList({ users }: UserListProps) {
         orientation="horizontal"
         color="white"
         className={cn(
-          "h-1.5",
-          resolvedTheme === "dark"
-            ? "[&>div]:bg-foreground"
-            : "[&>div]:bg-primary",
+          'h-1.5',
+          resolvedTheme === 'dark'
+            ? '[&>div]:bg-foreground'
+            : '[&>div]:bg-primary',
         )}
       />
     </ScrollArea>

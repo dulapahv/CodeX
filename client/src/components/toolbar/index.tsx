@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Monaco } from "@monaco-editor/react";
-import { Menu } from "lucide-react";
-import * as monaco from "monaco-editor";
+import { useEffect, useRef, useState } from 'react';
+import { Monaco } from '@monaco-editor/react';
+import { Menu } from 'lucide-react';
+import * as monaco from 'monaco-editor';
 
-import LeaveDialog from "@/components/leave-dialog";
+import { LeaveDialog } from '@/components/leave-dialog';
+import { SaveLocalDialog } from '@/components/save-local-dialog';
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -16,9 +17,9 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@/components/ui/menubar";
+} from '@/components/ui/menubar';
 
-import { getOS } from "./utils/get-os";
+import { getOS } from './utils/get-os';
 
 interface ToolbarProps {
   monaco: Monaco | null;
@@ -34,25 +35,33 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     openDialog: () => void;
     closeDialog: () => void;
   }>(null);
+  const saveLocalDialogRef = useRef<{
+    openDialog: () => void;
+    closeDialog: () => void;
+  }>(null);
 
-  const modKey = getOS() === "Mac" ? "⌘" : "Ctrl";
+  const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
-          case "q":
+          case 'q':
             event.preventDefault();
             leaveDialogRef.current?.openDialog();
+            break;
+          case 's':
+            event.preventDefault();
+            saveLocalDialogRef.current?.openDialog();
             break;
         }
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -60,7 +69,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     if (editor && monaco) {
       setMiniMap(editor.getOption(monaco.editor.EditorOption.minimap).enabled);
       setWordWrap(
-        editor.getOption(monaco.editor.EditorOption.wordWrap) === "on",
+        editor.getOption(monaco.editor.EditorOption.wordWrap) === 'on',
       );
     }
   }, [editor, monaco]);
@@ -69,57 +78,53 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
 
   function handleNewFile() {
     // Implement new file logic
-    console.log("New file");
+    console.log('New file');
   }
 
   function handleOpenFile() {
     // Implement open file logic
-    console.log("Open file");
-  }
-
-  function handleSaveFileToLocal() {
-    // Open save file dialog
-    console.log("Save file to local");
+    console.log('Open file');
   }
 
   function handleSaveFileToGitHub() {
     // Open save file dialog
-    console.log("Save file to GitHub");
+    console.log('Save file to GitHub');
   }
 
   const actions = {
+    saveLocal: () => saveLocalDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
-    undo: () => editor.trigger("keyboard", "undo", null),
-    redo: () => editor.trigger("keyboard", "redo", null),
+    undo: () => editor.trigger('keyboard', 'undo', null),
+    redo: () => editor.trigger('keyboard', 'redo', null),
     cut: () =>
-      editor.trigger("keyboard", "editor.action.clipboardCutAction", null),
+      editor.trigger('keyboard', 'editor.action.clipboardCutAction', null),
     copy: () =>
-      editor.trigger("keyboard", "editor.action.clipboardCopyAction", null),
+      editor.trigger('keyboard', 'editor.action.clipboardCopyAction', null),
     paste: () =>
-      editor.trigger("keyboard", "editor.action.clipboardPasteAction", null),
-    find: () => editor.trigger("keyboard", "actions.find", null),
+      editor.trigger('keyboard', 'editor.action.clipboardPasteAction', null),
+    find: () => editor.trigger('keyboard', 'actions.find', null),
     replace: () =>
-      editor.trigger("keyboard", "editor.action.startFindReplaceAction", null),
+      editor.trigger('keyboard', 'editor.action.startFindReplaceAction', null),
     selectAll: () =>
-      editor.trigger("keyboard", "editor.action.selectAll", null),
+      editor.trigger('keyboard', 'editor.action.selectAll', null),
     copyLineUp: () =>
-      editor.trigger("keyboard", "editor.action.copyLinesUpAction", null),
+      editor.trigger('keyboard', 'editor.action.copyLinesUpAction', null),
     copyLineDown: () =>
-      editor.trigger("keyboard", "editor.action.copyLinesDownAction", null),
+      editor.trigger('keyboard', 'editor.action.copyLinesDownAction', null),
     moveLineUp: () =>
-      editor.trigger("keyboard", "editor.action.moveLinesUpAction", null),
+      editor.trigger('keyboard', 'editor.action.moveLinesUpAction', null),
     moveLineDown: () =>
-      editor.trigger("keyboard", "editor.action.moveLinesDownAction", null),
+      editor.trigger('keyboard', 'editor.action.moveLinesDownAction', null),
     duplicateSelection: () =>
-      editor.trigger("keyboard", "editor.action.duplicateSelection", null),
+      editor.trigger('keyboard', 'editor.action.duplicateSelection', null),
     addCursorAbove: () =>
-      editor.trigger("keyboard", "editor.action.insertCursorAbove", null),
+      editor.trigger('keyboard', 'editor.action.insertCursorAbove', null),
     addCursorBelow: () =>
-      editor.trigger("keyboard", "editor.action.insertCursorBelow", null),
+      editor.trigger('keyboard', 'editor.action.insertCursorBelow', null),
     commandPalette: () => {
       // Timeout to prevent command palette triggered after editor is focused
       setTimeout(() => {
-        editor.trigger("keyboard", "editor.action.quickCommand", null);
+        editor.trigger('keyboard', 'editor.action.quickCommand', null);
       }, 1);
     },
     minimap: () => {
@@ -127,7 +132,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
       setMiniMap(!miniMap);
     },
     wordWrap: () => {
-      editor.updateOptions({ wordWrap: wordWrap ? "off" : "on" });
+      editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
       setWordWrap(!wordWrap);
     },
   };
@@ -139,7 +144,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
         onValueChange={(value) => {
           if (!value) editor.focus();
         }}
-        className="hidden h-fit animate-fade-in border-none bg-transparent p-0 sm:flex"
+        className="hidden h-fit border-none bg-transparent p-0 sm:flex"
       >
         <MenubarMenu>
           <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
@@ -152,7 +157,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
             <MenubarItem onSelect={handleOpenFile}>
               Open File... <MenubarShortcut>{modKey}+O</MenubarShortcut>
             </MenubarItem>
-            <MenubarItem onSelect={handleSaveFileToLocal}>
+            <MenubarItem onSelect={actions.saveLocal}>
               Save to local <MenubarShortcut>{modKey}+S</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={handleSaveFileToGitHub}>
@@ -279,12 +284,13 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
                 <MenubarItem onSelect={handleOpenFile}>
                   Open File...
                 </MenubarItem>
-                <MenubarItem onSelect={handleSaveFileToLocal}>Save</MenubarItem>
+                <MenubarItem onSelect={actions.saveLocal}>Save</MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem>Settings</MenubarItem>
                 <MenubarSeparator />
-                <MenubarItem>Close File</MenubarItem>
-                <MenubarItem>Leave Room</MenubarItem>
+                <MenubarItem onSelect={actions.leaveRoom}>
+                  Leave Room
+                </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
@@ -372,6 +378,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
+      <SaveLocalDialog ref={saveLocalDialogRef} roomId={roomId} />
       <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
     </>
   );

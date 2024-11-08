@@ -11,13 +11,14 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import * as monaco from "monaco-editor";
+import type { Monaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 
-import type { Monaco } from "@monaco-editor/react";
-import { userMap } from "@/lib/services/user-map";
+import { Cursor } from '@common/types/operation';
 
-import { Cursor } from "../../../../../common/types/operation";
-import { createCursorStyle } from "../utils/create-cursor-style";
+import { userMap } from '@/lib/services/user-map';
+
+import { createCursorStyle } from '../utils/create-cursor-style';
 
 /**
  * Show cursor and selection when other users type or select text.
@@ -42,7 +43,7 @@ export const updateCursor = (
   const monacoInstance = monacoInstanceRef.current;
   if (!editor || !monacoInstance) return;
 
-  const name = userMap.get(userID) || "Unknown";
+  const name = userMap.get(userID) || 'Unknown';
 
   // Clean up previous decoration
   cursorDecorationsRef.current[userID]?.clear();
@@ -62,7 +63,7 @@ export const updateCursor = (
     },
     options: {
       className: `cursor-${userID}`,
-      beforeContentClassName: "cursor-widget",
+      beforeContentClassName: 'cursor-widget',
       stickiness:
         monacoInstance.editor.TrackedRangeStickiness
           .NeverGrowsWhenTypingAtEdges,
@@ -107,7 +108,7 @@ export const updateCursor = (
   const styleId = `cursor-style-${userID}`;
   let styleElement = document.getElementById(styleId);
   if (!styleElement) {
-    styleElement = document.createElement("style");
+    styleElement = document.createElement('style');
     styleElement.id = styleId;
     document.head.appendChild(styleElement);
   }

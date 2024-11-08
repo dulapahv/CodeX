@@ -34,13 +34,13 @@ app.get('/', (_req, res) => {
 
 io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.CREATE, async (name) =>
-    roomService.create(socket, name)
+    roomService.create(socket, name),
   );
   socket.on(RoomServiceMsg.JOIN, async (roomID, name) =>
-    roomService.join(socket, io, roomID, name)
+    roomService.join(socket, io, roomID, name),
   );
   socket.on(RoomServiceMsg.LEAVE, async (roomID) =>
-    roomService.leave(socket, io, roomID)
+    roomService.leave(socket, io, roomID),
   );
   socket.on(UserServiceMsg.DISC, async () => userService.disconnect(socket));
   socket.on(RoomServiceMsg.GET_USERS, async () => {

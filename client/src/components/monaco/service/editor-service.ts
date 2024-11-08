@@ -13,19 +13,17 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import React, { MutableRefObject } from "react";
-import * as monaco from "monaco-editor";
-import themeList from "monaco-themes/themes/themelist.json";
+import React, { MutableRefObject } from 'react';
+import type { Monaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+import themeList from 'monaco-themes/themes/themelist.json';
 
-import type { Monaco } from "@monaco-editor/react";
-import { socket } from "@/lib/socket";
+import { CodeServiceMsg, UserServiceMsg } from '@common/types/message';
+import { Cursor, EditOp } from '@common/types/operation';
 
-import type { statusBar } from "../types/status-bar";
-import {
-  CodeServiceMsg,
-  UserServiceMsg,
-} from "../../../../../common/types/message";
-import { Cursor, EditOp } from "../../../../../common/types/operation";
+import { socket } from '@/lib/socket';
+
+import type { StatusBarCursorPosition } from '../types/status-bar';
 
 /**
  * Handle the Monaco editor before mounting.
@@ -53,24 +51,29 @@ export const handleBeforeMount = (monaco: Monaco): void => {
 export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monaco: Monaco,
-  editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void,
-  monacoRef: (monaco: Monaco) => void,
-  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  monacoInstanceRef: MutableRefObject<Monaco | null>,
   disposablesRef: MutableRefObject<monaco.IDisposable[]>,
-  setCursorPosition: React.Dispatch<React.SetStateAction<statusBar>>,
+  setCursorPosition: React.Dispatch<
+    React.SetStateAction<StatusBarCursorPosition>
+  >,
   defaultCode?: string,
 ): void => {
-  editorRef(editor);
-  monacoRef(monaco);
-  editorInstanceRef.current = editor;
-  monacoInstanceRef.current = monaco;
-
   if (defaultCode) {
     editor.setValue(defaultCode);
   }
   editor.focus();
-  editor.updateOptions({ cursorSmoothCaretAnimation: "on" });
+
+  editor.updateOptions({
+    cursorSmoothCaretAnimation: 'on',
+  });
+
+  // Disable unwanted validations
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+  });
+
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+  });
 
   const cursorSelectionDisposable = editor.onDidChangeCursorSelection((ev) => {
     setCursorPosition({

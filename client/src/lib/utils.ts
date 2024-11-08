@@ -1,11 +1,11 @@
-import type { ClassValue } from "clsx";
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
-import { socket } from "@/lib/socket";
+import { RoomServiceMsg } from '@common/types/message';
 
-import { RoomServiceMsg } from "../../../common/types/message";
-import { storage } from "./services/storage";
+import { socket } from '@/lib/socket';
+
+import { storage } from './services/storage';
 
 export function createRoom(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -23,12 +23,11 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     socket.emit(RoomServiceMsg.JOIN, roomId, name);
     socket.on(RoomServiceMsg.NOT_FOUND, () => {
-      reject("Room does not exist. Please check the room ID and try again.");
+      reject('Room does not exist. Please check the room ID and try again.');
     });
     socket.on(RoomServiceMsg.JOINED, (userID: string) => {
       storage.setRoomId(roomId);
       storage.setUserId(userID);
-
       resolve(true);
     });
   });
@@ -49,10 +48,10 @@ export const parseError = (error: unknown): string => {
   if (error instanceof Error) {
     return error.message;
   }
-  if (typeof error === "string") {
+  if (typeof error === 'string') {
     return error;
   }
-  return "An unknown error occurred";
+  return 'An unknown error occurred';
 };
 
 /**
@@ -117,10 +116,10 @@ const hslToHex = (h: number, s: number, l: number): string => {
   const rgb = [f(0), f(8), f(4)].map((x) =>
     Math.round(x * 255)
       .toString(16)
-      .padStart(2, "0"),
+      .padStart(2, '0'),
   );
 
-  return `#${rgb.join("")}`;
+  return `#${rgb.join('')}`;
 };
 
 /**
@@ -130,7 +129,7 @@ const hslToHex = (h: number, s: number, l: number): string => {
  */
 const getLuminance = (hexColor: string): number => {
   // Remove # if present
-  const hex = hexColor.replace("#", "");
+  const hex = hexColor.replace('#', '');
 
   // Convert hex to rgb
   const r = parseInt(hex.substring(0, 2), 16) / 255;
@@ -151,5 +150,5 @@ const getLuminance = (hexColor: string): number => {
 export const getTextColor = (backgroundColor: string): string => {
   const luminance = getLuminance(backgroundColor);
   // Use white text on dark backgrounds (luminance < 0.7)
-  return luminance < 0.7 ? "#fff" : "#000";
+  return luminance < 0.7 ? '#fff' : '#000';
 };

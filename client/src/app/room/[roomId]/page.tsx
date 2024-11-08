@@ -1,27 +1,24 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
-import * as monaco from "monaco-editor";
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import type { Monaco } from '@monaco-editor/react';
+import { LoaderCircle } from 'lucide-react';
+import * as monaco from 'monaco-editor';
 
-import type { Monaco } from "@monaco-editor/react";
-import { LeaveButton } from "@/components/leave-button";
-import { MonacoEditor } from "@/components/monaco";
-import { SettingSheet } from "@/components/settings-sheet";
-import { ShareButton } from "@/components/share-button";
-import { Toolbar } from "@/components/toolbar";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { UserList } from "@/components/user-list";
-import { userMap } from "@/lib/services/user-map";
-import { socket } from "@/lib/socket";
-import { leaveRoom } from "@/lib/utils";
+import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
+import type { User } from '@common/types/user';
 
-import type { User } from "../../../../../common/types/user";
-import {
-  CodeServiceMsg,
-  RoomServiceMsg,
-} from "../../../../../common/types/message";
+import { userMap } from '@/lib/services/user-map';
+import { socket } from '@/lib/socket';
+import { leaveRoom } from '@/lib/utils';
+import { LeaveButton } from '@/components/leave-button';
+import { MonacoEditor } from '@/components/monaco';
+import { SettingSheet } from '@/components/settings-sheet';
+import { ShareButton } from '@/components/share-button';
+import { Toolbar } from '@/components/toolbar';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { UserList } from '@/components/user-list';
 
 interface RoomProps {
   params: {
@@ -45,9 +42,9 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId]);
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket.connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
@@ -65,10 +62,10 @@ export default function Room({ params }: RoomProps) {
       setDefaultCode(code);
     });
 
-    window.addEventListener("popstate", disconnect);
+    window.addEventListener('popstate', disconnect);
 
     return () => {
-      window.removeEventListener("popstate", disconnect);
+      window.removeEventListener('popstate', disconnect);
       socket.off(RoomServiceMsg.UPDATE_USERS);
       socket.off(CodeServiceMsg.RECEIVE_CODE);
       userMap.clear();
@@ -80,7 +77,7 @@ export default function Room({ params }: RoomProps) {
       <div className="h-9">
         {monaco && editor && (
           <div className="flex items-center gap-x-2 bg-[#dddddd] p-1 dark:bg-[#3c3c3c]">
-            <div className="grow">
+            <div className="grow animate-swing-in-bottom-fwd">
               <Toolbar monaco={monaco} editor={editor} roomId={params.roomId} />
             </div>
             <UserList users={users} />

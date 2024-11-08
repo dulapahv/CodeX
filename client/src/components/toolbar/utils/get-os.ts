@@ -2,23 +2,23 @@ export function getOS(): string {
   const userAgent = navigator.userAgent || (window as any).opera;
 
   if (/windows phone/i.test(userAgent)) {
-    return "Windows Phone";
+    return 'Windows Phone';
   }
   if (/win/i.test(userAgent)) {
-    return "Windows";
+    return 'Windows';
   }
   if (/mac/i.test(userAgent)) {
-    return "MacOS";
+    return 'MacOS';
   }
   if (/android/i.test(userAgent)) {
-    return "Android";
+    return 'Android';
   }
   if (/linux/i.test(userAgent)) {
-    return "Linux";
+    return 'Linux';
   }
   if (/iphone|ipad|ipod/i.test(userAgent)) {
-    return "iOS";
+    return 'iOS';
   }
 
-  return "Unknown";
+  return 'Unknown';
 }

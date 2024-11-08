@@ -37,7 +37,7 @@ export function getCode(roomID: string): string {
 export function syncCode(socket: Socket, io: Server): void {
   io.to(socket.id).emit(
     CodeServiceMsg.RECEIVE_CODE,
-    getCode(getUserRoom(socket))
+    getCode(getUserRoom(socket)),
   );
 }
 
@@ -48,7 +48,7 @@ function spliceString(
   original: string,
   start: number,
   end: number,
-  insert: string
+  insert: string,
 ): string {
   // Avoid unnecessary string operations if possible
   if (start === end && !insert) return original;
@@ -114,13 +114,13 @@ export function updateCode(socket: Socket, operation: EditOp): void {
       startLine,
       safesC,
       startLine.length,
-      textLines[0]
+      textLines[0],
     );
     const newEndLine = spliceString(
       endLine,
       0,
       safeeC,
-      textLines[textLines.length - 1]
+      textLines[textLines.length - 1],
     );
 
     // Optimize array operations by calculating exact size needed

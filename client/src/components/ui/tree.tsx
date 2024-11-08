@@ -6,16 +6,15 @@
  * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
  */
 
-"use client";
+'use client';
 
-import type { LucideIcon } from "lucide-react";
-import React from "react";
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronRight } from "lucide-react";
-import useResizeObserver from "use-resize-observer";
+import React from 'react';
+import * as AccordionPrimitive from '@radix-ui/react-accordion';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
+import useResizeObserver from 'use-resize-observer';
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TreeDataItem {
   id: string;
@@ -94,7 +93,7 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
     const { ref: refRoot, width, height } = useResizeObserver();
 
     return (
-      <div ref={refRoot} className={cn("overflow-hidden", className)}>
+      <div ref={refRoot} className={cn('overflow-hidden', className)}>
         <ScrollArea style={{ width, height }}>
           <div className="relative p-2">
             <TreeItem
@@ -113,7 +112,7 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
     );
   },
 );
-Tree.displayName = "Tree";
+Tree.displayName = 'Tree';
 
 type TreeItemProps = TreeProps & {
   selectedItemId?: string;
@@ -151,9 +150,9 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          "px-2 before:absolute before:left-0 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100",
+                          'px-2 before:absolute before:left-0 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100',
                           selectedItemId === item.id &&
-                            "text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0",
+                            'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
                         )}
                         onClick={() => handleSelectChange(item)}
                       >
@@ -208,7 +207,7 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
     );
   },
 );
-TreeItem.displayName = "TreeItem";
+TreeItem.displayName = 'TreeItem';
 
 const Leaf = React.forwardRef<
   HTMLDivElement,
@@ -222,10 +221,10 @@ const Leaf = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex cursor-pointer items-center px-2 py-2 before:absolute before:left-0 before:right-1 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100",
+        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-0 before:right-1 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100',
         className,
         isSelected &&
-          "text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0",
+          'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
       )}
       {...props}
     >
@@ -245,7 +244,7 @@ const Leaf = React.forwardRef<
     </div>
   );
 });
-Leaf.displayName = "Leaf";
+Leaf.displayName = 'Leaf';
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
@@ -255,7 +254,7 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90",
+        'flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90',
         className,
       )}
       {...props}
@@ -274,7 +273,7 @@ const AccordionContent = React.forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      "data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all",
+      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all',
       className,
     )}
     {...props}

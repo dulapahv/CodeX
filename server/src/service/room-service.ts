@@ -44,7 +44,7 @@ export function join(
   socket: Socket,
   io: Server,
   roomID: string,
-  name: string
+  name: string,
 ): void {
   // check if room exists
   if (!io.sockets.adapter.rooms.has(roomID)) {
@@ -90,7 +90,7 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
 export function getUsersInRoom(
   socket: Socket,
   io: Server,
-  roomID: string = getUserRoom(socket)
+  roomID: string = getUserRoom(socket),
 ): Record<string, string> {
   // get all sockets in room
   const room = io.sockets.adapter.rooms.get(roomID);
@@ -106,7 +106,7 @@ export function getUsersInRoom(
       }
       return acc;
     },
-    {}
+    {},
   );
 
   // tell the client who joined the room

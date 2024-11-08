@@ -5,10 +5,10 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import { memo } from "react";
-import { LoaderCircle } from "lucide-react";
+import { memo } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const LoadingAlert = memo(() => (
   <Alert className="max-w-md">
@@ -20,4 +20,4 @@ export const LoadingAlert = memo(() => (
   </Alert>
 ));
 
-LoadingAlert.displayName = "LoadingAlert";
+LoadingAlert.displayName = 'LoadingAlert';

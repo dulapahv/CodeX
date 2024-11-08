@@ -8,9 +8,9 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import * as monaco from "monaco-editor";
+import * as monaco from 'monaco-editor';
 
-import { EditOp } from "../../../../../common/types/operation";
+import { EditOp } from '@common/types/operation';
 
 /**
  * Update the code in the editor.
