@@ -1,10 +1,17 @@
+/**
+ * This file contains the toolbar component for the code editor. It includes
+ * the toolbar items and actions for the editor.
+ *
+ * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ */
+
 import { useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Menu } from 'lucide-react';
 import * as monaco from 'monaco-editor';
 
 import { LeaveDialog } from '@/components/leave-dialog';
-import { SaveLocalDialog } from '@/components/save-local-dialog';
+import { SaveToGithubDialog } from '@/components/save-to-github-dialog';
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -20,6 +27,7 @@ import {
 } from '@/components/ui/menubar';
 
 import { getOS } from './utils/get-os';
+import { saveLocal } from './utils/save-local';
 
 interface ToolbarProps {
   monaco: Monaco | null;
@@ -35,7 +43,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     openDialog: () => void;
     closeDialog: () => void;
   }>(null);
-  const saveLocalDialogRef = useRef<{
+  const saveToGithubDialogRef = useRef<{
     openDialog: () => void;
     closeDialog: () => void;
   }>(null);
@@ -43,17 +51,28 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
   const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     function handleKeyDown(event: KeyboardEvent) {
       if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case 'q':
-            event.preventDefault();
-            leaveDialogRef.current?.openDialog();
-            break;
-          case 's':
-            event.preventDefault();
-            saveLocalDialogRef.current?.openDialog();
-            break;
+        if (event.shiftKey) {
+          switch (event.key) {
+            case 'S':
+              event.preventDefault();
+              saveToGithubDialogRef.current?.openDialog();
+              break;
+          }
+        } else {
+          switch (event.key) {
+            case 'q':
+              event.preventDefault();
+              leaveDialogRef.current?.openDialog();
+              break;
+            case 's':
+              event.preventDefault();
+              // saveLocal(editor);
+              break;
+          }
         }
       }
     }
@@ -63,7 +82,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [editor]);
 
   useEffect(() => {
     if (editor && monaco) {
@@ -86,13 +105,11 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     console.log('Open file');
   }
 
-  function handleSaveFileToGitHub() {
-    // Open save file dialog
-    console.log('Save file to GitHub');
-  }
-
   const actions = {
-    saveLocal: () => saveLocalDialogRef.current?.openDialog(),
+    saveLocal: () => {
+      // saveLocal(editor);
+    },
+    saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
     undo: () => editor.trigger('keyboard', 'undo', null),
     redo: () => editor.trigger('keyboard', 'redo', null),
@@ -155,13 +172,17 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               New File <MenubarShortcut>{modKey}+N</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={handleOpenFile}>
-              Open File... <MenubarShortcut>{modKey}+O</MenubarShortcut>
+              Open Local File <MenubarShortcut>{modKey}+O</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem>
+              Open GitHub File{' '}
+              <MenubarShortcut>{modKey}+Shift+O</MenubarShortcut>
             </MenubarItem>
             <MenubarItem onSelect={actions.saveLocal}>
               Save to local <MenubarShortcut>{modKey}+S</MenubarShortcut>
             </MenubarItem>
-            <MenubarItem onSelect={handleSaveFileToGitHub}>
-              Save to GitHub
+            <MenubarItem onSelect={actions.saveGitHub}>
+              Save to GitHub <MenubarShortcut>{modKey}+Shift+S</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem>Settings</MenubarItem>
@@ -282,9 +303,15 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               <MenubarSubContent>
                 <MenubarItem onSelect={handleNewFile}>New File</MenubarItem>
                 <MenubarItem onSelect={handleOpenFile}>
-                  Open File...
+                  Open Local File
                 </MenubarItem>
-                <MenubarItem onSelect={actions.saveLocal}>Save</MenubarItem>
+                <MenubarItem>Open GitHub File</MenubarItem>
+                <MenubarItem onSelect={actions.saveLocal}>
+                  Save to local
+                </MenubarItem>
+                <MenubarItem onSelect={actions.saveGitHub}>
+                  Save to GitHub
+                </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem>Settings</MenubarItem>
                 <MenubarSeparator />
@@ -378,7 +405,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
-      <SaveLocalDialog ref={saveLocalDialogRef} roomId={roomId} />
+      <SaveToGithubDialog ref={saveToGithubDialogRef} />
       <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
     </>
   );

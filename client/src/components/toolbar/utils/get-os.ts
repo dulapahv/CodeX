@@ -1,3 +1,13 @@
+/**
+ * This utility function gets the current operating system.
+ *
+ * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ */
+
+/**
+ * Get the current operating system
+ * @returns The current operating system
+ */
 export function getOS(): string {
   const userAgent = navigator.userAgent || (window as any).opera;
 
