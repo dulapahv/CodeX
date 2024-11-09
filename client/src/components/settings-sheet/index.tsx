@@ -112,7 +112,7 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
     } else {
       // Open a new window
       window.authWindow = window.open(
-        `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}`,
+        `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
         '_blank',
         `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
       );
