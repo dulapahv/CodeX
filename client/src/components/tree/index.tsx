@@ -1,42 +1,55 @@
 /**
- * Tree Component
+ * This component is a tree view that can be used to display a hierarchical list
+ * of items. It supports expanding and collapsing items, selecting items, and
+ * loading states.
  *
- * Edited from a comment on an issue in shadcn-ui/ui
- * by WangLarry (https://github.com/WangLarry)
+ * Modified by Dulapah Vibulsanti (https://github.com/dulapahv) from a comment
+ * on an issue in shadcn-ui/ui by WangLarry (https://github.com/WangLarry).
  * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
  */
 
 'use client';
 
-import React from 'react';
+import {
+  ComponentPropsWithoutRef,
+  ElementRef,
+  forwardRef,
+  HTMLAttributes,
+  useCallback,
+  useState,
+} from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { ChevronRight, Loader2, type LucideIcon } from 'lucide-react';
 import useResizeObserver from 'use-resize-observer';
 
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-interface TreeDataItem {
+// Base interface for tree items
+export interface TreeDataItem {
   id: string;
   name: string;
   icon?: LucideIcon;
   children?: TreeDataItem[];
+  type?: string;
+  isLoading?: boolean;
 }
 
-type TreeProps = React.HTMLAttributes<HTMLDivElement> & {
+// Tree component props
+export type TreeProps = HTMLAttributes<HTMLDivElement> & {
   data: TreeDataItem[] | TreeDataItem;
-  initialSlelectedItemId?: string;
-  onSelectChange?: (item: TreeDataItem | undefined) => void;
+  initialSelectedItemId?: string;
+  onSelectChange?: (item: TreeDataItem) => void;
   expandAll?: boolean;
   folderIcon?: LucideIcon;
   itemIcon?: LucideIcon;
 };
 
-const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
+const Tree = forwardRef<HTMLDivElement, TreeProps>(
   (
     {
       data,
-      initialSlelectedItemId,
+      initialSelectedItemId,
       onSelectChange,
       expandAll,
       folderIcon,
@@ -46,13 +59,14 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
     },
     ref,
   ) => {
-    const [selectedItemId, setSelectedItemId] = React.useState<
-      string | undefined
-    >(initialSlelectedItemId);
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
+      initialSelectedItemId,
+    );
+    const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
-    const handleSelectChange = React.useCallback(
-      (item: TreeDataItem | undefined) => {
-        setSelectedItemId(item?.id);
+    const handleSelectChange = useCallback(
+      (item: TreeDataItem) => {
+        setSelectedItemId(item.id);
         if (onSelectChange) {
           onSelectChange(item);
         }
@@ -60,35 +74,14 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
       [onSelectChange],
     );
 
-    const expandedItemIds = React.useMemo(() => {
-      if (!initialSlelectedItemId) {
-        return [] as string[];
-      }
-
-      const ids: string[] = [];
-
-      function walkTreeItems(
-        items: TreeDataItem[] | TreeDataItem,
-        targetId: string,
-      ) {
-        if (items instanceof Array) {
-          for (let i = 0; i < items.length; i++) {
-            ids.push(items[i]!.id);
-            if (walkTreeItems(items[i]!, targetId) && !expandAll) {
-              return true;
-            }
-            if (!expandAll) ids.pop();
-          }
-        } else if (!expandAll && items.id === targetId) {
-          return true;
-        } else if (items.children) {
-          return walkTreeItems(items.children, targetId);
+    const handleExpand = useCallback((itemId: string) => {
+      setExpandedIds((prev) => {
+        if (prev.includes(itemId)) {
+          return prev.filter((id) => id !== itemId);
         }
-      }
-
-      walkTreeItems(data, initialSlelectedItemId);
-      return ids;
-    }, [data, initialSlelectedItemId]);
+        return [...prev, itemId];
+      });
+    }, []);
 
     const { ref: refRoot, width, height } = useResizeObserver();
 
@@ -101,7 +94,8 @@ const Tree = React.forwardRef<HTMLDivElement, TreeProps>(
               ref={ref}
               selectedItemId={selectedItemId}
               handleSelectChange={handleSelectChange}
-              expandedItemIds={expandedItemIds}
+              expandedIds={expandedIds}
+              onExpand={handleExpand}
               FolderIcon={folderIcon}
               ItemIcon={itemIcon}
               {...props}
@@ -116,20 +110,22 @@ Tree.displayName = 'Tree';
 
 type TreeItemProps = TreeProps & {
   selectedItemId?: string;
-  handleSelectChange: (item: TreeDataItem | undefined) => void;
-  expandedItemIds: string[];
+  handleSelectChange: (item: TreeDataItem) => void;
+  expandedIds: string[];
+  onExpand: (itemId: string) => void;
   FolderIcon?: LucideIcon;
   ItemIcon?: LucideIcon;
 };
 
-const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
+const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
   (
     {
       className,
       data,
       selectedItemId,
       handleSelectChange,
-      expandedItemIds,
+      expandedIds,
+      onExpand,
       FolderIcon,
       ItemIcon,
       ...props
@@ -142,10 +138,16 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
           {data instanceof Array ? (
             data.map((item) => (
               <li key={item.id}>
-                {item.children ? (
+                {item.children ||
+                item.type === 'repo' ||
+                item.type === 'branch' ||
+                item.type === 'dir' ? (
                   <AccordionPrimitive.Root
                     type="multiple"
-                    defaultValue={expandedItemIds}
+                    defaultValue={expandedIds}
+                    onValueChange={(value) => {
+                      onExpand(item.id);
+                    }}
                   >
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
@@ -169,16 +171,22 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
                           />
                         )}
                         <span className="truncate text-sm">{item.name}</span>
+                        {item.isLoading && (
+                          <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                        )}
                       </AccordionTrigger>
                       <AccordionContent className="pl-6">
-                        <TreeItem
-                          data={item.children ? item.children : item}
-                          selectedItemId={selectedItemId}
-                          handleSelectChange={handleSelectChange}
-                          expandedItemIds={expandedItemIds}
-                          FolderIcon={FolderIcon}
-                          ItemIcon={ItemIcon}
-                        />
+                        {item.children && (
+                          <TreeItem
+                            data={item.children}
+                            selectedItemId={selectedItemId}
+                            handleSelectChange={handleSelectChange}
+                            expandedIds={expandedIds}
+                            onExpand={onExpand}
+                            FolderIcon={FolderIcon}
+                            ItemIcon={ItemIcon}
+                          />
+                        )}
                       </AccordionContent>
                     </AccordionPrimitive.Item>
                   </AccordionPrimitive.Root>
@@ -209,9 +217,9 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
 );
 TreeItem.displayName = 'TreeItem';
 
-const Leaf = React.forwardRef<
+const Leaf = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
+  HTMLAttributes<HTMLDivElement> & {
     item: TreeDataItem;
     isSelected?: boolean;
     Icon?: LucideIcon;
@@ -246,9 +254,9 @@ const Leaf = React.forwardRef<
 });
 Leaf.displayName = 'Leaf';
 
-const AccordionTrigger = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+const AccordionTrigger = forwardRef<
+  ElementRef<typeof AccordionPrimitive.Trigger>,
+  ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header>
     <AccordionPrimitive.Trigger
@@ -266,9 +274,9 @@ const AccordionTrigger = React.forwardRef<
 ));
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
-const AccordionContent = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
+const AccordionContent = forwardRef<
+  ElementRef<typeof AccordionPrimitive.Content>,
+  ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
@@ -283,4 +291,4 @@ const AccordionContent = React.forwardRef<
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
-export { Tree, type TreeDataItem };
+export { Tree };
