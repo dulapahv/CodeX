@@ -70,6 +70,8 @@ export function RepoTree({
           setTreeData,
           setItemLoading,
           setError,
+          setBranch,
+          setPath,
         )
       }
     />

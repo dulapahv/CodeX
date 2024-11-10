@@ -1,4 +1,10 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -60,6 +66,11 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       openDialog,
       closeDialog,
     }));
+
+    useEffect(() => {
+      console.log('branch:', branch);
+      console.log('path:', path);
+    }, [branch, path]);
 
     const onSubmit = useCallback(
       async (data: CommitForm) => {
