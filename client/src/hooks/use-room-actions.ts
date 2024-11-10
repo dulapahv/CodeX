@@ -1,6 +1,5 @@
 import { useRouter } from 'next/navigation';
 
-import { socket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/utils';
 
 export function useRoomActions(roomId: string) {

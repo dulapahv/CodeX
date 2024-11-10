@@ -10,8 +10,11 @@ import { Monaco } from '@monaco-editor/react';
 import { Menu } from 'lucide-react';
 import * as monaco from 'monaco-editor';
 
-import { LeaveDialog } from '@/components/leave-dialog';
-import { SaveToGithubDialog } from '@/components/save-to-github-dialog';
+import { LeaveDialog, LeaveDialogRef } from '@/components/leave-dialog';
+import {
+  SaveToGithubDialog,
+  SaveToGithubDialogRef,
+} from '@/components/save-to-github-dialog';
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -39,14 +42,8 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
   const [miniMap, setMiniMap] = useState(false);
   const [wordWrap, setWordWrap] = useState(false);
 
-  const leaveDialogRef = useRef<{
-    openDialog: () => void;
-    closeDialog: () => void;
-  }>(null);
-  const saveToGithubDialogRef = useRef<{
-    openDialog: () => void;
-    closeDialog: () => void;
-  }>(null);
+  const leaveDialogRef = useRef<LeaveDialogRef>(null);
+  const saveToGithubDialogRef = useRef<SaveToGithubDialogRef>(null);
 
   const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { LeaveDialog } from '@/components/leave-dialog';
+import { LeaveDialog, LeaveDialogRef } from '@/components/leave-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -13,20 +13,10 @@ import {
 interface LeaveButtonProps {
   readonly roomId: string;
   readonly className?: string;
-  readonly tooltipText?: string;
 }
 
-const DEFAULT_TOOLTIP = 'Leave Room';
-
-export function LeaveButton({
-  roomId,
-  className,
-  tooltipText = DEFAULT_TOOLTIP,
-}: LeaveButtonProps) {
-  const leaveDialogRef = useRef<{
-    openDialog: () => void;
-    closeDialog: () => void;
-  }>(null);
+export function LeaveButton({ roomId, className }: LeaveButtonProps) {
+  const leaveDialogRef = useRef<LeaveDialogRef>(null);
 
   const handleButtonClick = () => {
     leaveDialogRef.current?.openDialog();
@@ -37,25 +27,27 @@ export function LeaveButton({
   };
 
   return (
-    <Tooltip>
-      <TooltipTrigger onFocus={handleTooltipFocus} asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className={cn(
-            `size-7 animate-swing-in-bottom-fwd rounded-sm p-0`,
-            className,
-          )}
-          aria-label="Leave room"
-          onClick={handleButtonClick}
-        >
-          <LogOut className="size-4 text-red-600" strokeWidth={2.5} />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{tooltipText}</p>
-      </TooltipContent>
+    <>
+      <Tooltip>
+        <TooltipTrigger onFocus={handleTooltipFocus} asChild>
+          <Button
+            size="icon"
+            variant="ghost"
+            className={cn(
+              `size-7 animate-swing-in-bottom-fwd rounded-sm p-0`,
+              className,
+            )}
+            aria-label="Leave room"
+            onClick={handleButtonClick}
+          >
+            <LogOut className="size-4 text-red-600" strokeWidth={2.5} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Leave Room</p>
+        </TooltipContent>
+      </Tooltip>
       <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
-    </Tooltip>
+    </>
   );
 }

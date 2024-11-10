@@ -3,8 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
-import type { CreateRoomForm, JoinRoomForm } from '@/types/types';
-
 import { createRoom, joinRoom, parseError } from '@/lib/utils';
 import {
   Card,
@@ -21,6 +19,7 @@ import { JoinRoomSection } from './components/JoinRoomSection';
 import { LoadingCard } from './components/LoadingCard';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
+import type { CreateRoomForm, JoinRoomForm } from './types/form';
 
 export function JoinForm() {
   const router = useRouter();

@@ -5,11 +5,11 @@ import type {
   UseFormRegister,
 } from 'react-hook-form';
 
-import type { CreateRoomForm } from '@/types/types';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
+import type { CreateRoomForm } from '../types/form';
 
 interface CreateRoomSectionProps {
   register: UseFormRegister<CreateRoomForm>;
