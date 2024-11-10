@@ -1,4 +1,3 @@
-// app/api/github/repos/route.ts
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -7,7 +6,7 @@ import { GITHUB_API_URL } from '@/lib/constants';
 export async function GET() {
   try {
     // Get access token from cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token');
 
     if (!accessToken) {

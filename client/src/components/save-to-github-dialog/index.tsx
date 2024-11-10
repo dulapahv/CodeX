@@ -1,20 +1,12 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from 'react';
-import { FileCode, Folder, Loader2, LoaderCircle } from 'lucide-react';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { parseError } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Tree, type TreeDataItem } from '@/components/tree';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RepoTree } from '@/components/repo-tree';
+import type { ExtendedTreeDataItem } from '@/components/repo-tree/types/tree';
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -35,13 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { useCommitForm } from './hooks/useCommitForm';
-import { CommitForm } from './types/github';
-import type { ExtendedTreeDataItem } from './types/tree';
-import { handleSelectItem } from './utils/handle-select-item';
-import { setItemLoading } from './utils/set-item-loading';
-import { transformBranchesToTreeData } from './utils/transform-branches-to-tree';
-import { transformContentsToTreeData } from './utils/transform-contents-to-tree';
-import { transformReposToTreeData } from './utils/transform-repos-to-tree';
+import { CommitForm } from './types/form';
 
 export interface SaveToGithubDialogRef {
   openDialog: () => void;
@@ -51,12 +37,10 @@ export interface SaveToGithubDialogRef {
 export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
   (props, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [selectedItem, setSelectedItem] =
       useState<ExtendedTreeDataItem | null>(null);
-    const [currentPath, setCurrentPath] = useState('');
+    const [branch, setBranch] = useState('');
+    const [path, setPath] = useState('');
 
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const {
@@ -69,35 +53,13 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     const closeDialog = useCallback(() => {
       setIsOpen(false);
       setSelectedItem(null);
-      setCurrentPath('');
-      setTreeData([]);
+      setPath('');
     }, []);
 
     useImperativeHandle(ref, () => ({
       openDialog,
       closeDialog,
     }));
-
-    const fetchRepos = useCallback(async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await fetch('/api/oauth/repos/github');
-        if (!response.ok) throw new Error('Failed to fetch repositories');
-        const data = await response.json();
-        setTreeData(transformReposToTreeData(data.repositories));
-      } catch (err) {
-        setError(parseError(err));
-      } finally {
-        setLoading(false);
-      }
-    }, []);
-
-    useEffect(() => {
-      if (isOpen) {
-        fetchRepos();
-      }
-    }, [isOpen, fetchRepos]);
 
     const onSubmit = useCallback(
       async (data: CommitForm) => {
@@ -108,11 +70,12 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
           filename: data.fileName,
           commitMessage: data.commitSummary,
           extendedDescription: data.extendedDescription,
-          path: currentPath,
+          branch: branch,
+          path: path,
         });
         // closeDialog();
       },
-      [selectedItem, currentPath, closeDialog],
+      [selectedItem, path, closeDialog],
     );
 
     const onError = () => {
@@ -123,32 +86,11 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       <>
         {/* Tree Container */}
         <div className="mx-4 min-h-10 flex-1 rounded-md border md:mx-0 md:mb-0">
-          {loading ? (
-            <div className="flex h-full items-center justify-center">
-              <Loader2 className="size-6 animate-spin" />
-            </div>
-          ) : error ? (
-            <Alert variant="destructive" className="border-none">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          ) : (
-            <Tree
-              data={treeData}
-              className="h-full"
-              onSelectChange={(item) =>
-                handleSelectItem(
-                  item,
-                  treeData,
-                  setSelectedItem,
-                  setTreeData,
-                  setItemLoading,
-                  setError,
-                )
-              }
-              folderIcon={Folder}
-              itemIcon={FileCode}
-            />
-          )}
+          <RepoTree
+            setSelectedItem={setSelectedItem}
+            setBranch={setBranch}
+            setPath={setPath}
+          />
         </div>
 
         {/* Input Fields Container */}
@@ -209,13 +151,13 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
         <DrawerContent className="first:[&>div]:bg-transparent">
           {/* Main content wrapper with flex and scrolling */}
           <div className="flex h-[90vh] flex-col">
-            <DrawerHeader className="mx-4 flex-shrink-0">
+            <DrawerHeader className="flex-shrink-0 text-left">
               <DrawerTitle>Save to GitHub</DrawerTitle>
               <DrawerDescription>
                 Select a repository, branch, and folder to save your code.
               </DrawerDescription>
             </DrawerHeader>
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
               {formContent}
             </div>
             <form

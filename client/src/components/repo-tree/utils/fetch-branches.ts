@@ -22,7 +22,7 @@ export const fetchBranches = async (
   try {
     const [owner, repoName] = repo.full_name.split('/');
     const response = await fetch(
-      `/api/oauth/repos/github/branches/${owner}/${repoName}`,
+      `/api/github/repos/branches/${owner}/${repoName}`,
     );
 
     if (!response.ok) {

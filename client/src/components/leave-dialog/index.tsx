@@ -77,7 +77,7 @@ export const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 
     return (
       <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={false}>
-        <DrawerContent className="first:[&>div]:bg-transparent">
+        <DrawerContent className="first:[&>div]:mt-0 first:[&>div]:bg-transparent">
           <DrawerHeader>
             <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
             <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>

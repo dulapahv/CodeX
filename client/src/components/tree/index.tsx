@@ -19,10 +19,17 @@ import {
   useState,
 } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronRight, Loader2, type LucideIcon } from 'lucide-react';
+import {
+  ChevronRight,
+  FileCode,
+  Folder,
+  LoaderCircle,
+  type LucideIcon,
+} from 'lucide-react';
 import useResizeObserver from 'use-resize-observer';
 
 import { cn } from '@/lib/utils';
+import { itemType } from '@/components/repo-tree/types/tree';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Base interface for tree items
@@ -41,19 +48,15 @@ export type TreeProps = HTMLAttributes<HTMLDivElement> & {
   initialSelectedItemId?: string;
   onSelectChange?: (item: TreeDataItem) => void;
   expandAll?: boolean;
-  folderIcon?: LucideIcon;
-  itemIcon?: LucideIcon;
 };
 
-const Tree = forwardRef<HTMLDivElement, TreeProps>(
+export const Tree = forwardRef<HTMLDivElement, TreeProps>(
   (
     {
       data,
       initialSelectedItemId,
       onSelectChange,
       expandAll,
-      folderIcon,
-      itemIcon,
       className,
       ...props
     },
@@ -96,8 +99,8 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
               handleSelectChange={handleSelectChange}
               expandedIds={expandedIds}
               onExpand={handleExpand}
-              FolderIcon={folderIcon}
-              ItemIcon={itemIcon}
+              FolderIcon={Folder}
+              ItemIcon={FileCode}
               {...props}
             />
           </div>
@@ -139,9 +142,9 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
             data.map((item) => (
               <li key={item.id}>
                 {item.children ||
-                item.type === 'repo' ||
-                item.type === 'branch' ||
-                item.type === 'dir' ? (
+                item.type === itemType.REPO ||
+                item.type === itemType.BRANCH ||
+                item.type === itemType.DIR ? (
                   <AccordionPrimitive.Root
                     type="multiple"
                     defaultValue={expandedIds}
@@ -152,7 +155,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          'px-2 before:absolute before:left-0 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100',
+                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-muted/80 before:opacity-0 before:duration-75 hover:before:opacity-100',
                           selectedItemId === item.id &&
                             'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
                         )}
@@ -172,7 +175,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                         )}
                         <span className="truncate text-sm">{item.name}</span>
                         {item.isLoading && (
-                          <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                          <LoaderCircle className="ml-2 h-4 w-4 animate-spin" />
                         )}
                       </AccordionTrigger>
                       <AccordionContent className="pl-6">
@@ -229,7 +232,7 @@ const Leaf = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-0 before:right-1 before:-z-10 before:h-[1.75rem] before:w-full before:bg-muted/80 before:opacity-0 hover:before:opacity-100',
+        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-muted/80 before:opacity-0 before:duration-75 hover:before:opacity-100',
         className,
         isSelected &&
           'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
@@ -290,5 +293,3 @@ const AccordionContent = forwardRef<
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
-
-export { Tree };

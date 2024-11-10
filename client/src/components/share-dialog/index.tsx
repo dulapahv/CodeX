@@ -169,7 +169,7 @@ export const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
               </DialogDescription>
             </DialogHeader>
             {content}
-            <DialogFooter className="mt-6">
+            <DialogFooter className="mt-4">
               <DialogClose asChild>
                 <Button variant="secondary">Close</Button>
               </DialogClose>

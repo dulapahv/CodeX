@@ -24,7 +24,7 @@ export const fetchContents = async (
   try {
     const [owner, repoName] = repo.full_name.split('/');
     const response = await fetch(
-      `/api/oauth/repos/github/contents/${owner}/${repoName}?path=${encodeURIComponent(
+      `/api/github/repos/contents/${owner}/${repoName}?path=${encodeURIComponent(
         path,
       )}&ref=${encodeURIComponent(branch.name)}`,
     );

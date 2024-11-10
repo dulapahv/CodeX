@@ -29,54 +29,31 @@ interface SettingSheetProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
-async function checkAuthStatus() {
-  try {
-    const response = await fetch('/api/oauth/check/github', {
-      method: 'GET',
-      credentials: 'include', // Important for sending cookies
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.username;
-  } catch (error) {
-    console.error('Error checking auth status:', error);
-    return null;
-  }
-}
-
 export function SettingSheet({ monaco, editor }: SettingSheetProps) {
   const [githubUser, setGithubUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if "access-token" is in cookies
-    if (document.cookie.includes('access-token')) {
-      // Check authentication status
-      checkAuthStatus().then((username) => {
-        setGithubUser(username);
-      });
-    }
-    setIsLoading(false);
+    fetch('/api/github/auth', {
+      credentials: 'include',
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setGithubUser(data?.username ?? null))
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
-    // Listen for messages from the OAuth popup
     const handleMessage = async (event: MessageEvent) => {
-      if (event.data.type === 'github-oauth') {
-        if (event.data.success) {
-          // Verify auth status after successful OAuth
-          const username = await checkAuthStatus();
-          setGithubUser(username);
+      if (event.data.type === 'github-oauth' && event.data.success) {
+        const response = await fetch('/api/github/auth', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setGithubUser(data.username);
         }
-        // Close the popup window if it exists
-        if (window.authWindow) {
-          window.authWindow.close();
-          window.authWindow = null;
-        }
+        window.authWindow?.close();
       }
     };
 
@@ -86,14 +63,11 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
 
   async function handleLogout() {
     try {
-      const response = await fetch('/api/oauth/logout/github', {
-        method: 'POST',
+      const response = await fetch('/api/github/auth', {
+        method: 'DELETE',
         credentials: 'include',
       });
-
-      if (response.ok) {
-        setGithubUser(null);
-      }
+      if (response.ok) setGithubUser(null);
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -105,12 +79,9 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 
-    // Check if the auth window is already open
-    if (window.authWindow && !window.authWindow.closed) {
-      // Focus the existing window
+    if (window.authWindow?.closed === false) {
       window.authWindow.focus();
     } else {
-      // Open a new window
       window.authWindow = window.open(
         `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
         '_blank',

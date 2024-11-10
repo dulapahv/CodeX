@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 
 import type { TreeDataItem } from '@/components/tree';
 
-import type { ExtendedTreeDataItem } from '../types/tree';
+import { itemType, type ExtendedTreeDataItem } from '../types/tree';
 import { fetchBranches } from './fetch-branches';
 import { fetchContents } from './fetch-contents';
 
@@ -21,9 +21,9 @@ export const handleSelectItem = async (
   const extendedItem = item as ExtendedTreeDataItem;
   setSelectedItem(extendedItem);
 
-  if (extendedItem.type === 'repo' && !item.children) {
+  if (extendedItem.type === itemType.REPO && !item.children) {
     await fetchBranches(extendedItem, setTreeData, setItemLoading, setError);
-  } else if (extendedItem.type === 'branch' && !item.children) {
+  } else if (extendedItem.type === itemType.BRANCH && !item.children) {
     const parentRepo = treeData.find((repo) =>
       repo.children?.some((branch) => branch.id === item.id),
     );
@@ -37,7 +37,7 @@ export const handleSelectItem = async (
         setError,
       );
     }
-  } else if (extendedItem.type === 'dir' && !item.children) {
+  } else if (extendedItem.type === itemType.DIR && !item.children) {
     const parentRepo = treeData.find((repo) =>
       repo.children?.some((branch) =>
         branch.children?.some((content) => content.id === item.id),

@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: { params: string[] } },
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token')?.value;
 
     if (!accessToken) {

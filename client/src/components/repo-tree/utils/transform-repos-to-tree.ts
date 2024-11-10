@@ -1,7 +1,7 @@
 import { Folder } from 'lucide-react';
 
 import type { GithubRepo } from '../types/github';
-import type { ExtendedTreeDataItem } from '../types/tree';
+import { itemType, type ExtendedTreeDataItem } from '../types/tree';
 
 export function transformReposToTreeData(
   repos: GithubRepo[],
@@ -13,6 +13,6 @@ export function transformReposToTreeData(
     full_name: repo.full_name,
     children: undefined,
     icon: Folder,
-    type: 'repo',
+    type: itemType.REPO,
   }));
 }
