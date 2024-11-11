@@ -31,7 +31,7 @@ export const CreateRoomSection = ({
   isJoining,
 }: CreateRoomSectionProps) => (
   <form onSubmit={handleSubmit((data) => onSubmit(data), onError)}>
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col gap-y-4">
       <h3 className="text-lg font-medium">Create a Room</h3>
       <div className="flex flex-col space-y-1.5">
         <Label htmlFor="name-create">Name</Label>
