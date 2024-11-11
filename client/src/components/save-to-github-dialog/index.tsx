@@ -5,16 +5,15 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { ExternalLink, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { parseError } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { RepoTree } from '@/components/repo-tree';
+import { RepoBrowser } from '@/components/repo-browser';
 import {
   itemType,
   type ExtendedTreeDataItem,
-} from '@/components/repo-tree/types/tree';
+} from '@/components/repo-browser/types/tree';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -34,21 +33,13 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 
 import { useCommitForm } from './hooks/useCommitForm';
-import { CommitForm } from './types/form';
+import { onSubmit } from './utils/on-submit';
 
 export interface SaveToGithubDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
-}
-
-interface CommitResponse {
-  content: {
-    html_url: string;
-    sha: string;
-  };
 }
 
 export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
@@ -56,6 +47,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     const [isOpen, setIsOpen] = useState(false);
     const [selectedItem, setSelectedItem] =
       useState<ExtendedTreeDataItem | null>(null);
+    const [fileName, setFileName] = useState('');
     const [repo, setRepo] = useState('');
     const [branch, setBranch] = useState('');
 
@@ -87,73 +79,11 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       const fileName =
         selectedItem?.type === itemType.FILE ? selectedItem.name : '';
       if (fileName) {
+        setFileName(fileName);
         setValue('fileName', fileName);
         clearErrors('fileName');
       }
     }, [selectedItem, setValue, clearErrors]);
-
-    const commitChanges = async (data: CommitForm) => {
-      if (!selectedItem) throw new Error('No file selected');
-
-      const commitData = {
-        repo: repo,
-        branch: branch,
-        path: selectedItem.path || '',
-        filename: data.fileName,
-        commitMessage: data.commitSummary,
-        extendedDescription: data.extendedDescription,
-        content: btoa('Hello World!'),
-      };
-
-      const response = await fetch('/api/github/commit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(commitData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to commit changes');
-      }
-
-      return (await response.json()) as CommitResponse;
-    };
-
-    const onSubmit = useCallback(
-      async (data: CommitForm) => {
-        await toast.promise(commitChanges(data), {
-          loading: 'Committing changes...',
-          success: (result) => {
-            closeDialog();
-            return (
-              <div className="flex flex-col text-sm">
-                <p>Changes committed successfully!</p>
-                <div className="flex items-center gap-x-1 text-accent-foreground">
-                  <a
-                    href={result.content.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-fit hover:underline"
-                  >
-                    View on GitHub
-                  </a>
-                  <ExternalLink className="size-4" />
-                </div>
-              </div>
-            );
-          },
-          error: (err) => (
-            <div className="flex flex-col text-sm">
-              <p>Failed to commit changes</p>
-              <p>{parseError(err)}</p>
-            </div>
-          ),
-        });
-      },
-      [selectedItem, repo, branch],
-    );
 
     const onError = () => {
       toast.error('Please check the information and try again.');
@@ -164,7 +94,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     const formContent = (
       <>
         <div className="mx-4 min-h-10 flex-1 rounded-md border md:mx-0 md:mb-0">
-          <RepoTree
+          <RepoBrowser
             setSelectedItem={setSelectedItem}
             setRepo={setRepo}
             setBranch={setBranch}
@@ -190,12 +120,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               {errors.commitSummary.message}
             </p>
           )}
-          <Textarea
-            placeholder="Extended description (Optional)"
-            className="h-20 resize-none placeholder:text-sm"
-            disabled={isSubmitting}
-            {...register('extendedDescription')}
-          />
         </div>
       </>
     );
@@ -211,7 +135,13 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               </AlertDialogDescription>
             </AlertDialogHeader>
             {formContent}
-            <form onSubmit={handleSubmit(onSubmit, onError)}>
+            <form
+              onSubmit={handleSubmit(
+                (data) =>
+                  onSubmit(data, selectedItem, repo, branch, closeDialog),
+                onError,
+              )}
+            >
               <AlertDialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
                 <p className="w-full text-sm text-muted-foreground">
                   Commit Email: <span className="font-semibold">{email}</span>
@@ -249,7 +179,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
         onOpenChange={setIsOpen}
         dismissible={!isSubmitting}
       >
-        <DrawerContent className="first:[&>div]:bg-transparent">
+        <DrawerContent className="first:[&>div]:mt-0 first:[&>div]:bg-transparent">
           <div className="flex h-[90vh] flex-col">
             <DrawerHeader className="flex-shrink-0 text-left">
               <DrawerTitle>Save to GitHub</DrawerTitle>
@@ -261,7 +191,11 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               {formContent}
             </div>
             <form
-              onSubmit={handleSubmit(onSubmit, onError)}
+              onSubmit={handleSubmit(
+                (data) =>
+                  onSubmit(data, selectedItem, repo, branch, closeDialog),
+                onError,
+              )}
               className="flex-shrink-0"
             >
               <DrawerFooter>

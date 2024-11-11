@@ -16,17 +16,17 @@ import { handleSelectItem } from './utils/handle-select-item';
 import { setItemLoading } from './utils/set-item-loading';
 import { transformReposToTreeData } from './utils/transform-repos-to-tree';
 
-interface RepoTreeProps {
+interface RepoBrowserProps {
   setSelectedItem: Dispatch<SetStateAction<ExtendedTreeDataItem | null>>;
   setRepo: Dispatch<SetStateAction<string>>;
   setBranch: Dispatch<SetStateAction<string>>;
 }
 
-export function RepoTree({
+export function RepoBrowser({
   setSelectedItem,
   setRepo,
   setBranch,
-}: RepoTreeProps) {
+}: RepoBrowserProps) {
   const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

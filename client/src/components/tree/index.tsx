@@ -29,7 +29,7 @@ import {
 import useResizeObserver from 'use-resize-observer';
 
 import { cn } from '@/lib/utils';
-import { itemType } from '@/components/repo-tree/types/tree';
+import { itemType } from '@/components/repo-browser/types/tree';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Base interface for tree items
@@ -284,7 +284,7 @@ const AccordionContent = forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down left-3 overflow-hidden border-l border-muted text-sm transition-all',
+      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down left-3 overflow-hidden border-l border-foreground/10 text-sm transition-all',
       className,
     )}
     {...props}

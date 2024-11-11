@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 
 import { GITHUB_API_URL } from '@/lib/constants';
 
+export const runtime = 'edge';
+
 export async function GET() {
   try {
     // Get access token from cookies

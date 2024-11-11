@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 
 import { GITHUB_API_URL } from '@/lib/constants';
 
+export const runtime = 'edge';
+
 interface CommitRequest {
   repo: string;
   branch: string;
   path: string;
   filename: string;
   commitMessage: string;
-  extendedDescription: string;
   content: string; // Base64 encoded content
 }
 
@@ -26,22 +27,14 @@ export async function POST(request: Request) {
     }
 
     const body: CommitRequest = await request.json();
-    const {
-      repo,
-      branch,
-      path,
-      filename,
-      commitMessage,
-      extendedDescription,
-      content,
-    } = body;
+    const { repo, branch, path, filename, commitMessage, content } = body;
+
+    // Construct the file path
+    const filePath = path ? `${path}/${filename}` : filename;
 
     // Get the current file (if it exists) to get its SHA
     const getCurrentFile = async () => {
       try {
-        // Construct the file path
-        const filePath = path === filename ? filename : `${path}/${filename}`;
-
         const response = await fetch(
           `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}?ref=${branch}`,
           {
@@ -57,6 +50,7 @@ export async function POST(request: Request) {
         }
 
         const data = await response.json();
+        console.log(data);
         return data.sha;
       } catch (error) {
         console.error('Error fetching current file:', error);
@@ -72,19 +66,8 @@ export async function POST(request: Request) {
       message: commitMessage,
       content,
       branch,
-      ...(extendedDescription && {
-        // committer: { name: 'Committer Name', email: 'committer@example.com' },
-      }),
       ...(currentSha && { sha: currentSha }),
     };
-
-    // Construct the file path
-    let filePath = '';
-    if (currentSha) {
-      filePath = path === filename ? filename : `${path}/${filename}`;
-    } else {
-      filePath = path ? `${path}/${filename}` : filename;
-    }
 
     // Create or update the file
     const response = await fetch(

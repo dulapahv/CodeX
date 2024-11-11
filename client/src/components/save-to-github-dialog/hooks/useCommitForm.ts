@@ -10,7 +10,6 @@ export const useCommitForm = () => {
     defaultValues: {
       fileName: '',
       commitSummary: '',
-      extendedDescription: '',
     },
   });
 };

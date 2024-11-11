@@ -23,9 +23,7 @@
 }
 
 @layer base {
-  
-
-  :root  {
+  :root {
     --background: 219 37% 95%;
     --foreground: 219 5% 10%;
     --card: 219 37% 90%;
@@ -49,7 +47,7 @@
     --ring: 219 93% 60%;
     --radius: 0.5rem;
   }
-  .dark  {
+  .dark {
     --background: 219 37% 10%;
     --foreground: 219 5% 90%;
     --card: 219 37% 10%;
@@ -73,7 +71,6 @@
     --ring: 219 93% 60%;
     --radius: 0.5rem;
   }
-  
 }
 
 @layer base {

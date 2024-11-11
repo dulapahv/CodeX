@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
-import { BackButton } from './components/BackButton';
-import { CreateRoomSection } from './components/CreateRoomSection';
-import { JoinRoomSection } from './components/JoinRoomSection';
-import { LoadingCard } from './components/LoadingCard';
+import { BackButton } from './components/back-button';
+import { CreateRoomSection } from './components/create-room-section';
+import { JoinRoomSection } from './components/join-room-section';
+import { RedirectingCard } from './components/redirecting-card';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types/form';
@@ -84,7 +84,7 @@ export function JoinForm() {
   };
 
   if (createSuccessful || joinSuccessful) {
-    return <LoadingCard />;
+    return <RedirectingCard />;
   }
 
   return (

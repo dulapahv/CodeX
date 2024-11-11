@@ -19,7 +19,7 @@ import { Cursor, EditOp } from '@common/types/operation';
 
 import { socket } from '@/lib/socket';
 
-import { LoadingAlert } from './components/loading-alert';
+import { LoadingCard } from './components/loading-card';
 import { StatusBar } from './components/status-bar';
 import * as codeService from './service/code-service';
 import * as cursorService from './service/cursor-service';
@@ -152,11 +152,11 @@ export const MonacoEditor = memo(function MonacoEditor({
 
   return (
     <>
-      <div className="h-[calc(100%-24px)] animate-fade-in">
+      <div className="h-[calc(100%-24px)]">
         <Editor
           defaultLanguage="python"
           theme={theme}
-          loading={<LoadingAlert />}
+          loading={<LoadingCard />}
           beforeMount={editorService.handleBeforeMount}
           onMount={handleEditorMount}
           onChange={(
