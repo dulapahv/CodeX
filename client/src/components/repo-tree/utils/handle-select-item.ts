@@ -48,16 +48,16 @@ export const handleSelectItem = async (
     setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
   ) => void,
   setError: Dispatch<SetStateAction<string>>,
+  setRepo: Dispatch<SetStateAction<string>>,
   setBranch: Dispatch<SetStateAction<string>>,
-  setPath: Dispatch<SetStateAction<string>>,
 ) => {
   const extendedItem = item as ExtendedTreeDataItem;
   setSelectedItem(extendedItem);
 
   // Reset branch and path when selecting a new repository
   if (extendedItem.type === itemType.REPO) {
+    setRepo(extendedItem.full_name || '');
     setBranch('');
-    setPath('');
 
     if (!item.children) {
       await fetchBranches(extendedItem, setTreeData, setItemLoading, setError);
@@ -66,7 +66,6 @@ export const handleSelectItem = async (
   // Update branch when selecting a branch
   else if (extendedItem.type === itemType.BRANCH) {
     setBranch(extendedItem.name);
-    setPath(''); // Reset path when changing branches
 
     if (!item.children) {
       const parentRepo = treeData.find((repo) =>
@@ -90,8 +89,6 @@ export const handleSelectItem = async (
       extendedItem.type === itemType.FILE) &&
     extendedItem.path
   ) {
-    setPath(extendedItem.path);
-
     if (extendedItem.type === itemType.DIR && !item.children) {
       const { parentRepo, parentBranch } = findParents(treeData, item.id);
 

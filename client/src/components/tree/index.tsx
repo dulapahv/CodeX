@@ -155,7 +155,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-muted/80 before:opacity-0 before:duration-75 hover:before:opacity-100',
+                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-100',
                           selectedItemId === item.id &&
                             'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
                         )}
@@ -232,7 +232,7 @@ const Leaf = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-muted/80 before:opacity-0 before:duration-75 hover:before:opacity-100',
+        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-100',
         className,
         isSelected &&
           'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',

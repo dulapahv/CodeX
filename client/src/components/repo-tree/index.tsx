@@ -18,14 +18,14 @@ import { transformReposToTreeData } from './utils/transform-repos-to-tree';
 
 interface RepoTreeProps {
   setSelectedItem: Dispatch<SetStateAction<ExtendedTreeDataItem | null>>;
+  setRepo: Dispatch<SetStateAction<string>>;
   setBranch: Dispatch<SetStateAction<string>>;
-  setPath: Dispatch<SetStateAction<string>>;
 }
 
 export function RepoTree({
   setSelectedItem,
+  setRepo,
   setBranch,
-  setPath,
 }: RepoTreeProps) {
   const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,8 +70,8 @@ export function RepoTree({
           setTreeData,
           setItemLoading,
           setError,
+          setRepo,
           setBranch,
-          setPath,
         )
       }
     />
