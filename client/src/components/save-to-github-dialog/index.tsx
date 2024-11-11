@@ -5,7 +5,7 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { ExternalLink, LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { parseError } from '@/lib/utils';
@@ -130,14 +130,17 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
             return (
               <div className="flex flex-col text-sm">
                 <p>Changes committed successfully!</p>
-                <a
-                  href={result.content.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  View on GitHub
-                </a>
+                <div className="flex items-center gap-x-1 text-accent-foreground">
+                  <a
+                    href={result.content.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-fit hover:underline"
+                  >
+                    View on GitHub
+                  </a>
+                  <ExternalLink className="size-4" />
+                </div>
               </div>
             );
           },

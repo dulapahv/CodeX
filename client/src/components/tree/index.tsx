@@ -155,9 +155,9 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-100',
+                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
                           selectedItemId === item.id &&
-                            'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
+                            'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
                         )}
                         onClick={() => handleSelectChange(item)}
                       >
@@ -178,7 +178,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                           <LoaderCircle className="ml-2 h-4 w-4 animate-spin" />
                         )}
                       </AccordionTrigger>
-                      <AccordionContent className="pl-6">
+                      <AccordionContent className="ml-4 pl-2">
                         {item.children && (
                           <TreeItem
                             data={item.children}
@@ -232,10 +232,10 @@ const Leaf = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-100',
+        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
         className,
         isSelected &&
-          'text-accent-foreground before:border-l-2 before:border-l-accent-foreground/50 before:bg-accent before:opacity-100 dark:before:border-0',
+          'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
       )}
       {...props}
     >
@@ -284,7 +284,7 @@ const AccordionContent = forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all',
+      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down left-3 overflow-hidden border-l border-muted text-sm transition-all',
       className,
     )}
     {...props}
