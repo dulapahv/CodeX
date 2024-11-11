@@ -8,11 +8,18 @@ export async function GET(req: NextRequest) {
   // OAuth callback
   if (code) {
     const result = await githubAuthHandlers.callback(code);
-    return result.success
-      ? Response.redirect('/oauth/github?status=success')
-      : Response.redirect(
-          `/oauth/github?status=${result.error}&description=${result.description}`,
-        );
+
+    // Get the base URL from the request
+    const baseUrl = new URL(req.url).origin;
+
+    if (result.success) {
+      return Response.redirect(`${baseUrl}/oauth/github?status=success`);
+    } else {
+      const redirectUrl = new URL(`${baseUrl}/oauth/github`);
+      redirectUrl.searchParams.set('status', result.error);
+      redirectUrl.searchParams.set('description', result.description);
+      return Response.redirect(redirectUrl.toString());
+    }
   }
 
   // Regular auth check
