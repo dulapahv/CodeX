@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 
 import { BackButton } from './components/back-button';
 import { CreateRoomSection } from './components/create-room-section';
+import { InvitedSection } from './components/invited-section';
 import { JoinRoomSection } from './components/join-room-section';
 import { RedirectingCard } from './components/redirecting-card';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
@@ -91,15 +92,38 @@ export function JoinForm() {
     <Card className="w-[480px] animate-fade-in">
       <CardHeader>
         <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
-        <CardDescription>
-          {room
-            ? 'You have been invited to a room. Enter your name to join.'
-            : 'Create or join a room to start coding.'}
-        </CardDescription>
+        {!room && (
+          <CardDescription>
+            Create or join a room to start coding.
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-6">
-          {!room && (
+          {room ? (
+            <>
+              <div className="space-y-2 text-center">
+                <p>You&apos;ve been invited to join a coding session!</p>
+                <p className="text-lg">
+                  Room: <span className="font-bold">{room}</span>
+                </p>
+                <p className="text-sm">Enter your name to join the room</p>
+              </div>
+              <InvitedSection
+                register={registerJoin}
+                handleSubmit={handleSubmitJoin}
+                onSubmit={handleJoinRoom}
+                onError={handleFormError}
+                errors={joinErrors}
+                isSubmitting={isJoining}
+                isCreating={isCreating}
+              />
+              <BackButton
+                onClick={() => router.push('/')}
+                disabled={isJoining}
+              />
+            </>
+          ) : (
             <>
               <CreateRoomSection
                 register={registerCreate}
@@ -111,23 +135,17 @@ export function JoinForm() {
                 isJoining={isJoining}
               />
               <Separator />
+              <JoinRoomSection
+                register={registerJoin}
+                handleSubmit={handleSubmitJoin}
+                onSubmit={handleJoinRoom}
+                onError={handleFormError}
+                errors={joinErrors}
+                isSubmitting={isJoining}
+                isCreating={isCreating}
+              />
             </>
           )}
-
-          {room && (
-            <BackButton onClick={() => router.push('/')} disabled={isJoining} />
-          )}
-
-          <JoinRoomSection
-            register={registerJoin}
-            handleSubmit={handleSubmitJoin}
-            onSubmit={handleJoinRoom}
-            onError={handleFormError}
-            errors={joinErrors}
-            isSubmitting={isJoining}
-            isCreating={isCreating}
-            room={room}
-          />
         </div>
       </CardContent>
     </Card>

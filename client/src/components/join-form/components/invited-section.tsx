@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 
 import type { JoinRoomForm } from '../types/form';
 
-interface JoinRoomSectionProps {
+interface InvitedSectionProps {
   register: UseFormRegister<JoinRoomForm>;
   handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
   onSubmit: (data: JoinRoomForm) => Promise<void> | Promise<any>;
@@ -21,7 +21,7 @@ interface JoinRoomSectionProps {
   isCreating: boolean;
 }
 
-export const JoinRoomSection = ({
+export const InvitedSection = ({
   register,
   handleSubmit,
   onSubmit,
@@ -29,23 +29,10 @@ export const JoinRoomSection = ({
   errors,
   isSubmitting,
   isCreating,
-}: JoinRoomSectionProps) => {
+}: InvitedSectionProps) => {
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data), onError)}>
-      <div className="flex flex-col space-y-4">
-        <h3 className="text-lg font-medium">Join a Room</h3>
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="room-id">Room ID</Label>
-          <Input
-            id="room-id"
-            placeholder="Enter room ID"
-            disabled={isCreating || isSubmitting}
-            {...register('roomId')}
-          />
-          {errors.roomId && (
-            <p className="text-sm text-red-500">{errors.roomId.message}</p>
-          )}
-        </div>
+      <div className="flex flex-col gap-y-4">
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="name-join">Name</Label>
           <Input

@@ -21,7 +21,7 @@ export function onSubmit(
     success: (result) => {
       closeDialog();
       return (
-        <div className="flex flex-col text-sm">
+        <div className="flex flex-col text-sm font-medium">
           <p>Changes committed successfully!</p>
           <div className="flex items-center gap-x-1 text-accent-foreground">
             <a

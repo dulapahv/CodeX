@@ -47,7 +47,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     const [isOpen, setIsOpen] = useState(false);
     const [selectedItem, setSelectedItem] =
       useState<ExtendedTreeDataItem | null>(null);
-    const [fileName, setFileName] = useState('');
     const [repo, setRepo] = useState('');
     const [branch, setBranch] = useState('');
 
@@ -79,7 +78,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       const fileName =
         selectedItem?.type === itemType.FILE ? selectedItem.name : '';
       if (fileName) {
-        setFileName(fileName);
         setValue('fileName', fileName);
         clearErrors('fileName');
       }

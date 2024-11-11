@@ -27,7 +27,7 @@ export function getUserRoom(socket: Socket): string | undefined {
 export function create(socket: Socket, name: string): void {
   userService.connect(socket, name);
 
-  const roomID = uuidv4().slice(0, 8);
+  const roomID = uuidv4().slice(0, 8).toUpperCase();
 
   socket.join(roomID);
   socket.emit(RoomServiceMsg.CREATED, roomID, socket.id);

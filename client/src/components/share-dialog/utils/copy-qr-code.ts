@@ -12,6 +12,7 @@ export async function copyQRCode(
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const img = new Image();
+
   img.onload = () => {
     // Increase resolution by scaling
     const scale = 2; // Adjust this value to increase/decrease resolution
@@ -20,27 +21,49 @@ export async function copyQRCode(
     ctx?.scale(scale, scale);
     ctx?.drawImage(img, 0, 0);
 
+    // Convert canvas to blob
     canvas.toBlob((blob) => {
       if (blob) {
-        navigator.clipboard
-          .write([new ClipboardItem({ 'image/png': blob })])
-          .then(() => {
-            setCopyStatus((prevState) => ({
-              ...prevState,
-              qrCodeCopied: true,
-            }));
-            setTimeout(() => {
-              setCopyStatus((prevState) => ({
-                ...prevState,
-                qrCodeCopied: false,
-              }));
-            }, 500);
-          })
-          .catch((error) => {
-            console.error('Failed to copy QR code:', error);
-          });
+        // Try using the Clipboard API first
+        if (navigator.clipboard && navigator.clipboard.write) {
+          navigator.clipboard
+            .write([new ClipboardItem({ 'image/png': blob })])
+            .then(handleCopySuccess)
+            .catch(handleCopyFallback);
+        } else {
+          // Fallback for browsers that don't support Clipboard API
+          handleCopyFallback();
+        }
       }
     }, 'image/png');
   };
-  img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+
+  img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
+
+  function handleCopySuccess() {
+    setCopyStatus((prevState) => ({
+      ...prevState,
+      qrCodeCopied: true,
+    }));
+    setTimeout(() => {
+      setCopyStatus((prevState) => ({
+        ...prevState,
+        qrCodeCopied: false,
+      }));
+    }, 500);
+  }
+
+  function handleCopyFallback() {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'qr-code.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Notify user to manually save the image
+    alert('Please save the downloaded image to your device.');
+    handleCopySuccess();
+  }
 }
