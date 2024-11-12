@@ -4,7 +4,10 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import * as monaco from 'monaco-editor';
+import { type Monaco } from '@monaco-editor/react';
+
+// Cannot import as it'll trigger window is not defined error from SSR stuffs
+// import * as monaco from 'monaco-editor';
 
 interface Language {
   alias: string;
@@ -22,7 +25,7 @@ let languagesCache: Language[] | null = null;
  * @param languageId - The Monaco language identifier
  * @returns The preferred file extension including the dot, or '.txt' if none found
  */
-function getFileExtension(languageId: string): string {
+function getFileExtension(languageId: string, monaco: Monaco): string {
   if (!languagesCache) {
     languagesCache = monaco.languages.getLanguages().map(
       (language): Language => ({
@@ -46,7 +49,8 @@ function getFileExtension(languageId: string): string {
  * @throws Error if editor is null or getValue() fails
  */
 export function saveLocal(
-  editor: monaco.editor.IStandaloneCodeEditor | null,
+  monaco: Monaco,
+  editor: any, // Can't use `editor: monaco.editor.IStandaloneCodeEditor | null` as we can't import monaco
   filename = `kasca-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`,
 ): void {
   if (!editor) {
@@ -61,7 +65,7 @@ export function saveLocal(
       throw new Error('Editor model not found');
     }
 
-    const extension = getFileExtension(model.getLanguageId());
+    const extension = getFileExtension(model.getLanguageId(), monaco);
     const fullFilename = `${filename}${extension}`;
 
     // Create blob and download

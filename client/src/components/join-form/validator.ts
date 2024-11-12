@@ -9,7 +9,7 @@ const nameSchema = z
 
 export const joinRoomSchema = z.object({
   name: nameSchema,
-  roomId: z.string().min(1, 'Room ID is required'),
+  roomId: z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/, 'Invalid room ID'),
 });
 
 export const createRoomSchema = z.object({

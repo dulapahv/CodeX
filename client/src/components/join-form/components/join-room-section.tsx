@@ -3,6 +3,7 @@ import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
+  UseFormSetValue,
 } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import type { JoinRoomForm } from '../types/form';
+import { onRoomIdChange } from '../utils/on-room-id-change';
 
 interface JoinRoomSectionProps {
   register: UseFormRegister<JoinRoomForm>;
+  setValue: UseFormSetValue<JoinRoomForm>;
   handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
   onSubmit: (data: JoinRoomForm) => Promise<void> | Promise<any>;
   onError: () => void;
@@ -23,6 +26,7 @@ interface JoinRoomSectionProps {
 
 export const JoinRoomSection = ({
   register,
+  setValue,
   handleSubmit,
   onSubmit,
   onError,
@@ -38,9 +42,11 @@ export const JoinRoomSection = ({
           <Label htmlFor="room-id">Room ID</Label>
           <Input
             id="room-id"
-            placeholder="Enter room ID"
+            placeholder="XXXX-XXXX"
             disabled={isCreating || isSubmitting}
-            {...register('roomId')}
+            {...register('roomId', {
+              onChange: (e) => onRoomIdChange(e, setValue),
+            })}
           />
           {errors.roomId && (
             <p className="text-sm text-red-500">{errors.roomId.message}</p>

@@ -11,7 +11,7 @@ import { LoaderCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const LoadingCard = memo(() => (
-  <div className="top-0 fixed left-0 flex size-full items-center justify-center">
+  <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
     <Alert className="max-w-md">
       <LoaderCircle className="size-5 animate-spin" />
       <AlertTitle>Setting up editor</AlertTitle>

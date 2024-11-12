@@ -23,6 +23,15 @@ function getRoomKey(roomID: string): object {
 }
 
 /**
+ * Check whether a room exists
+ * @param roomID Room identifier
+ * @returns True if the room exists, false otherwise
+ */
+export function roomExists(roomID: string): boolean {
+  return roomKeys.has(roomID);
+}
+
+/**
  * Retrieve the current code for a room with O(1) lookup
  * @param roomID Room identifier
  * @returns Current code for the room

@@ -87,8 +87,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       toast.error('Please check the information and try again.');
     };
 
-    const email = 'TEST_EMAIL@GMAIL.COM';
-
     const formContent = (
       <>
         <div className="mx-4 min-h-10 flex-1 rounded-md border md:mx-0 md:mb-0">
@@ -140,30 +138,25 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                 onError,
               )}
             >
-              <AlertDialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
-                <p className="w-full text-sm text-muted-foreground">
-                  Commit Email: <span className="font-semibold">{email}</span>
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={closeDialog}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        <LoaderCircle className="mr-2 size-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Save'
-                    )}
-                  </Button>
-                </div>
+              <AlertDialogFooter>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={closeDialog}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <LoaderCircle className="mr-2 size-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
+                </Button>
               </AlertDialogFooter>
             </form>
           </AlertDialogContent>
@@ -172,11 +165,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     }
 
     return (
-      <Drawer
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        dismissible={!isSubmitting}
-      >
+      <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={false}>
         <DrawerContent className="first:[&>div]:mt-0 first:[&>div]:bg-transparent">
           <div className="flex h-[90vh] flex-col">
             <DrawerHeader className="flex-shrink-0 text-left">
@@ -185,7 +174,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                 Select a repository, branch, and folder to save your code.
               </DrawerDescription>
             </DrawerHeader>
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
               {formContent}
             </div>
             <form
@@ -197,9 +186,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               className="flex-shrink-0"
             >
               <DrawerFooter>
-                <p className="w-full text-sm text-muted-foreground">
-                  Commit Email: <span className="font-semibold">{email}</span>
-                </p>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>

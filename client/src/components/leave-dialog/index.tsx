@@ -2,17 +2,16 @@ import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useRoomActions } from '@/hooks/use-room-actions';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -54,30 +53,28 @@ export const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 
     if (isDesktop) {
       return (
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>{DEFAULT_TITLE}</AlertDialogTitle>
-              <AlertDialogDescription>
-                {DEFAULT_DESCRIPTION}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={closeDialog}>
-                Cancel
-              </AlertDialogCancel>
-              <Button variant="destructive" onClick={handleLeaveRoom} asChild>
-                <AlertDialogAction>Leave</AlertDialogAction>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
+              <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="secondary">Close</Button>
+              </DialogClose>
+              <Button variant="destructive" onClick={handleLeaveRoom}>
+                Leave
               </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       );
     }
 
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={false}>
-        <DrawerContent className="first:[&>div]:mt-0 first:[&>div]:bg-transparent">
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
             <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>

@@ -160,7 +160,7 @@ export const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
     if (isDesktop) {
       return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
               <DialogDescription>

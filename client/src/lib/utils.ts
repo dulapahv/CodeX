@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { RoomServiceMsg } from '@common/types/message';
 
 import { socket } from '@/lib/socket';
+import { formatRoomId } from '@/utils/format-room-id';
 
 import { storage } from './services/storage';
 
@@ -11,6 +12,8 @@ export function createRoom(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
     socket.emit(RoomServiceMsg.CREATE, name);
     socket.on(RoomServiceMsg.CREATED, (roomId: string, userID: string) => {
+      roomId = formatRoomId(roomId);
+
       storage.setRoomId(roomId);
       storage.setUserId(userID);
 
@@ -21,6 +24,8 @@ export function createRoom(name: string): Promise<string> {
 
 export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
+    roomId = roomId.replace(/-/g, '');
+
     socket.emit(RoomServiceMsg.JOIN, roomId, name);
     socket.on(RoomServiceMsg.NOT_FOUND, () => {
       reject('Room does not exist. Please check the room ID and try again.');

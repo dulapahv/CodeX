@@ -1,7 +1,8 @@
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 
 import { RoomServiceMsg } from '../../../common/types/message';
+import { generateRoomID } from '../utils/generate-room-id';
+import * as codeService from './code-service';
 import * as userService from './user-service';
 
 /**
@@ -27,7 +28,10 @@ export function getUserRoom(socket: Socket): string | undefined {
 export function create(socket: Socket, name: string): void {
   userService.connect(socket, name);
 
-  const roomID = uuidv4().slice(0, 8).toUpperCase();
+  let roomID: string;
+  do {
+    roomID = generateRoomID();
+  } while (codeService.roomExists(roomID)); // Check for collisions
 
   socket.join(roomID);
   socket.emit(RoomServiceMsg.CREATED, roomID, socket.id);

@@ -40,6 +40,7 @@ export function JoinForm() {
   const {
     register: registerJoin,
     handleSubmit: handleSubmitJoin,
+    setValue: setJoinValue,
     formState: {
       errors: joinErrors,
       isSubmitting: isJoining,
@@ -90,7 +91,7 @@ export function JoinForm() {
 
   return (
     <Card className="w-[480px] animate-fade-in">
-      <CardHeader>
+      <CardHeader className="p-4 pt-6 md:p-6">
         <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
         {!room && (
           <CardDescription>
@@ -98,7 +99,7 @@ export function JoinForm() {
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-6 md:px-6 md:pt-0">
         <div className="grid w-full items-center gap-6">
           {room ? (
             <>
@@ -137,6 +138,7 @@ export function JoinForm() {
               <Separator />
               <JoinRoomSection
                 register={registerJoin}
+                setValue={setJoinValue}
                 handleSubmit={handleSubmitJoin}
                 onSubmit={handleJoinRoom}
                 onError={handleFormError}

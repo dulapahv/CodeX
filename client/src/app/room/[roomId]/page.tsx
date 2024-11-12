@@ -96,7 +96,7 @@ export default function Room({ params }: RoomProps) {
           />
         </div>
       ) : (
-        <div className="fixed left-0 top-0 flex size-full items-center justify-center">
+        <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
           <Alert className="max-w-md">
             <LoaderCircle className="size-5 animate-spin" />
             <AlertTitle>Loading session</AlertTitle>

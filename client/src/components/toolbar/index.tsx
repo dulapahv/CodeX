@@ -48,8 +48,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
   const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     function handleKeyDown(event: KeyboardEvent) {
       if (event.ctrlKey || event.metaKey) {
         if (event.shiftKey) {
@@ -67,7 +65,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               break;
             case 's':
               event.preventDefault();
-              // saveLocal(editor);
+              if (monaco) saveLocal(monaco, editor);
               break;
           }
         }
@@ -104,7 +102,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
 
   const actions = {
     saveLocal: () => {
-      // saveLocal(editor);
+      saveLocal(monaco, editor);
     },
     saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
