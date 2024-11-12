@@ -219,12 +219,14 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                         <>
                           Saving to:{' '}
                           <span className="font-semibold">
-                            {repo}/{branch}/{selectedItem.type === itemType.DIR
-                              ? selectedItem.path
+                            {repo}
+                            {branch ? `/${branch}` : ''}
+                            {selectedItem.type === itemType.DIR
+                              ? `/${selectedItem.path}`
                               : selectedItem.path
                                   ?.split('/')
                                   .slice(0, -1)
-                                  .join('/')}
+                                  .join('/') || '/'}
                           </span>
                         </>
                       ) : (
@@ -279,7 +281,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                 Select a repository, branch, and folder to save your code.
               </DrawerDescription>
             </DrawerHeader>
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
               {!isLoading && !githubUser ? authContent : formContent}
             </div>
 
@@ -292,6 +294,36 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               className="flex-shrink-0"
             >
               <DrawerFooter>
+                <div className="w-full">
+                  <p className="text-xs text-muted-foreground">
+                    {selectedItem ? (
+                      <>
+                        Saving to:{' '}
+                        <span className="font-semibold">
+                          {repo}
+                          {branch ? `/${branch}` : ''}
+                          {selectedItem.type === itemType.DIR
+                            ? `/${selectedItem.path}`
+                            : selectedItem.path
+                                ?.split('/')
+                                .slice(0, -1)
+                                .join('/') || '/'}
+                        </span>
+                      </>
+                    ) : (
+                      'Select a folder or file to save your code.'
+                    )}
+                  </p>
+                  <div className="flex flex-wrap items-center text-xs text-muted-foreground">
+                    <span>Connected as</span>
+                    <span className="ml-1 font-semibold">{githubUser}</span>
+                    <span>. To disconnect, go to</span>
+                    <span className="flex items-center font-semibold">
+                      <Settings className="mx-1 inline size-3" />
+                      Settings.
+                    </span>
+                  </div>
+                </div>
                 {githubUser && (
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? (
