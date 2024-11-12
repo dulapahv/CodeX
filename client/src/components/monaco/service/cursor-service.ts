@@ -131,3 +131,24 @@ export const updateCursor = (
     delete cleanupTimeoutsRef.current[userID];
   }
 };
+
+/**
+ * Remove cursor and selection when a user leaves.
+ * @param userID User identifier.
+ * @param cursorDecorationsRef Cursor decorations reference.
+ */
+export const removeCursor = (
+  userID: string,
+  cursorDecorationsRef: React.MutableRefObject<
+    Record<string, monaco.editor.IEditorDecorationsCollection>
+  >,
+): void => {
+  const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
+  cursorElements.forEach((el) => el.remove());
+  const selectionElements = document.querySelectorAll(
+    `.cursor-${userID}-selection`,
+  );
+  selectionElements.forEach((el) => el.remove());
+
+  cursorDecorationsRef.current[userID]?.clear();
+};

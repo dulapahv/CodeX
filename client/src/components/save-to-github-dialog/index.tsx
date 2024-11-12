@@ -5,9 +5,10 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from '@/lib/constants';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { RepoBrowser } from '@/components/repo-browser';
 import {
@@ -49,6 +50,8 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       useState<ExtendedTreeDataItem | null>(null);
     const [repo, setRepo] = useState('');
     const [branch, setBranch] = useState('');
+    const [githubUser, setGithubUser] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const {
@@ -59,6 +62,54 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       reset,
       formState: { errors, isSubmitting },
     } = useCommitForm();
+
+    // GitHub authentication
+    useEffect(() => {
+      if (isOpen) {
+        fetch('/api/github/auth', {
+          credentials: 'include',
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => setGithubUser(data?.username ?? null))
+          .catch(console.error)
+          .finally(() => setIsLoading(false));
+      }
+    }, [isOpen]);
+
+    useEffect(() => {
+      const handleMessage = async (event: MessageEvent) => {
+        if (event.data.type === 'github-oauth' && event.data.success) {
+          const response = await fetch('/api/github/auth', {
+            credentials: 'include',
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setGithubUser(data.username);
+          }
+          window.authWindow?.close();
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
+    function loginWithGithub() {
+      const width = 790;
+      const height = 720;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+
+      if (window.authWindow?.closed === false) {
+        window.authWindow.focus();
+      } else {
+        window.authWindow = window.open(
+          `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
+          '_blank',
+          `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
+        );
+      }
+    }
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => {
@@ -87,8 +138,36 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
       toast.error('Please check the information and try again.');
     };
 
+    const authContent = (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4">
+        {isLoading ? (
+          <LoaderCircle className="size-6 animate-spin" />
+        ) : !githubUser ? (
+          <>
+            <p className="text-center text-sm text-muted-foreground">
+              Please log in with GitHub to save your code.
+            </p>
+            <Button onClick={loginWithGithub} variant="outline">
+              Login with GitHub
+            </Button>
+          </>
+        ) : null}
+      </div>
+    );
+
     const formContent = (
       <>
+        {githubUser && (
+          <div className="mx-4 flex flex-wrap items-center text-xs text-muted-foreground md:mx-0">
+            <span>Connected as</span>
+            <span className="ml-1 font-semibold">{githubUser}</span>
+            <span>. To disconnect, go to</span>
+            <span className='font-semibold flex items-center'>
+              <Settings className="mx-1 inline size-3" />
+              Settings.
+            </span>
+          </div>
+        )}
         <div className="mx-4 min-h-10 flex-1 md:mx-0 md:mb-0">
           <RepoBrowser
             setSelectedItem={setSelectedItem}
@@ -123,14 +202,18 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     if (isDesktop) {
       return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialogContent className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl" autoFocus={false}>
+          <AlertDialogContent
+            className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl"
+            autoFocus={false}
+          >
             <AlertDialogHeader className="flex-shrink-0 text-left">
               <AlertDialogTitle>Save to GitHub</AlertDialogTitle>
               <AlertDialogDescription>
                 Select a repository, branch, and folder to save your code.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            {formContent}
+            {!isLoading && !githubUser ? authContent : formContent}
+
             <form
               onSubmit={handleSubmit(
                 (data) =>
@@ -147,16 +230,18 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <LoaderCircle className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
+                {githubUser && (
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <LoaderCircle className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save'
+                    )}
+                  </Button>
+                )}
               </AlertDialogFooter>
             </form>
           </AlertDialogContent>
@@ -175,8 +260,9 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               </DrawerDescription>
             </DrawerHeader>
             <div className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4">
-              {formContent}
+              {!isLoading && !githubUser ? authContent : formContent}
             </div>
+
             <form
               onSubmit={handleSubmit(
                 (data) =>
@@ -196,16 +282,18 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                     'Save'
                   )}
                 </Button>
-                <DrawerClose asChild>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={closeDialog}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                </DrawerClose>
+                {githubUser && (
+                  <DrawerClose asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={closeDialog}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                  </DrawerClose>
+                )}
               </DrawerFooter>
             </form>
           </div>
