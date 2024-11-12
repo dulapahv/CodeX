@@ -89,7 +89,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
 
     const formContent = (
       <>
-        <div className="mx-4 min-h-10 flex-1 rounded-md border md:mx-0 md:mb-0">
+        <div className="mx-4 min-h-10 flex-1 md:mx-0 md:mb-0">
           <RepoBrowser
             setSelectedItem={setSelectedItem}
             setRepo={setRepo}
@@ -123,7 +123,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     if (isDesktop) {
       return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialogContent className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl">
+          <AlertDialogContent className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl" autoFocus={false}>
             <AlertDialogHeader className="flex-shrink-0 text-left">
               <AlertDialogTitle>Save to GitHub</AlertDialogTitle>
               <AlertDialogDescription>

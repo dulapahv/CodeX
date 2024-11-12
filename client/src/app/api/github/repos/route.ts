@@ -5,8 +5,11 @@ import { GITHUB_API_URL } from '@/lib/constants';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q');
+
     // Get access token from cookies
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token');
@@ -18,8 +21,13 @@ export async function GET() {
       );
     }
 
+    // Construct the GitHub API URL with search query and sort parameters
+    const apiUrl = query
+      ? `${GITHUB_API_URL}/search/repositories?q=${encodeURIComponent(query)}+in:name+user:@me&sort=updated&order=desc`
+      : `${GITHUB_API_URL}/user/repos?sort=updated&order=desc`;
+
     // Fetch repositories from GitHub API
-    const response = await fetch(`${GITHUB_API_URL}/user/repos`, {
+    const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
         Accept: 'application/vnd.github.v3+json',
@@ -34,7 +42,8 @@ export async function GET() {
       );
     }
 
-    const repositories = await response.json();
+    const data = await response.json();
+    const repositories = query ? data.items : data;
 
     // Return the repositories data
     return NextResponse.json({
