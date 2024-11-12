@@ -1,16 +1,12 @@
-import type {
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-  UseFormSetValue,
-} from 'react-hook-form';
+import { ChangeEvent } from 'react';
+import type { UseFormSetValue } from 'react-hook-form';
 
 import { formatRoomId } from '@/utils/format-room-id';
 
 import type { JoinRoomForm } from '../types/form';
 
 export function onRoomIdChange(
-  e: React.ChangeEvent<HTMLInputElement>,
+  e: ChangeEvent<HTMLInputElement>,
   setValue: UseFormSetValue<JoinRoomForm>,
 ) {
   const rawValue = e.target.value.toUpperCase();

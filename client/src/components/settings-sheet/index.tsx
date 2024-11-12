@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, LogOut, Settings } from 'lucide-react';
 import * as monaco from 'monaco-editor';
@@ -33,7 +33,7 @@ export function SettingSheet({ monaco, editor }: SettingSheetProps) {
   const [githubUser, setGithubUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetch('/api/github/auth', {
       credentials: 'include',
     })

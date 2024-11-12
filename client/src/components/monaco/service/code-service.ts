@@ -8,6 +8,7 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
+import { MutableRefObject } from 'react';
 import * as monaco from 'monaco-editor';
 
 import { EditOp } from '@common/types/operation';
@@ -20,8 +21,8 @@ import { EditOp } from '@common/types/operation';
  */
 export const updateCode = (
   op: EditOp,
-  editorInstanceRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  skipUpdateRef: React.MutableRefObject<boolean>,
+  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  skipUpdateRef: MutableRefObject<boolean>,
 ): void => {
   const editor = editorInstanceRef.current;
   if (!editor) return;

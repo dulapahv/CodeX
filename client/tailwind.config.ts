@@ -65,6 +65,8 @@ const config: Config = {
           'swing-in-top-fwd 1.2s cubic-bezier(0.175, 0.885, 0.320, 1.275)   both',
         'swing-in-bottom-fwd':
           'swing-in-bottom-fwd 1.2s cubic-bezier(0.175, 0.885, 0.320, 1.275)   both',
+        'fade-in-top':
+          'fade-in-top 1s cubic-bezier(0.075, 0.820, 0.165, 1.000)   both',
       },
       keyframes: {
         'scale-up-center': {
@@ -104,6 +106,16 @@ const config: Config = {
           to: {
             transform: 'rotateX(0)',
             'transform-origin': 'bottom',
+            opacity: '1',
+          },
+        },
+        'fade-in-top': {
+          '0%': {
+            transform: 'translateY(-25px)',
+            opacity: '0',
+          },
+          to: {
+            transform: 'translateY(0)',
             opacity: '1',
           },
         },

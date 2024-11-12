@@ -11,6 +11,7 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
+import { MutableRefObject } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
@@ -32,12 +33,12 @@ import { createCursorStyle } from '../utils/create-cursor-style';
 export const updateCursor = (
   userID: string,
   cursor: Cursor,
-  editorInstanceRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  monacoInstanceRef: React.MutableRefObject<Monaco | null>,
-  cursorDecorationsRef: React.MutableRefObject<
+  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  monacoInstanceRef: MutableRefObject<Monaco | null>,
+  cursorDecorationsRef: MutableRefObject<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >,
-  cleanupTimeoutsRef: React.MutableRefObject<Record<string, NodeJS.Timeout>>,
+  cleanupTimeoutsRef: MutableRefObject<Record<string, NodeJS.Timeout>>,
 ): void => {
   const editor = editorInstanceRef.current;
   const monacoInstance = monacoInstanceRef.current;
@@ -139,7 +140,7 @@ export const updateCursor = (
  */
 export const removeCursor = (
   userID: string,
-  cursorDecorationsRef: React.MutableRefObject<
+  cursorDecorationsRef: MutableRefObject<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >,
 ): void => {

@@ -13,7 +13,7 @@
  * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
  */
 
-import React, { MutableRefObject } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
@@ -52,9 +52,7 @@ export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monaco: Monaco,
   disposablesRef: MutableRefObject<monaco.IDisposable[]>,
-  setCursorPosition: React.Dispatch<
-    React.SetStateAction<StatusBarCursorPosition>
-  >,
+  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
   defaultCode?: string,
 ): void => {
   if (defaultCode) {

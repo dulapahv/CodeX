@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { FocusEvent, useRef } from 'react';
 import { LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -22,7 +22,7 @@ export function LeaveButton({ roomId, className }: LeaveButtonProps) {
     leaveDialogRef.current?.openDialog();
   };
 
-  const handleTooltipFocus = (e: React.FocusEvent) => {
+  const handleTooltipFocus = (e: FocusEvent) => {
     e.preventDefault();
   };
 

@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useState,
 } from 'react';
 import { LoaderCircle, Settings } from 'lucide-react';
@@ -64,7 +65,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
     } = useCommitForm();
 
     // GitHub authentication
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (isOpen) {
         fetch('/api/github/auth', {
           credentials: 'include',
@@ -157,17 +158,6 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
 
     const formContent = (
       <>
-        {githubUser && (
-          <div className="mx-4 flex flex-wrap items-center text-xs text-muted-foreground md:mx-0">
-            <span>Connected as</span>
-            <span className="ml-1 font-semibold">{githubUser}</span>
-            <span>. To disconnect, go to</span>
-            <span className="flex items-center font-semibold">
-              <Settings className="mx-1 inline size-3" />
-              Settings.
-            </span>
-          </div>
-        )}
         <div className="mx-4 min-h-10 flex-1 md:mx-0 md:mb-0">
           <RepoBrowser
             setSelectedItem={setSelectedItem}
@@ -221,7 +211,37 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
                 onError,
               )}
             >
-              <AlertDialogFooter>
+              <AlertDialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
+                {githubUser && (
+                  <div className="w-full">
+                    <p className="text-xs text-muted-foreground">
+                      {selectedItem ? (
+                        <>
+                          Saving to:{' '}
+                          <span className="font-semibold">
+                            {repo}/{branch}/{selectedItem.type === itemType.DIR
+                              ? selectedItem.path
+                              : selectedItem.path
+                                  ?.split('/')
+                                  .slice(0, -1)
+                                  .join('/')}
+                          </span>
+                        </>
+                      ) : (
+                        'Select a folder or file to save your code.'
+                      )}
+                    </p>
+                    <div className="flex flex-wrap items-center text-xs text-muted-foreground">
+                      <span>Connected as</span>
+                      <span className="ml-1 font-semibold">{githubUser}</span>
+                      <span>. To disconnect, go to</span>
+                      <span className="flex items-center font-semibold">
+                        <Settings className="mx-1 inline size-3" />
+                        Settings.
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <Button
                   type="button"
                   variant="secondary"
