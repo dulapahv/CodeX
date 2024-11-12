@@ -162,7 +162,7 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
             <span>Connected as</span>
             <span className="ml-1 font-semibold">{githubUser}</span>
             <span>. To disconnect, go to</span>
-            <span className='font-semibold flex items-center'>
+            <span className="flex items-center font-semibold">
               <Settings className="mx-1 inline size-3" />
               Settings.
             </span>
@@ -272,28 +272,28 @@ export const SaveToGithubDialog = forwardRef<SaveToGithubDialogRef>(
               className="flex-shrink-0"
             >
               <DrawerFooter>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <LoaderCircle className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
                 {githubUser && (
-                  <DrawerClose asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={closeDialog}
-                      disabled={isSubmitting}
-                    >
-                      Cancel
-                    </Button>
-                  </DrawerClose>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <LoaderCircle className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save'
+                    )}
+                  </Button>
                 )}
+                <DrawerClose asChild>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={closeDialog}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                </DrawerClose>
               </DrawerFooter>
             </form>
           </div>
