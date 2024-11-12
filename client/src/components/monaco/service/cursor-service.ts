@@ -64,6 +64,7 @@ export const updateCursor = (
     options: {
       className: `cursor-${userID}`,
       beforeContentClassName: 'cursor-widget',
+      hoverMessage: { value: `${name}'s cursor` },
       stickiness:
         monacoInstance.editor.TrackedRangeStickiness
           .NeverGrowsWhenTypingAtEdges,
@@ -129,35 +130,4 @@ export const updateCursor = (
     clearTimeout(cleanupTimeoutsRef.current[userID]);
     delete cleanupTimeoutsRef.current[userID];
   }
-
-  // Set cleanup timeout only if there's no selection
-  if (!hasSelection) {
-    cleanupTimeoutsRef.current[userID] = setTimeout(() => {
-      cursorDecoration.clear();
-      delete cursorDecorationsRef.current[userID];
-      styleElement?.remove();
-      delete cleanupTimeoutsRef.current[userID];
-    }, 3000);
-  }
-};
-
-/**
- * Remove cursor and selection when a user leaves.
- * @param userID User identifier.
- * @param cursorDecorationsRef Cursor decorations reference.
- */
-export const removeCursor = (
-  userID: string,
-  cursorDecorationsRef: React.MutableRefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
-  >,
-): void => {
-  const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-  cursorElements.forEach((el) => el.remove());
-  const selectionElements = document.querySelectorAll(
-    `.cursor-${userID}-selection`,
-  );
-  selectionElements.forEach((el) => el.remove());
-
-  cursorDecorationsRef.current[userID]?.clear();
 };

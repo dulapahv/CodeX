@@ -1,11 +1,4 @@
 /**
- * Utility function to create a CSS style for a cursor, cursor selection, and
- * cursor name.
- *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
- */
-
-/**
  * Create a CSS style for a cursor, cursor selection, and cursor name.
  * @param userID User identifier.
  * @param bgColor Background color.
@@ -33,7 +26,7 @@ export const createCursorStyle = (
     color: ${color};
     position: absolute;
     font-weight: bold;
-    top: ${isFirstLine ? '19px' : '-19px'};
+    ${isFirstLine ? 'top: 19px;' : 'top: -19px;'}
     height: 19px;
     font-size: 12px;
     padding: 0 4px;
@@ -43,7 +36,7 @@ export const createCursorStyle = (
     ${
       !hasSelection
         ? `
-    animation: cursorFadeOut 0.2s ease-in forwards;
+    animation: cursorLabelFadeOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     animation-delay: 2.7s;`
         : ''
     }
