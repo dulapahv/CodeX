@@ -8,7 +8,7 @@
  * 2. removeCursor
  *    - Remove cursor and selection when a user leaves.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { MutableRefObject } from 'react';
@@ -19,7 +19,7 @@ import { Cursor } from '@common/types/operation';
 
 import { userMap } from '@/lib/services/user-map';
 
-import { createCursorStyle } from '../utils/create-cursor-style';
+import { createCursorStyle } from '../utils';
 
 /**
  * Show cursor and selection when other users type or select text.

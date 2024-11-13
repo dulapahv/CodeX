@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 
-import type { CopyStatus } from '../types/copy-status';
+import type { CopyStatus } from './types';
 
-export async function copyQRCode(
+export const copyQRCode = (
   setCopyStatus: Dispatch<SetStateAction<CopyStatus>>,
-) {
+) => {
   const svg = document.getElementById('qr-code');
   if (!svg) return;
 
@@ -66,4 +66,16 @@ export async function copyQRCode(
     alert('Please save the downloaded image to your device.');
     handleCopySuccess();
   }
-}
+};
+
+export const copy = (
+  text: string,
+  key: keyof CopyStatus,
+  setCopyStatus: Dispatch<SetStateAction<CopyStatus>>,
+) => {
+  navigator.clipboard.writeText(text);
+  setCopyStatus((prevState) => ({ ...prevState, [key]: true }));
+  setTimeout(() => {
+    setCopyStatus((prevState) => ({ ...prevState, [key]: false }));
+  }, 500);
+};

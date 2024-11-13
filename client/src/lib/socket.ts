@@ -3,7 +3,7 @@
  * To use this library, you need to import it and call the getSocket function.
  * For example: const socket = getSocket();
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { io, type Socket } from 'socket.io-client';

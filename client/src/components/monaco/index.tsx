@@ -2,7 +2,7 @@
  * This component is responsible for rendering the Monaco Editor, which is a
  * code editor that powers the code editing experience in the application.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { memo, useEffect, useRef, useState } from 'react';
@@ -24,7 +24,7 @@ import { StatusBar } from './components/status-bar';
 import * as codeService from './service/code-service';
 import * as cursorService from './service/cursor-service';
 import * as editorService from './service/editor-service';
-import type { StatusBarCursorPosition } from './types/status-bar';
+import type { StatusBarCursorPosition } from './types';
 
 interface MonacoEditorProps {
   monacoRef: (monaco: Monaco) => void;
@@ -32,7 +32,7 @@ interface MonacoEditorProps {
   defaultCode?: string;
 }
 
-export const MonacoEditor = memo(function MonacoEditor({
+const MonacoEditor = memo(function MonacoEditor({
   monacoRef,
   editorRef,
   defaultCode,
@@ -175,3 +175,5 @@ export const MonacoEditor = memo(function MonacoEditor({
     </>
   );
 });
+
+export { MonacoEditor };

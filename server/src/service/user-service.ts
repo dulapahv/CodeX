@@ -27,28 +27,28 @@ function getUserKey(userID: string): object {
  * @param userID User identifier
  * @returns Username associated with the user ID
  */
-export function getUsername(userID: string): string | undefined {
+export const getUsername = (userID: string): string | undefined => {
   return userID_to_Username_Map.get(getUserKey(userID));
-}
+};
 
 /**
  * Connect a user and store their username
  * @param socket Socket instance
  * @param name Username to store
  */
-export function connect(socket: Socket, name: string): void {
+export const connect = (socket: Socket, name: string): void => {
   const userKey = getUserKey(socket.id);
   userID_to_Username_Map.set(userKey, name);
-}
+};
 
 /**
  * Disconnect a user and clean up their data
  * @param socket Socket instance
  */
-export function disconnect(socket: Socket): void {
+export const disconnect = (socket: Socket): void => {
   userKeys.delete(socket.id);
   // WeakMap will automatically garbage collect the entry
-}
+};
 
 /**
  * Update cursor position for a user and broadcast to room
@@ -56,8 +56,8 @@ export function disconnect(socket: Socket): void {
  * @param roomID Room identifier
  * @param cursor Cursor position data
  */
-export function updateCursor(socket: Socket, cursor: Cursor): void {
+export const updateCursor = (socket: Socket, cursor: Cursor): void => {
   const roomID = getUserRoom(socket);
   // Update cursor for all users in the room except the sender
   socket.to(roomID).emit(UserServiceMsg.CURSOR_RX, socket.id, cursor);
-}
+};

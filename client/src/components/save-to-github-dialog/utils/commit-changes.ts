@@ -4,15 +4,15 @@ import {
   type ExtendedTreeDataItem,
 } from '@/components/repo-browser/types/tree';
 
-import { CommitForm } from '../types/form';
+import { CommitForm } from '../types';
 
-export async function commitChanges(
+export const commitChanges = async (
   data: CommitForm,
   selectedItem: ExtendedTreeDataItem | null,
   repo: string,
   branch: string,
   content: string,
-): Promise<CommitResponse> {
+): Promise<CommitResponse> => {
   try {
     if (!selectedItem) {
       throw new Error('Please select a branch, directory, or file to save to.');
@@ -52,4 +52,4 @@ export async function commitChanges(
     // Rethrow the error but ensure it's an Error object
     throw error instanceof Error ? error : new Error(String(error));
   }
-}
+};

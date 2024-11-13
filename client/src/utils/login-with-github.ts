@@ -1,6 +1,6 @@
 import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from '@/lib/constants';
 
-export function loginWithGithub() {
+export const loginWithGithub = () => {
   const width = 790;
   const height = 720;
   const left = window.screenX + (window.outerWidth - width) / 2;
@@ -15,4 +15,4 @@ export function loginWithGithub() {
       `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
     );
   }
-}
+};

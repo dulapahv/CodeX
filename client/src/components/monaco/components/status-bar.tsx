@@ -2,7 +2,7 @@
  * This component is responsible for rendering the status bar of the editor.
  * It displays the current language and cursor position of the editor.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { memo } from 'react';
@@ -12,7 +12,7 @@ import * as monaco from 'monaco-editor';
 
 import { cn } from '@/lib/utils';
 
-import type { StatusBarCursorPosition } from '../types/status-bar';
+import type { StatusBarCursorPosition } from '../types';
 import { LanguageSelection } from './language-selection';
 
 interface StatusBarProps {

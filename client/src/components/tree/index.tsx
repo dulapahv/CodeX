@@ -33,7 +33,7 @@ import { itemType } from '@/components/repo-browser/types/tree';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Base interface for tree items
-export interface TreeDataItem {
+interface TreeDataItem {
   id: string;
   name: string;
   icon?: LucideIcon;
@@ -42,15 +42,14 @@ export interface TreeDataItem {
   isLoading?: boolean;
 }
 
-// Tree component props
-export type TreeProps = HTMLAttributes<HTMLDivElement> & {
+interface TreeProps extends HTMLAttributes<HTMLDivElement> {
   data: TreeDataItem[] | TreeDataItem;
   initialSelectedItemId?: string;
   onSelectChange?: (item: TreeDataItem) => void;
   expandAll?: boolean;
-};
+}
 
-export const Tree = forwardRef<HTMLDivElement, TreeProps>(
+const Tree = forwardRef<HTMLDivElement, TreeProps>(
   (
     {
       data,
@@ -293,3 +292,5 @@ const AccordionContent = forwardRef<
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
+
+export { Tree, type TreeDataItem };

@@ -27,51 +27,51 @@ function getRoomKey(roomID: string): object {
  * @param roomID Room identifier
  * @returns True if the room exists, false otherwise
  */
-export function roomExists(roomID: string): boolean {
+export const roomExists = (roomID: string): boolean => {
   return roomKeys.has(roomID);
-}
+};
 
 /**
  * Retrieve the current code for a room with O(1) lookup
  * @param roomID Room identifier
  * @returns Current code for the room
  */
-export function getCode(roomID: string): string {
+export const getCode = (roomID: string): string => {
   return roomID_to_Code_Map.get(getRoomKey(roomID)) || '';
-}
+};
 
 /**
  * Sync code to a client with minimal data transfer
  */
-export function syncCode(socket: Socket, io: Server): void {
+export const syncCode = (socket: Socket, io: Server): void => {
   io.to(socket.id).emit(
     CodeServiceMsg.RECEIVE_CODE,
     getCode(getUserRoom(socket)),
   );
-}
+};
 
 /**
  * Optimized string splicing function that minimizes string allocations
  */
-function spliceString(
+const spliceString = (
   original: string,
   start: number,
   end: number,
   insert: string,
-): string {
+): string => {
   // Avoid unnecessary string operations if possible
   if (start === end && !insert) return original;
   if (start === 0 && end === original.length) return insert;
 
   // Use substring instead of slice for better performance
   return original.substring(0, start) + insert + original.substring(end);
-}
+};
 
 /**
  * Updates the code in a room based on an edit operation
  * Optimized for performance while maintaining safety
  */
-export function updateCode(socket: Socket, operation: EditOp): void {
+export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
   const currentCode = getCode(roomID);
   const { r, t } = operation;
@@ -166,4 +166,4 @@ export function updateCode(socket: Socket, operation: EditOp): void {
 
   // Emit update
   socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation);
-}
+};

@@ -24,7 +24,7 @@ interface EditorThemeSettingsProps {
   monaco: Monaco | null;
 }
 
-export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
+const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const [open, setOpen] = useState(false);
   const [editorTheme, setEditorTheme] = useState('');
 
@@ -102,4 +102,6 @@ export function EditorThemeSettings({ monaco }: EditorThemeSettingsProps) {
       </Popover>
     </div>
   );
-}
+};
+
+export { EditorThemeSettings };

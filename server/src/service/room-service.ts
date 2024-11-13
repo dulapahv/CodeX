@@ -11,7 +11,7 @@ import * as userService from './user-service';
  * @param socket Socket instance
  * @returns Room ID if user is in a room, undefined otherwise
  */
-export function getUserRoom(socket: Socket): string | undefined {
+export const getUserRoom = (socket: Socket): string | undefined => {
   // Socket.IO stores rooms in socket.rooms Set
   // First entry is always the socket ID, any subsequent entries are room IDs
   const rooms = Array.from(socket.rooms);
@@ -19,14 +19,14 @@ export function getUserRoom(socket: Socket): string | undefined {
   // If user is in a room, it will be the second entry
   // (first entry is always the socket's own room/ID)
   return rooms.length > 1 ? rooms[1] : undefined;
-}
+};
 
 /**
  * Creates a new room and joins the socket to it
  * @param socket Socket instance
  * @param name Username
  */
-export function create(socket: Socket, name: string): void {
+export const create = (socket: Socket, name: string): void => {
   userService.connect(socket, name);
 
   let roomID: string;
@@ -36,7 +36,7 @@ export function create(socket: Socket, name: string): void {
 
   socket.join(roomID);
   socket.emit(RoomServiceMsg.CREATED, roomID, socket.id);
-}
+};
 
 /**
  * Joins an existing room
@@ -45,12 +45,12 @@ export function create(socket: Socket, name: string): void {
  * @param roomID Room identifier
  * @param name Username
  */
-export function join(
+export const join = (
   socket: Socket,
   io: Server,
   roomID: string,
   name: string,
-): void {
+): void => {
   roomID = normalizeRoomId(roomID);
 
   // check if room exists
@@ -67,7 +67,7 @@ export function join(
   // tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
   socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
-}
+};
 
 /**
  * Leaves a room and updates other clients
@@ -75,7 +75,7 @@ export function join(
  * @param io Server instance
  * @param roomID Room identifier
  */
-export function leave(socket: Socket, io: Server, roomID: string): void {
+export const leave = (socket: Socket, io: Server, roomID: string): void => {
   roomID = normalizeRoomId(roomID);
 
   socket.leave(roomID);
@@ -87,7 +87,7 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
 
   // tell all clients in the room who left
   socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, socket.id);
-}
+};
 
 /**
  * Gets a mapping of socket IDs to usernames for all users in a room
@@ -96,11 +96,11 @@ export function leave(socket: Socket, io: Server, roomID: string): void {
  * @param roomID Room identifier
  * @returns Object mapping socket IDs to usernames
  */
-export function getUsersInRoom(
+export const getUsersInRoom = (
   socket: Socket,
   io: Server,
   roomID: string = getUserRoom(socket),
-): Record<string, string> {
+): Record<string, string> => {
   // get all sockets in room
   const room = io.sockets.adapter.rooms.get(roomID);
 
@@ -121,4 +121,4 @@ export function getUsersInRoom(
   // tell the client who joined the room
   io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersDict);
   return usersDict;
-}
+};

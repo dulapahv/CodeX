@@ -1,3 +1,35 @@
+/**
+ * CreateRoomSection component that renders the form for creating a new room.
+ * Provides input field for room name and submit button with loading states.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <CreateRoomSection
+ *   register={register}
+ *   handleSubmit={handleSubmit}
+ *   onSubmit={handleCreateRoom}
+ *   onError={handleError}
+ *   errors={errors}
+ *   isSubmitting={isSubmitting}
+ *   isJoining={isJoining}
+ * />
+ * ```
+ *
+ * @param props - Component props
+ * @param props.register - React Hook Form register function for form fields
+ * @param props.handleSubmit - React Hook Form submit handler
+ * @param props.onSubmit - Function called when form is submitted successfully
+ * @param props.onError - Function called when form submission fails
+ * @param props.errors - Form validation errors from React Hook Form
+ * @param props.isSubmitting - Whether form is currently submitting
+ * @param props.isJoining - Whether user is currently joining a room
+ *
+ * @returns A form section with name input and create button
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 import { CirclePlus, LoaderCircle } from 'lucide-react';
 import type {
   FieldErrors,
@@ -9,7 +41,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import type { CreateRoomForm } from '../types/form';
+import type { CreateRoomForm } from '../types';
 
 interface CreateRoomSectionProps {
   register: UseFormRegister<CreateRoomForm>;

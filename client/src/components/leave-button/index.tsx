@@ -15,7 +15,7 @@ interface LeaveButtonProps {
   readonly className?: string;
 }
 
-export function LeaveButton({ roomId, className }: LeaveButtonProps) {
+const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
 
   const handleButtonClick = () => {
@@ -50,4 +50,6 @@ export function LeaveButton({ roomId, className }: LeaveButtonProps) {
       <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
     </>
   );
-}
+};
+
+export { LeaveButton };

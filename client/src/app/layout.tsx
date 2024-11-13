@@ -1,3 +1,21 @@
+/**
+ * Root layout component that provides the base structure and providers for
+ * the application.
+ * Handles theme, tooltips, toasts and global styles.
+ *
+ * @remarks
+ * This layout:
+ * - Sets up theme support via [`ThemeProvider`]
+ *   (src/components/theme-provider.tsx)
+ * - Provides tooltip functionality via [`TooltipProvider`]
+ *   (src/components/ui/tooltip.tsx)
+ * - Adds toast notifications via [`Toaster`](src/components/ui/sonner.tsx)
+ * - Uses Geist Sans font from the geist package
+ * - Sets default metadata for SEO
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';

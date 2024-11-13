@@ -28,7 +28,7 @@ export const authCookie = {
 };
 
 // Shared authentication check
-export async function verifyGithubAuth() {
+export const verifyGithubAuth = async () => {
   const token = authCookie.get();
   if (!token) return null;
 
@@ -44,7 +44,7 @@ export async function verifyGithubAuth() {
   } catch {
     return null;
   }
-}
+};
 
 // API route handlers
 export const githubAuthHandlers = {

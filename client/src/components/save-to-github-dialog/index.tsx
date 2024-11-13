@@ -45,12 +45,12 @@ interface SaveToGithubDialogProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
-export interface SaveToGithubDialogRef {
+interface SaveToGithubDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
 
-export const SaveToGithubDialog = forwardRef<
+const SaveToGithubDialog = forwardRef<
   SaveToGithubDialogRef,
   SaveToGithubDialogProps
 >(({ editor }, ref) => {
@@ -74,7 +74,6 @@ export const SaveToGithubDialog = forwardRef<
     formState: { errors, isSubmitting },
   } = useCommitForm();
 
-  // GitHub authentication
   useLayoutEffect(() => {
     if (isOpen) {
       fetch('/api/github/auth', {
@@ -191,7 +190,7 @@ export const SaveToGithubDialog = forwardRef<
           className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl"
           autoFocus={false}
         >
-          <AlertDialogHeader className="flex-shrink-0 text-left">
+          <AlertDialogHeader className="flex-shrink-0 space-y-0 text-left">
             <AlertDialogTitle>Save to GitHub</AlertDialogTitle>
             <AlertDialogDescription>
               Select a repository, branch, and folder to save your code.
@@ -351,4 +350,4 @@ export const SaveToGithubDialog = forwardRef<
 
 SaveToGithubDialog.displayName = 'SaveToGithubDialog';
 
-export default SaveToGithubDialog;
+export { SaveToGithubDialog, type SaveToGithubDialogRef };

@@ -1,3 +1,11 @@
+/**
+ * Theme provider component that wraps the application to handle
+ * theme switching.
+ * Uses next-themes under the hood to manage light/dark themes.
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 'use client';
 
 import * as React from 'react';

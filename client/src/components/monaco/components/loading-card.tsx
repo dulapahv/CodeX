@@ -2,7 +2,7 @@
  * This component is responsible for rendering a loading alert that is displayed
  * when the editor is being set up.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { memo } from 'react';

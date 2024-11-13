@@ -2,7 +2,7 @@
  * This file contains the toolbar component for the code editor. It includes
  * the toolbar items and actions for the editor.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -33,8 +33,7 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar';
 
-import { getOS } from './utils/get-os';
-import { saveLocal } from './utils/save-local';
+import { getOS, saveLocal } from './utils';
 
 interface ToolbarProps {
   monaco: Monaco | null;
@@ -42,7 +41,7 @@ interface ToolbarProps {
   roomId: string;
 }
 
-export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
+const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
   const [miniMap, setMiniMap] = useState(false);
   const [wordWrap, setWordWrap] = useState(false);
 
@@ -85,7 +84,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [editor]);
+  }, [monaco, editor]);
 
   useEffect(() => {
     if (editor && monaco) {
@@ -432,4 +431,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
       <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
     </>
   );
-}
+};
+
+export { Toolbar };

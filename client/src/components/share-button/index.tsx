@@ -14,7 +14,7 @@ interface RoomProps {
   roomId: string;
 }
 
-export function ShareButton({ roomId }: RoomProps) {
+const ShareButton = ({ roomId }: RoomProps) => {
   const shareDialogRef = useRef<ShareDialogRef>(null);
 
   const handleButtonClick = () => {
@@ -45,4 +45,6 @@ export function ShareButton({ roomId }: RoomProps) {
       <ShareDialog ref={shareDialogRef} roomId={roomId} />
     </>
   );
-}
+};
+
+export { ShareButton };

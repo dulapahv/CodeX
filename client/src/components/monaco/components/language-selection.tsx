@@ -2,7 +2,7 @@
  * This component is responsible for rendering a language selection dropdown
  * that allows users to select the programming language for the editor.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { useCallback, useMemo, useState } from 'react';
@@ -40,12 +40,12 @@ interface LanguageSelectionProps {
   className?: string;
 }
 
-export function LanguageSelection({
+const LanguageSelection = ({
   monaco,
   editor,
   defaultLanguage = 'Python',
   className,
-}: LanguageSelectionProps) {
+}: LanguageSelectionProps) => {
   const [open, setOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
 
@@ -139,4 +139,6 @@ export function LanguageSelection({
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export { LanguageSelection };

@@ -10,7 +10,7 @@
  * 3. handleOnChange
  *   - Handle changes in the editor.
  *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';
@@ -23,7 +23,7 @@ import { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
 
-import type { StatusBarCursorPosition } from '../types/status-bar';
+import type { StatusBarCursorPosition } from '../types';
 
 /**
  * Handle the Monaco editor before mounting.

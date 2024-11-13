@@ -10,7 +10,7 @@ interface UserListProps {
   users: User[];
 }
 
-export function UserList({ users }: UserListProps) {
+const UserList = ({ users }: UserListProps) => {
   const { resolvedTheme } = useTheme();
 
   return (
@@ -32,4 +32,6 @@ export function UserList({ users }: UserListProps) {
       />
     </ScrollArea>
   );
-}
+};
+
+export { UserList };

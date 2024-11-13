@@ -8,7 +8,7 @@ import { formatRoomId } from '@/utils/format-room-id';
 
 import { storage } from './services/storage';
 
-export function createRoom(name: string): Promise<string> {
+export const createRoom = (name: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
     socket.emit(RoomServiceMsg.CREATE, name);
@@ -21,9 +21,9 @@ export function createRoom(name: string): Promise<string> {
       resolve(roomId);
     });
   });
-}
+};
 
-export function joinRoom(roomId: string, name: string): Promise<boolean> {
+export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
 
@@ -39,9 +39,9 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
       resolve(true);
     });
   });
-}
+};
 
-export function leaveRoom(roomId: string): Promise<void> {
+export const leaveRoom = (roomId: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
 
@@ -49,11 +49,11 @@ export function leaveRoom(roomId: string): Promise<void> {
     socket.disconnect();
     storage.clear();
   });
-}
+};
 
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
-}
+};
 
 export const parseError = (error: unknown): string => {
   if (error instanceof Error) {

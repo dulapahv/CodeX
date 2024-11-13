@@ -1,3 +1,25 @@
+/**
+ * Room page component that handles the collaborative code editing experience.
+ * Manages room state, user connections, and code synchronization between clients.
+ *
+ * @remarks
+ * This component:
+ * - Establishes socket connection for real-time collaboration
+ * - Renders Monaco editor with collaborative features
+ * - Handles user presence/absence in the room
+ * - Syncs code changes between connected users
+ * - Provides toolbar controls and user interface elements
+ * - Manages disconnection and cleanup when leaving room
+ *
+ * Uses the following services and components:
+ * - [`userMap`](src/lib/services/user-map.ts) for managing connected users
+ * - [`getSocket`](src/lib/socket.ts) for WebSocket connections
+ * - [`MonacoEditor`](src/components/monaco/index.tsx) for code editing
+ * - [`Toolbar`](src/components/toolbar/index.tsx) for editor controls
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -58,6 +80,7 @@ export default function Room({ params }: RoomProps) {
       },
     );
 
+    // Request code and listen for updates
     socket.emit(CodeServiceMsg.GET_CODE);
     socket.on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
       setDefaultCode(code);

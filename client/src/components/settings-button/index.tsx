@@ -19,7 +19,7 @@ interface SettingsButtonProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
-export function SettingsButton({ monaco, editor }: SettingsButtonProps) {
+const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
   const settingsSheetRef = useRef<SettingsSheetRef>(null);
 
   const handleButtonClick = () => {
@@ -46,4 +46,6 @@ export function SettingsButton({ monaco, editor }: SettingsButtonProps) {
       <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
     </>
   );
-}
+};
+
+export { SettingsButton };

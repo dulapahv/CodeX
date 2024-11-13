@@ -30,12 +30,12 @@ interface LeaveDialogProps {
   roomId: string;
 }
 
-export interface LeaveDialogRef {
+interface LeaveDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
 
-export const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
+const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
   ({ roomId }: LeaveDialogProps, ref) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -96,3 +96,5 @@ export const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 );
 
 LeaveDialog.displayName = 'LeaveDialog';
+
+export { LeaveDialog, type LeaveDialogRef };

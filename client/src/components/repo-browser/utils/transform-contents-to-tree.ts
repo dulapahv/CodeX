@@ -3,11 +3,11 @@ import { FileCode, Folder } from 'lucide-react';
 import type { GithubContent } from '../types/github';
 import { itemType, type ExtendedTreeDataItem } from '../types/tree';
 
-export function transformContentsToTreeData(
+export const transformContentsToTreeData = (
   repoID: string,
   branchID: string,
   contents: GithubContent[],
-): ExtendedTreeDataItem[] {
+): ExtendedTreeDataItem[] => {
   if (!contents) return [];
   return contents
     .filter((item) => item.type === itemType.DIR || item.type === itemType.FILE)
@@ -19,4 +19,4 @@ export function transformContentsToTreeData(
       icon: item.type === itemType.DIR ? Folder : FileCode,
       type: item.type,
     }));
-}
+};

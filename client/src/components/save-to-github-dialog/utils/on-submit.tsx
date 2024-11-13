@@ -4,17 +4,17 @@ import { toast } from 'sonner';
 import { parseError } from '@/lib/utils';
 import { type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 
-import { CommitForm } from '../types/form';
+import { CommitForm } from '../types';
 import { commitChanges } from './commit-changes';
 
-export function onSubmit(
+export const onSubmit = (
   data: CommitForm,
   selectedItem: ExtendedTreeDataItem | null,
   repo: string,
   branch: string,
   content: string,
   closeDialog: () => void,
-) {
+) => {
   return new Promise((resolve, reject) => {
     const createPromise = commitChanges(
       data,
@@ -58,4 +58,4 @@ export function onSubmit(
         resolve(null);
       });
   });
-}
+};

@@ -22,10 +22,10 @@ import {
 } from '@/components/ui/sheet';
 import { loginWithGithub } from '@/utils/login-with-github';
 
-import { AppThemeSettings } from './app-theme';
-import { EditorThemeSettings } from './editor-theme';
+import { AppThemeSettings } from './components/app-theme';
+import { EditorThemeSettings } from './components/editor-theme';
 
-export interface SettingsSheetRef {
+interface SettingsSheetRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
@@ -35,7 +35,7 @@ interface SettingsSheetProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
-export const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
+const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
   ({ monaco, editor }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [githubUser, setGithubUser] = useState<string | null>(null);
@@ -144,3 +144,5 @@ export const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
 );
 
 SettingsSheet.displayName = 'SettingsSheet';
+
+export { SettingsSheet, type SettingsSheetRef };

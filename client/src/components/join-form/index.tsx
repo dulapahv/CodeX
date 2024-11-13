@@ -1,3 +1,33 @@
+/**
+ * Join Form component that handles room creation and joining functionality.
+ * Provides a form interface for creating new rooms or joining existing ones.
+ *
+ * @remarks
+ * This component:
+ * - Handles room creation via [`createRoom`](src/lib/utils.ts)
+ * - Handles room joining via [`joinRoom`](src/lib/utils.ts)
+ * - Manages form state via custom hooks:
+ *   - [`useCreateRoomForm`]
+ *     (src/components/join-form/hooks/useCreateRoomForm.ts)
+ *   - [`useJoinRoomForm`](src/components/join-form/hooks/useJoinRoomForm.ts)
+ * - Shows loading and error states
+ * - Supports invitation links via URL parameters
+ * - Provides navigation via Next.js router
+ *
+ * Uses the following components:
+ * - [`Card`](src/components/ui/card.tsx) for layout
+ * - [`Separator`](src/components/ui/separator.tsx) for visual dividers
+ * - Form sections for different actions:
+ *   - [`CreateRoomSection`]
+ *     (src/components/join-form/components/create-room-section.tsx)
+ *   - [`JoinRoomSection`]
+ *     (src/components/join-form/components/join-room-section.tsx)
+ *   - [`InvitedSection`]
+ *     (src/components/join-form/components/invited-section.tsx)
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -20,9 +50,9 @@ import { JoinRoomSection } from './components/join-room-section';
 import { RedirectingCard } from './components/redirecting-card';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
-import type { CreateRoomForm, JoinRoomForm } from './types/form';
+import type { CreateRoomForm, JoinRoomForm } from './types';
 
-export function JoinForm() {
+const JoinForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const room = searchParams.get('room') || '';
@@ -152,4 +182,6 @@ export function JoinForm() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { JoinForm };

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export function AppThemeSettings() {
+const AppThemeSettings = () => {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -46,4 +46,6 @@ export function AppThemeSettings() {
       </Select>
     </div>
   );
-}
+};
+
+export { AppThemeSettings };

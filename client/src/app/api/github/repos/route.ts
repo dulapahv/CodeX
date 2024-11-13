@@ -1,3 +1,36 @@
+/**
+ * GitHub repository search API route handler.
+ * Searches user's repositories or lists all repos if no query provided.
+ * Uses Edge Runtime for optimal performance.
+ *
+ * @remarks
+ * This handler supports two modes:
+ * 1. Search repos - When query parameter 'q' is provided
+ * 2. List repos - When no query parameter is provided
+ *
+ * Uses GitHub's repository search API with the following parameters:
+ * - Search in repository names only
+ * - Filter to authenticated user's repos only
+ * - Sort by last updated
+ * - Order by descending
+ *
+ * @example
+ * ```ts
+ * // Search repositories
+ * GET /api/github/repos/search?q=test
+ *
+ * // List all repositories
+ * GET /api/github/repos/search
+ * ```
+ *
+ * @param request - Next.js Edge API request object
+ * @returns {Promise<Response>}
+ * - Success: JSON response with repository data
+ * - Error: JSON response with error message and status code
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 

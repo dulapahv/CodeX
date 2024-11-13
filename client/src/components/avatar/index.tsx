@@ -1,3 +1,32 @@
+/**
+ * Avatar component that displays user initials in a colored circle.
+ * Supports different sizes and optional tooltips.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <Avatar
+ *   user={{ id: "123", name: "John Doe" }}
+ *   size="md"
+ *   showTooltip={true}
+ * />
+ * ```
+ *
+ * @param props - Component props
+ * @param props.user - User object with name and id
+ * @param props.size - Size of avatar: 'sm' | 'md' | 'lg' (default: 'md')
+ * @param props.className - Additional CSS classes
+ * @param props.showTooltip - Whether to show name tooltip on hover
+ *
+ * @remarks
+ * Uses [`userMap`](src/lib/services/user-map.ts) to get current user ID and
+ * [`storage`](src/lib/services/storage.ts) for user preferences.
+ * Tooltip content is rendered using [`TooltipProvider`]
+ * (src/components/ui/tooltip.tsx).
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ */
+
 import type { User } from '@common/types/user';
 
 import { storage } from '@/lib/services/storage';
@@ -9,6 +38,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { getDisplayName, getInitials } from './utils';
+
 interface AvatarProps {
   readonly user: User;
   readonly size?: 'sm' | 'md' | 'lg';
@@ -16,40 +47,18 @@ interface AvatarProps {
   readonly showTooltip?: boolean;
 }
 
-/**
- * Generates initials from a name
- * @param name - Full name
- * @returns Two-letter initials
- */
-const getInitials = (name: string): string => {
-  const [firstName, secondName = ''] = name.trim().split(/\s+/);
-  const firstInitial = firstName?.[0] ?? '';
-  const secondInitial = secondName?.[0] ?? firstName?.[1] ?? '';
-  return (firstInitial + secondInitial).toUpperCase();
-};
-
-/**
- * Gets display name with "you" suffix
- * @param user - User object
- * @param currentUserId - Current user's ID
- * @returns Display name
- */
-const getDisplayName = (user: User, currentUserId: string) => {
-  return user.id === currentUserId ? `${user.username} (you)` : user.username;
-};
-
 const sizeClasses = {
   sm: 'size-6 text-xs',
   md: 'size-7 text-sm',
   lg: 'size-8 text-base',
-} as const;
+};
 
-export function Avatar({
+const Avatar = ({
   user,
   size = 'md',
   className,
   showTooltip = true,
-}: AvatarProps) {
+}: AvatarProps) => {
   const initials = getInitials(user.username);
   const colors = userMap.getColors(user.id);
   const currentUserId = storage.getUserId() ?? '';
@@ -78,7 +87,6 @@ export function Avatar({
       <TooltipContent>{getDisplayName(user, currentUserId)}</TooltipContent>
     </Tooltip>
   );
-}
+};
 
-// Add prop types export for documentation
-export type { AvatarProps };
+export { Avatar };

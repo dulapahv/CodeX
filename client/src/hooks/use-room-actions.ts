@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import { leaveRoom } from '@/lib/utils';
 
-export function useRoomActions(roomId: string) {
+export const useRoomActions = (roomId: string) => {
   const router = useRouter();
 
   const handleLeaveRoom = () => {
@@ -17,4 +17,4 @@ export function useRoomActions(roomId: string) {
   return {
     handleLeaveRoom,
   };
-}
+};

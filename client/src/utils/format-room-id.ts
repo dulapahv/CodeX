@@ -1,4 +1,4 @@
-export function formatRoomId(value: string) {
+export const formatRoomId = (value: string) => {
   // Remove any non-alphanumeric characters
   const cleaned = value.replace(/[^A-Z0-9]/g, '');
 
@@ -11,4 +11,4 @@ export function formatRoomId(value: string) {
   }
 
   return truncated;
-}
+};

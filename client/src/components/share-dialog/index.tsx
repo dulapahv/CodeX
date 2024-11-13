@@ -26,20 +26,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import type { CopyStatus } from './types/copy-status';
-import { copy } from './utils/copy';
-import { copyQRCode } from './utils/copy-qr-code';
+import type { CopyStatus } from './types';
+import { copy, copyQRCode } from './utils';
 
 interface ShareDialogProps {
   roomId: string;
 }
 
-export interface ShareDialogRef {
+interface ShareDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
 
-export const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
+const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -202,3 +201,5 @@ export const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
 );
 
 ShareDialog.displayName = 'LeaveDialog';
+
+export { ShareDialog, type ShareDialogRef };

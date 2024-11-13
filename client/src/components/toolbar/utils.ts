@@ -1,13 +1,36 @@
-/**
- * This utility function saves the current editor content to a local file.
- *
- * Created by Dulapah Vibulsanti (https://github.com/dulapahv).
- */
-
 import { type Monaco } from '@monaco-editor/react';
 
 // Cannot import as it'll trigger window is not defined error from SSR stuffs
 // import * as monaco from 'monaco-editor';
+
+/**
+ * Get the current operating system
+ * @returns The current operating system
+ */
+export const getOS = (): string => {
+  const userAgent = navigator.userAgent || (window as any).opera;
+
+  if (/windows phone/i.test(userAgent)) {
+    return 'Windows Phone';
+  }
+  if (/win/i.test(userAgent)) {
+    return 'Windows';
+  }
+  if (/mac/i.test(userAgent)) {
+    return 'MacOS';
+  }
+  if (/android/i.test(userAgent)) {
+    return 'Android';
+  }
+  if (/linux/i.test(userAgent)) {
+    return 'Linux';
+  }
+  if (/iphone|ipad|ipod/i.test(userAgent)) {
+    return 'iOS';
+  }
+
+  return 'Unknown';
+};
 
 interface Language {
   alias: string;
@@ -48,11 +71,11 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
  * @param filename - Optional custom filename without extension
  * @throws Error if editor is null or getValue() fails
  */
-export function saveLocal(
+export const saveLocal = (
   monaco: Monaco,
   editor: any, // Can't use `editor: monaco.editor.IStandaloneCodeEditor | null` as we can't import monaco
   filename = `kasca-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`,
-): void {
+): void => {
   if (!editor) {
     throw new Error('Editor instance is required');
   }
@@ -86,4 +109,4 @@ export function saveLocal(
       `Failed to save file: ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
   }
-}
+};
