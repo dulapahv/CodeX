@@ -2,7 +2,7 @@
  * This file contains the toolbar component for the code editor. It includes
  * the toolbar items and actions for the editor.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
 import { useEffect, useRef, useState } from 'react';

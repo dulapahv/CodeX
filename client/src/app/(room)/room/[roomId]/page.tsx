@@ -17,7 +17,7 @@
  * - [`MonacoEditor`](src/components/monaco/index.tsx) for code editing
  * - [`Toolbar`](src/components/toolbar/index.tsx) for editor controls
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';

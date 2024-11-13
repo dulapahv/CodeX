@@ -13,7 +13,7 @@
  * The component is used as part of the GitHub OAuth flow to handle the callback
  * after authentication attempt.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';

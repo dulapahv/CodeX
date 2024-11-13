@@ -7,7 +7,7 @@
  * shares a room link, the preview will show the room's metadata with an
  * invitation message.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ReactNode } from 'react';

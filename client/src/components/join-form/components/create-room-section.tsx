@@ -2,7 +2,6 @@
  * CreateRoomSection component that renders the form for creating a new room.
  * Provides input field for room name and submit button with loading states.
  *
- * @component
  * @example
  * ```tsx
  * <CreateRoomSection
@@ -27,7 +26,7 @@
  *
  * @returns A form section with name input and create button
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { CirclePlus, LoaderCircle } from 'lucide-react';

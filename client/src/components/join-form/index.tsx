@@ -25,7 +25,7 @@
  *   - [`InvitedSection`]
  *     (src/components/join-form/components/invited-section.tsx)
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';

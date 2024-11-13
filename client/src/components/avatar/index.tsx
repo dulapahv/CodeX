@@ -2,7 +2,6 @@
  * Avatar component that displays user initials in a colored circle.
  * Supports different sizes and optional tooltips.
  *
- * @component
  * @example
  * ```tsx
  * <Avatar
@@ -24,7 +23,7 @@
  * Tooltip content is rendered using [`TooltipProvider`]
  * (src/components/ui/tooltip.tsx).
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { User } from '@common/types/user';

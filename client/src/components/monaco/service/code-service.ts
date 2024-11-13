@@ -5,7 +5,7 @@
  * 1. updateCode
  *    - Update the code in the editor.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
 import { MutableRefObject } from 'react';

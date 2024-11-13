@@ -28,7 +28,7 @@
  * - Check: JSON response with auth status
  * - Delete: Clears auth session
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { NextRequest } from 'next/server';

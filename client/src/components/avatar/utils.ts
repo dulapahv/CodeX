@@ -13,7 +13,7 @@
  *
  * @see [`User`](@common/types/user.ts) - User type definition
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { User } from '@common/types/user';

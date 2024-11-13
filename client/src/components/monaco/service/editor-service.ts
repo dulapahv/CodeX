@@ -10,7 +10,7 @@
  * 3. handleOnChange
  *   - Handle changes in the editor.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';

@@ -8,7 +8,7 @@
  * 2. removeCursor
  *    - Remove cursor and selection when a user leaves.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
 import { MutableRefObject } from 'react';

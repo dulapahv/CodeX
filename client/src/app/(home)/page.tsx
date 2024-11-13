@@ -7,7 +7,7 @@
  * - Centers content both horizontally and vertically in the viewport
  * - Provides padding around the form component
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { Suspense } from 'react';

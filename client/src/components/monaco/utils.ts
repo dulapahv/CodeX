@@ -1,13 +1,33 @@
 /**
- * Create a CSS style for a cursor, cursor selection, and cursor name.
- * @param userID User identifier.
- * @param bgColor Background color.
- * @param color Text color.
- * @param name User name.
- * @param isFirstLine Is the cursor on the first line.
- * @param hasSelection Has selection.
- * @returns CSS style string.
+ * Creates CSS styles for a user's cursor in the collaborative editor.
+ * Generates cursor highlight and nametag styles with fade-out animation.
+ *
+ * @param userID - Unique identifier for the user's cursor
+ * @param bgColor - Background color for cursor and nametag
+ * @param color - Text color for the nametag
+ * @param name - Display name to show in the nametag
+ * @param isFirstLine - Whether cursor is on first line to adjust
+ *                      nametag position
+ * @param hasSelection - Whether user has text selected to control
+ *                      fade animation
+ *
+ * @returns CSS string for cursor styles
+ *
+ * @example
+ * ```ts
+ * const cursorStyle = createCursorStyle(
+ *   "user123",
+ *   "#ff0000",
+ *   "#ffffff",
+ *   "John",
+ *   false,
+ *   true
+ * );
+ * ```
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
+
 export const createCursorStyle = (
   userID: string,
   bgColor: string,

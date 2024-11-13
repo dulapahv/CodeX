@@ -1,8 +1,8 @@
 /**
- * InvitedSection component that renders a form for users joining via invitation link.
+ * InvitedSection component that renders a form for users joining via\
+ * invitation link.
  * Provides input fields for name entry when joining an existing room.
  *
- * @component
  * @example
  * ```tsx
  * <InvitedSection
@@ -27,7 +27,7 @@
  *
  * @returns A form section for handling room invitations
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ArrowRight, LoaderCircle } from 'lucide-react';

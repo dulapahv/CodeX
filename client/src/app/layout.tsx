@@ -13,7 +13,7 @@
  * - Uses Geist Sans font from the geist package
  * - Sets default metadata for SEO
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ReactNode } from 'react';

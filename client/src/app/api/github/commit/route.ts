@@ -29,7 +29,7 @@
  * - Success: JSON response with commit details
  * - Error: JSON response with error message
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

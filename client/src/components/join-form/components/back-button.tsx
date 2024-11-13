@@ -2,7 +2,6 @@
  * Back button component used in the room joining flow.
  * Renders a link-styled button with an arrow icon to navigate back.
  *
- * @component
  * @example
  * ```tsx
  * <BackButton
@@ -18,7 +17,7 @@
  * @returns A button component with left arrow icon and
  * "Back to create/join room" text
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ArrowLeft } from 'lucide-react';

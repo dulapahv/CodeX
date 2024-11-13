@@ -1,8 +1,21 @@
 /**
- * This component is responsible for rendering a loading alert that is displayed
- * when the editor is being set up.
+ * Loading card component that displays while the Monaco editor is initializing.
+ * Shows a centered alert with spinner and loading message.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * @example
+ * ```tsx
+ * <LoadingCard />
+ * ```
+ *
+ * @remarks
+ * Uses the following components:
+ * - [`Alert`](src/components/ui/alert.tsx) for the container
+ * - [`LoaderCircle`](lucide-react) for the loading animation
+ * - Tailwind CSS for styling and animations
+ *
+ * @returns A centered alert component with loading spinner and setup message
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { memo } from 'react';

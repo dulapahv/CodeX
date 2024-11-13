@@ -2,7 +2,6 @@
  * JoinRoomSection component that renders a form for joining an existing room.
  * Provides input fields for room ID and validation handling.
  *
- * @component
  * @example
  * ```tsx
  * <JoinRoomSection
@@ -19,7 +18,8 @@
  *
  * @param props - Component props
  * @param props.register - React Hook Form register function for form fields
- * @param props.setValue - React Hook Form setValue function for updating form values
+ * @param props.setValue - React Hook Form setValue function for updating
+ *                         form values
  * @param props.handleSubmit - React Hook Form submit handler
  * @param props.onSubmit - Function called when form is submitted successfully
  * @param props.onError - Function called when form submission fails
@@ -29,7 +29,7 @@
  *
  * @returns A form section with room ID input and join button
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ArrowRight, LoaderCircle } from 'lucide-react';

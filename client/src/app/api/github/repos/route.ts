@@ -28,7 +28,7 @@
  * - Success: JSON response with repository data
  * - Error: JSON response with error message and status code
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

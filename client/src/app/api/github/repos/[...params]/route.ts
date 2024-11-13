@@ -23,7 +23,7 @@
  * - Success: JSON response with branches/contents data
  * - Error: JSON response with error message
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

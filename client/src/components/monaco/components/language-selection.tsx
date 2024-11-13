@@ -1,8 +1,26 @@
 /**
- * This component is responsible for rendering a language selection dropdown
- * that allows users to select the programming language for the editor.
+ * Language selection component for the Monaco editor.
+ * Provides a searchable dropdown to select programming languages.
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)..
+ * @example
+ * ```tsx
+ * <LanguageSelection
+ *   monaco={monaco}
+ *   editor={editor}
+ * />
+ * ```
+ *
+ * @param props - Component props
+ * @param props.monaco - Monaco instance
+ * @param props.editor - Monaco editor instance
+ *
+ * @remarks
+ * Uses the following components:
+ * - [`Command`](src/components/ui/command.tsx) for search functionality
+ * - [`Popover`](src/components/ui/popover.tsx) for dropdown menu
+ * - [`Button`](src/components/ui/button.tsx) for trigger
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useCallback, useMemo, useState } from 'react';
