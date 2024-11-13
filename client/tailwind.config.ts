@@ -65,8 +65,7 @@ const config: Config = {
           'swing-in-top-fwd 1.2s cubic-bezier(0.175, 0.885, 0.320, 1.275)   both',
         'swing-in-bottom-fwd':
           'swing-in-bottom-fwd 1.2s cubic-bezier(0.175, 0.885, 0.320, 1.275)   both',
-        'fade-in-top':
-          'fade-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1)   both',
+        'fade-in-top': 'fade-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1)   both',
       },
       keyframes: {
         'scale-up-center': {

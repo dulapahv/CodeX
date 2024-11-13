@@ -16,7 +16,13 @@ export function onSubmit(
   closeDialog: () => void,
 ) {
   return new Promise((resolve, reject) => {
-    const createPromise = commitChanges(data, selectedItem, repo, branch, content);
+    const createPromise = commitChanges(
+      data,
+      selectedItem,
+      repo,
+      branch,
+      content,
+    );
 
     toast.promise(createPromise, {
       loading: 'Committing changes...',

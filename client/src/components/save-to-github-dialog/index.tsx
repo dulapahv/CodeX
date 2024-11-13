@@ -295,33 +295,41 @@ export const SaveToGithubDialog = forwardRef<
             className="flex-shrink-0"
           >
             <DrawerFooter>
-              <div className="w-full">
-                <p className="break-all text-xs text-muted-foreground">
-                  Saving to{' '}
-                  <span className="font-semibold">
-                    {`${repo || githubUser}/${branch ? `${branch}/` : ''}${watch('fileName')}`}
-                  </span>
-                </p>
-                <div className="flex flex-wrap items-center text-xs text-muted-foreground">
-                  <span>To disconnect GitHub, go to</span>
-                  <span className="flex items-center font-semibold">
-                    <Settings className="mx-1 inline size-3" />
-                    Settings
-                  </span>
-                  .
-                </div>
-              </div>
               {githubUser && (
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <LoaderCircle className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
+                <>
+                  <div className="w-full">
+                    <p className="break-all text-xs text-muted-foreground">
+                      Saving to{' '}
+                      <span className="font-semibold">
+                        {getDisplayPath(
+                          repo,
+                          githubUser,
+                          branch,
+                          selectedItem,
+                          watch('fileName'),
+                        )}
+                      </span>
+                    </p>
+                    <div className="flex flex-wrap items-center text-xs text-muted-foreground">
+                      <span>To disconnect GitHub, go to</span>
+                      <span className="flex items-center font-semibold">
+                        <Settings className="mx-1 inline size-3" />
+                        Settings
+                      </span>
+                      .
+                    </div>
+                  </div>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <LoaderCircle className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save'
+                    )}
+                  </Button>
+                </>
               )}
               <DrawerClose asChild>
                 <Button
