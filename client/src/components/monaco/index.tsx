@@ -126,7 +126,7 @@ const MonacoEditor = memo(function MonacoEditor({
       socket.off(UserServiceMsg.CURSOR_RX);
       socket.off(RoomServiceMsg.USER_LEFT);
     };
-  }, [isMonacoReady]);
+  }, [isMonacoReady, socket]);
 
   // Cleanup on unmount
   useEffect(() => {

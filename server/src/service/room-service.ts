@@ -87,6 +87,9 @@ export const leave = (socket: Socket, io: Server, roomID: string): void => {
 
   // tell all clients in the room who left
   socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, socket.id);
+
+  // disconnect the user
+  socket.disconnect();
 };
 
 /**
