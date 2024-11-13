@@ -38,6 +38,7 @@ import { Input } from '@/components/ui/input';
 import { loginWithGithub } from '@/utils/login-with-github';
 
 import { useCommitForm } from './hooks/useCommitForm';
+import { getDisplayPath } from './utils/get-display-path';
 import { onSubmit } from './utils/on-submit';
 
 interface SaveToGithubDialogProps {
@@ -218,7 +219,13 @@ export const SaveToGithubDialog = forwardRef<
                   <p className="break-all text-xs text-muted-foreground">
                     Saving to{' '}
                     <span className="font-semibold">
-                      {`${repo || githubUser}/${branch ? `${branch}/` : ''}${watch('fileName')}`}
+                      {getDisplayPath(
+                        repo,
+                        githubUser,
+                        branch,
+                        selectedItem,
+                        watch('fileName'),
+                      )}
                     </span>
                   </p>
                   <div className="flex flex-wrap items-center text-xs text-muted-foreground">

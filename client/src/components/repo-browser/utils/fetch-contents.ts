@@ -72,8 +72,35 @@ export const fetchContents = async (
 ) => {
   if (!repo.full_name) return;
 
-  setItemLoading(branch.id, true, setTreeData);
+  // Find the ID of the folder being expanded
+  const getFolderIdFromPath = (
+    items: ExtendedTreeDataItem[],
+    targetPath: string,
+  ): string | undefined => {
+    for (const item of items) {
+      if (item.path === targetPath) {
+        return item.id;
+      }
+      if (item.children) {
+        const foundId = getFolderIdFromPath(item.children, targetPath);
+        if (foundId) return foundId;
+      }
+    }
+    return undefined;
+  };
+
+  // If there's a path, find the corresponding folder's ID
+  let targetId = branch.id;
+  if (path) {
+    const folderId = getFolderIdFromPath(branch.children || [], path);
+    if (folderId) {
+      targetId = folderId;
+    }
+  }
+
+  setItemLoading(targetId, true, setTreeData);
   setError('');
+
   try {
     const [owner, repoName] = repo.full_name.split('/');
     const response = await fetch(
@@ -110,7 +137,6 @@ export const fetchContents = async (
                 return {
                   ...branchItem,
                   children: mergedChildren,
-                  isLoading: false,
                 };
               }
               return branchItem;
@@ -123,6 +149,6 @@ export const fetchContents = async (
   } catch (err) {
     setError(parseError(err));
   } finally {
-    setItemLoading(branch.id, false, setTreeData);
+    setItemLoading(targetId, false, setTreeData);
   }
 };
