@@ -159,7 +159,6 @@ export const removeCursor = (
   >,
 ): void => {
   const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-  console.log(cursorElements);
   cursorElements.forEach((el) => el.remove());
   const selectionElements = document.querySelectorAll(
     `.cursor-${userID}-selection`,

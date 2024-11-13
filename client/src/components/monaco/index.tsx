@@ -115,9 +115,10 @@ const MonacoEditor = memo(function MonacoEditor({
       ),
     );
 
-    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) =>
-      cursorService.removeCursor(userID, cursorDecorationsRef),
-    );
+    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) => {
+      console.log('User left:', userID);
+      cursorService.removeCursor(userID, cursorDecorationsRef);
+    });
 
     // Cleanup socket listeners
     return () => {
@@ -125,7 +126,7 @@ const MonacoEditor = memo(function MonacoEditor({
       socket.off(UserServiceMsg.CURSOR_RX);
       socket.off(RoomServiceMsg.USER_LEFT);
     };
-  }, [isMonacoReady, socket]);
+  }, [isMonacoReady]);
 
   // Cleanup on unmount
   useEffect(() => {

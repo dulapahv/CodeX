@@ -44,7 +44,7 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
 export const leaveRoom = (roomId: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
-
+    console.log('leaving room', roomId);
     socket.emit(RoomServiceMsg.LEAVE, roomId);
     socket.disconnect();
     storage.clear();
