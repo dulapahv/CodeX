@@ -31,7 +31,7 @@ export const fetchBranches = async (
     }
 
     const branches = await response.json();
-    const branchData = transformBranchesToTreeData(branches);
+    const branchData = transformBranchesToTreeData(repo.id, branches);
 
     setTreeData((prevData) =>
       prevData.map((item) =>

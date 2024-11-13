@@ -88,7 +88,11 @@ export const fetchContents = async (
     }
 
     const contents = await response.json();
-    const contentData = transformContentsToTreeData(contents);
+    const contentData = transformContentsToTreeData(
+      repo.id,
+      branch.id,
+      contents,
+    );
 
     setTreeData((prevData) => {
       return prevData.map((repoItem) => {
