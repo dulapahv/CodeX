@@ -43,9 +43,9 @@ export default function Room({ params }: RoomProps) {
   }, [params.roomId, socket]);
 
   useEffect(() => {
-    // if (!socket.connected) {
-    //   router.replace(`/?room=${params.roomId}`);
-    // }
+    if (!socket.connected) {
+      router.replace(`/?room=${params.roomId}`);
+    }
 
     // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
