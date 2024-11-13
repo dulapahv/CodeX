@@ -10,11 +10,11 @@ import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { User } from '@common/types/user';
 
 import { userMap } from '@/lib/services/user-map';
-import { socket } from '@/lib/socket';
+import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/utils';
 import { LeaveButton } from '@/components/leave-button';
 import { MonacoEditor } from '@/components/monaco';
-import { SettingSheet } from '@/components/settings-sheet';
+import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
 import { Toolbar } from '@/components/toolbar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -28,6 +28,7 @@ interface RoomProps {
 
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
+  const socket = getSocket();
 
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
@@ -39,12 +40,12 @@ export default function Room({ params }: RoomProps) {
   const disconnect = useCallback(() => {
     leaveRoom(params.roomId);
     socket.disconnect();
-  }, [params.roomId]);
+  }, [params.roomId, socket]);
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket.connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
@@ -70,7 +71,7 @@ export default function Room({ params }: RoomProps) {
       socket.off(CodeServiceMsg.RECEIVE_CODE);
       userMap.clear();
     };
-  }, [disconnect, params.roomId, router]);
+  }, [disconnect, params.roomId, router, socket]);
 
   return (
     <main className="flex h-full min-w-[425px] flex-col overflow-clip">
@@ -82,7 +83,7 @@ export default function Room({ params }: RoomProps) {
             </div>
             <UserList users={users} />
             <ShareButton roomId={params.roomId} />
-            <SettingSheet monaco={monaco} editor={editor} />
+            <SettingsButton monaco={monaco} editor={editor} />
             <LeaveButton roomId={params.roomId} />
           </div>
         )}

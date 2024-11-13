@@ -10,11 +10,15 @@ import { Monaco } from '@monaco-editor/react';
 import { Menu } from 'lucide-react';
 import * as monaco from 'monaco-editor';
 
-import { LeaveDialog, LeaveDialogRef } from '@/components/leave-dialog';
+import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
 import {
   SaveToGithubDialog,
-  SaveToGithubDialogRef,
+  type SaveToGithubDialogRef,
 } from '@/components/save-to-github-dialog';
+import {
+  SettingsSheet,
+  type SettingsSheetRef,
+} from '@/components/settings-sheet';
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -44,6 +48,7 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
 
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
   const saveToGithubDialogRef = useRef<SaveToGithubDialogRef>(null);
+  const settingsSheetRef = useRef<SettingsSheetRef>(null);
 
   const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 
@@ -67,6 +72,9 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               event.preventDefault();
               if (monaco) saveLocal(monaco, editor);
               break;
+            case ',':
+              event.preventDefault();
+              settingsSheetRef.current?.openDialog();
           }
         }
       }
@@ -90,11 +98,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
 
   if (!monaco || !editor) return null;
 
-  function handleNewFile() {
-    // Implement new file logic
-    console.log('New file');
-  }
-
   function handleOpenFile() {
     // Implement open file logic
     console.log('Open file');
@@ -106,35 +109,67 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
     },
     saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
-    undo: () => editor.trigger('keyboard', 'undo', null),
-    redo: () => editor.trigger('keyboard', 'redo', null),
-    cut: () =>
-      editor.trigger('keyboard', 'editor.action.clipboardCutAction', null),
-    copy: () =>
-      editor.trigger('keyboard', 'editor.action.clipboardCopyAction', null),
-    paste: () =>
-      editor.trigger('keyboard', 'editor.action.clipboardPasteAction', null),
+    settings: () => settingsSheetRef.current?.openDialog(),
+    undo: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'undo', null);
+    },
+    redo: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'redo', null);
+    },
+    cut: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.clipboardCutAction', null);
+    },
+    copy: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.clipboardCopyAction', null);
+    },
+    paste: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.clipboardPasteAction', null);
+    },
     find: () => editor.trigger('keyboard', 'actions.find', null),
-    replace: () =>
-      editor.trigger('keyboard', 'editor.action.startFindReplaceAction', null),
-    selectAll: () =>
-      editor.trigger('keyboard', 'editor.action.selectAll', null),
-    copyLineUp: () =>
-      editor.trigger('keyboard', 'editor.action.copyLinesUpAction', null),
-    copyLineDown: () =>
-      editor.trigger('keyboard', 'editor.action.copyLinesDownAction', null),
-    moveLineUp: () =>
-      editor.trigger('keyboard', 'editor.action.moveLinesUpAction', null),
-    moveLineDown: () =>
-      editor.trigger('keyboard', 'editor.action.moveLinesDownAction', null),
-    duplicateSelection: () =>
-      editor.trigger('keyboard', 'editor.action.duplicateSelection', null),
-    addCursorAbove: () =>
-      editor.trigger('keyboard', 'editor.action.insertCursorAbove', null),
-    addCursorBelow: () =>
-      editor.trigger('keyboard', 'editor.action.insertCursorBelow', null),
+    replace: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.startFindReplaceAction', null);
+    },
+    selectAll: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.selectAll', null);
+    },
+    copyLineUp: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.copyLinesUpAction', null);
+    },
+    copyLineDown: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.copyLinesDownAction', null);
+    },
+    moveLineUp: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.moveLinesUpAction', null);
+    },
+    moveLineDown: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.moveLinesDownAction', null);
+    },
+    duplicateSelection: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.duplicateSelection', null);
+    },
+    addCursorAbove: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.insertCursorAbove', null);
+    },
+    addCursorBelow: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.insertCursorBelow', null);
+    },
     commandPalette: () => {
       // Timeout to prevent command palette triggered after editor is focused
+      editor.focus();
       setTimeout(() => {
         editor.trigger('keyboard', 'editor.action.quickCommand', null);
       }, 1);
@@ -152,20 +187,12 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
   return (
     <>
       {/* Desktop menu */}
-      <Menubar
-        onValueChange={(value) => {
-          if (!value) editor.focus();
-        }}
-        className="hidden h-fit border-none bg-transparent p-0 sm:flex"
-      >
+      <Menubar className="hidden h-fit border-none bg-transparent p-0 sm:flex">
         <MenubarMenu>
           <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             File
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>
-            <MenubarItem onSelect={handleNewFile}>
-              New File <MenubarShortcut>{modKey}+N</MenubarShortcut>
-            </MenubarItem>
             <MenubarItem onSelect={handleOpenFile}>
               Open Local File <MenubarShortcut>{modKey}+O</MenubarShortcut>
             </MenubarItem>
@@ -180,7 +207,10 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               Save to GitHub <MenubarShortcut>{modKey}+Shift+S</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem>Settings</MenubarItem>
+            <MenubarItem onSelect={actions.settings}>
+              Settings
+              <MenubarShortcut>{modKey}+,</MenubarShortcut>
+            </MenubarItem>
             <MenubarSeparator />
             <MenubarItem onSelect={actions.leaveRoom}>
               Leave Room <MenubarShortcut>{modKey}+Q</MenubarShortcut>
@@ -259,7 +289,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
               Command Palette <MenubarShortcut>F1</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarCheckboxItem checked>Status Bar</MenubarCheckboxItem>
             <MenubarCheckboxItem
               onCheckedChange={actions.minimap}
               checked={miniMap}
@@ -296,7 +325,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
                 File
               </MenubarSubTrigger>
               <MenubarSubContent>
-                <MenubarItem onSelect={handleNewFile}>New File</MenubarItem>
                 <MenubarItem onSelect={handleOpenFile}>
                   Open Local File
                 </MenubarItem>
@@ -373,7 +401,6 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
                   Command Palette
                 </MenubarItem>
                 <MenubarSeparator />
-                <MenubarCheckboxItem checked>Status Bar</MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   onCheckedChange={actions.minimap}
                   checked={miniMap}
@@ -400,8 +427,9 @@ export function Toolbar({ monaco, editor, roomId }: ToolbarProps) {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
-      <SaveToGithubDialog ref={saveToGithubDialogRef} />
+      <SaveToGithubDialog ref={saveToGithubDialogRef} editor={editor} />
       <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
+      <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
     </>
   );
 }

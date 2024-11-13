@@ -17,7 +17,7 @@ import {
 } from '@common/types/message';
 import { Cursor, EditOp } from '@common/types/operation';
 
-import { socket } from '@/lib/socket';
+import { getSocket } from '@/lib/socket';
 
 import { LoadingCard } from './components/loading-card';
 import { StatusBar } from './components/status-bar';
@@ -38,6 +38,8 @@ export const MonacoEditor = memo(function MonacoEditor({
   defaultCode,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
+  const socket = getSocket();
+
   const [theme, setTheme] = useState<string>('vs-dark');
   const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
     {
@@ -102,7 +104,7 @@ export const MonacoEditor = memo(function MonacoEditor({
       socket.off(UserServiceMsg.CURSOR_RX);
       socket.off(RoomServiceMsg.USER_LEFT);
     };
-  }, [isMonacoReady]);
+  }, [isMonacoReady, socket]);
 
   // Cleanup on unmount
   useEffect(() => {

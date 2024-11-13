@@ -21,7 +21,7 @@ import themeList from 'monaco-themes/themes/themelist.json';
 import { CodeServiceMsg, UserServiceMsg } from '@common/types/message';
 import { Cursor, EditOp } from '@common/types/operation';
 
-import { socket } from '@/lib/socket';
+import { getSocket } from '@/lib/socket';
 
 import type { StatusBarCursorPosition } from '../types/status-bar';
 
@@ -55,6 +55,8 @@ export const handleOnMount = (
   setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
   defaultCode?: string,
 ): void => {
+  const socket = getSocket();
+
   if (defaultCode) {
     editor.setValue(defaultCode);
   }
@@ -116,6 +118,8 @@ export const handleOnChange = (
   skipUpdateRef: MutableRefObject<boolean>,
 ): void => {
   if (skipUpdateRef.current) return;
+  const socket = getSocket();
+
   ev.changes.forEach((change) => {
     socket.emit(CodeServiceMsg.CODE_TX, {
       t: change.text,

@@ -56,7 +56,7 @@ export function JoinForm() {
       loading: 'Joining room, please wait...',
       success: () => {
         router.push(`/room/${roomId}`);
-        return 'Successfully joined room';
+        return 'Joined room successfully. Have fun coding!';
       },
       error: (error) => `Failed to join room.\n${parseError(error)}`,
     });
@@ -73,7 +73,7 @@ export function JoinForm() {
       success: (roomId) => {
         router.push(`/room/${roomId}`);
         navigator.clipboard.writeText(roomId);
-        return 'Successfully created room. Room ID has been copied to clipboard.';
+        return 'Room created successfully. Have fun coding!';
       },
       error: (error) => `Failed to create room.\n${parseError(error)}`,
     });

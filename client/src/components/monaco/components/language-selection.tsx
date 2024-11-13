@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import * as monaco from 'monaco-editor';
+import { isMobile } from 'react-device-detect';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -96,7 +97,12 @@ export function LanguageSelection({
           <ChevronsUpDown className="size-4 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0">
+      <PopoverContent
+        className="w-64 p-0"
+        onOpenAutoFocus={(event) => {
+          if (isMobile) event.preventDefault();
+        }}
+      >
         <Command>
           <CommandInput placeholder="Search language..." className="h-9" />
           <CommandList>

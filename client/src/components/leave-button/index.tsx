@@ -2,7 +2,7 @@ import { FocusEvent, useRef } from 'react';
 import { LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { LeaveDialog, LeaveDialogRef } from '@/components/leave-dialog';
+import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,

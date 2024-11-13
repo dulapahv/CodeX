@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 
 import { RoomServiceMsg } from '../../../common/types/message';
 import { generateRoomID } from '../utils/generate-room-id';
+import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
 import * as userService from './user-service';
 
@@ -50,6 +51,8 @@ export function join(
   roomID: string,
   name: string,
 ): void {
+  roomID = normalizeRoomId(roomID);
+
   // check if room exists
   if (!io.sockets.adapter.rooms.has(roomID)) {
     socket.emit(RoomServiceMsg.NOT_FOUND, roomID);
@@ -73,6 +76,8 @@ export function join(
  * @param roomID Room identifier
  */
 export function leave(socket: Socket, io: Server, roomID: string): void {
+  roomID = normalizeRoomId(roomID);
+
   socket.leave(roomID);
   userService.disconnect(socket);
 

@@ -50,7 +50,6 @@ export async function POST(request: Request) {
         }
 
         const data = await response.json();
-        console.log(data);
         return data.sha;
       } catch (error) {
         console.error('Error fetching current file:', error);

@@ -3,13 +3,14 @@ import { twMerge } from 'tailwind-merge';
 
 import { RoomServiceMsg } from '@common/types/message';
 
-import { socket } from '@/lib/socket';
+import { getSocket } from '@/lib/socket';
 import { formatRoomId } from '@/utils/format-room-id';
 
 import { storage } from './services/storage';
 
 export function createRoom(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const socket = getSocket();
     socket.emit(RoomServiceMsg.CREATE, name);
     socket.on(RoomServiceMsg.CREATED, (roomId: string, userID: string) => {
       roomId = formatRoomId(roomId);
@@ -24,6 +25,8 @@ export function createRoom(name: string): Promise<string> {
 
 export function joinRoom(roomId: string, name: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
+    const socket = getSocket();
+
     roomId = roomId.replace(/-/g, '');
 
     socket.emit(RoomServiceMsg.JOIN, roomId, name);
@@ -40,7 +43,10 @@ export function joinRoom(roomId: string, name: string): Promise<boolean> {
 
 export function leaveRoom(roomId: string): Promise<void> {
   return new Promise((resolve, reject) => {
+    const socket = getSocket();
+
     socket.emit(RoomServiceMsg.LEAVE, roomId);
+    socket.disconnect();
     storage.clear();
   });
 }

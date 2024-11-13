@@ -12,33 +12,44 @@ export function onSubmit(
   selectedItem: ExtendedTreeDataItem | null,
   repo: string,
   branch: string,
+  content: string,
   closeDialog: () => void,
 ) {
-  const createPromise = commitChanges(data, selectedItem, repo, branch);
+  return new Promise((resolve, reject) => {
+    const createPromise = commitChanges(data, selectedItem, repo, branch, content);
 
-  toast.promise(createPromise, {
-    loading: 'Committing changes...',
-    success: (result) => {
-      closeDialog();
-      return (
-        <div className="flex flex-col text-sm font-medium">
-          <p>Changes committed successfully!</p>
-          <div className="flex items-center gap-x-1 text-accent-foreground">
-            <a
-              href={result.content.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-fit hover:underline"
-            >
-              View on GitHub
-            </a>
-            <ExternalLink className="size-4" />
+    toast.promise(createPromise, {
+      loading: 'Committing changes...',
+      success: (result) => {
+        closeDialog();
+        return (
+          <div className="flex flex-col font-medium [font-size:13px] [line-height:1.5rem]">
+            <p>Changes committed successfully!</p>
+            <div className="flex items-center gap-x-1 text-accent-foreground">
+              <a
+                href={result.content.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-fit hover:underline"
+              >
+                View on GitHub
+              </a>
+              <ExternalLink className="size-4" />
+            </div>
           </div>
-        </div>
-      );
-    },
-    error: (error) => `Failed to commit changes.\n${parseError(error)}`,
-  });
+        );
+      },
+      error: (error) => `Failed to commit changes.\n${parseError(error)}`,
+    });
 
-  return createPromise;
+    createPromise
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((error) => {
+        console.error('Commit error:', error);
+        // Resolve with null instead of rejecting to prevent uncaught errors
+        resolve(null);
+      });
+  });
 }
