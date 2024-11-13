@@ -39,7 +39,7 @@ import { createCursorStyle } from '../utils';
  * Show cursor and selection when other users type or select text.
  * @param userID User identifier
  * @param cursor Cursor data
- * @param editorInstanceRef Editor instance reference 
+ * @param editorInstanceRef Editor instance reference
  * @param monacoInstanceRef Monaco instance reference
  * @param cursorDecorationsRef Cursor decorations reference
  * @param cleanupTimeoutsRef Cleanup timeouts reference
@@ -159,6 +159,7 @@ export const removeCursor = (
   >,
 ): void => {
   const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
+  console.log(cursorElements);
   cursorElements.forEach((el) => el.remove());
   const selectionElements = document.querySelectorAll(
     `.cursor-${userID}-selection`,
