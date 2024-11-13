@@ -1,11 +1,16 @@
 /**
- * This file is responsible for updating the code in the editor.
+ * Service for handling code updates in the Monaco editor.
  *
- * This file contains 1 function:
- * 1. updateCode
- *    - Update the code in the editor.
+ * @example
+ * ```typescript
+ * updateCode(
+ *   editOperation,
+ *   editorRef,
+ *   skipUpdateRef
+ * );
+ * ```
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { MutableRefObject } from 'react';
@@ -15,9 +20,24 @@ import { EditOp } from '@common/types/operation';
 
 /**
  * Update the code in the editor.
- * @param op Edit operation.
- * @param editorInstanceRef Editor instance reference.
- * @param skipUpdateRef Skip update reference.
+ * @param op - Edit operation containing range and text
+ * @param editorInstanceRef - Reference to Monaco editor instance
+ * @param skipUpdateRef - Reference to skip update flag
+ *
+ * @example
+ * ```typescript
+ * updateCode(
+ *   {
+ *     r: { sL: 1, sC: 1, eL: 1, eC: 1 },
+ *     text: "hello"
+ *   },
+ *   editorRef,
+ *   skipUpdateRef
+ * );
+ * ```
+ *
+ * @remarks
+ * Uses [`EditOp`](@common/types/operation.ts) type for operation data
  */
 export const updateCode = (
   op: EditOp,

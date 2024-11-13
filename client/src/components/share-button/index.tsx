@@ -1,3 +1,25 @@
+/**
+ * ShareButton component that displays a button to open a dialog for sharing room details.
+ * Shows a tooltip on hover and handles opening the share dialog.
+ *
+ * @example
+ * ```tsx
+ * <ShareButton roomId="abc123" />
+ * ```
+ *
+ * @param props - Component props
+ * @param props.roomId - ID of the current room to share
+ *
+ * @remarks
+ * Uses the following components:
+ * - [`ShareDialog`](src/components/share-dialog/index.tsx) for sharing options
+ * - [`Button`](src/components/ui/button.tsx) for trigger
+ * - [`Dialog`](src/components/ui/dialog.tsx) for modal
+ * - [`Tooltip`](src/components/ui/tooltip.tsx) for hover hints
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useRef } from 'react';
 import { Share } from 'lucide-react';
 

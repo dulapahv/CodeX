@@ -1,14 +1,28 @@
 /**
- * This file is responsible for showing the cursor and selection when other
- * users type or select text.
+ * Service for handling cursor position updates and synchronization between users.
+ * Manages remote user cursors, selections, and decorations in the Monaco editor.
  *
- * This file contains 2 functions:
- * 1. updateCursor
- *    - Show cursor and selection when other users type or select text.
- * 2. removeCursor
- *    - Remove cursor and selection when a user leaves.
+ * @example
+ * ```ts
+ * updateCursor(
+ *   "user123",
+ *   { pL: 1, pC: 1 },
+ *   editorRef,
+ *   monacoRef,
+ *   decorationsRef,
+ *   timeoutsRef
+ * );
+ * ```
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * @remarks
+ * Uses [`createCursorStyle`](../utils.ts) for cursor styling and
+ * [`userMap`](src/lib/services/user-map.ts) for user data.
+ *
+ * @see
+ * - [`Cursor`](@common/types/operation.ts) interface
+ * - Monaco editor decoration APIs
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { MutableRefObject } from 'react';
@@ -23,12 +37,12 @@ import { createCursorStyle } from '../utils';
 
 /**
  * Show cursor and selection when other users type or select text.
- * @param userID User identifier.
- * @param cursor Cursor data.
- * @param editorInstanceRef Editor instance reference.
- * @param monacoInstanceRef Monaco instance reference.
- * @param cursorDecorationsRef Cursor decorations reference.
- * @param cleanupTimeoutsRef Cleanup timeouts reference.
+ * @param userID User identifier
+ * @param cursor Cursor data
+ * @param editorInstanceRef Editor instance reference 
+ * @param monacoInstanceRef Monaco instance reference
+ * @param cursorDecorationsRef Cursor decorations reference
+ * @param cleanupTimeoutsRef Cleanup timeouts reference
  */
 export const updateCursor = (
   userID: string,

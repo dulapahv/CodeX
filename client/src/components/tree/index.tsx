@@ -3,9 +3,25 @@
  * of items. It supports expanding and collapsing items, selecting items, and
  * loading states.
  *
+ * @component
+ * @example
+ * ```tsx
+ * <Tree
+ *   data={items}
+ *   onSelectChange={(item) => handleSelect(item)}
+ *   className="h-full"
+ * />
+ * ```
+ *
+ * @remarks
  * Modified by Dulapah Vibulsanti (https://github.com/dulapahv) from a comment
  * on an issue in shadcn-ui/ui by WangLarry (https://github.com/WangLarry).
  * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
+ *
+ * Uses the following components:
+ * - [`ScrollArea`](src/components/ui/scroll-area.tsx) for scrolling
+ * - [`Accordion`](src/components/ui/accordion.tsx) for expanding/collapsing
+ * - [`LoaderCircle`](lucide-react) for loading states
  */
 
 'use client';

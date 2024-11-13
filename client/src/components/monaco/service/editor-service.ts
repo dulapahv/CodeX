@@ -1,16 +1,21 @@
 /**
- * This file is responsible for handling the Monaco editor before and
- * after mounting.
+ * Service for handling Monaco editor lifecycle and configuration.
+ * Manages editor setup, mounting, and event handling.
  *
- * This file contains 3 functions:
- * 1. handleBeforeMount
- *    - Handle the Monaco editor before mounting.
- * 2. handleOnMount
- *   - Handle the Monaco editor after mounting.
- * 3. handleOnChange
- *   - Handle changes in the editor.
+ * @example
+ * ```ts
+ * // Initialize editor
+ * handleBeforeMount(monaco);
+ * handleOnMount(editor, monaco, disposablesRef, setCursorPosition);
+ * ```
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * @remarks
+ * Uses the following services:
+ * - [`getSocket`](src/lib/socket.ts) for editor synchronization
+ * - Monaco editor API for editor configuration
+ * - Theme definitions from monaco-themes package
+ *
+ * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';
@@ -38,15 +43,11 @@ export const handleBeforeMount = (monaco: Monaco): void => {
 
 /**
  * Handle the Monaco editor after mounting.
- * @param editor Monaco editor instance.
- * @param monaco Monaco instance.
- * @param editorRef Editor reference function.
- * @param monacoRef Monaco reference function.
- * @param editorInstanceRef Editor instance reference.
- * @param monacoInstanceRef Monaco instance reference.
- * @param disposablesRef Disposables reference.
- * @param setCursorPosition Set cursor position function.
- * @param defaultCode Default code to set in the editor.
+ * @param editor Monaco editor instance
+ * @param monaco Monaco instance
+ * @param editorRef Editor reference function
+ * @param monacoRef Monaco reference function
+ * @param editorInstanceRef Editor instance reference
  */
 export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
