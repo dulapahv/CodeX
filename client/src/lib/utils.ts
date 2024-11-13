@@ -46,7 +46,7 @@ export const leaveRoom = (roomId: string): Promise<void> => {
     const socket = getSocket();
 
     socket.emit(RoomServiceMsg.LEAVE, roomId);
-    // socket.disconnect();
+    socket.disconnect();
     storage.clear();
   });
 };

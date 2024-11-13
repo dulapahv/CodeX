@@ -48,6 +48,8 @@ export const connect = (socket: Socket, name: string): void => {
 export const disconnect = (socket: Socket): void => {
   userKeys.delete(socket.id);
   // WeakMap will automatically garbage collect the entry
+
+  socket.disconnect();
 };
 
 /**
