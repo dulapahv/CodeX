@@ -1,3 +1,8 @@
+/**
+ * TX = Transmit (to server)
+ * RX = Receive (from server)
+ */
+
 export enum UserServiceMsg {
   DISC = 'dc',
   CURSOR_RX = 'curRx',
@@ -21,4 +26,7 @@ export enum CodeServiceMsg {
   RECEIVE_CODE = 'rcCd',
   CODE_TX = 'cdTx',
   CODE_RX = 'cdRx',
+  GET_LANG = 'gtLng',
+  LANG_TX = 'lngTx',
+  LANG_RX = 'lngRx',
 }

@@ -92,6 +92,7 @@ export default function Room({ params }: RoomProps) {
       window.removeEventListener('popstate', disconnect);
       socket.off(RoomServiceMsg.UPDATE_USERS);
       socket.off(CodeServiceMsg.RECEIVE_CODE);
+      socket.off(CodeServiceMsg.LANG_RX);
       userMap.clear();
     };
   }, [disconnect, params.roomId, router, socket]);

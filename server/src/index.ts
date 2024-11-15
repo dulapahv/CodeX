@@ -55,6 +55,12 @@ io.on('connection', (socket) => {
   socket.on(UserServiceMsg.CURSOR_TX, async (cursor: Cursor) => {
     userService.updateCursor(socket, cursor);
   });
+  socket.on(CodeServiceMsg.GET_LANG, async () => {
+    codeService.syncLang(socket, io);
+  });
+  socket.on(CodeServiceMsg.LANG_TX, async (langID: string) => {
+    codeService.updateLang(socket, langID);
+  });
 });
 
 const PORT = process.env.PORT || 3001;

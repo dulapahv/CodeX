@@ -1,4 +1,4 @@
-import { type TreeDataItem } from '@/components/tree';
+import type { TreeDataItem } from '@/components/tree';
 
 export enum itemType {
   REPO = 'repo',

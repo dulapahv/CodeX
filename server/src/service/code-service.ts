@@ -4,9 +4,13 @@ import { CodeServiceMsg } from '../../../common/types/message';
 import { EditOp } from '../../../common/types/operation';
 import { getUserRoom } from './room-service';
 
-// Use a WeakMap for better memory management - allows garbage collection of unused rooms
+// Use WeakMap for better memory management - allows garbage collection of unused rooms
 const roomID_to_Code_Map = new WeakMap<object, string>();
+const roomID_to_Lang_Map = new WeakMap<object, string>();
 const roomKeys = new Map<string, object>();
+
+// Default language ID for Python
+const DEFAULT_LANG_ID = "python";
 
 /**
  * Get or create room key for WeakMap storage
@@ -18,6 +22,8 @@ function getRoomKey(roomID: string): object {
   if (!key) {
     key = { id: roomID };
     roomKeys.set(roomID, key);
+    // Initialize with default language when creating new room
+    roomID_to_Lang_Map.set(key, DEFAULT_LANG_ID);
   }
   return key;
 }
@@ -41,6 +47,24 @@ export const getCode = (roomID: string): string => {
 };
 
 /**
+ * Retrieve the current language ID for a room
+ * @param roomID Room identifier
+ * @returns Current language ID for the room
+ */
+export const getLang = (roomID: string): string => {
+  return roomID_to_Lang_Map.get(getRoomKey(roomID)) || DEFAULT_LANG_ID;
+};
+
+/**
+ * Set the language ID for a room
+ * @param roomID Room identifier
+ * @param langId Language identifier
+ */
+export const setLang = (roomID: string, langId: string): void => {
+  roomID_to_Lang_Map.set(getRoomKey(roomID), langId);
+};
+
+/**
  * Sync code to a client with minimal data transfer
  */
 export const syncCode = (socket: Socket, io: Server): void => {
@@ -48,6 +72,28 @@ export const syncCode = (socket: Socket, io: Server): void => {
     CodeServiceMsg.RECEIVE_CODE,
     getCode(getUserRoom(socket)),
   );
+};
+
+/**
+ * Sync language ID to a client
+ */
+export const syncLang = (socket: Socket, io: Server): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  const langId = getLang(roomID);
+  io.to(socket.id).emit(CodeServiceMsg.LANG_RX, langId);
+};
+
+/**
+ * Update the language ID for a room
+ */
+export const updateLang = (socket: Socket, langId: string): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  setLang(roomID, langId);
+  socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId);
 };
 
 /**

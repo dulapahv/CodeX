@@ -50,7 +50,7 @@ interface CommitRequest {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token')?.value;
 
     if (!accessToken) {

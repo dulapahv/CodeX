@@ -1,7 +1,7 @@
 import { type Monaco } from '@monaco-editor/react';
+import { toast } from 'sonner';
 
-// Cannot import as it'll trigger window is not defined error from SSR stuffs
-// import * as monaco from 'monaco-editor';
+import { parseError } from '@/lib/utils';
 
 /**
  * Get the current operating system
@@ -66,6 +66,59 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
 }
 
 /**
+ * Opens a local file and sets its content in the Monaco editor
+ * @param monaco - Monaco instance for language detection
+ * @param editor - Monaco editor instance
+ * @throws Error if editor is null or file reading fails
+ */
+export const openLocal = (
+  monaco: Monaco,
+  editor: any, // Using any due to SSR limitations with Monaco types
+): void => {
+  // Create input element
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '*.*';
+
+  // Handle file selection
+  input.onchange = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file || !editor) return;
+
+    // Create file reader
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+
+      // Try to detect language from file extension
+      const extension = file.name.split('.').pop() || '';
+      const languages = monaco.languages.getLanguages();
+      const language = languages.find((lang) =>
+        lang.extensions?.some((ext) => ext.replace('.', '') === extension),
+      );
+
+      // Set content and language (default to plaintext)
+      editor.setValue(content);
+      monaco.editor.setModelLanguage(
+        editor.getModel(),
+        language?.id || 'plaintext',
+      );
+      toast.success('File opened successfully');
+    };
+
+    reader.onerror = () => {
+      toast.error('Failed to read file');
+      throw new Error('Failed to read file');
+    };
+
+    reader.readAsText(file);
+  };
+
+  // Trigger file dialog
+  input.click();
+};
+
+/**
  * Saves the current editor content to a local file
  * @param editor - Monaco editor instance
  * @param filename - Optional custom filename without extension
@@ -73,7 +126,7 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
  */
 export const saveLocal = (
   monaco: Monaco,
-  editor: any, // Can't use `editor: monaco.editor.IStandaloneCodeEditor | null` as we can't import monaco
+  editor: any, // Using any due to SSR limitations with Monaco types
   filename = `kasca-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`,
 ): void => {
   if (!editor) {
@@ -105,8 +158,6 @@ export const saveLocal = (
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } catch (error) {
-    throw new Error(
-      `Failed to save file: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    );
+    throw new Error(`Failed to save file: ${parseError(error)}`);
   }
 };

@@ -2,7 +2,7 @@ import { ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { parseError } from '@/lib/utils';
-import { type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
+import type { ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 
 import { CommitForm } from '../types';
 import { commitChanges } from './commit-changes';

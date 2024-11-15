@@ -7,10 +7,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import { Menu } from 'lucide-react';
 import * as monaco from 'monaco-editor';
 
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
+import {
+  OpenPromptDialog,
+  type OpenPromptDialogRef,
+} from '@/components/open-prompt-dialog';
 import {
   SaveToGithubDialog,
   type SaveToGithubDialogRef,
@@ -19,21 +24,15 @@ import {
   SettingsSheet,
   type SettingsSheetRef,
 } from '@/components/settings-sheet';
-import {
-  Menubar,
-  MenubarCheckboxItem,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarTrigger,
-} from '@/components/ui/menubar';
 
-import { getOS, saveLocal } from './utils';
+import {
+  OpenFromGithubDialog,
+  type OpenFromGithubDialogRef,
+} from '../open-from-github-dialog';
+import { DesktopMenu } from './components/desktop-menu';
+import { MobileMenu } from './components/mobile-menu';
+import type { ToolbarActions } from './types';
+import { getOS, openLocal, saveLocal } from './utils';
 
 interface ToolbarProps {
   monaco: Monaco | null;
@@ -42,12 +41,18 @@ interface ToolbarProps {
 }
 
 const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
   const [miniMap, setMiniMap] = useState(false);
   const [wordWrap, setWordWrap] = useState(false);
 
-  const leaveDialogRef = useRef<LeaveDialogRef>(null);
+  const openFromGithubDialogRef = useRef<OpenFromGithubDialogRef>(null);
+  const openPromptDialogRef1 = useRef<OpenPromptDialogRef>(null);
+  const openPromptDialogRef2 = useRef<OpenPromptDialogRef>(null);
   const saveToGithubDialogRef = useRef<SaveToGithubDialogRef>(null);
   const settingsSheetRef = useRef<SettingsSheetRef>(null);
+  const leaveDialogRef = useRef<LeaveDialogRef>(null);
+  const aboutDialogRef = useRef<AboutDialogRef>(null);
 
   const modKey = getOS() === 'Mac' ? '⌘' : 'Ctrl';
 
@@ -56,6 +61,10 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
       if (event.ctrlKey || event.metaKey) {
         if (event.shiftKey) {
           switch (event.key) {
+            case 'O':
+              event.preventDefault();
+              openPromptDialogRef2.current?.openDialog();
+              break;
             case 'S':
               event.preventDefault();
               saveToGithubDialogRef.current?.openDialog();
@@ -97,15 +106,10 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
 
   if (!monaco || !editor) return null;
 
-  function handleOpenFile() {
-    // Implement open file logic
-    console.log('Open file');
-  }
-
-  const actions = {
-    saveLocal: () => {
-      saveLocal(monaco, editor);
-    },
+  const toolbarActions: ToolbarActions = {
+    openLocal: () => openPromptDialogRef1.current?.openDialog(),
+    openGitHub: () => openPromptDialogRef2.current?.openDialog(),
+    saveLocal: () => saveLocal(monaco, editor),
     saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
     settings: () => settingsSheetRef.current?.openDialog(),
@@ -167,7 +171,7 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
       editor.trigger('keyboard', 'editor.action.insertCursorBelow', null);
     },
     commandPalette: () => {
-      // Timeout to prevent command palette triggered after editor is focused
+      // Timeout to prevent command palette triggering before editor is focussed
       editor.focus();
       setTimeout(() => {
         editor.trigger('keyboard', 'editor.action.quickCommand', null);
@@ -181,254 +185,38 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
       editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
       setWordWrap(!wordWrap);
     },
+    about: () => aboutDialogRef.current?.openDialog(),
   };
 
   return (
     <>
-      {/* Desktop menu */}
-      <Menubar className="hidden h-fit border-none bg-transparent p-0 sm:flex">
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-            File
-          </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
-            <MenubarItem onSelect={handleOpenFile}>
-              Open Local File <MenubarShortcut>{modKey}+O</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem>
-              Open GitHub File{' '}
-              <MenubarShortcut>{modKey}+Shift+O</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.saveLocal}>
-              Save to local <MenubarShortcut>{modKey}+S</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.saveGitHub}>
-              Save to GitHub <MenubarShortcut>{modKey}+Shift+S</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.settings}>
-              Settings
-              <MenubarShortcut>{modKey}+,</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.leaveRoom}>
-              Leave Room <MenubarShortcut>{modKey}+Q</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-            Edit
-          </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
-            <MenubarItem onSelect={actions.undo}>
-              Undo <MenubarShortcut>{modKey}+Z</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.redo}>
-              Redo <MenubarShortcut>{modKey}+Y</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.cut}>
-              Cut <MenubarShortcut>{modKey}+X</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.copy}>
-              Copy <MenubarShortcut>{modKey}+C</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.paste}>
-              Paste <MenubarShortcut>{modKey}+V</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.find}>
-              Find <MenubarShortcut>{modKey}+F</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.replace}>
-              Replace <MenubarShortcut>{modKey}+H</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-            Selection
-          </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
-            <MenubarItem onSelect={actions.selectAll}>
-              Select All <MenubarShortcut>{modKey}+A</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.copyLineUp}>
-              Copy Line Up <MenubarShortcut>Shift+Alt+↑</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.copyLineDown}>
-              Copy Line Down <MenubarShortcut>Shift+Alt+↓</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.moveLineUp}>
-              Move Line Up <MenubarShortcut>Alt+↑</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.moveLineDown}>
-              Move Line Down <MenubarShortcut>Alt+↓</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.duplicateSelection}>
-              Duplicate Selection
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onSelect={actions.addCursorAbove}>
-              Add Cursor Above <MenubarShortcut>{modKey}+Alt+↑</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem onSelect={actions.addCursorBelow}>
-              Add Cursor Below <MenubarShortcut>{modKey}+Alt+↓</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-            View
-          </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
-            <MenubarItem onSelect={actions.commandPalette}>
-              Command Palette <MenubarShortcut>F1</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator />
-            <MenubarCheckboxItem
-              onCheckedChange={actions.minimap}
-              checked={miniMap}
-            >
-              Minimap
-            </MenubarCheckboxItem>
-            <MenubarCheckboxItem
-              onCheckedChange={actions.wordWrap}
-              checked={wordWrap}
-            >
-              Word Wrap
-            </MenubarCheckboxItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-            Help
-          </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
-            <MenubarItem>Documentation</MenubarItem>
-            <MenubarItem>About</MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
-      {/* Mobile menu */}
-      <Menubar className="flex h-fit animate-fade-in border-none bg-transparent p-0 sm:hidden">
-        <MenubarMenu>
-          <MenubarTrigger className="px-2 py-1">
-            <Menu className="size-5" />
-          </MenubarTrigger>
-          <MenubarContent className="ml-1">
-            <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
-                File
-              </MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem onSelect={handleOpenFile}>
-                  Open Local File
-                </MenubarItem>
-                <MenubarItem>Open GitHub File</MenubarItem>
-                <MenubarItem onSelect={actions.saveLocal}>
-                  Save to local
-                </MenubarItem>
-                <MenubarItem onSelect={actions.saveGitHub}>
-                  Save to GitHub
-                </MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Settings</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem onSelect={actions.leaveRoom}>
-                  Leave Room
-                </MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
-                Edit
-              </MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem onSelect={actions.undo}>Undo</MenubarItem>
-                <MenubarItem onSelect={actions.redo}>Redo</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem onSelect={actions.cut}>Cut</MenubarItem>
-                <MenubarItem onSelect={actions.copy}>Copy</MenubarItem>
-                <MenubarItem onSelect={actions.paste}>Paste</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem onSelect={actions.find}>Find</MenubarItem>
-                <MenubarItem onSelect={actions.replace}>Replace</MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
-                Selection
-              </MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem onSelect={actions.selectAll}>
-                  Select All
-                </MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem onSelect={actions.copyLineUp}>
-                  Copy Line Up
-                </MenubarItem>
-                <MenubarItem onSelect={actions.copyLineDown}>
-                  Copy Line Down
-                </MenubarItem>
-                <MenubarItem onSelect={actions.moveLineUp}>
-                  Move Line Up
-                </MenubarItem>
-                <MenubarItem onSelect={actions.moveLineDown}>
-                  Move Line Down
-                </MenubarItem>
-                <MenubarItem onSelect={actions.duplicateSelection}>
-                  Duplicate Selection
-                </MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem onSelect={actions.addCursorAbove}>
-                  Add Cursor Above
-                </MenubarItem>
-                <MenubarItem onSelect={actions.addCursorBelow}>
-                  Add Cursor Below
-                </MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
-                View
-              </MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem onSelect={actions.commandPalette}>
-                  Command Palette
-                </MenubarItem>
-                <MenubarSeparator />
-                <MenubarCheckboxItem
-                  onCheckedChange={actions.minimap}
-                  checked={miniMap}
-                >
-                  Minimap
-                </MenubarCheckboxItem>
-                <MenubarCheckboxItem
-                  onCheckedChange={actions.wordWrap}
-                  checked={wordWrap}
-                >
-                  Word Wrap
-                </MenubarCheckboxItem>
-              </MenubarSubContent>
-            </MenubarSub>
-            <MenubarSub>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
-                Help
-              </MenubarSubTrigger>
-              <MenubarSubContent>
-                <MenubarItem>Documentation</MenubarItem>
-                <MenubarItem>About</MenubarItem>
-              </MenubarSubContent>
-            </MenubarSub>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
+      {isDesktop ? (
+        <DesktopMenu
+          modKey={modKey}
+          actions={toolbarActions}
+          miniMap={miniMap}
+          wordWrap={wordWrap}
+        />
+      ) : (
+        <MobileMenu
+          actions={toolbarActions}
+          miniMap={miniMap}
+          wordWrap={wordWrap}
+        />
+      )}
+      <OpenFromGithubDialog ref={openFromGithubDialogRef} editor={editor} />
+      <OpenPromptDialog
+        ref={openPromptDialogRef1}
+        callback={() => openLocal(monaco, editor)}
+      />
+      <OpenPromptDialog
+        ref={openPromptDialogRef2}
+        callback={() => openFromGithubDialogRef.current?.openDialog()}
+      />
       <SaveToGithubDialog ref={saveToGithubDialogRef} editor={editor} />
-      <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
       <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
+      <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
+      <AboutDialog ref={aboutDialogRef} />
     </>
   );
 };

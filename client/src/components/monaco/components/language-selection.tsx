@@ -23,12 +23,15 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import * as monaco from 'monaco-editor';
 import { isMobile } from 'react-device-detect';
 
+import { CodeServiceMsg } from '@common/types/message';
+
+import { getSocket } from '@/lib/socket';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,8 +67,51 @@ const LanguageSelection = ({
   defaultLanguage = 'Python',
   className,
 }: LanguageSelectionProps) => {
+  const socket = getSocket();
+
   const [open, setOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
+
+  // Sync with editor's current language
+  useEffect(() => {
+    if (!editor || !monaco) return;
+
+    const model = editor.getModel();
+    if (!model) return;
+
+    socket.emit(CodeServiceMsg.GET_LANG);
+    socket.on(CodeServiceMsg.LANG_RX, (langID: string) => {
+      const model = editor.getModel();
+      if (model) {
+        monaco.editor.setModelLanguage(model, langID);
+      }
+    });
+
+    // Get initial language
+    const currentLanguage = model.getLanguageId();
+    const language = monaco.languages
+      .getLanguages()
+      .find((lang) => lang.id === currentLanguage);
+    if (language?.aliases?.[0]) {
+      setSelectedLanguage(language.aliases[0]);
+    }
+
+    // Listen for language changes
+    const disposable = model.onDidChangeLanguage((e) => {
+      const newLanguage = monaco.languages
+        .getLanguages()
+        .find((lang) => lang.id === e.newLanguage);
+      if (newLanguage?.aliases?.[0]) {
+        setSelectedLanguage(newLanguage.aliases[0]);
+        socket.emit(CodeServiceMsg.LANG_TX, newLanguage.id);
+      }
+    });
+
+    return () => {
+      socket.off(CodeServiceMsg.LANG_RX);
+      disposable.dispose();
+    };
+  }, [editor, monaco, socket]);
 
   // Memoize languages array to prevent unnecessary recalculations
   const languages = useMemo(() => {
