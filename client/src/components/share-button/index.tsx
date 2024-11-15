@@ -51,9 +51,10 @@ const ShareButton = ({ roomId }: RoomProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 animate-swing-in-bottom-fwd rounded-sm px-2"
+              className="h-7 animate-slide-in-top rounded-sm px-2 hover:!text-foreground"
               aria-label="Share room"
               onClick={handleButtonClick}
+              style={{ color: 'var(--toolbar-foreground)' }}
             >
               <Share className="mr-2 size-4" />
               Share

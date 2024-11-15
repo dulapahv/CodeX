@@ -68,12 +68,8 @@ export const handleOnMount = (
   });
 
   // Disable unwanted validations
-  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
-  });
-
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
+    diagnosticCodesToIgnore: [2792], // Ignore "Cannot find module" error
   });
 
   const cursorSelectionDisposable = editor.onDidChangeCursorSelection((ev) => {

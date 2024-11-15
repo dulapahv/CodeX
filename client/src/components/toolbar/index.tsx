@@ -13,6 +13,10 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
 import {
+  OpenFromGithubDialog,
+  type OpenFromGithubDialogRef,
+} from '@/components/open-from-github-dialog';
+import {
   OpenPromptDialog,
   type OpenPromptDialogRef,
 } from '@/components/open-prompt-dialog';
@@ -25,10 +29,6 @@ import {
   type SettingsSheetRef,
 } from '@/components/settings-sheet';
 
-import {
-  OpenFromGithubDialog,
-  type OpenFromGithubDialogRef,
-} from '../open-from-github-dialog';
 import { DesktopMenu } from './components/desktop-menu';
 import { MobileMenu } from './components/mobile-menu';
 import type { ToolbarActions } from './types';
@@ -107,8 +107,15 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
   if (!monaco || !editor) return null;
 
   const toolbarActions: ToolbarActions = {
-    openLocal: () => openPromptDialogRef1.current?.openDialog(),
-    openGitHub: () => openPromptDialogRef2.current?.openDialog(),
+    openLocal: () => {
+      if (!editor.getModel()?.getValue()) openLocal(monaco, editor);
+      else openPromptDialogRef1.current?.openDialog();
+    },
+    openGitHub: () => {
+      if (!editor.getModel()?.getValue())
+        openFromGithubDialogRef.current?.openDialog();
+      else openPromptDialogRef2.current?.openDialog();
+    },
     saveLocal: () => saveLocal(monaco, editor),
     saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),

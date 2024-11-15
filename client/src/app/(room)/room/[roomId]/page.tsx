@@ -101,8 +101,14 @@ export default function Room({ params }: RoomProps) {
     <main className="flex h-full min-w-[425px] flex-col overflow-clip">
       <div className="h-9">
         {monaco && editor && (
-          <div className="flex items-center gap-x-2 bg-[#dddddd] p-1 dark:bg-[#3c3c3c]">
-            <div className="grow animate-swing-in-bottom-fwd">
+          <div
+            className="flex items-center gap-x-2 p-1"
+            style={{ backgroundColor: 'var(--toolbar-bg-secondary)' }}
+          >
+            <div
+              className="grow animate-slide-in-top"
+              style={{ color: 'var(--toolbar-foreground)' }}
+            >
               <Toolbar monaco={monaco} editor={editor} roomId={params.roomId} />
             </div>
             <UserList users={users} />

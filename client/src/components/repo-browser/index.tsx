@@ -76,7 +76,7 @@ const RepoBrowser = ({
       ) : (
         <Tree
           data={treeData}
-          className="h-full"
+          className="h-full animate-fade-in"
           onSelectChange={(item) =>
             handleSelectItem(
               item,

@@ -1,4 +1,5 @@
 import { type Monaco } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
 import { parseError } from '@/lib/utils';
@@ -73,7 +74,7 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
  */
 export const openLocal = (
   monaco: Monaco,
-  editor: any, // Using any due to SSR limitations with Monaco types
+  editor: monaco.editor.IStandaloneCodeEditor | null,
 ): void => {
   // Create input element
   const input = document.createElement('input');
@@ -99,10 +100,10 @@ export const openLocal = (
 
       // Set content and language (default to plaintext)
       editor.setValue(content);
-      monaco.editor.setModelLanguage(
-        editor.getModel(),
-        language?.id || 'plaintext',
-      );
+      const model = editor.getModel();
+      if (model) {
+        monaco.editor.setModelLanguage(model, language?.id || 'plaintext');
+      }
       toast.success('File opened successfully');
     };
 
@@ -126,7 +127,7 @@ export const openLocal = (
  */
 export const saveLocal = (
   monaco: Monaco,
-  editor: any, // Using any due to SSR limitations with Monaco types
+  editor: monaco.editor.IStandaloneCodeEditor | null,
   filename = `kasca-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`,
 ): void => {
   if (!editor) {

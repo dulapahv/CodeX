@@ -62,13 +62,17 @@ export const StatusBar = memo(function StatusBar({
   return (
     <section
       className={cn(
-        'absolute bottom-0 h-6 w-full animate-swing-in-top-fwd bg-[#2678ca] py-1',
+        'absolute bottom-0 h-6 w-full animate-slide-in-bottom py-1',
         className,
       )}
+      style={{ backgroundColor: 'var(--toolbar-bg-primary)' }}
       role="status"
       aria-label="Editor status bar"
     >
-      <div className="flex items-center justify-end gap-x-2 px-2 text-xs text-primary-foreground">
+      <div
+        className="flex items-center justify-end gap-x-2 px-2 text-xs"
+        style={{ color: 'var(--toolbar-foreground)' }}
+      >
         <div className="flex items-center">
           <span className="flex items-center gap-x-1">
             <Languages className="size-4" aria-hidden="true" />

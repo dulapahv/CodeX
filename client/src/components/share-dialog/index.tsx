@@ -1,7 +1,9 @@
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import { GeistMono } from 'geist/font/mono';
 import { Check, Copy, Image as LuImage } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
+import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -80,7 +82,11 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Room ID</Label>
               <div className="flex gap-x-2">
-                <Input value={roomId} readOnly className="font-mono text-sm" />
+                <Input
+                  value={roomId}
+                  readOnly
+                  className={cn('text-sm', GeistMono.className)}
+                />
                 <Button
                   onClick={() => handleCopy(roomId, 'roomIdCopied')}
                   size="icon"
@@ -104,7 +110,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
                   <Input
                     value={`${window.location.origin}/room/${roomId}`}
                     readOnly
-                    className="font-mono text-sm"
+                    className={cn('text-sm', GeistMono.className)}
                   />
                 )}
                 <Button

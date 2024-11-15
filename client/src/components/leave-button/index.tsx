@@ -59,7 +59,7 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
             size="icon"
             variant="ghost"
             className={cn(
-              `size-7 animate-swing-in-bottom-fwd rounded-sm p-0`,
+              `size-7 animate-slide-in-top rounded-sm p-0`,
               className,
             )}
             aria-label="Leave room"

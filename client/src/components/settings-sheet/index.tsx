@@ -95,7 +95,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
             <SheetDescription>
-              You can customize this code editor and the app to your liking.
+              Personalize your experience and preferences.
             </SheetDescription>
           </SheetHeader>
           <div className="flex flex-col gap-y-4 py-4">

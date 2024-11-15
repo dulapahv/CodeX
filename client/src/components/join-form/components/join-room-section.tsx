@@ -32,6 +32,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import { GeistMono } from 'geist/font/mono';
 import { ArrowRight, LoaderCircle } from 'lucide-react';
 import type {
   FieldErrors,
@@ -77,6 +78,7 @@ export const JoinRoomSection = ({
           <Input
             id="room-id"
             placeholder="XXXX-XXXX"
+            className={GeistMono.className}
             disabled={isCreating || isSubmitting}
             {...register('roomId', {
               onChange: (e) => onRoomIdChange(e, setValue),

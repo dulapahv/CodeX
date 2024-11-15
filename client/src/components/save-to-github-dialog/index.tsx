@@ -246,7 +246,14 @@ const SaveToGithubDialog = forwardRef<
                 Cancel
               </Button>
               {githubUser && (
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={
+                    isSubmitting ||
+                    !selectedItem ||
+                    selectedItem.type === itemType.REPO
+                  }
+                >
                   {isSubmitting ? (
                     <>
                       <LoaderCircle className="mr-2 size-4 animate-spin" />
@@ -318,7 +325,14 @@ const SaveToGithubDialog = forwardRef<
                       .
                     </div>
                   </div>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    disabled={
+                      isSubmitting ||
+                      !selectedItem ||
+                      selectedItem.type === itemType.REPO
+                    }
+                  >
                     {isSubmitting ? (
                       <>
                         <LoaderCircle className="mr-2 size-4 animate-spin" />

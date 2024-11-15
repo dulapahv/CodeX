@@ -36,13 +36,42 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   }, []);
 
   const handleThemeChange = useCallback(
-    (currentValue: string) => {
-      setEditorTheme(currentValue === editorTheme ? '' : currentValue);
-      localStorage.setItem('editorTheme', currentValue);
+    (key: string, value: string) => {
+      setEditorTheme(key === editorTheme ? '' : key);
+      localStorage.setItem('editorTheme', key);
       setOpen(false);
 
+      if (key === 'vs-dark' || key === 'light') {
+        document.documentElement.style.setProperty(
+          '--toolbar-bg-primary',
+          '#2678ca',
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-bg-secondary',
+          '#3c3c3c',
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-foreground',
+          '#fff',
+        );
+      } else {
+        const themeData = require(`monaco-themes/themes/${value}.json`);
+        document.documentElement.style.setProperty(
+          '--toolbar-bg-primary',
+          themeData.colors['editor.selectionBackground'].slice(0, 7),
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-bg-secondary',
+          themeData.colors['editor.selectionBackground'].slice(0, 7),
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-foreground',
+          themeData.colors['editor.foreground'],
+        );
+      }
+
       if (monaco) {
-        monaco.editor.setTheme(currentValue);
+        monaco.editor.setTheme(key);
       }
     },
     [monaco, editorTheme],
@@ -84,12 +113,12 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
                   <CommandItem
                     key={key}
                     value={key}
-                    onSelect={handleThemeChange}
+                    onSelect={() => handleThemeChange(key, value)}
                   >
                     <Check
                       className={cn(
                         'mr-2 h-4 w-4',
-                        value === editorTheme ? 'opacity-100' : 'opacity-0',
+                        key === editorTheme ? 'opacity-100' : 'opacity-0',
                       )}
                     />
                     {value}

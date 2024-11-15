@@ -1,5 +1,5 @@
 /**
- * Settings button component that opens a settings sheet for configuring 
+ * Settings button component that opens a settings sheet for configuring
  * editor options.
  * Provides access to editor preferences and configuration via a
  * slide-out panel.
@@ -61,7 +61,8 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 animate-swing-in-bottom-fwd rounded-sm p-0"
+            className="size-7 animate-slide-in-top rounded-sm p-0 hover:!text-foreground"
+            style={{ color: 'var(--toolbar-foreground)' }}
             onClick={handleButtonClick}
           >
             <Settings className="size-4" />

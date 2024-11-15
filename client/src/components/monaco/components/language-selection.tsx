@@ -162,7 +162,7 @@ const LanguageSelection = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-64 p-0"
+        className="mb-1 mr-1 w-64 p-0"
         onOpenAutoFocus={(event) => {
           if (isMobile) event.preventDefault();
         }}
