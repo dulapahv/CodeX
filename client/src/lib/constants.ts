@@ -23,6 +23,8 @@ export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_URL = 'https://kasca.dulapahv.dev';
 export const SITE_DESCRIPTION =
   'Kasca is a code collaboration platform that allows you to code with others in real-time.';
+export const INVITED_DESCRIPTION =
+  'You have been invited to a coding session. Happy coding!';
 export const SITE_IMAGE_URL = `${SITE_URL}/ogp.png`;
 export const THEME_COLOR = '#4a7af6';
 export const NAME = 'Dulapah Vibulsanti';
