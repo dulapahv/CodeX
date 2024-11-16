@@ -159,6 +159,6 @@ const getLuminance = (hexColor: string): number => {
  */
 export const getTextColor = (backgroundColor: string): string => {
   const luminance = getLuminance(backgroundColor);
-  // Use white text on dark backgrounds (luminance < 0.7)
-  return luminance < 0.7 ? '#fff' : '#000';
+  // Use white text on dark backgrounds (luminance < 0.6)
+  return luminance < 0.6 ? '#fff' : '#000';
 };
