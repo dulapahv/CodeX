@@ -7,6 +7,8 @@ import { PORTFOLIO_URL, SITE_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
+export const runtime = 'edge';
+
 export default function Error({
   error,
   reset,
