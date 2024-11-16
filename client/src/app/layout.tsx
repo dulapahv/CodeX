@@ -18,7 +18,7 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics, type BeforeSendEvent } from '@vercel/analytics/next';
 import { GeistSans } from 'geist/font/sans';
 
 import {
@@ -196,7 +196,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('h-dvh', GeistSans.className)}>
-        <Analytics />
+        <Analytics
+          beforeSend={(event: BeforeSendEvent) => {
+            const url = new URL(event.url);
+            if (url.pathname.startsWith('/room/')) return null;
+            url.searchParams.delete('room');
+            return {
+              ...event,
+              url: url.toString(),
+            };
+          }}
+        />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />
