@@ -56,13 +56,13 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
       <Tooltip>
         <TooltipTrigger onFocus={handleTooltipFocus} asChild>
           <Button
+            aria-label="Leave room"
             size="icon"
             variant="ghost"
             className={cn(
               `size-7 animate-slide-in-top rounded-sm p-0`,
               className,
             )}
-            aria-label="Leave room"
             onClick={handleButtonClick}
           >
             <LogOut className="size-4 text-red-600" strokeWidth={2.5} />
