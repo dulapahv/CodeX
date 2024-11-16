@@ -70,8 +70,9 @@ export const handleOnMount = (
   // Disable unwanted validations
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     diagnosticCodesToIgnore: [
-      2792, // Ignore "Cannot find module" error
+      2304, // Ignore "Cannot find name" error
       2339, // Ignore "Property does not exist" error
+      2792, // Ignore "Cannot find module" error
     ],
   });
 
