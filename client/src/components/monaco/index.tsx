@@ -28,7 +28,7 @@
 
 import { memo, useEffect, useRef, useState } from 'react';
 import Editor, { type Monaco } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import { useTheme } from 'next-themes';
 
 import {

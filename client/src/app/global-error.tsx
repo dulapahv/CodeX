@@ -42,7 +42,13 @@ export default function GlobalError({
                 </p>
               )}
             </AlertDescription>
-            <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
+            <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
+              <Button variant="outline" asChild className="gap-2">
+                <Link href={generateErrorReport()} target="_blank">
+                  <Bug className="size-4" />
+                  Report Issue
+                </Link>
+              </Button>
               <Button
                 variant="default"
                 onClick={() => reset()}
@@ -50,12 +56,6 @@ export default function GlobalError({
               >
                 <RefreshCcw className="size-4" />
                 Reload Application
-              </Button>
-              <Button variant="outline" asChild className="gap-2">
-                <Link href={generateErrorReport()} target="_blank">
-                  <Bug className="size-4" />
-                  Report Issue
-                </Link>
               </Button>
             </div>
           </Alert>

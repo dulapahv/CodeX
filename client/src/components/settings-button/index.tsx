@@ -29,7 +29,7 @@
 import { useRef } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { Settings } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import {
   SettingsSheet,

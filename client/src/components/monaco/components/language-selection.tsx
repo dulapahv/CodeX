@@ -26,7 +26,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg } from '@common/types/message';

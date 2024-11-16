@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
@@ -211,7 +211,11 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
           wordWrap={wordWrap}
         />
       )}
-      <OpenFromGithubDialog ref={openFromGithubDialogRef} editor={editor} />
+      <OpenFromGithubDialog
+        ref={openFromGithubDialogRef}
+        monaco={monaco}
+        editor={editor}
+      />
       <OpenPromptDialog
         ref={openPromptDialogRef1}
         callback={() => openLocal(monaco, editor)}

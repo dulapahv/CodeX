@@ -20,7 +20,7 @@
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { Monaco } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
 
 import { CodeServiceMsg, UserServiceMsg } from '@common/types/message';

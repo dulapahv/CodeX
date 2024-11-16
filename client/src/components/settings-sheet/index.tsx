@@ -8,7 +8,7 @@ import {
 } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';

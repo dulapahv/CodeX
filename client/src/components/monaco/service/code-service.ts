@@ -14,7 +14,7 @@
  */
 
 import { MutableRefObject } from 'react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { EditOp } from '@common/types/operation';
 

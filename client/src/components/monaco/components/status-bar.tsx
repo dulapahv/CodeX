@@ -28,7 +28,7 @@
 import { memo } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Languages } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { cn } from '@/lib/utils';
 

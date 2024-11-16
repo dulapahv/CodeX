@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { LoaderCircle, Settings } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
 import { useMediaQuery } from '@/hooks/use-media-query';

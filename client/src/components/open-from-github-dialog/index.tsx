@@ -6,8 +6,9 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Settings } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -39,6 +40,7 @@ import { loginWithGithub } from '@/utils/login-with-github';
 import { getDisplayPath } from './utils';
 
 interface OpenFromGithubDialogProps {
+  monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
@@ -50,7 +52,7 @@ interface OpenFromGithubDialogRef {
 const OpenFromGithubDialog = forwardRef<
   OpenFromGithubDialogRef,
   OpenFromGithubDialogProps
->(({ editor }, ref) => {
+>(({ monaco, editor }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
     null,
@@ -116,7 +118,7 @@ const OpenFromGithubDialog = forwardRef<
   }, [selectedItem]);
 
   const handleOpenFile = async () => {
-    if (!editor || !repo || !branch || !fileName || !selectedItem) {
+    if (!monaco || !editor || !repo || !branch || !fileName || !selectedItem) {
       toast.error('Please select a file to open');
       return;
     }

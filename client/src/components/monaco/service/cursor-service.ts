@@ -27,7 +27,7 @@
 
 import { MutableRefObject } from 'react';
 import type { Monaco } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { Cursor } from '@common/types/operation';
 

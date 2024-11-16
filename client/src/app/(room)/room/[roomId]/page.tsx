@@ -26,7 +26,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { User } from '@common/types/user';
