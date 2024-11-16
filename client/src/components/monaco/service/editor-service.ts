@@ -69,7 +69,10 @@ export const handleOnMount = (
 
   // Disable unwanted validations
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [2792], // Ignore "Cannot find module" error
+    diagnosticCodesToIgnore: [
+      2792, // Ignore "Cannot find module" error
+      2339, // Ignore "Property does not exist" error
+    ],
   });
 
   const cursorSelectionDisposable = editor.onDidChangeCursorSelection((ev) => {
