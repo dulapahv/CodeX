@@ -13,6 +13,8 @@
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
+export const runtime = 'edge';
+
 /**
  * The metadata is set to be different from the home page so that when a user
  * shares a room link, the preview will show the room's metadata.
