@@ -30,7 +30,6 @@ import {
   THEME_COLOR,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Analytics } from '@/components/analytics';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -195,7 +194,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('h-dvh', GeistSans.className)}>
-        <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />
