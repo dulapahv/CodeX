@@ -32,6 +32,10 @@ app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Hello from kasca-server!' });
 });
 
+io.engine.on('connection', (rawSocket) => {
+  rawSocket.request = null;
+});
+
 io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.CREATE, async (name) =>
     roomService.create(socket, name),
