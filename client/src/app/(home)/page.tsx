@@ -12,8 +12,6 @@
 
 import { JoinForm } from '@/components/join-form';
 
-export const runtime = 'edge';
-
 export default function Page() {
   return (
     <main className="flex h-full items-center justify-center p-2">
