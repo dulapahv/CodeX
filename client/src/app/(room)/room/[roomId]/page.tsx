@@ -42,6 +42,8 @@ import { Toolbar } from '@/components/toolbar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { UserList } from '@/components/user-list';
 
+export const runtime = 'edge';
+
 interface RoomProps {
   params: {
     roomId: string;

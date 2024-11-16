@@ -26,7 +26,7 @@ import {
  * The metadata is set to be different from the home page so that when a user
  * shares a room link, the preview will show the room's metadata.
  */
-export const generateMetadata = async ({
+export const metadata = async ({
   params,
 }: {
   params: { roomId: string };
