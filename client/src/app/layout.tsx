@@ -18,7 +18,6 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Analytics, type BeforeSendEvent } from '@vercel/analytics/next';
 import { GeistSans } from 'geist/font/sans';
 
 import {
@@ -31,6 +30,7 @@ import {
   THEME_COLOR,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { Analytics } from '@/components/analytics';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -193,14 +193,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('h-dvh', GeistSans.className)}>
-        <Analytics
-          beforeSend={(event: BeforeSendEvent) => {
-            const pathname = new URL(event.url).pathname;
-            if (pathname === '/') return event;
-
-            return null;
-          }}
-        />
+        <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />
