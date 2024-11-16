@@ -48,6 +48,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.5",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@types/node": "^20.17.6",
     "@types/react": "^18.3.12",
