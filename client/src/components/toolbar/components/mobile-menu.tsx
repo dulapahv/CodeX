@@ -24,7 +24,7 @@ interface MobileMenuProps {
 const MobileMenu = ({ actions, miniMap, wordWrap }: MobileMenuProps) => (
   <Menubar className="flex h-fit animate-fade-in border-none bg-transparent p-0 sm:hidden">
     <MenubarMenu>
-      <MenubarTrigger className="px-2 py-1">
+      <MenubarTrigger className="px-2 py-1" aria-label="Open menu">
         <Menu className="size-5" />
       </MenubarTrigger>
       <MenubarContent className="ml-1">

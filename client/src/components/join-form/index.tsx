@@ -42,6 +42,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { BackButton } from './components/back-button';
 import { CreateRoomSection } from './components/create-room-section';

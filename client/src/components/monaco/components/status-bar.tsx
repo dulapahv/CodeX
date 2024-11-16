@@ -42,6 +42,16 @@ interface StatusBarProps {
   className?: string;
 }
 
+const MemoizedLanguageLabel = memo(function MemoizedLanguagesIcon() {
+  return (
+    <span className="flex items-center gap-x-1">
+      <Languages className="size-4" aria-hidden="true" />
+      <span className="sr-only">Current language:</span>
+      Language:
+    </span>
+  );
+});
+
 function formatCursorPosition({
   line,
   column,
@@ -74,11 +84,7 @@ export const StatusBar = memo(function StatusBar({
         style={{ color: 'var(--toolbar-foreground)' }}
       >
         <div className="flex items-center">
-          <span className="flex items-center gap-x-1">
-            <Languages className="size-4" aria-hidden="true" />
-            <span className="sr-only">Current language:</span>
-            Language:
-          </span>
+          <MemoizedLanguageLabel />
           <LanguageSelection
             monaco={monaco}
             editor={editor}

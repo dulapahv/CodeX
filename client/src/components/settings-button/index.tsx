@@ -59,6 +59,7 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
+            aria-label="Settings"
             variant="ghost"
             size="icon"
             className="size-7 animate-slide-in-top rounded-sm p-0 hover:!text-foreground"
