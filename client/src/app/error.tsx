@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Bug, Home, RefreshCcw } from 'lucide-react';
 
-import { PORTFOLIO_URL, SITE_URL } from '@/lib/constants';
+import { IS_DEV_ENV, PORTFOLIO_URL, SITE_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -16,12 +16,16 @@ export default function Error({
 }) {
   const generateErrorReport = () => {
     const timestamp = new Date().toISOString();
-    const errorMessage = `Error Details:
-      Time: ${timestamp}
-      Message: ${error.message || 'Unknown error'}
-      Digest: ${error.digest || 'No digest available'}
-      Stack: ${error.stack || 'No stack trace available'}
-      URL: ${window.location.href}`;
+    let errorMessage = `Error Details:
+Time: ${timestamp}
+Digest: ${error.digest || 'No digest available'}
+URL: ${window.location.href}`;
+
+    if (IS_DEV_ENV) {
+      errorMessage += `
+Message: ${error.message || 'Unknown error'}
+Stack: ${error.stack || 'No stack trace available'}`;
+    }
 
     return `${PORTFOLIO_URL}/contact?type=other&message=${encodeURIComponent(errorMessage)}`;
   };
