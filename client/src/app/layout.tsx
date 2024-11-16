@@ -161,9 +161,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
-    languages: {
-      'en-US': '/en-US',
-    },
   },
   other: {
     'msapplication-TileColor': THEME_COLOR,
@@ -198,13 +195,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={cn('h-dvh', GeistSans.className)}>
         <Analytics
           beforeSend={(event: BeforeSendEvent) => {
-            const url = new URL(event.url);
-            if (url.pathname.startsWith('/room/')) return null;
-            url.searchParams.delete('room');
-            return {
-              ...event,
-              url: url.toString(),
-            };
+            const pathname = new URL(event.url).pathname;
+            if (pathname === '/') return event;
+
+            return null;
           }}
         />
         <ThemeProvider attribute="class" disableTransitionOnChange>
