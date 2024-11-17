@@ -1,3 +1,4 @@
+// service/room-service.ts
 import { Server, Socket } from 'socket.io';
 
 import { RoomServiceMsg } from '../../../common/types/message';
@@ -12,12 +13,7 @@ import * as userService from './user-service';
  * @returns Room ID if user is in a room, undefined otherwise
  */
 export const getUserRoom = (socket: Socket): string | undefined => {
-  // Socket.IO stores rooms in socket.rooms Set
-  // First entry is always the socket ID, any subsequent entries are room IDs
   const rooms = Array.from(socket.rooms);
-
-  // If user is in a room, it will be the second entry
-  // (first entry is always the socket's own room/ID)
   return rooms.length > 1 ? rooms[1] : undefined;
 };
 
@@ -27,15 +23,15 @@ export const getUserRoom = (socket: Socket): string | undefined => {
  * @param name Username
  */
 export const create = (socket: Socket, name: string): void => {
-  userService.connect(socket, name);
+  const customId = userService.connect(socket, name);
 
   let roomID: string;
   do {
     roomID = generateRoomID();
-  } while (codeService.roomExists(roomID)); // Check for collisions
+  } while (codeService.roomExists(roomID));
 
   socket.join(roomID);
-  socket.emit(RoomServiceMsg.CREATED, roomID, socket.id);
+  socket.emit(RoomServiceMsg.CREATED, roomID, customId);
 };
 
 /**
@@ -53,18 +49,18 @@ export const join = (
 ): void => {
   roomID = normalizeRoomId(roomID);
 
-  // check if room exists
   if (!io.sockets.adapter.rooms.has(roomID)) {
     socket.emit(RoomServiceMsg.NOT_FOUND, roomID);
     return;
   }
 
-  userService.connect(socket, name);
+  const customId = userService.connect(socket, name);
   socket.join(roomID);
-  // tell the client they joined the room
-  socket.emit(RoomServiceMsg.JOINED, socket.id);
 
-  // tell all clients in the room to update their client list
+  // Tell the client they joined the room with their custom ID
+  socket.emit(RoomServiceMsg.JOINED, customId);
+
+  // Tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
   socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
 };
@@ -77,48 +73,53 @@ export const join = (
  */
 export const leave = (socket: Socket, io: Server, roomID: string): void => {
   roomID = normalizeRoomId(roomID);
+  const customId = userService.getSocCustomId(socket);
 
   socket.leave(roomID);
   userService.disconnect(socket);
 
-  // tell all clients in the room to update their client list
+  // Tell all clients in the room to update their client list
   const users = getUsersInRoom(socket, io, roomID);
   socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
 
-  // tell all clients in the room who left
-  socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, socket.id);
+  // Tell all clients in the room who left using custom ID
+  if (customId) {
+    socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
+  }
 };
 
 /**
- * Gets a mapping of socket IDs to usernames for all users in a room
+ * Gets a mapping of custom IDs to usernames for all users in a room
  * @param socket Socket instance
  * @param io Server instance
  * @param roomID Room identifier
- * @returns Object mapping socket IDs to usernames
+ * @returns Object mapping custom IDs to usernames
  */
 export const getUsersInRoom = (
   socket: Socket,
   io: Server,
   roomID: string = getUserRoom(socket),
 ): Record<string, string> => {
-  // get all sockets in room
   const room = io.sockets.adapter.rooms.get(roomID);
 
   if (!room) return {};
 
-  // Create a dictionary of socket IDs to usernames
+  // Create a dictionary of custom IDs to usernames
   const usersDict = Array.from(room).reduce(
     (acc: Record<string, string>, socketId) => {
       const username = userService.getUsername(socketId);
-      if (username !== undefined) {
-        acc[socketId] = username;
+      const customId = userService.getSocCustomId(
+        io.sockets.sockets.get(socketId),
+      );
+      if (username !== undefined && customId !== undefined) {
+        acc[customId] = username;
       }
       return acc;
     },
     {},
   );
 
-  // tell the client who joined the room
+  // Tell the client who joined the room
   io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersDict);
   return usersDict;
 };

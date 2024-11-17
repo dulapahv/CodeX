@@ -65,6 +65,11 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.LANG_TX, async (langID: string) => {
     codeService.updateLang(socket, langID);
   });
+
+  // Clean up custom ID mapping when socket disconnects
+  socket.on('disconnect', () => {
+    userService.removeCustomId(socket);
+  });
 });
 
 const PORT = process.env.PORT || 3001;

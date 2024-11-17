@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { CodeServiceMsg } from '../../../common/types/message';
 import { EditOp } from '../../../common/types/operation';
 import { getUserRoom } from './room-service';
+import { getCustomId } from './user-service'; // Import the new user ID function
 
 // Use WeakMap for better memory management - allows garbage collection of unused rooms
 const roomID_to_Code_Map = new WeakMap<object, string>();
@@ -66,34 +67,46 @@ export const setLang = (roomID: string, langId: string): void => {
 
 /**
  * Sync code to a client with minimal data transfer
+ * Now uses custom ID for identification
  */
 export const syncCode = (socket: Socket, io: Server): void => {
-  io.to(socket.id).emit(
-    CodeServiceMsg.RECEIVE_CODE,
-    getCode(getUserRoom(socket)),
-  );
+  const customId = getCustomId(socket.id);
+  if (customId) {
+    io.to(socket.id).emit(
+      CodeServiceMsg.RECEIVE_CODE,
+      getCode(getUserRoom(socket)),
+    );
+  }
 };
 
 /**
  * Sync language ID to a client
+ * Now uses custom ID for identification
  */
 export const syncLang = (socket: Socket, io: Server): void => {
   const roomID = getUserRoom(socket);
   if (!roomID) return;
 
-  const langId = getLang(roomID);
-  io.to(socket.id).emit(CodeServiceMsg.LANG_RX, langId);
+  const customId = getCustomId(socket.id);
+  if (customId) {
+    const langId = getLang(roomID);
+    io.to(socket.id).emit(CodeServiceMsg.LANG_RX, langId);
+  }
 };
 
 /**
  * Update the language ID for a room
+ * Now uses custom ID for broadcasting
  */
 export const updateLang = (socket: Socket, langId: string): void => {
   const roomID = getUserRoom(socket);
   if (!roomID) return;
 
-  setLang(roomID, langId);
-  socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId);
+  const customId = getCustomId(socket.id);
+  if (customId) {
+    setLang(roomID, langId);
+    socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId); // Include customId in emission
+  }
 };
 
 /**
@@ -115,10 +128,14 @@ const spliceString = (
 
 /**
  * Updates the code in a room based on an edit operation
- * Optimized for performance while maintaining safety
+ * Now includes custom ID in broadcasts
  */
 export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
+  const customId = getCustomId(socket.id);
+
+  if (!customId) return; // Early return if no custom ID is found
+
   const currentCode = getCode(roomID);
   const txt = operation[0];
   const startLnNum = operation[1];
@@ -214,6 +231,6 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomKey = getRoomKey(roomID);
   roomID_to_Code_Map.set(roomKey, updatedCode);
 
-  // Emit update
-  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation);
+  // Emit update with custom ID
+  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation, customId);
 };
