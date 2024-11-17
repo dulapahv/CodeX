@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Bug, Home, RefreshCcw } from 'lucide-react';
 
-import { BASE_CLIENT_URL, IS_DEV_ENV, PORTFOLIO_URL } from '@/lib/constants';
+import { BASE_CLIENT_URL, CONTACT_URL, IS_DEV_ENV } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -27,7 +27,7 @@ Message: ${error.message || 'Unknown error'}
 Stack: ${error.stack || 'No stack trace available'}`;
     }
 
-    return `${PORTFOLIO_URL}/contact?type=other&message=${encodeURIComponent(errorMessage)}`;
+    return `${CONTACT_URL}?type=other&message=${encodeURIComponent(errorMessage)}`;
   };
 
   return (

@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 
 import {
+  BASE_CLIENT_URL,
   SITE_DESCRIPTION,
   SITE_NAME,
-  BASE_CLIENT_URL,
   THEME_COLOR,
 } from '@/lib/constants';
 

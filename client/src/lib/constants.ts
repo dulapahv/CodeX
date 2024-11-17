@@ -24,10 +24,13 @@ export const NAME_MAX_LENGTH = 64;
 export const SITE_NAME = 'Kasca - Code Collaboration Platform';
 export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_DESCRIPTION =
-  'Kasca is a code collaboration platform that allows you to code with others in real-time.';
+  'Kasca is a lightweight online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
 export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/ogp.png`;
 export const THEME_COLOR = '#4a7af6';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
+export const CONTACT_URL = 'https://dulapahv.dev/contact';
+export const REPO_URL = 'https://github.com/dulapahv/kasca';
+export const GITHUB_URL = 'https://github.com/dulapahv';

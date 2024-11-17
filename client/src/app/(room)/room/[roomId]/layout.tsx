@@ -14,12 +14,12 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
 import {
+  BASE_CLIENT_URL,
   INVITED_DESCRIPTION,
   NAME,
   PORTFOLIO_URL,
   SHORT_SITE_NAME,
   SITE_NAME,
-  BASE_CLIENT_URL,
   THEME_COLOR,
 } from '@/lib/constants';
 

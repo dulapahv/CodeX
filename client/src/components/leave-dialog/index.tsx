@@ -94,9 +94,7 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
-              <DialogDescription>
-                {DEFAULT_DESCRIPTION}
-              </DialogDescription>
+              <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
@@ -119,16 +117,10 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 
     return (
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent
-          role="alertdialog"
-          aria-labelledby="leave-drawer-title"
-          aria-describedby="leave-drawer-description"
-        >
+        <DrawerContent role="alertdialog" aria-label="Leave room drawer">
           <DrawerHeader>
-            <DrawerTitle id="leave-drawer-title">{DEFAULT_TITLE}</DrawerTitle>
-            <DrawerDescription id="leave-drawer-description">
-              {DEFAULT_DESCRIPTION}
-            </DrawerDescription>
+            <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
+            <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
           </DrawerHeader>
           <DrawerFooter>
             <Button

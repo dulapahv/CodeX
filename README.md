@@ -1,8 +1,8 @@
 # Online Code Collaboration Platform
 
-Web-based platform with which 2 colleagues can remotely, but seamlessly, collaborate on software development tasks.
+Kasca is a lightweight online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required.
 
-> This project is a part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
+> This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
 ## Table of Contents
 

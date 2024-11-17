@@ -1,5 +1,20 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
+import Image from 'next/image';
 
+import {
+  CONTACT_URL,
+  GITHUB_URL,
+  PORTFOLIO_URL,
+  REPO_URL,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+} from '@/lib/constants';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +35,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface AboutDialogRef {
   openDialog: () => void;
@@ -28,6 +45,7 @@ interface AboutDialogRef {
 
 const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isImgLoaded, setIsImgLoaded] = useState(false);
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -40,16 +58,74 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
     closeDialog,
   }));
 
+  useEffect(() => {
+    if (isOpen) {
+      setIsImgLoaded(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    setIsImgLoaded(false);
+  }, [isDesktop]);
+
   if (isDesktop) {
     return (
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+      <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="About dialog">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Kasca - Code Collaboration Platform</DialogTitle>
-            <DialogDescription>
-              Developed with 💕 by Dulapah Vibulsanti
-            </DialogDescription>
+            <DialogTitle>{SITE_NAME}</DialogTitle>
           </DialogHeader>
+          <div className="relative aspect-[600/315]">
+            <Image
+              src="/images/ogp.png"
+              alt="Kasca cover image"
+              className="absolute rounded-md"
+              fill
+              sizes="1200px"
+              quality={100}
+              onLoad={() => setIsImgLoaded(true)}
+            />
+            {!isImgLoaded && (
+              <Skeleton className="absolute inset-0 h-full w-full rounded-lg" />
+            )}
+          </div>
+          <Separator />
+          <div className="space-y-2">
+            <p>{SITE_DESCRIPTION}</p>
+            <p>
+              This project is part of the course &quot;COMPSCI4025P Level 4
+              Individual Project&quot; at the University of Glasgow.
+            </p>
+            <p className="pt-2 text-center font-semibold">
+              Made with 💕 by dulapahv
+            </p>
+            <div className="flex flex-wrap justify-center">
+              <Button variant="ghost">
+                <a
+                  href={PORTFOLIO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Portfolio
+                </a>
+              </Button>
+              <Button variant="ghost">
+                <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                  GitHub Profile
+                </a>
+              </Button>
+              <Button variant="ghost">
+                <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+                  Kasca GitHub
+                </a>
+              </Button>
+              <Button variant="ghost">
+                <a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">
+                  Contact
+                </a>
+              </Button>
+            </div>
+          </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="secondary">Close</Button>
@@ -61,14 +137,65 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={setIsOpen} aria-label="About drawer">
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Kasca</DrawerTitle>
-          <DrawerDescription>
-            Developed with 💕 by Dulapah Vibulsanti
-          </DrawerDescription>
+          <DrawerTitle>{SITE_NAME}</DrawerTitle>
         </DrawerHeader>
+        <div className="relative mx-4 aspect-[600/315]">
+          <Image
+            src="/images/ogp.png"
+            alt="Kasca cover image"
+            className="absolute rounded-md"
+            fill
+            sizes="1200px"
+            quality={100}
+            onLoad={() => setIsImgLoaded(true)}
+          />
+          {!isImgLoaded && (
+            <Skeleton className="absolute inset-0 h-full w-full rounded-lg" />
+          )}
+        </div>
+        <div className="px-4">
+          <Separator className="my-4" />
+        </div>
+        <div className="mx-4 space-y-2">
+          <p>
+            Kasca is a code collaboration platform for the web that allows you
+            to code with others in real-time. Kasca features real-time
+            collaboration, Git integrated, and lightweight with no sign-up
+            required.
+          </p>
+          <p>
+            This project is a part of the course &quot;COMPSCI4025P Level 4
+            Individual Project&quot; at the University of Glasgow.
+          </p>
+          <p className="pt-2 text-center font-semibold">
+            Made with 💕 by dulapahv
+          </p>
+          <div className="flex flex-wrap justify-center">
+            <Button variant="ghost">
+              <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">
+                Portfolio
+              </a>
+            </Button>
+            <Button variant="ghost">
+              <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                GitHub Profile
+              </a>
+            </Button>
+            <Button variant="ghost">
+              <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+                Kasca GitHub
+              </a>
+            </Button>
+            <Button variant="ghost">
+              <a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">
+                Contact
+              </a>
+            </Button>
+          </div>
+        </div>
         <DrawerFooter>
           <DrawerClose asChild>
             <Button variant="secondary">Close</Button>
