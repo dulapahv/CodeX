@@ -86,15 +86,15 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 
     if (isDesktop) {
       return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent
-            role="alertdialog"
-            aria-labelledby="leave-dialog-title"
-            aria-describedby="leave-dialog-description"
-          >
+        <Dialog
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          aria-label="Leave room dialog"
+        >
+          <DialogContent>
             <DialogHeader>
-              <DialogTitle id="leave-dialog-title">{DEFAULT_TITLE}</DialogTitle>
-              <DialogDescription id="leave-dialog-description">
+              <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
+              <DialogDescription>
                 {DEFAULT_DESCRIPTION}
               </DialogDescription>
             </DialogHeader>
