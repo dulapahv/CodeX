@@ -173,7 +173,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="text-left">{SITE_NAME}</DrawerTitle>
-          <DrawerDescription className="text-pretty pt-2 text-left text-base text-foreground">
+          <DrawerDescription className="pt-2 text-left text-base text-foreground">
             {SITE_DESCRIPTION}
           </DrawerDescription>
         </DrawerHeader>
@@ -204,7 +204,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
           <Separator className="my-4" aria-hidden="true" />
         </div>
 
-        <div className="mx-4 space-y-2 text-pretty">
+        <div className="mx-4 space-y-2">
           <p>
             This project is a part of the course &quot;COMPSCI4025P Level 4
             Individual Project&quot; at the University of Glasgow.

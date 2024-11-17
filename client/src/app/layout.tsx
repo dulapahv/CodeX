@@ -190,7 +190,9 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('h-dvh antialiased', GeistSans.className)}>
+      <body
+        className={cn('h-dvh text-pretty antialiased', GeistSans.className)}
+      >
         <div
           aria-hidden="true"
           role="presentation"

@@ -23,6 +23,8 @@ const AboutButton = () => {
             size="icon"
             className="fixed bottom-2 right-4 hover:bg-accent/50"
             aria-label="About"
+            type="button"
+            aria-haspopup="dialog"
             onClick={() => aboutDialogRef.current?.openDialog()}
           >
             <Info className="size-5" />
