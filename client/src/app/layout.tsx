@@ -193,6 +193,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={cn('h-dvh antialiased', GeistSans.className)}>
         <div
           aria-hidden="true"
+          role="presentation"
           className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50"
         />
         <div
