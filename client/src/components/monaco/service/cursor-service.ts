@@ -6,7 +6,7 @@
  * ```ts
  * updateCursor(
  *   "user123",
- *   { pL: 1, pC: 1 },
+ *   [1, 1, 1, 1, 1, 1],
  *   editorRef,
  *   monacoRef,
  *   decorationsRef,
@@ -22,7 +22,7 @@
  * - [`Cursor`](@common/types/operation.ts) interface
  * - Monaco editor decoration APIs
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * Created by Dulapah Vibulsanti (https://dulapahv[5]ev)
  */
 
 import { MutableRefObject } from 'react';
@@ -64,17 +64,17 @@ export const updateCursor = (
   cursorDecorationsRef.current[userID]?.clear();
 
   const { backgroundColor, color } = userMap.getColors(userID);
-  const isFirstLine = cursor.pL === 1;
+  const isFirstLine = cursor[0] === 1;
 
   const decorations: monaco.editor.IModelDeltaDecoration[] = [];
 
   // Add cursor decoration
   decorations.push({
     range: {
-      startLineNumber: cursor.pL,
-      startColumn: cursor.pC,
-      endLineNumber: cursor.pL,
-      endColumn: cursor.pC,
+      startLineNumber: cursor[0],
+      startColumn: cursor[1],
+      endLineNumber: cursor[0],
+      endColumn: cursor[1],
     },
     options: {
       className: `cursor-${userID}`,
@@ -88,19 +88,19 @@ export const updateCursor = (
 
   // Add selection decoration if there is a selection
   const hasSelection =
-    cursor.sL !== undefined &&
-    cursor.sC !== undefined &&
-    cursor.eL !== undefined &&
-    cursor.eC !== undefined &&
-    (cursor.sL !== cursor.eL || cursor.sC !== cursor.eC);
+    cursor[2] !== undefined &&
+    cursor[3] !== undefined &&
+    cursor[4] !== undefined &&
+    cursor[5] !== undefined &&
+    (cursor[2] !== cursor[4] || cursor[3] !== cursor[5]);
 
   if (hasSelection) {
     decorations.push({
       range: {
-        startLineNumber: cursor.sL ?? 1,
-        startColumn: cursor.sC ?? 1,
-        endLineNumber: cursor.eL ?? 1,
-        endColumn: cursor.eC ?? 1,
+        startLineNumber: cursor[2] ?? 1,
+        startColumn: cursor[3] ?? 1,
+        endLineNumber: cursor[4] ?? 1,
+        endColumn: cursor[5] ?? 1,
       },
       options: {
         className: `cursor-${userID}-selection`,

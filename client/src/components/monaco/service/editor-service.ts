@@ -88,19 +88,19 @@ export const handleOnMount = (
       ev.selection.startLineNumber === ev.selection.endLineNumber &&
       ev.selection.startColumn === ev.selection.endColumn
     ) {
-      socket.emit(UserServiceMsg.CURSOR_TX, {
-        pL: ev.selection.positionLineNumber,
-        pC: ev.selection.positionColumn,
-      } as Cursor);
+      socket.emit(UserServiceMsg.CURSOR_TX, [
+        ev.selection.positionLineNumber,
+        ev.selection.positionColumn,
+      ] as Cursor);
     } else {
-      socket.emit(UserServiceMsg.CURSOR_TX, {
-        pL: ev.selection.positionLineNumber,
-        pC: ev.selection.positionColumn,
-        sL: ev.selection.startLineNumber,
-        sC: ev.selection.startColumn,
-        eL: ev.selection.endLineNumber,
-        eC: ev.selection.endColumn,
-      } as Cursor);
+      socket.emit(UserServiceMsg.CURSOR_TX, [
+        ev.selection.positionLineNumber,
+        ev.selection.positionColumn,
+        ev.selection.startLineNumber,
+        ev.selection.startColumn,
+        ev.selection.endLineNumber,
+        ev.selection.endColumn,
+      ] as Cursor);
     }
   });
 
@@ -122,14 +122,12 @@ export const handleOnChange = (
   const socket = getSocket();
 
   ev.changes.forEach((change) => {
-    socket.emit(CodeServiceMsg.CODE_TX, {
-      t: change.text,
-      r: {
-        sL: change.range.startLineNumber,
-        sC: change.range.startColumn,
-        eL: change.range.endLineNumber,
-        eC: change.range.endColumn,
-      },
-    } as EditOp);
+    socket.emit(CodeServiceMsg.CODE_TX, [
+      change.text,
+      change.range.startLineNumber,
+      change.range.startColumn,
+      change.range.endLineNumber,
+      change.range.endColumn,
+    ] as EditOp);
   });
 };

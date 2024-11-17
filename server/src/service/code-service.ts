@@ -10,7 +10,7 @@ const roomID_to_Lang_Map = new WeakMap<object, string>();
 const roomKeys = new Map<string, object>();
 
 // Default language ID for Python
-const DEFAULT_LANG_ID = "python";
+const DEFAULT_LANG_ID = 'python';
 
 /**
  * Get or create room key for WeakMap storage
@@ -120,12 +120,15 @@ const spliceString = (
 export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
   const currentCode = getCode(roomID);
-  const { r, t } = operation;
-  const { sL, sC, eL, eC } = r;
+  const txt = operation[0];
+  const startLnNum = operation[1];
+  const startCol = operation[2];
+  const endLnNum = operation[3];
+  const endCol = operation[4];
 
   // Split lines only once and reuse the array
   const lines = currentCode.split('\n');
-  const maxLine = Math.max(lines.length, sL);
+  const maxLine = Math.max(lines.length, startLnNum);
 
   // Preallocate array size if needed
   if (maxLine > lines.length) {
@@ -134,35 +137,36 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   }
 
   // Handle empty line deletion specifically
-  const isEmptyLineDeletion = t === '' && sL < eL && sC === 1 && eC === 1;
+  const isEmptyLineDeletion =
+    txt === '' && startLnNum < endLnNum && startCol === 1 && endCol === 1;
 
   if (isEmptyLineDeletion) {
     // Remove the empty lines
-    lines.splice(sL - 1, eL - sL);
-  } else if (sL === eL) {
+    lines.splice(startLnNum - 1, endLnNum - startLnNum);
+  } else if (startLnNum === endLnNum) {
     // Single line change
-    const lineIndex = sL - 1;
+    const lineIndex = startLnNum - 1;
     const line = lines[lineIndex] || '';
 
     // Boundary check with bitwise operations for performance
-    const safesC = Math.max(0, Math.min(sC - 1, line.length));
-    const safeeC = Math.max(0, Math.min(eC - 1, line.length));
+    const safesC = Math.max(0, Math.min(startCol - 1, line.length));
+    const safeeC = Math.max(0, Math.min(endCol - 1, line.length));
 
     // Optimize string concatenation
-    lines[lineIndex] = spliceString(line, safesC, safeeC, t);
+    lines[lineIndex] = spliceString(line, safesC, safeeC, txt);
   } else {
     // Multi-line change
-    const textLines = t.split('\n');
-    const startLineIndex = sL - 1;
-    const endLineIndex = eL - 1;
+    const textLines = txt.split('\n');
+    const startLineIndex = startLnNum - 1;
+    const endLineIndex = endLnNum - 1;
 
     // Get start and end lines
     const startLine = lines[startLineIndex] || '';
     const endLine = lines[endLineIndex] || '';
 
     // Calculate safe column positions
-    const safesC = Math.min(Math.max(0, sC - 1), startLine.length);
-    const safeeC = Math.min(Math.max(0, eC - 1), endLine.length);
+    const safesC = Math.min(Math.max(0, startCol - 1), startLine.length);
+    const safeeC = Math.min(Math.max(0, endCol - 1), endLine.length);
 
     // Create new start and end lines efficiently
     const newStartLine = spliceString(

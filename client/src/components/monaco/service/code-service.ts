@@ -27,10 +27,7 @@ import { EditOp } from '@common/types/operation';
  * @example
  * ```typescript
  * updateCode(
- *   {
- *     r: { sL: 1, sC: 1, eL: 1, eC: 1 },
- *     text: "hello"
- *   },
+ *   editOperation,
  *   editorRef,
  *   skipUpdateRef
  * );
@@ -55,13 +52,13 @@ export const updateCode = (
       [
         {
           forceMoveMarkers: true,
+          text: op[0],
           range: {
-            startLineNumber: op.r.sL,
-            startColumn: op.r.sC,
-            endLineNumber: op.r.eL,
-            endColumn: op.r.eC,
+            startLineNumber: op[1],
+            startColumn: op[2],
+            endLineNumber: op[3],
+            endColumn: op[4],
           },
-          text: op.t,
         },
       ],
       () => [],
