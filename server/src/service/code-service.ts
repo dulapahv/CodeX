@@ -120,6 +120,9 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
 
   if (!customId || !roomID) return;
 
+  // Emit update with custom ID
+  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation, customId);
+
   const currentCode = getCode(roomID);
   const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
 
@@ -146,11 +149,11 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     const line = lines[lineIndex] || '';
 
     // Boundary check with bitwise operations for performance
-    const safesC = Math.max(0, Math.min(startCol - 1, line.length));
-    const safeeC = Math.max(0, Math.min(endCol - 1, line.length));
+    const safeStartCol = Math.max(0, Math.min(startCol - 1, line.length));
+    const safeEndCol = Math.max(0, Math.min(endCol - 1, line.length));
 
     // Optimize string concatenation
-    lines[lineIndex] = spliceString(line, safesC, safeeC, txt);
+    lines[lineIndex] = spliceString(line, safeStartCol, safeEndCol, txt);
   } else {
     // Multi-line change
     const textLines = txt.split('\n');
@@ -162,20 +165,20 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     const endLine = lines[endLineIndex] || '';
 
     // Calculate safe column positions
-    const safesC = Math.min(Math.max(0, startCol - 1), startLine.length);
-    const safeeC = Math.min(Math.max(0, endCol - 1), endLine.length);
+    const safeStartCol = Math.min(Math.max(0, startCol - 1), startLine.length);
+    const safeEndCol = Math.min(Math.max(0, endCol - 1), endLine.length);
 
     // Create new start and end lines efficiently
     const newStartLine = spliceString(
       startLine,
-      safesC,
+      safeStartCol,
       startLine.length,
       textLines[0],
     );
     const newEndLine = spliceString(
       endLine,
       0,
-      safeeC,
+      safeEndCol,
       textLines[textLines.length - 1],
     );
 
@@ -208,9 +211,6 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   const updatedCode = lines.join('\n');
   const data = initializeRoom(roomID);
   data.code = updatedCode;
-
-  // Emit update with custom ID
-  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation, customId);
 };
 
 /**

@@ -17,7 +17,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
-  'https://dev-kasca.dulapahv.dev',
+  'https://dev.kasca.pages.dev',
 ];
 
 const server = createServer(app);
