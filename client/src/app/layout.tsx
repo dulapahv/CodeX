@@ -198,7 +198,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       >
         <div
           aria-hidden="true"
-          className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#FB568A]/50 via-[#C240FF]/50 to-[#5BB3FB]/50"
+          className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50"
         />
         <div
           aria-hidden="true"
