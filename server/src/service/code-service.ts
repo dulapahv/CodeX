@@ -3,85 +3,74 @@ import { Server, Socket } from 'socket.io';
 import { CodeServiceMsg } from '../../../common/types/message';
 import { EditOp } from '../../../common/types/operation';
 import { getUserRoom } from './room-service';
-import { getCustomId } from './user-service'; // Import the new user ID function
+import { getCustomId } from './user-service';
 
-// Use WeakMap for better memory management - allows garbage collection of unused rooms
-const roomID_to_Code_Map = new WeakMap<object, string>();
-const roomID_to_Lang_Map = new WeakMap<object, string>();
-const roomKeys = new Map<string, object>();
+// Use a single Map for all room data to reduce memory overhead
+type RoomData = {
+  code: string;
+  langId: string;
+};
+
+// Core data structure for room management
+const roomData = new Map<string, RoomData>();
 
 // Default language ID for Python
 const DEFAULT_LANG_ID = 'python';
 
 /**
- * Get or create room key for WeakMap storage
- * @param roomID Room identifier
- * @returns Room key object
+ * Room existence check - O(1) operation
  */
-function getRoomKey(roomID: string): object {
-  let key = roomKeys.get(roomID);
-  if (!key) {
-    key = { id: roomID };
-    roomKeys.set(roomID, key);
-    // Initialize with default language when creating new room
-    roomID_to_Lang_Map.set(key, DEFAULT_LANG_ID);
+export const roomExists = (roomID: string): boolean => {
+  return roomData.has(roomID);
+};
+
+/**
+ * Initialize room data if not present
+ */
+function initializeRoom(roomID: string): RoomData {
+  let data = roomData.get(roomID);
+  if (!data) {
+    data = { code: '', langId: DEFAULT_LANG_ID };
+    roomData.set(roomID, data);
   }
-  return key;
+  return data;
 }
 
 /**
- * Check whether a room exists
- * @param roomID Room identifier
- * @returns True if the room exists, false otherwise
- */
-export const roomExists = (roomID: string): boolean => {
-  return roomKeys.has(roomID);
-};
-
-/**
- * Retrieve the current code for a room with O(1) lookup
- * @param roomID Room identifier
- * @returns Current code for the room
+ * Get code with O(1) lookup
  */
 export const getCode = (roomID: string): string => {
-  return roomID_to_Code_Map.get(getRoomKey(roomID)) || '';
+  return roomData.get(roomID)?.code || '';
 };
 
 /**
- * Retrieve the current language ID for a room
- * @param roomID Room identifier
- * @returns Current language ID for the room
+ * Get language ID with O(1) lookup
  */
 export const getLang = (roomID: string): string => {
-  return roomID_to_Lang_Map.get(getRoomKey(roomID)) || DEFAULT_LANG_ID;
+  return roomData.get(roomID)?.langId || DEFAULT_LANG_ID;
 };
 
 /**
- * Set the language ID for a room
- * @param roomID Room identifier
- * @param langId Language identifier
+ * Set language ID with single operation
  */
 export const setLang = (roomID: string, langId: string): void => {
-  roomID_to_Lang_Map.set(getRoomKey(roomID), langId);
+  const data = initializeRoom(roomID);
+  data.langId = langId;
 };
 
 /**
- * Sync code to a client with minimal data transfer
- * Now uses custom ID for identification
+ * Optimized code sync
  */
 export const syncCode = (socket: Socket, io: Server): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
-    io.to(socket.id).emit(
-      CodeServiceMsg.RECEIVE_CODE,
-      getCode(getUserRoom(socket)),
-    );
+    const code = getCode(getUserRoom(socket));
+    io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, code);
   }
 };
 
 /**
- * Sync language ID to a client
- * Now uses custom ID for identification
+ * Optimized language sync
  */
 export const syncLang = (socket: Socket, io: Server): void => {
   const roomID = getUserRoom(socket);
@@ -95,8 +84,7 @@ export const syncLang = (socket: Socket, io: Server): void => {
 };
 
 /**
- * Update the language ID for a room
- * Now uses custom ID for broadcasting
+ * Optimized language update
  */
 export const updateLang = (socket: Socket, langId: string): void => {
   const roomID = getUserRoom(socket);
@@ -105,12 +93,12 @@ export const updateLang = (socket: Socket, langId: string): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     setLang(roomID, langId);
-    socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId); // Include customId in emission
+    socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId);
   }
 };
 
 /**
- * Optimized string splicing function that minimizes string allocations
+ * Original optimized string splicing function
  */
 const spliceString = (
   original: string,
@@ -118,30 +106,22 @@ const spliceString = (
   end: number,
   insert: string,
 ): string => {
-  // Avoid unnecessary string operations if possible
   if (start === end && !insert) return original;
   if (start === 0 && end === original.length) return insert;
-
-  // Use substring instead of slice for better performance
   return original.substring(0, start) + insert + original.substring(end);
 };
 
 /**
- * Updates the code in a room based on an edit operation
- * Now includes custom ID in broadcasts
+ * Optimized code update with existing string manipulation logic
  */
 export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
   const customId = getCustomId(socket.id);
 
-  if (!customId) return; // Early return if no custom ID is found
+  if (!customId || !roomID) return;
 
   const currentCode = getCode(roomID);
-  const txt = operation[0];
-  const startLnNum = operation[1];
-  const startCol = operation[2];
-  const endLnNum = operation[3];
-  const endCol = operation[4];
+  const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
 
   // Split lines only once and reuse the array
   const lines = currentCode.split('\n');
@@ -224,13 +204,18 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     }
   }
 
-  // Join lines efficiently
+  // Join lines and update storage
   const updatedCode = lines.join('\n');
-
-  // Update storage using WeakMap
-  const roomKey = getRoomKey(roomID);
-  roomID_to_Code_Map.set(roomKey, updatedCode);
+  const data = initializeRoom(roomID);
+  data.code = updatedCode;
 
   // Emit update with custom ID
   socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation, customId);
+};
+
+/**
+ * Clean up room data when a room is deleted
+ */
+export const deleteRoom = (roomID: string): void => {
+  roomData.delete(roomID);
 };

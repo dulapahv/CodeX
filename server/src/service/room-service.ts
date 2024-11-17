@@ -1,4 +1,3 @@
-// service/room-service.ts
 import { Server, Socket } from 'socket.io';
 
 import { RoomServiceMsg } from '../../../common/types/message';
@@ -7,46 +6,49 @@ import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
 import * as userService from './user-service';
 
+// Cache for room users to reduce repeated lookups
+const roomUsersCache = new Map<string, Record<string, string>>();
+
 /**
- * Get the room ID that a user is currently in
- * @param socket Socket instance
- * @returns Room ID if user is in a room, undefined otherwise
+ * Get the room ID that a user is currently in - O(1) operation
  */
 export const getUserRoom = (socket: Socket): string | undefined => {
-  const rooms = Array.from(socket.rooms);
-  return rooms.length > 1 ? rooms[1] : undefined;
+  // Socket.rooms is a Set, so we convert to array only for room access
+  for (const room of socket.rooms) {
+    if (room !== socket.id) return room;
+  }
+  return undefined;
 };
 
 /**
  * Creates a new room and joins the socket to it
- * @param socket Socket instance
- * @param name Username
  */
-export const create = (socket: Socket, name: string): void => {
+export const create = async (socket: Socket, name: string): Promise<void> => {
   const customId = userService.connect(socket, name);
 
+  // Generate unique room ID
   let roomID: string;
   do {
     roomID = generateRoomID();
   } while (codeService.roomExists(roomID));
 
-  socket.join(roomID);
+  await socket.join(roomID);
+
+  // Initialize room cache
+  roomUsersCache.set(roomID, { [customId]: name });
+
   socket.emit(RoomServiceMsg.CREATED, roomID, customId);
 };
 
 /**
- * Joins an existing room
- * @param socket Socket instance
- * @param io Server instance
- * @param roomID Room identifier
- * @param name Username
+ * Joins an existing room with optimized user management
  */
-export const join = (
+export const join = async (
   socket: Socket,
   io: Server,
   roomID: string,
   name: string,
-): void => {
+): Promise<void> => {
   roomID = normalizeRoomId(roomID);
 
   if (!io.sockets.adapter.rooms.has(roomID)) {
@@ -55,71 +57,94 @@ export const join = (
   }
 
   const customId = userService.connect(socket, name);
-  socket.join(roomID);
+  await socket.join(roomID);
 
-  // Tell the client they joined the room with their custom ID
+  // Update room cache
+  const users = roomUsersCache.get(roomID) || {};
+  users[customId] = name;
+  roomUsersCache.set(roomID, users);
+
+  // Emit events
   socket.emit(RoomServiceMsg.JOINED, customId);
-
-  // Tell all clients in the room to update their client list
-  const users = getUsersInRoom(socket, io, roomID);
-  socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
+  socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
 };
 
 /**
- * Leaves a room and updates other clients
- * @param socket Socket instance
- * @param io Server instance
- * @param roomID Room identifier
+ * Leaves a room with efficient cleanup
  */
-export const leave = (socket: Socket, io: Server, roomID: string): void => {
+export const leave = async (
+  socket: Socket,
+  io: Server,
+  roomID: string,
+): Promise<void> => {
   roomID = normalizeRoomId(roomID);
   const customId = userService.getSocCustomId(socket);
 
-  socket.leave(roomID);
-  userService.disconnect(socket);
-
-  // Tell all clients in the room to update their client list
-  const users = getUsersInRoom(socket, io, roomID);
-  socket.in(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
-
-  // Tell all clients in the room who left using custom ID
   if (customId) {
-    socket.in(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
+    // Update room cache
+    const users = roomUsersCache.get(roomID);
+    if (users) {
+      delete users[customId];
+      if (Object.keys(users).length === 0) {
+        roomUsersCache.delete(roomID);
+        codeService.deleteRoom(roomID);
+      } else {
+        roomUsersCache.set(roomID, users);
+      }
+    }
+
+    await socket.leave(roomID);
+    userService.disconnect(socket);
+
+    // Broadcast updates
+    io.to(socket.id).emit(RoomServiceMsg.USER_LEFT, customId);
+    socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
   }
 };
 
 /**
- * Gets a mapping of custom IDs to usernames for all users in a room
- * @param socket Socket instance
- * @param io Server instance
- * @param roomID Room identifier
- * @returns Object mapping custom IDs to usernames
+ * Gets users in a room with caching for better performance
  */
 export const getUsersInRoom = (
   socket: Socket,
   io: Server,
   roomID: string = getUserRoom(socket),
 ): Record<string, string> => {
-  const room = io.sockets.adapter.rooms.get(roomID);
+  // Return empty object if no room
+  if (!roomID) return {};
 
-  if (!room) return {};
+  // Check cache first
+  let users = roomUsersCache.get(roomID);
 
-  // Create a dictionary of custom IDs to usernames
-  const usersDict = Array.from(room).reduce(
-    (acc: Record<string, string>, socketId) => {
+  // If not in cache, rebuild it
+  if (!users) {
+    const room = io.sockets.adapter.rooms.get(roomID);
+    if (!room) return {};
+
+    users = {};
+    for (const socketId of room) {
       const username = userService.getUsername(socketId);
       const customId = userService.getSocCustomId(
         io.sockets.sockets.get(socketId),
       );
-      if (username !== undefined && customId !== undefined) {
-        acc[customId] = username;
+      if (username && customId) {
+        users[customId] = username;
       }
-      return acc;
-    },
-    {},
-  );
+    }
 
-  // Tell the client who joined the room
-  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, usersDict);
-  return usersDict;
+    // Update cache
+    roomUsersCache.set(roomID, users);
+  }
+
+  // Update client
+  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, users);
+  return users;
+};
+
+/**
+ * Clean up room cache when server restarts or room is deleted
+ * Should be called when appropriate
+ */
+export const cleanupRoomCache = (roomID: string): void => {
+  roomUsersCache.delete(roomID);
 };
