@@ -145,7 +145,9 @@ const MobileMenu = ({ actions, miniMap, wordWrap }: MobileMenuProps) => {
               Help
             </MenubarSubTrigger>
             <MenubarSubContent>
-              <MenubarItem>Documentation</MenubarItem>
+              <MenubarItem onSelect={actions.documentation}>
+                Documentation
+              </MenubarItem>
               <MenubarItem onSelect={actions.about}>About</MenubarItem>
             </MenubarSubContent>
           </MenubarSub>

@@ -99,7 +99,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
             <p className="pt-2 text-center font-semibold">
               Made with 💕 by dulapahv
             </p>
-            <div className="flex flex-wrap justify-center">
+            <div className="grid grid-cols-4">
               <Button variant="ghost">
                 <a
                   href={PORTFOLIO_URL}
@@ -160,12 +160,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
           <Separator className="my-4" />
         </div>
         <div className="mx-4 space-y-2">
-          <p>
-            Kasca is a code collaboration platform for the web that allows you
-            to code with others in real-time. Kasca features real-time
-            collaboration, Git integrated, and lightweight with no sign-up
-            required.
-          </p>
+          <p>{SITE_DESCRIPTION}</p>
           <p>
             This project is a part of the course &quot;COMPSCI4025P Level 4
             Individual Project&quot; at the University of Glasgow.
@@ -173,7 +168,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
           <p className="pt-2 text-center font-semibold">
             Made with 💕 by dulapahv
           </p>
-          <div className="flex flex-wrap justify-center">
+          <div className="grid grid-cols-2">
             <Button variant="ghost">
               <a href={PORTFOLIO_URL} target="_blank" rel="noopener noreferrer">
                 Portfolio

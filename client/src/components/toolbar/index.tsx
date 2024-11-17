@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
+import { REPO_URL } from '@/lib/constants';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
@@ -191,6 +192,9 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
     wordWrap: () => {
       editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
       setWordWrap(!wordWrap);
+    },
+    documentation: () => {
+      window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
     about: () => aboutDialogRef.current?.openDialog(),
   };

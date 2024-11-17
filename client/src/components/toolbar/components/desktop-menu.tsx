@@ -164,7 +164,9 @@ const DesktopMenu = ({
           Help
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>
-          <MenubarItem>Documentation</MenubarItem>
+          <MenubarItem onSelect={actions.documentation}>
+            Documentation
+          </MenubarItem>
           <MenubarItem onSelect={actions.about}>About</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
