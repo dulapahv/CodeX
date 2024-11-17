@@ -97,7 +97,7 @@ export const leave = async (
     userService.disconnect(socket);
 
     // Broadcast updates
-    io.to(socket.id).emit(RoomServiceMsg.USER_LEFT, customId);
+    socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
     socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
   }
 };

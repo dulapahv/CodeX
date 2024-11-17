@@ -93,7 +93,7 @@ export const updateLang = (socket: Socket, langId: string): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     setLang(roomID, langId);
-    socket.in(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId);
+    socket.to(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId);
   }
 };
 
