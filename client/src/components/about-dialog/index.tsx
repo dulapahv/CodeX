@@ -206,7 +206,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
 
         <div className="mx-4 space-y-2">
           <p>
-            This project is a part of the course &quot;COMPSCI4025P Level 4
+            This project is part of the course &quot;COMPSCI4025P Level 4
             Individual Project&quot; at the University of Glasgow.
           </p>
           <p className="pt-2 text-center font-medium">
