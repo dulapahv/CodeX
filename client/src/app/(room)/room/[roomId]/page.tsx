@@ -145,7 +145,7 @@ export default function Room({ params }: RoomProps) {
           role="status"
           aria-live="polite"
         >
-          <Alert className="max-w-md">
+          <Alert className="max-w-md bg-background/50 backdrop-blur">
             <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
             <AlertTitle>Loading session</AlertTitle>
             <AlertDescription>

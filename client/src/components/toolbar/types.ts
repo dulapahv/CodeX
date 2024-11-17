@@ -47,8 +47,8 @@ export interface ToolbarActions {
   minimap: () => void;
   /** Toggle word wrap */
   wordWrap: () => void;
-  /** Documentation */
-  documentation: () => void;
+  /** Manual */
+  manual: () => void;
   /** About */
   about: () => void;
 }

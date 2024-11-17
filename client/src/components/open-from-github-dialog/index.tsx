@@ -170,15 +170,25 @@ const OpenFromGithubDialog = forwardRef<
   };
 
   const authContent = (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
+    <div
+      className="flex flex-1 flex-col items-center justify-center gap-4"
+      role="status"
+    >
       {isLoading ? (
-        <LoaderCircle className="size-6 animate-spin" />
+        <LoaderCircle className="size-6 animate-spin" aria-label="Loading..." />
       ) : !githubUser ? (
         <>
-          <p className="text-center text-sm text-muted-foreground">
-            Please log in with GitHub to open your code.
+          <p
+            className="text-center text-sm text-muted-foreground"
+            id="login-prompt"
+          >
+            Please log in with GitHub to save your code.
           </p>
-          <Button onClick={loginWithGithub} variant="outline">
+          <Button
+            onClick={loginWithGithub}
+            variant="outline"
+            aria-describedby="login-prompt"
+          >
             Login with GitHub
           </Button>
         </>
@@ -192,6 +202,7 @@ const OpenFromGithubDialog = forwardRef<
         setSelectedItem={setSelectedItem}
         setRepo={setRepo}
         setBranch={setBranch}
+        aria-label="Repository browser"
       />
     </div>
   );
@@ -230,7 +241,10 @@ const OpenFromGithubDialog = forwardRef<
                   <div className="flex flex-wrap items-center text-xs text-muted-foreground">
                     <span>To disconnect GitHub, go to</span>
                     <span className="flex items-center font-semibold">
-                      <Settings className="mx-1 inline size-3" />
+                      <Settings
+                        className="mx-1 inline size-3"
+                        aria-hidden="true"
+                      />
                       Settings
                     </span>
                     .
@@ -242,6 +256,7 @@ const OpenFromGithubDialog = forwardRef<
                 variant="secondary"
                 onClick={closeDialog}
                 disabled={isFetchingContent}
+                aria-busy={isFetchingContent}
               >
                 Cancel
               </Button>
@@ -256,7 +271,10 @@ const OpenFromGithubDialog = forwardRef<
                 >
                   {isFetchingContent ? (
                     <>
-                      <LoaderCircle className="mr-2 size-4 animate-spin" />
+                      <LoaderCircle
+                        className="mr-2 size-4 animate-spin"
+                        aria-hidden="true"
+                      />
                       Opening...
                     </>
                   ) : (
@@ -305,7 +323,10 @@ const OpenFromGithubDialog = forwardRef<
                     <div className="flex flex-wrap items-center text-xs text-muted-foreground">
                       <span>To disconnect GitHub, go to</span>
                       <span className="flex items-center font-semibold">
-                        <Settings className="mx-1 inline size-3" />
+                        <Settings
+                          className="mx-1 inline size-3"
+                          aria-hidden="true"
+                        />
                         Settings
                       </span>
                       .
@@ -318,10 +339,14 @@ const OpenFromGithubDialog = forwardRef<
                       selectedItem.type !== itemType.FILE ||
                       isFetchingContent
                     }
+                    aria-busy={isFetchingContent}
                   >
                     {isFetchingContent ? (
                       <>
-                        <LoaderCircle className="mr-2 size-4 animate-spin" />
+                        <LoaderCircle
+                          className="mr-2 size-4 animate-spin"
+                          aria-hidden="true"
+                        />
                         Opening...
                       </>
                     ) : (

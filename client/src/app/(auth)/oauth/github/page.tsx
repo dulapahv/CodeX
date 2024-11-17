@@ -50,7 +50,7 @@ export default function Page({
 
   return (
     <main className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
-      <Alert className="max-w-md">
+      <Alert className="max-w-md bg-background/50 backdrop-blur">
         <LoaderCircle className="size-5 animate-spin" />
         <AlertTitle>Processing authentication...</AlertTitle>
         <AlertDescription>

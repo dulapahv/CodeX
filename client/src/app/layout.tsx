@@ -18,6 +18,7 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
+import Image from 'next/image';
 import { GeistSans } from 'geist/font/sans';
 
 import {
@@ -90,10 +91,6 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-  },
   icons: {
     icon: [
       {
@@ -163,6 +160,7 @@ export const metadata: Metadata = {
     canonical: BASE_CLIENT_URL,
   },
   other: {
+    'mobile-web-app-capable': 'yes',
     'msapplication-TileColor': THEME_COLOR,
     'msapplication-TileImage': '/images/mstile-144x144.png',
     'msapplication-square70x70logo': '/images/mstile-70x70.png',
@@ -174,8 +172,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000' },
+    { media: '(prefers-color-scheme: light)', color: '#eef1f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#101723' },
   ],
   initialScale: 1,
   userScalable: true,
@@ -192,10 +190,39 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('h-dvh antialiased', GeistSans.className)}>
+      <body
+        className={cn(
+          'relative h-dvh text-pretty bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50 antialiased',
+          GeistSans.className,
+        )}
+      >
+        <div
+          aria-hidden="true"
+          role="presentation"
+          className="pointer-events-none fixed inset-0 -z-10 size-full select-none"
+        >
+          <Image
+            src="/images/grid.svg"
+            alt=""
+            fill
+            priority
+            className="object-cover dark:opacity-50"
+            style={{
+              maskImage:
+                'linear-gradient(to bottom, transparent, 20%, white, 80%, transparent)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, transparent, 20%, white, 80%, transparent)',
+            }}
+          />
+        </div>
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
-          <Toaster richColors className="whitespace-pre-line" />
+          <Toaster
+            richColors
+            className="whitespace-pre-line"
+            pauseWhenPageIsHidden
+            containerAriaLabel="Toast Notifications"
+          />
         </ThemeProvider>
       </body>
     </html>

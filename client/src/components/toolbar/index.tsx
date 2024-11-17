@@ -193,7 +193,7 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
       editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
       setWordWrap(!wordWrap);
     },
-    documentation: () => {
+    manual: () => {
       window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
     about: () => aboutDialogRef.current?.openDialog(),

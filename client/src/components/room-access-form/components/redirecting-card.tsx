@@ -29,7 +29,7 @@ export const RedirectingCard = () => (
     aria-live="polite"
   >
     <Alert
-      className="max-w-md"
+      className="max-w-md bg-background/50 backdrop-blur"
       aria-labelledby="redirect-title"
       aria-describedby="redirect-description"
     >

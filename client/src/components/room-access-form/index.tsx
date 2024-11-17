@@ -121,7 +121,7 @@ const RoomAccessForm = () => {
 
   return (
     <Card
-      className="w-[480px] animate-fade-in"
+      className="w-[480px] animate-fade-in bg-background/50 backdrop-blur"
       role="region"
       aria-label="Room access form"
     >

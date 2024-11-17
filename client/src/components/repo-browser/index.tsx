@@ -84,15 +84,26 @@ const RepoBrowser = memo(
     );
 
     return (
-      <div className="flex h-full flex-col rounded-md border">
+      <div
+        className="flex h-full flex-col rounded-md border"
+        role="region"
+        aria-label="Repository search"
+      >
         <div className="relative border-b">
-          <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             ref={searchInputRef}
             value={text}
             onChange={handleSearchChange}
             placeholder="Search repositories..."
             className="border-transparent pl-10 focus-visible:border-input"
+            type="search"
+            role="searchbox"
+            aria-label="Search repositories"
+            aria-busy={loading}
           />
         </div>
         {loading ? (

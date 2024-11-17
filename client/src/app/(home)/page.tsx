@@ -10,7 +10,9 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import { AboutButton } from '@/components/about-button';
 import { RoomAccessForm } from '@/components/room-access-form';
+import { ThemeSwitch } from '@/components/theme-switch';
 
 export default function Page() {
   return (
@@ -19,6 +21,8 @@ export default function Page() {
       aria-label="Join or create a room"
     >
       <RoomAccessForm />
+      <ThemeSwitch />
+      <AboutButton />
     </main>
   );
 }

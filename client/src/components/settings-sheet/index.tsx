@@ -99,7 +99,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
             <SheetDescription>
-              Personalize your experience and preferences.
+              Configure your editor and connection settings here.
             </SheetDescription>
           </SheetHeader>
           <div

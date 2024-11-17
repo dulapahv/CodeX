@@ -136,15 +136,25 @@ const SaveToGithubDialog = forwardRef<
   };
 
   const authContent = (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
+    <div
+      className="flex flex-1 flex-col items-center justify-center gap-4"
+      role="status"
+    >
       {isLoading ? (
-        <LoaderCircle className="size-6 animate-spin" />
+        <LoaderCircle className="size-6 animate-spin" aria-label="Loading..." />
       ) : !githubUser ? (
         <>
-          <p className="text-center text-sm text-muted-foreground">
+          <p
+            className="text-center text-sm text-muted-foreground"
+            id="login-prompt"
+          >
             Please log in with GitHub to save your code.
           </p>
-          <Button onClick={loginWithGithub} variant="outline">
+          <Button
+            onClick={loginWithGithub}
+            variant="outline"
+            aria-describedby="login-prompt"
+          >
             Login with GitHub
           </Button>
         </>
@@ -159,26 +169,48 @@ const SaveToGithubDialog = forwardRef<
           setSelectedItem={setSelectedItem}
           setRepo={setRepo}
           setBranch={setBranch}
+          aria-label="Repository browser"
         />
       </div>
-
       <div className="mx-4 flex-shrink-0 space-y-3 md:mx-0">
-        <Input
-          placeholder="Filename (e.g., hello.js)"
-          disabled={isSubmitting}
-          {...register('fileName')}
-        />
-        {errors.fileName && (
-          <p className="text-sm text-red-500">{errors.fileName.message}</p>
-        )}
-        <Input
-          placeholder="Commit summary"
-          disabled={isSubmitting}
-          {...register('commitSummary')}
-        />
-        {errors.commitSummary && (
-          <p className="text-sm text-red-500">{errors.commitSummary.message}</p>
-        )}
+        <div role="group" aria-labelledby="filename-group">
+          <span id="filename-group" className="sr-only">
+            File details
+          </span>
+          <Input
+            placeholder="Filename (e.g., hello.js)"
+            disabled={isSubmitting}
+            aria-invalid={errors.fileName ? 'true' : 'false'}
+            aria-describedby={errors.fileName ? 'filename-error' : undefined}
+            {...register('fileName')}
+          />
+          {errors.fileName && (
+            <p
+              id="filename-error"
+              className="text-sm text-red-500"
+              role="alert"
+            >
+              {errors.fileName.message}
+            </p>
+          )}
+        </div>
+        <div role="group" aria-labelledby="commit-group">
+          <span id="commit-group" className="sr-only">
+            Commit details
+          </span>
+          <Input
+            placeholder="Commit summary"
+            disabled={isSubmitting}
+            aria-invalid={errors.commitSummary ? 'true' : 'false'}
+            aria-describedby={errors.commitSummary ? 'commit-error' : undefined}
+            {...register('commitSummary')}
+          />
+          {errors.commitSummary && (
+            <p id="commit-error" className="text-sm text-red-500" role="alert">
+              {errors.commitSummary.message}
+            </p>
+          )}
+        </div>
       </div>
     </>
   );
@@ -197,7 +229,6 @@ const SaveToGithubDialog = forwardRef<
             </AlertDialogDescription>
           </AlertDialogHeader>
           {!isLoading && !githubUser ? authContent : formContent}
-
           <form
             onSubmit={handleSubmit(
               (data) =>
@@ -230,7 +261,10 @@ const SaveToGithubDialog = forwardRef<
                   <div className="flex flex-wrap items-center text-xs text-muted-foreground">
                     <span>To disconnect GitHub, go to</span>
                     <span className="flex items-center font-semibold">
-                      <Settings className="mx-1 inline size-3" />
+                      <Settings
+                        className="mx-1 inline size-3"
+                        aria-hidden="true"
+                      />
                       Settings
                     </span>
                     .
@@ -253,10 +287,14 @@ const SaveToGithubDialog = forwardRef<
                     !selectedItem ||
                     selectedItem.type === itemType.REPO
                   }
+                  aria-busy={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <LoaderCircle className="mr-2 size-4 animate-spin" />
+                      <LoaderCircle
+                        className="mr-2 size-4 animate-spin"
+                        aria-hidden="true"
+                      />
                       Saving...
                     </>
                   ) : (
@@ -284,7 +322,6 @@ const SaveToGithubDialog = forwardRef<
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
             {!isLoading && !githubUser ? authContent : formContent}
           </div>
-
           <form
             onSubmit={handleSubmit(
               (data) =>
@@ -319,7 +356,10 @@ const SaveToGithubDialog = forwardRef<
                     <div className="flex flex-wrap items-center text-xs text-muted-foreground">
                       <span>To disconnect GitHub, go to</span>
                       <span className="flex items-center font-semibold">
-                        <Settings className="mx-1 inline size-3" />
+                        <Settings
+                          className="mx-1 inline size-3"
+                          aria-hidden="true"
+                        />
                         Settings
                       </span>
                       .
@@ -332,10 +372,14 @@ const SaveToGithubDialog = forwardRef<
                       !selectedItem ||
                       selectedItem.type === itemType.REPO
                     }
+                    aria-busy={isSubmitting}
                   >
                     {isSubmitting ? (
                       <>
-                        <LoaderCircle className="mr-2 size-4 animate-spin" />
+                        <LoaderCircle
+                          className="mr-2 size-4 animate-spin"
+                          aria-hidden="true"
+                        />
                         Saving...
                       </>
                     ) : (
