@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 import {
   SITE_DESCRIPTION,
   SITE_NAME,
-  SITE_URL,
+  BASE_CLIENT_URL,
   THEME_COLOR,
 } from '@/lib/constants';
 
@@ -20,9 +20,9 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'en',
     orientation: 'any',
     dir: 'auto',
-    start_url: SITE_URL,
-    scope: SITE_URL,
-    id: SITE_URL,
+    start_url: BASE_CLIENT_URL,
+    scope: BASE_CLIENT_URL,
+    id: BASE_CLIENT_URL,
     icons: [
       {
         src: '/images/favicon.ico',

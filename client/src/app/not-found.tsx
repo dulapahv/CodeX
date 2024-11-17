@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Home, MoveLeft } from 'lucide-react';
 
-import { SITE_URL } from '@/lib/constants';
+import { BASE_CLIENT_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -28,7 +28,7 @@ export default function NotFound() {
             Go Back
           </Button>
           <Button variant="default" asChild className="gap-2">
-            <Link href={SITE_URL}>
+            <Link href={BASE_CLIENT_URL}>
               <Home className="size-4" />
               Return Home
             </Link>

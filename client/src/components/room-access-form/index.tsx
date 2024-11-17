@@ -42,7 +42,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 
 import { BackButton } from './components/back-button';
 import { CreateRoomSection } from './components/create-room-section';
@@ -53,7 +52,7 @@ import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
 
-const JoinForm = () => {
+const RoomAccessForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const room = searchParams.get('room') || '';
@@ -121,20 +120,31 @@ const JoinForm = () => {
   }
 
   return (
-    <Card className="w-[480px] animate-fade-in">
+    <Card
+      className="w-[480px] animate-fade-in"
+      role="region"
+      aria-label="Room access form"
+    >
       <CardHeader className="p-4 pt-6 md:p-6">
         <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
         {!room && (
-          <CardDescription>
+          <CardDescription id="form-description">
             Create or join a room to start coding.
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent className="px-4 pb-6 md:px-6 md:pt-0">
-        <div className="grid w-full items-center gap-6">
+      <CardContent
+        className="px-4 pb-6 md:px-6 md:pt-0"
+        aria-describedby={!room ? 'form-description' : undefined}
+      >
+        <div className="grid w-full items-center gap-6" role="group">
           {room ? (
             <>
-              <div className="space-y-2 text-center">
+              <div
+                className="space-y-2 text-center"
+                role="status"
+                aria-live="polite"
+              >
                 <p>You&apos;ve been invited to join a coding session!</p>
                 <p className="text-lg">
                   Room: <span className="font-bold">{room}</span>
@@ -157,26 +167,30 @@ const JoinForm = () => {
             </>
           ) : (
             <>
-              <CreateRoomSection
-                register={registerCreate}
-                handleSubmit={handleSubmitCreate}
-                onSubmit={handleCreateRoom}
-                onError={handleFormError}
-                errors={createErrors}
-                isSubmitting={isCreating}
-                isJoining={isJoining}
-              />
-              <Separator />
-              <JoinRoomSection
-                register={registerJoin}
-                setValue={setJoinValue}
-                handleSubmit={handleSubmitJoin}
-                onSubmit={handleJoinRoom}
-                onError={handleFormError}
-                errors={joinErrors}
-                isSubmitting={isJoining}
-                isCreating={isCreating}
-              />
+              <section aria-label="Create new room">
+                <CreateRoomSection
+                  register={registerCreate}
+                  handleSubmit={handleSubmitCreate}
+                  onSubmit={handleCreateRoom}
+                  onError={handleFormError}
+                  errors={createErrors}
+                  isSubmitting={isCreating}
+                  isJoining={isJoining}
+                />
+              </section>
+              <Separator role="separator" />
+              <section aria-label="Join existing room">
+                <JoinRoomSection
+                  register={registerJoin}
+                  setValue={setJoinValue}
+                  handleSubmit={handleSubmitJoin}
+                  onSubmit={handleJoinRoom}
+                  onError={handleFormError}
+                  errors={joinErrors}
+                  isSubmitting={isJoining}
+                  isCreating={isCreating}
+                />
+              </section>
             </>
           )}
         </div>
@@ -185,4 +199,4 @@ const JoinForm = () => {
   );
 };
 
-export { JoinForm };
+export { RoomAccessForm };

@@ -57,6 +57,8 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
         <TooltipTrigger onFocus={handleTooltipFocus} asChild>
           <Button
             aria-label="Leave room"
+            aria-haspopup="dialog"
+            aria-expanded="false"
             size="icon"
             variant="ghost"
             className={cn(
@@ -65,14 +67,22 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
             )}
             onClick={handleButtonClick}
           >
-            <LogOut className="size-4 text-red-600" strokeWidth={2.5} />
+            <LogOut
+              className="size-4 text-red-600"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent role="tooltip" aria-label="Leave Room">
           <p>Leave Room</p>
         </TooltipContent>
       </Tooltip>
-      <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
+      <LeaveDialog
+        ref={leaveDialogRef}
+        roomId={roomId}
+        aria-label="Confirm leaving room"
+      />
     </>
   );
 };

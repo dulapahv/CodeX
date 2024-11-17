@@ -61,6 +61,7 @@ const Avatar = ({
   const initials = getInitials(user.username);
   const colors = userMap.getColors(user.id);
   const currentUserId = storage.getUserId() ?? '';
+  const displayName = getDisplayName(user, currentUserId);
 
   const AvatarContent = (
     <div
@@ -71,8 +72,11 @@ const Avatar = ({
       )}
       style={colors}
       data-testid="avatar"
+      role="img"
+      aria-label={displayName}
+      tabIndex={0}
     >
-      {initials}
+      <span aria-hidden="true">{initials}</span>
     </div>
   );
 
@@ -82,8 +86,10 @@ const Avatar = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{AvatarContent}</TooltipTrigger>
-      <TooltipContent>{getDisplayName(user, currentUserId)}</TooltipContent>
+      <TooltipTrigger asChild aria-label={`${displayName}'s avatar`}>
+        {AvatarContent}
+      </TooltipTrigger>
+      <TooltipContent role="tooltip">{displayName}</TooltipContent>
     </Tooltip>
   );
 };

@@ -49,7 +49,7 @@ export default function Page({
   }, [isSuccessful]);
 
   return (
-    <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
+    <main className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
       <Alert className="max-w-md">
         <LoaderCircle className="size-5 animate-spin" />
         <AlertTitle>Processing authentication...</AlertTitle>
@@ -57,6 +57,6 @@ export default function Page({
           This window will close automatically in a few seconds.
         </AlertDescription>
       </Alert>
-    </div>
+    </main>
   );
 }

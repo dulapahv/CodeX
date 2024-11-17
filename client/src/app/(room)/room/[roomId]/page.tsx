@@ -98,8 +98,11 @@ export default function Room({ params }: RoomProps) {
   }, [disconnect, params.roomId, router, socket]);
 
   return (
-    <main className="flex h-full min-w-[425px] flex-col overflow-clip">
-      <div className="h-9">
+    <main
+      className="flex h-full min-w-[425px] flex-col overflow-clip"
+      aria-label="Code Editor Workspace"
+    >
+      <div className="h-9" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
           <div
             className="flex items-center gap-x-2 p-1"
@@ -108,18 +111,28 @@ export default function Room({ params }: RoomProps) {
             <div
               className="grow animate-slide-in-top"
               style={{ color: 'var(--toolbar-foreground)' }}
+              role="group"
+              aria-label="Editor Toolbar"
             >
               <Toolbar monaco={monaco} editor={editor} roomId={params.roomId} />
             </div>
-            <UserList users={users} />
-            <ShareButton roomId={params.roomId} />
-            <SettingsButton monaco={monaco} editor={editor} />
-            <LeaveButton roomId={params.roomId} />
+            <nav aria-label="Collaboration Tools">
+              <div className="flex items-center gap-x-2">
+                <UserList users={users} />
+                <ShareButton roomId={params.roomId} />
+                <SettingsButton monaco={monaco} editor={editor} />
+                <LeaveButton roomId={params.roomId} />
+              </div>
+            </nav>
           </div>
         )}
       </div>
       {defaultCode !== null ? (
-        <div className="relative h-[calc(100%-36px)]">
+        <div
+          className="relative h-[calc(100%-36px)]"
+          role="region"
+          aria-label="Code Editor"
+        >
           <MonacoEditor
             monacoRef={setMonaco}
             editorRef={setEditor}
@@ -127,9 +140,13 @@ export default function Room({ params }: RoomProps) {
           />
         </div>
       ) : (
-        <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
+        <div
+          className="fixed left-0 top-0 flex size-full items-center justify-center p-2"
+          role="status"
+          aria-live="polite"
+        >
           <Alert className="max-w-md">
-            <LoaderCircle className="size-5 animate-spin" />
+            <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
             <AlertTitle>Loading session</AlertTitle>
             <AlertDescription>
               Loading your coding session. Please wait...

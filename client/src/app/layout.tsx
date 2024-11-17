@@ -21,12 +21,12 @@ import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 
 import {
+  BASE_CLIENT_URL,
   NAME,
   PORTFOLIO_URL,
   SHORT_SITE_NAME,
   SITE_DESCRIPTION,
   SITE_NAME,
-  SITE_URL,
   THEME_COLOR,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
-    url: SITE_URL,
+    url: BASE_CLIENT_URL,
     locale: 'en_US',
     type: 'website',
     images: [
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL(BASE_CLIENT_URL),
   formatDetection: {
     telephone: false,
   },
@@ -160,7 +160,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: SITE_URL,
+    canonical: BASE_CLIENT_URL,
   },
   other: {
     'msapplication-TileColor': THEME_COLOR,
@@ -192,7 +192,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('h-dvh', GeistSans.className)}>
+      <body className={cn('h-dvh antialiased', GeistSans.className)}>
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors className="whitespace-pre-line" />

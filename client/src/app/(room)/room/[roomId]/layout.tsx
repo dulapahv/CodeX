@@ -19,7 +19,7 @@ import {
   PORTFOLIO_URL,
   SHORT_SITE_NAME,
   SITE_NAME,
-  SITE_URL,
+  BASE_CLIENT_URL,
   THEME_COLOR,
 } from '@/lib/constants';
 
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: INVITED_DESCRIPTION,
     siteName: SITE_NAME,
-    url: SITE_URL,
+    url: BASE_CLIENT_URL,
     locale: 'en_US',
     type: 'website',
     images: [
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL(BASE_CLIENT_URL),
   formatDetection: {
     telephone: false,
   },
@@ -149,7 +149,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: SITE_URL,
+    canonical: BASE_CLIENT_URL,
   },
   other: {
     'msapplication-TileColor': THEME_COLOR,

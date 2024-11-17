@@ -91,21 +91,42 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
 
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent>
+        <SheetContent
+          role="dialog"
+          aria-label="Editor Settings"
+          aria-modal="true"
+        >
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
             <SheetDescription>
               Personalize your experience and preferences.
             </SheetDescription>
           </SheetHeader>
-          <div className="flex flex-col gap-y-4 py-4">
-            <Label className="text-base">GitHub Connection</Label>
+          <div
+            className="flex flex-col gap-y-4 py-4"
+            role="group"
+            aria-label="Settings Options"
+          >
+            <Label className="text-base" id="github-section">
+              GitHub Connection
+            </Label>
             {isLoading ? (
-              <div className="flex items-center justify-center py-2">
-                <LoaderCircle className="size-4 animate-spin" />
+              <div
+                className="flex items-center justify-center py-2"
+                role="status"
+                aria-label="Loading GitHub connection status"
+              >
+                <LoaderCircle
+                  className="size-4 animate-spin"
+                  aria-hidden="true"
+                />
               </div>
             ) : githubUser ? (
-              <div className="flex items-center justify-between">
+              <div
+                className="flex items-center justify-between"
+                role="status"
+                aria-label={`Connected to GitHub as ${githubUser}`}
+              >
                 <span className="text-sm text-muted-foreground">
                   Connected as{' '}
                   <span className="font-semibold">{githubUser}</span>
@@ -115,8 +136,9 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                   size="sm"
                   onClick={handleLogout}
                   className="flex items-center gap-2"
+                  aria-label="Disconnect from GitHub"
                 >
-                  <Unplug className="size-4" />
+                  <Unplug className="size-4" aria-hidden="true" />
                   Disconnect
                 </Button>
               </div>
@@ -126,16 +148,24 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 variant="outline"
                 className="w-full"
                 size="sm"
+                aria-describedby="github-section"
               >
                 Login with GitHub
               </Button>
             )}
-            <Separator />
-            <Label className="text-base">General</Label>
-            <AppThemeSettings />
-            <Separator />
-            <Label className="text-base">Editor</Label>
-            <EditorThemeSettings monaco={monaco} />
+            <Separator role="separator" />
+            <Label className="text-base" id="general-section">
+              General
+            </Label>
+            <AppThemeSettings aria-labelledby="general-section" />
+            <Separator role="separator" />
+            <Label className="text-base" id="editor-section">
+              Editor
+            </Label>
+            <EditorThemeSettings
+              monaco={monaco}
+              aria-labelledby="editor-section"
+            />
           </div>
         </SheetContent>
       </Sheet>

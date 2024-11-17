@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Bug, Home, RefreshCcw } from 'lucide-react';
 
-import { IS_DEV_ENV, PORTFOLIO_URL, SITE_URL } from '@/lib/constants';
+import { BASE_CLIENT_URL, IS_DEV_ENV, PORTFOLIO_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -57,7 +57,7 @@ Stack: ${error.stack || 'No stack trace available'}`;
             </Link>
           </Button>
           <Button variant="default" asChild className="gap-2">
-            <Link href={SITE_URL}>
+            <Link href={BASE_CLIENT_URL}>
               <Home className="size-4" />
               Return Home
             </Link>

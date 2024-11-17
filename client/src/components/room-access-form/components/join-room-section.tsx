@@ -69,49 +69,83 @@ export const JoinRoomSection = ({
   isSubmitting,
   isCreating,
 }: JoinRoomSectionProps) => {
+  const isDisabled = isCreating || isSubmitting;
+  const roomIdErrorId = 'room-id-error';
+  const nameErrorId = 'name-join-error';
+
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data), onError)}>
-      <div className="flex flex-col space-y-4">
-        <h3 className="text-lg font-medium">Join a Room</h3>
-        <div className="flex flex-col space-y-1.5">
+    <section aria-labelledby="join-room-heading">
+      <form
+        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        className="flex flex-col space-y-4"
+        noValidate
+      >
+        <h3 id="join-room-heading" className="text-lg font-medium">
+          Join a Room
+        </h3>
+        <div
+          className="flex flex-col space-y-1.5"
+          role="group"
+          aria-labelledby="room-id"
+        >
           <Label htmlFor="room-id">Room ID</Label>
           <Input
             id="room-id"
             placeholder="XXXX-XXXX"
             className={GeistMono.className}
-            disabled={isCreating || isSubmitting}
+            disabled={isDisabled}
+            aria-required="true"
+            aria-invalid={errors.roomId ? 'true' : 'false'}
+            aria-describedby={errors.roomId ? roomIdErrorId : undefined}
             {...register('roomId', {
               onChange: (e) => onRoomIdChange(e, setValue),
             })}
           />
           {errors.roomId && (
-            <p className="text-sm text-red-500">{errors.roomId.message}</p>
+            <p id={roomIdErrorId} className="text-sm text-red-500" role="alert">
+              {errors.roomId.message}
+            </p>
           )}
         </div>
-        <div className="flex flex-col space-y-1.5">
+        <div
+          className="flex flex-col space-y-1.5"
+          role="group"
+          aria-labelledby="name-join"
+        >
           <Label htmlFor="name-join">Name</Label>
           <Input
             id="name-join"
             placeholder="Enter your name"
-            disabled={isCreating || isSubmitting}
+            disabled={isDisabled}
+            aria-required="true"
+            aria-invalid={errors.name ? 'true' : 'false'}
+            aria-describedby={errors.name ? nameErrorId : undefined}
             {...register('name')}
           />
           {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
+            <p id={nameErrorId} className="text-sm text-red-500" role="alert">
+              {errors.name.message}
+            </p>
           )}
         </div>
         <Button
           type="submit"
           className="bg-primary"
-          disabled={isSubmitting || isCreating}
+          disabled={isDisabled}
+          aria-busy={isSubmitting}
         >
           {isSubmitting && (
-            <LoaderCircle className="mr-2 size-4 animate-spin" />
+            <LoaderCircle
+              className="mr-2 size-4 animate-spin"
+              aria-hidden="true"
+            />
           )}
-          {isSubmitting ? 'Joining...' : 'Join Room'}
-          {!isSubmitting && <ArrowRight className="ml-2 size-4" />}
+          <span>{isSubmitting ? 'Joining...' : 'Join Room'}</span>
+          {!isSubmitting && (
+            <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+          )}
         </Button>
-      </div>
-    </form>
+      </form>
+    </section>
   );
 };

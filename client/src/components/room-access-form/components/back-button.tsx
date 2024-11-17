@@ -36,9 +36,10 @@ const BackButton = ({ onClick, disabled }: BackButtonProps) => (
     size="sm"
     onClick={onClick}
     disabled={disabled}
+    aria-label="Back to create or join room page"
   >
-    <ArrowLeft className="mr-2 size-4" />
-    Back to create/join room
+    <ArrowLeft className="mr-2 size-4" aria-hidden="true" />
+    <span>Back to create/join room</span>
   </Button>
 );
 

@@ -37,25 +37,35 @@ interface UserListProps {
 
 const UserList = ({ users }: UserListProps) => {
   const { resolvedTheme } = useTheme();
+  const totalUsers = users.length;
 
   return (
-    <ScrollArea className="max-w-52">
-      <div className="flex -space-x-2">
-        {users.map((user) => (
-          <Avatar key={user.id} user={user} />
-        ))}
-      </div>
-      <ScrollBar
-        orientation="horizontal"
-        color="white"
-        className={cn(
-          'h-1.5',
-          resolvedTheme === 'dark'
-            ? '[&>div]:bg-foreground'
-            : '[&>div]:bg-primary',
-        )}
-      />
-    </ScrollArea>
+    <div role="region" aria-label="Active users">
+      <ScrollArea
+        className="max-w-52"
+        aria-label={`${totalUsers} active users in this session`}
+      >
+        <div className="flex -space-x-2" role="list">
+          {users.map((user) => (
+            <div key={user.id} role="listitem">
+              <Avatar key={user.id} user={user} />
+            </div>
+          ))}
+        </div>
+        <ScrollBar
+          orientation="horizontal"
+          color="white"
+          className={cn(
+            'h-1.5',
+            resolvedTheme === 'dark'
+              ? '[&>div]:bg-foreground'
+              : '[&>div]:bg-primary',
+          )}
+          aria-orientation="horizontal"
+          aria-label="Scroll through user avatars"
+        />
+      </ScrollArea>
+    </div>
   );
 };
 

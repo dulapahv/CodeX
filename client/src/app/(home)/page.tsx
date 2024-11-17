@@ -10,12 +10,15 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { JoinForm } from '@/components/join-form';
+import { RoomAccessForm } from '@/components/room-access-form';
 
 export default function Page() {
   return (
-    <main className="flex h-full items-center justify-center p-2">
-      <JoinForm />
+    <main
+      className="flex h-full items-center justify-center p-2"
+      aria-label="Join or create a room"
+    >
+      <RoomAccessForm />
     </main>
   );
 }

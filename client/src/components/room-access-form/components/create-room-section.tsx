@@ -60,34 +60,61 @@ export const CreateRoomSection = ({
   errors,
   isSubmitting,
   isJoining,
-}: CreateRoomSectionProps) => (
-  <form onSubmit={handleSubmit((data) => onSubmit(data), onError)}>
-    <div className="flex flex-col gap-y-4">
-      <h3 className="text-lg font-medium">Create a Room</h3>
-      <div className="flex flex-col space-y-1.5">
-        <Label htmlFor="name-create">Name</Label>
-        <Input
-          id="name-create"
-          placeholder="Enter your name"
-          disabled={isSubmitting || isJoining}
-          {...register('name')}
-        />
-        {errors.name && (
-          <p className="text-sm text-red-500">{errors.name.message}</p>
-        )}
-      </div>
-      <Button
-        type="submit"
-        className="bg-primary"
-        disabled={isSubmitting || isJoining}
+}: CreateRoomSectionProps) => {
+  const isDisabled = isSubmitting || isJoining;
+  const inputId = 'name-create';
+  const errorId = 'name-error';
+
+  return (
+    <section aria-labelledby="create-room-heading">
+      <form
+        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        className="flex flex-col space-y-4"
+        noValidate
       >
-        {isSubmitting ? (
-          <LoaderCircle className="mr-2 size-4 animate-spin" />
-        ) : (
-          <CirclePlus className="mr-2 size-4" />
-        )}
-        {isSubmitting ? 'Creating...' : 'Create Room'}
-      </Button>
-    </div>
-  </form>
-);
+        <h3 id="create-room-heading" className="text-lg font-medium">
+          Create a Room
+        </h3>
+        <div
+          className="flex flex-col space-y-1.5"
+          role="group"
+          aria-labelledby={inputId}
+        >
+          <Label htmlFor={inputId} className="text-sm font-medium">
+            Name
+          </Label>
+          <Input
+            id={inputId}
+            placeholder="Enter your name"
+            disabled={isDisabled}
+            aria-required="true"
+            aria-invalid={errors.name ? 'true' : 'false'}
+            aria-describedby={errors.name ? errorId : undefined}
+            {...register('name')}
+          />
+          {errors.name && (
+            <p id={errorId} className="text-sm text-red-500" role="alert">
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+        <Button
+          type="submit"
+          className="bg-primary"
+          disabled={isDisabled}
+          aria-busy={isSubmitting}
+        >
+          {isSubmitting ? (
+            <LoaderCircle
+              className="mr-2 size-4 animate-spin"
+              aria-hidden="true"
+            />
+          ) : (
+            <CirclePlus className="mr-2 size-4" aria-hidden="true" />
+          )}
+          <span>{isSubmitting ? 'Creating...' : 'Create Room'}</span>
+        </Button>
+      </form>
+    </section>
+  );
+};

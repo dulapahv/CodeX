@@ -10,6 +10,7 @@
  */
 
 export type EditOp = [string, number, number, number, number];
+export type EditOp2 = string;
 
 /**
  * Cursor data for the editor.
@@ -23,3 +24,4 @@ export type EditOp = [string, number, number, number, number];
  * Index 5: endColumn
  */
 export type Cursor = [number, number, number?, number?, number?, number?];
+export type Cursor2 = string;

@@ -87,16 +87,28 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
     if (isDesktop) {
       return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent>
+          <DialogContent
+            role="alertdialog"
+            aria-labelledby="leave-dialog-title"
+            aria-describedby="leave-dialog-description"
+          >
             <DialogHeader>
-              <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
-              <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
+              <DialogTitle id="leave-dialog-title">{DEFAULT_TITLE}</DialogTitle>
+              <DialogDescription id="leave-dialog-description">
+                {DEFAULT_DESCRIPTION}
+              </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">Close</Button>
+                <Button variant="secondary" aria-label="Cancel leaving room">
+                  Close
+                </Button>
               </DialogClose>
-              <Button variant="destructive" onClick={handleLeaveRoom}>
+              <Button
+                variant="destructive"
+                onClick={handleLeaveRoom}
+                aria-label="Confirm leaving room"
+              >
                 Leave
               </Button>
             </DialogFooter>
@@ -107,17 +119,31 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
 
     return (
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent>
+        <DrawerContent
+          role="alertdialog"
+          aria-labelledby="leave-drawer-title"
+          aria-describedby="leave-drawer-description"
+        >
           <DrawerHeader>
-            <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
-            <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
+            <DrawerTitle id="leave-drawer-title">{DEFAULT_TITLE}</DrawerTitle>
+            <DrawerDescription id="leave-drawer-description">
+              {DEFAULT_DESCRIPTION}
+            </DrawerDescription>
           </DrawerHeader>
           <DrawerFooter>
-            <Button variant="destructive" onClick={handleLeaveRoom}>
+            <Button
+              variant="destructive"
+              onClick={handleLeaveRoom}
+              aria-label="Confirm leaving room"
+            >
               Leave
             </Button>
             <DrawerClose asChild>
-              <Button variant="secondary" onClick={closeDialog}>
+              <Button
+                variant="secondary"
+                onClick={closeDialog}
+                aria-label="Cancel leaving room"
+              >
                 Cancel
               </Button>
             </DrawerClose>

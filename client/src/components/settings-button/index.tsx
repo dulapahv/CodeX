@@ -59,21 +59,28 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            aria-label="Settings"
+            aria-label="Open Settings"
+            aria-haspopup="dialog"
+            aria-expanded="false"
             variant="ghost"
             size="icon"
             className="size-7 animate-slide-in-top rounded-sm p-0 hover:!text-foreground"
             style={{ color: 'var(--toolbar-foreground)' }}
             onClick={handleButtonClick}
           >
-            <Settings className="size-4" />
+            <Settings className="size-4" aria-hidden="true" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent role="tooltip">
           <p>Settings</p>
         </TooltipContent>
       </Tooltip>
-      <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
+      <SettingsSheet
+        ref={settingsSheetRef}
+        monaco={monaco}
+        editor={editor}
+        aria-label="Editor Settings"
+      />
     </>
   );
 };

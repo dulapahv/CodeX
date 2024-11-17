@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-import { SITE_URL } from '@/lib/constants';
+import { BASE_CLIENT_URL } from '@/lib/constants';
 
 export const runtime = 'edge';
 
@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/room/*', '/oauth/*'], // Block all URLs that start with /room/ and /oauth/
       },
     ],
-    host: SITE_URL,
+    host: BASE_CLIENT_URL,
   };
 }
