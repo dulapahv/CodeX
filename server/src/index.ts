@@ -1,6 +1,5 @@
-import { createServer } from 'http';
-import express from 'express';
 import { Server } from 'socket.io';
+import { App } from 'uWebSockets.js';
 
 import {
   CodeServiceMsg,
@@ -12,7 +11,7 @@ import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
 
-const app = express();
+const PORT = 3001;
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -20,20 +19,35 @@ const allowedOrigins = [
   'https://dev.kasca.pages.dev',
 ];
 
-const server = createServer(app);
-const io = new Server(server, {
+const app = App();
+const io = new Server({
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
 
-app.get('/', (_req, res) => {
-  res.status(200).json({ message: 'Hello from kasca-server!' });
-});
+io.attachApp(app);
 
 io.engine.on('connection', (rawSocket) => {
   rawSocket.request = null;
+});
+
+app.listen(PORT, (token) => {
+  if (!token) {
+    console.warn(`Port ${PORT} is already in use`);
+  }
+  console.log(`kasca-server listening on port: ${PORT}`);
+});
+
+app.get('/', (res) => {
+  res.writeHeader('Content-Type', 'application/json');
+  res.end(
+    JSON.stringify({
+      message:
+        'Hello from kasca-server! Go to https://kasca.dulapahv.dev to use the app :D',
+    }),
+  );
 });
 
 io.on('connection', (socket) => {
@@ -71,10 +85,4 @@ io.on('connection', (socket) => {
       roomService.leave(socket, io, roomID);
     }
   });
-});
-
-const PORT = process.env.PORT || 3001;
-
-server.listen(PORT, function () {
-  console.log(`kasca-server listening on port: ${PORT}`);
 });
