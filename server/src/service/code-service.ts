@@ -93,7 +93,7 @@ export const updateLang = (socket: Socket, langId: string): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     setLang(roomID, langId);
-    socket.to(roomID).emit(CodeServiceMsg.LANG_RX, langId, customId);
+    socket.to(roomID).emit(CodeServiceMsg.LANG_RX, langId);
   }
 };
 
@@ -121,7 +121,7 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   if (!customId || !roomID) return;
 
   // Emit update with custom ID
-  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation, customId);
+  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation);
 
   const currentCode = getCode(roomID);
   const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
