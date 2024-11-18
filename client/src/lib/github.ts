@@ -20,7 +20,7 @@ export const authCookie = {
       secure: !IS_DEV_ENV,
       httpOnly: true,
       sameSite: IS_DEV_ENV ? 'lax' : 'strict',
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
   },
   get: () => cookies().get('access_token'),
