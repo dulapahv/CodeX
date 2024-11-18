@@ -4,29 +4,28 @@
  */
 
 export enum UserServiceMsg {
-  DISC = 'A',
-  CURSOR_RX = 'B',
-  CURSOR_TX = 'C',
+  CURSOR_RX = 'A',
+  CURSOR_TX = 'B',
 }
 
 export enum RoomServiceMsg {
-  CREATE = 'D',
-  JOIN = 'E',
-  LEAVE = 'F',
+  CREATE = 'E',
+  JOIN = 'F',
+  LEAVE = 'L',
   CREATED = 'G',
   JOINED = 'H',
   NOT_FOUND = 'I',
   UPDATE_USERS = 'J',
   GET_USERS = 'K',
-  USER_LEFT = 'L',
+  USER_LEFT = 'M',
 }
 
 export enum CodeServiceMsg {
-  GET_CODE = 'M',
-  RECEIVE_CODE = 'N',
-  CODE_TX = 'O',
-  CODE_RX = 'P',
-  GET_LANG = 'Q',
-  LANG_TX = 'R',
-  LANG_RX = 'S',
+  GET_CODE = 'N',
+  RECEIVE_CODE = 'O',
+  CODE_TX = 'C',
+  CODE_RX = 'D',
+  GET_LANG = 'P',
+  LANG_TX = 'Q',
+  LANG_RX = 'R',
 }
