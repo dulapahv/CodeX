@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     site: '@dulapahv',
     images: [
       {
-        url: '/images/ogp.png',
+        url: '/images/cover.png',
         width: 1200,
         height: 630,
         alt: SITE_NAME,
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/images/ogp.png',
+        url: '/images/cover.png',
         width: 1200,
         height: 630,
         alt: SITE_NAME,
