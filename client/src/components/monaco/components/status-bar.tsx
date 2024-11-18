@@ -72,7 +72,7 @@ export const StatusBar = memo(function StatusBar({
   return (
     <section
       className={cn(
-        'absolute bottom-0 h-6 w-full animate-slide-in-bottom py-1',
+        'absolute bottom-0 h-6 w-full animate-fade-in-bottom py-1',
         className,
       )}
       style={{ backgroundColor: 'var(--toolbar-bg-primary)' }}

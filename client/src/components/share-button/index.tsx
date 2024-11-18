@@ -51,7 +51,7 @@ const ShareButton = ({ roomId }: RoomProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 animate-slide-in-top rounded-sm px-2 hover:!text-foreground"
+              className="h-7 animate-fade-in-top rounded-sm px-2 hover:!text-foreground"
               aria-label="Share this coding room"
               aria-haspopup="dialog"
               aria-expanded="false"

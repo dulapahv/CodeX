@@ -61,9 +61,8 @@ const config: Config = {
           'scale-up-center 0.4s cubic-bezier(0.175, 0.885, 0.320, 1.275) both',
         'fade-in': 'fade-in 0.4s cubic-bezier(0.190, 1.000, 0.220, 1.000) both',
         'fade-in-top': 'fade-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
-        'slide-in-top': 'slide-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
-        'slide-in-bottom':
-          'slide-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
+        'fade-in-bottom':
+          'fade-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
       },
       keyframes: {
         'scale-up-center': {
@@ -92,17 +91,7 @@ const config: Config = {
             opacity: '1',
           },
         },
-        'slide-in-top': {
-          '0%': {
-            transform: 'translateY(-25px)',
-            opacity: '0',
-          },
-          to: {
-            transform: 'translateY(0)',
-            opacity: '1',
-          },
-        },
-        'slide-in-bottom': {
+        'fade-in-bottom': {
           '0%': {
             transform: 'translateY(25px)',
             opacity: '0',

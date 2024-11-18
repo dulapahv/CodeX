@@ -109,7 +109,7 @@ export default function Room({ params }: RoomProps) {
             style={{ backgroundColor: 'var(--toolbar-bg-secondary)' }}
           >
             <div
-              className="grow animate-slide-in-top"
+              className="grow animate-fade-in-top"
               style={{ color: 'var(--toolbar-foreground)' }}
               role="group"
               aria-label="Editor Toolbar"
