@@ -75,9 +75,7 @@ export const join = async (
  */
 export const leave = async (socket: Socket, io: Server): Promise<void> => {
   try {
-    if (!socket || socket.disconnected) {
-      return;
-    }
+    if (!socket || socket.disconnected) return;
 
     const roomID = getUserRoom(socket);
     if (!roomID) return;
@@ -101,13 +99,10 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
       socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
     }
 
-    if (!socket.disconnected) {
-      await socket.leave(roomID);
-    }
+    await socket.leave(roomID);
 
     userService.disconnect(socket);
   } catch {
-    // Silently handle any errors
     return;
   }
 };
