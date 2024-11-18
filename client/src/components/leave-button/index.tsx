@@ -78,11 +78,7 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
           <p>Leave Room</p>
         </TooltipContent>
       </Tooltip>
-      <LeaveDialog
-        ref={leaveDialogRef}
-        roomId={roomId}
-        aria-label="Confirm leaving room"
-      />
+      <LeaveDialog ref={leaveDialogRef} aria-label="Confirm leaving room" />
     </>
   );
 };
