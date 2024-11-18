@@ -75,7 +75,7 @@ export const join = async (
  */
 export const leave = async (socket: Socket): Promise<void> => {
   const roomID = roomService.getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID || socket.disconnected) return;
 
   const customId = userService.getSocCustomId(socket);
 
