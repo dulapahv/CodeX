@@ -96,16 +96,16 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
       }
     }
 
+    if (io.sockets.adapter.rooms.has(roomID)) {
+      socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
+      socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
+    }
+
     if (!socket.disconnected) {
       await socket.leave(roomID);
     }
 
     userService.disconnect(socket);
-
-    if (io.sockets.adapter.rooms.has(roomID)) {
-      socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
-      socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
-    }
   } catch {
     // Silently handle any errors
     return;
