@@ -113,7 +113,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
               Made with 💕 by dulapahv
             </p>
             <nav className="grid grid-cols-4 gap-2" aria-label="External links">
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <a
                   href={PORTFOLIO_URL}
                   target="_blank"
@@ -123,7 +123,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                   Portfolio
                 </a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <a
                   href={GITHUB_URL}
                   target="_blank"
@@ -133,7 +133,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                   GitHub Profile
                 </a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <a
                   href={REPO_URL}
                   target="_blank"
@@ -143,7 +143,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                   Kasca GitHub
                 </a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <a
                   href={CONTACT_URL}
                   target="_blank"
@@ -213,7 +213,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
             Made with 💕 by dulapahv
           </p>
           <nav className="grid grid-cols-2 gap-2" aria-label="External links">
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={PORTFOLIO_URL}
                 target="_blank"
@@ -223,7 +223,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                 Portfolio
               </a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -233,7 +233,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                 GitHub Profile
               </a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={REPO_URL}
                 target="_blank"
@@ -243,7 +243,7 @@ const AboutDialog = forwardRef<AboutDialogRef>((props, ref) => {
                 Kasca GitHub
               </a>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={CONTACT_URL}
                 target="_blank"

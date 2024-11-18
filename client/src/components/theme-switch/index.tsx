@@ -5,13 +5,12 @@ import { Monitor, Moon, Palette, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Tooltip,
   TooltipContent,
@@ -20,7 +19,6 @@ import {
 
 const ThemeSwitch = () => {
   const { theme, setTheme } = useTheme();
-
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -79,24 +77,28 @@ const ThemeSwitch = () => {
         </TooltipContent>
       </Tooltip>
       <PopoverContent
-        className="mr-1 w-48 bg-background/50 backdrop-blur"
+        className="mr-1 w-48 bg-background/50 p-0 backdrop-blur"
         side="top"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        <RadioGroup value={theme} onValueChange={setTheme}>
-          {themes.map(({ value, label, icon: Icon }) => (
-            <div key={value} className="flex items-center space-x-2 space-y-0">
-              <RadioGroupItem value={value} id={value} />
-              <Label
-                htmlFor={value}
-                className="flex flex-1 cursor-pointer items-center space-x-3 rounded-md p-1"
+        <Tabs
+          defaultValue={theme}
+          orientation="vertical"
+          onValueChange={setTheme}
+        >
+          <TabsList className="flex h-auto flex-col gap-1 bg-transparent">
+            {themes.map(({ value, label, icon: Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="w-full justify-start gap-2 px-3 data-[state=active]:bg-background/90"
               >
                 <Icon className="size-5" />
-                <p className="text-sm font-medium leading-none">{label}</p>
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
+                <span className="text-sm font-medium">{label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </PopoverContent>
     </Popover>
   );
