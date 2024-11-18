@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.JOIN, async (roomID: string, name: string) =>
     roomService.join(socket, io, roomID, name),
   );
-  socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket));
+  socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
   socket.on(RoomServiceMsg.GET_USERS, async () => {
     roomService.getUsersInRoom(socket, io);
   });
@@ -75,5 +75,5 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.LANG_TX, async (langID: string) =>
     codeService.updateLang(socket, langID),
   );
-  socket.on('disconnecting', () => roomService.leave(socket));
+  socket.on('disconnecting', () => roomService.leave(socket, io));
 });

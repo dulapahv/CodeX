@@ -73,14 +73,18 @@ export const join = async (
 /**
  * Leaves a room with efficient cleanup
  */
-export const leave = async (socket: Socket): Promise<void> => {
-  const roomID = roomService.getUserRoom(socket);
-  if (!roomID || socket.disconnected) return;
+export const leave = async (socket: Socket, io: Server): Promise<void> => {
+  try {
+    if (!socket || socket.disconnected) {
+      return;
+    }
 
-  const customId = userService.getSocCustomId(socket);
+    const roomID = getUserRoom(socket);
+    if (!roomID) return;
 
-  if (customId) {
-    // Update room cache
+    const customId = userService.getSocCustomId(socket);
+    if (!customId) return;
+
     const users = roomUsersCache.get(roomID);
     if (users) {
       delete users[customId];
@@ -92,12 +96,19 @@ export const leave = async (socket: Socket): Promise<void> => {
       }
     }
 
-    await socket.leave(roomID);
+    if (!socket.disconnected) {
+      await socket.leave(roomID);
+    }
+
     userService.disconnect(socket);
 
-    // Broadcast updates
-    socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
-    socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
+    if (io.sockets.adapter.rooms.has(roomID)) {
+      socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
+      socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
+    }
+  } catch {
+    // Silently handle any errors
+    return;
   }
 };
 
