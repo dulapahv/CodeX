@@ -4,6 +4,7 @@ import { RoomServiceMsg } from '../../../common/types/message';
 import { generateRoomID } from '../utils/generate-room-id';
 import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
+import * as roomService from './room-service';
 import * as userService from './user-service';
 
 // Cache for room users to reduce repeated lookups
@@ -72,12 +73,10 @@ export const join = async (
 /**
  * Leaves a room with efficient cleanup
  */
-export const leave = async (
-  socket: Socket,
-  io: Server,
-  roomID: string,
-): Promise<void> => {
-  roomID = normalizeRoomId(roomID);
+export const leave = async (socket: Socket): Promise<void> => {
+  const roomID = roomService.getUserRoom(socket);
+  if (!roomID) return;
+
   const customId = userService.getSocCustomId(socket);
 
   if (customId) {

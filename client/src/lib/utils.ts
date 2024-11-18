@@ -41,11 +41,11 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
   });
 };
 
-export const leaveRoom = (roomId: string): Promise<void> => {
+export const leaveRoom = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
 
-    socket.emit(RoomServiceMsg.LEAVE, roomId);
+    socket.emit(RoomServiceMsg.LEAVE);
     storage.clear();
   });
 };

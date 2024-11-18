@@ -59,70 +59,44 @@ const DEFAULT_TITLE = 'Are you sure you want to leave this room?';
 const DEFAULT_DESCRIPTION =
   'You can always rejoin this room using the same Room ID. This room will be deleted if you are the last participant.';
 
-interface LeaveDialogProps {
-  roomId: string;
-}
-
 interface LeaveDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
 
-const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
-  ({ roomId }: LeaveDialogProps, ref) => {
-    const [isOpen, setIsOpen] = useState(false);
+const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-    const isDesktop = useMediaQuery('(min-width: 768px)');
-    const { handleLeaveRoom } = useRoomActions(roomId);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const { handleLeaveRoom } = useRoomActions();
 
-    const openDialog = useCallback(() => setIsOpen(true), []);
-    const closeDialog = useCallback(() => setIsOpen(false), []);
+  const openDialog = useCallback(() => setIsOpen(true), []);
+  const closeDialog = useCallback(() => setIsOpen(false), []);
 
-    // Expose openDialog and closeDialog to the parent component
-    useImperativeHandle(ref, () => ({
-      openDialog,
-      closeDialog,
-    }));
+  // Expose openDialog and closeDialog to the parent component
+  useImperativeHandle(ref, () => ({
+    openDialog,
+    closeDialog,
+  }));
 
-    if (isDesktop) {
-      return (
-        <Dialog
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          aria-label="Leave room dialog"
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
-              <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="secondary" aria-label="Cancel leaving room">
-                  Close
-                </Button>
-              </DialogClose>
-              <Button
-                variant="destructive"
-                onClick={handleLeaveRoom}
-                aria-label="Confirm leaving room"
-              >
-                Leave
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      );
-    }
-
+  if (isDesktop) {
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent role="alertdialog" aria-label="Leave room drawer">
-          <DrawerHeader>
-            <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
-            <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
-          </DrawerHeader>
-          <DrawerFooter>
+      <Dialog
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        aria-label="Leave room dialog"
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
+            <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="secondary" aria-label="Cancel leaving room">
+                Close
+              </Button>
+            </DialogClose>
             <Button
               variant="destructive"
               onClick={handleLeaveRoom}
@@ -130,21 +104,41 @@ const LeaveDialog = forwardRef<LeaveDialogRef, LeaveDialogProps>(
             >
               Leave
             </Button>
-            <DrawerClose asChild>
-              <Button
-                variant="secondary"
-                onClick={closeDialog}
-                aria-label="Cancel leaving room"
-              >
-                Cancel
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
-  },
-);
+  }
+
+  return (
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <DrawerContent role="alertdialog" aria-label="Leave room drawer">
+        <DrawerHeader>
+          <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
+          <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter>
+          <Button
+            variant="destructive"
+            onClick={handleLeaveRoom}
+            aria-label="Confirm leaving room"
+          >
+            Leave
+          </Button>
+          <DrawerClose asChild>
+            <Button
+              variant="secondary"
+              onClick={closeDialog}
+              aria-label="Cancel leaving room"
+            >
+              Cancel
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+});
 
 LeaveDialog.displayName = 'LeaveDialog';
 

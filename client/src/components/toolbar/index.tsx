@@ -230,7 +230,7 @@ const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
       />
       <SaveToGithubDialog ref={saveToGithubDialogRef} editor={editor} />
       <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
-      <LeaveDialog ref={leaveDialogRef} roomId={roomId} />
+      <LeaveDialog ref={leaveDialogRef} />
       <AboutDialog ref={aboutDialogRef} />
     </>
   );

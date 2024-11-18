@@ -20,15 +20,14 @@ const allowedOrigins = [
 ];
 
 const app = App();
+
 const io = new Server({
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
-
 io.attachApp(app);
-
 io.engine.on('connection', (rawSocket) => {
   rawSocket.request = null;
 });
@@ -51,38 +50,30 @@ app.get('/', (res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on(RoomServiceMsg.CREATE, async (name) =>
+  socket.on(RoomServiceMsg.CREATE, async (name: string) =>
     roomService.create(socket, name),
   );
-  socket.on(RoomServiceMsg.JOIN, async (roomID, name) =>
+  socket.on(RoomServiceMsg.JOIN, async (roomID: string, name: string) =>
     roomService.join(socket, io, roomID, name),
   );
-  socket.on(RoomServiceMsg.LEAVE, async (roomID) =>
-    roomService.leave(socket, io, roomID),
-  );
-  socket.on(UserServiceMsg.DISC, async () => userService.disconnect(socket));
+  socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket));
   socket.on(RoomServiceMsg.GET_USERS, async () => {
     roomService.getUsersInRoom(socket, io);
   });
   socket.on(CodeServiceMsg.GET_CODE, async () => {
     codeService.syncCode(socket, io);
   });
-  socket.on(CodeServiceMsg.CODE_TX, async (op: EditOp) => {
-    codeService.updateCode(socket, op);
-  });
-  socket.on(UserServiceMsg.CURSOR_TX, async (cursor: Cursor) => {
-    userService.updateCursor(socket, cursor);
-  });
-  socket.on(CodeServiceMsg.GET_LANG, async () => {
-    codeService.syncLang(socket, io);
-  });
-  socket.on(CodeServiceMsg.LANG_TX, async (langID: string) => {
-    codeService.updateLang(socket, langID);
-  });
-  socket.on('disconnecting', () => {
-    const roomID = roomService.getUserRoom(socket);
-    if (roomID) {
-      roomService.leave(socket, io, roomID);
-    }
-  });
+  socket.on(CodeServiceMsg.CODE_TX, async (op: EditOp) =>
+    codeService.updateCode(socket, op),
+  );
+  socket.on(UserServiceMsg.CURSOR_TX, async (cursor: Cursor) =>
+    userService.updateCursor(socket, cursor),
+  );
+  socket.on(CodeServiceMsg.GET_LANG, async () =>
+    codeService.syncLang(socket, io),
+  );
+  socket.on(CodeServiceMsg.LANG_TX, async (langID: string) =>
+    codeService.updateLang(socket, langID),
+  );
+  socket.on('disconnecting', () => roomService.leave(socket));
 });

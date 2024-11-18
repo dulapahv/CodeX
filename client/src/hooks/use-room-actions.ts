@@ -2,12 +2,12 @@ import { useRouter } from 'next/navigation';
 
 import { leaveRoom } from '@/lib/utils';
 
-export const useRoomActions = (roomId: string) => {
+export const useRoomActions = () => {
   const router = useRouter();
 
   const handleLeaveRoom = () => {
     try {
-      leaveRoom(roomId);
+      leaveRoom();
       router.push('/');
     } catch (error) {
       console.error('Failed to leave room:', error);

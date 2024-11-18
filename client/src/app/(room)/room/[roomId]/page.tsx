@@ -60,9 +60,9 @@ export default function Room({ params }: RoomProps) {
   const [defaultCode, setDefaultCode] = useState<string | null>(null);
 
   const disconnect = useCallback(() => {
-    leaveRoom(params.roomId);
+    leaveRoom();
     socket.disconnect();
-  }, [params.roomId, socket]);
+  }, [socket]);
 
   useEffect(() => {
     if (!socket.connected) {
