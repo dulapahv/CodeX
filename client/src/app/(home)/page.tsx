@@ -14,6 +14,8 @@ import { AboutButton } from '@/components/about-button';
 import { RoomAccessForm } from '@/components/room-access-form';
 import { ThemeSwitch } from '@/components/theme-switch';
 
+export const runtime = 'edge';
+
 export default function Page() {
   return (
     <main
