@@ -27,8 +27,7 @@ import { CodeServiceMsg, UserServiceMsg } from '@common/types/message';
 import { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
-
-import type { StatusBarCursorPosition } from '../types';
+import type { StatusBarCursorPosition } from '@/components/status-bar';
 
 /**
  * Handle the Monaco editor before mounting.

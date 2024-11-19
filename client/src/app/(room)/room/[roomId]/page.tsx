@@ -35,11 +35,21 @@ import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { leaveRoom } from '@/lib/utils';
 import { LeaveButton } from '@/components/leave-button';
+import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
+import {
+  StatusBar,
+  type StatusBarCursorPosition,
+} from '@/components/status-bar';
 import { Toolbar } from '@/components/toolbar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
 import { UserList } from '@/components/user-list';
 
 interface RoomProps {
@@ -55,9 +65,17 @@ export default function Room({ params }: RoomProps) {
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
+    {
+      line: 1,
+      column: 1,
+      selected: 0,
+    },
+  );
 
   const [users, setUsers] = useState<User[]>([]);
-  const [defaultCode, setDefaultCode] = useState<string | null>(null);
+  const [defaultCode, setDefaultCode] = useState<string | null>(''); // ! CHANGE BACK TO NULL
+  const [mdContent, setMdContent] = useState<string | null>(null);
 
   const disconnect = useCallback(() => {
     leaveRoom();
@@ -65,9 +83,9 @@ export default function Room({ params }: RoomProps) {
   }, [socket]);
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket.connected) { // ! UNCOMMENT
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
@@ -86,6 +104,12 @@ export default function Room({ params }: RoomProps) {
       setDefaultCode(code);
     });
 
+    // Request markdown content and listen for updates
+    socket.emit(RoomServiceMsg.GET_MD);
+    socket.on(RoomServiceMsg.MD_RX, (md: string) => {
+      setMdContent(md);
+    });
+
     window.addEventListener('popstate', disconnect);
 
     return () => {
@@ -93,6 +117,7 @@ export default function Room({ params }: RoomProps) {
       socket.off(RoomServiceMsg.UPDATE_USERS);
       socket.off(CodeServiceMsg.RECEIVE_CODE);
       socket.off(CodeServiceMsg.LANG_RX);
+      socket.off(RoomServiceMsg.MD_RX);
       userMap.clear();
     };
   }, [disconnect, params.roomId, router, socket]);
@@ -127,18 +152,33 @@ export default function Room({ params }: RoomProps) {
           </div>
         )}
       </div>
-      {defaultCode !== null ? (
-        <div
-          className="relative h-[calc(100%-36px)]"
-          role="region"
-          aria-label="Code Editor"
-        >
-          <MonacoEditor
-            monacoRef={setMonaco}
-            editorRef={setEditor}
-            defaultCode={defaultCode}
-          />
-        </div>
+      {defaultCode !== null && mdContent !== null ? (
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel
+            className="animate-fade-in-left h-[calc(100%-24px)] [&>div]:h-full"
+            role="region"
+            aria-label="Notepad"
+            collapsible
+            minSize={10}
+          >
+            <MarkdownEditor markdown={mdContent} />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel
+            className="h-[calc(100%-24px)] animate-fade-in"
+            role="region"
+            aria-label="Code Editor"
+            defaultSize={75}
+            minSize={10}
+          >
+            <MonacoEditor
+              monacoRef={setMonaco}
+              editorRef={setEditor}
+              cursorPosition={setCursorPosition}
+              defaultCode={defaultCode}
+            />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       ) : (
         <div
           className="fixed left-0 top-0 flex size-full items-center justify-center p-2"
@@ -153,6 +193,13 @@ export default function Room({ params }: RoomProps) {
             </AlertDescription>
           </Alert>
         </div>
+      )}
+      {monaco && editor && (
+        <StatusBar
+          monaco={monaco}
+          editor={editor}
+          cursorPosition={cursorPosition}
+        />
       )}
     </main>
   );

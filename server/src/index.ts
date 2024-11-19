@@ -75,5 +75,11 @@ io.on('connection', (socket) => {
   socket.on(CodeServiceMsg.LANG_TX, async (langID: string) =>
     codeService.updateLang(socket, langID),
   );
+  socket.on(RoomServiceMsg.GET_MD, async () => {
+    roomService.syncNote(socket, io);
+  });
+  socket.on(RoomServiceMsg.MD_TX, async (note: string) =>
+    roomService.updateNote(socket, note),
+  );
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });

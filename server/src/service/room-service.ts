@@ -4,11 +4,13 @@ import { RoomServiceMsg } from '../../../common/types/message';
 import { generateRoomID } from '../utils/generate-room-id';
 import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
-import * as roomService from './room-service';
 import * as userService from './user-service';
 
 // Cache for room users to reduce repeated lookups
 const roomUsersCache = new Map<string, Record<string, string>>();
+
+// Maps note to room
+const roomNotes = new Map<string, string>();
 
 /**
  * Get the room ID that a user is currently in - O(1) operation
@@ -152,4 +154,26 @@ export const getUsersInRoom = (
  */
 export const cleanupRoomCache = (roomID: string): void => {
   roomUsersCache.delete(roomID);
+};
+
+/**
+ * Get the note for a room
+ */
+export const syncNote = (socket: Socket, io: Server): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  const note = roomNotes.get(roomID) || '';
+  io.to(socket.id).emit(RoomServiceMsg.MD_RX, note);
+};
+
+/**
+ * Update the note for a room
+ */
+export const updateNote = (socket: Socket, note: string): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  socket.to(roomID).emit(RoomServiceMsg.MD_RX, note);
+  roomNotes.set(roomID, note);
 };

@@ -1,3 +1,4 @@
+import typography from '@tailwindcss/typography';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -63,6 +64,7 @@ const config: Config = {
         'fade-in-top': 'fade-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
         'fade-in-bottom':
           'fade-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
+        'fade-in-left': 'fade-in-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
       },
       keyframes: {
         'scale-up-center': {
@@ -101,9 +103,19 @@ const config: Config = {
             opacity: '1',
           },
         },
+        'fade-in-left': {
+          '0%': {
+            transform: 'translateX(-25px)',
+            opacity: '0',
+          },
+          to: {
+            transform: 'translateX(0)',
+            opacity: '1',
+          },
+        },
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [typography, require('tailwindcss-animate')],
 };
 export default config;

@@ -9,23 +9,26 @@ export enum UserServiceMsg {
 }
 
 export enum RoomServiceMsg {
-  CREATE = 'E',
-  JOIN = 'F',
-  LEAVE = 'L',
-  CREATED = 'G',
-  JOINED = 'H',
-  NOT_FOUND = 'I',
-  UPDATE_USERS = 'J',
-  GET_USERS = 'K',
-  USER_LEFT = 'M',
+  CREATE = 'C',
+  JOIN = 'D',
+  LEAVE = 'E',
+  CREATED = 'F',
+  JOINED = 'G',
+  NOT_FOUND = 'H',
+  UPDATE_USERS = 'I',
+  GET_USERS = 'J',
+  USER_LEFT = 'K',
+  GET_MD = 'L',
+  MD_TX = 'M',
+  MD_RX = 'N',
 }
 
 export enum CodeServiceMsg {
-  GET_CODE = 'N',
-  RECEIVE_CODE = 'O',
-  CODE_TX = 'C',
-  CODE_RX = 'D',
-  GET_LANG = 'P',
-  LANG_TX = 'Q',
-  LANG_RX = 'R',
+  GET_CODE = 'O',
+  RECEIVE_CODE = 'P',
+  CODE_TX = 'Q',
+  CODE_RX = 'R',
+  GET_LANG = 'S',
+  LANG_TX = 'T',
+  LANG_RX = 'U',
 }

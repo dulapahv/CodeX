@@ -26,7 +26,14 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { memo, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import Editor, { type Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useTheme } from 'next-themes';
@@ -39,36 +46,31 @@ import {
 import { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
+import type { StatusBarCursorPosition } from '@/components/status-bar';
 
 import { LoadingCard } from './components/loading-card';
-import { StatusBar } from './components/status-bar';
 import * as codeService from './service/code-service';
 import * as cursorService from './service/cursor-service';
 import * as editorService from './service/editor-service';
-import type { StatusBarCursorPosition } from './types';
 
 interface MonacoEditorProps {
   monacoRef: (monaco: Monaco) => void;
   editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
   defaultCode?: string;
 }
 
 const MonacoEditor = memo(function MonacoEditor({
   monacoRef,
   editorRef,
+  cursorPosition,
   defaultCode,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
   const socket = getSocket();
 
   const [theme, setTheme] = useState<string>('vs-dark');
-  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
-    {
-      line: 1,
-      column: 1,
-      selected: 0,
-    },
-  );
+
   const [isMonacoReady, setIsMonacoReady] = useState(false);
 
   const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
@@ -165,7 +167,7 @@ const MonacoEditor = memo(function MonacoEditor({
       editor,
       monaco,
       disposablesRef,
-      setCursorPosition,
+      cursorPosition,
       defaultCode,
     );
 
@@ -174,26 +176,17 @@ const MonacoEditor = memo(function MonacoEditor({
   };
 
   return (
-    <>
-      <div className="h-[calc(100%-24px)]">
-        <Editor
-          defaultLanguage="python"
-          theme={theme}
-          loading={<LoadingCard />}
-          beforeMount={editorService.handleBeforeMount}
-          onMount={handleEditorMount}
-          onChange={(
-            value: string | undefined,
-            ev: monaco.editor.IModelContentChangedEvent,
-          ) => editorService.handleOnChange(value, ev, skipUpdateRef)}
-        />
-      </div>
-      <StatusBar
-        monaco={monacoInstanceRef.current}
-        editor={editorInstanceRef.current}
-        cursorPosition={cursorPosition}
-      />
-    </>
+    <Editor
+      defaultLanguage="python"
+      theme={theme}
+      loading={<LoadingCard />}
+      beforeMount={editorService.handleBeforeMount}
+      onMount={handleEditorMount}
+      onChange={(
+        value: string | undefined,
+        ev: monaco.editor.IModelContentChangedEvent,
+      ) => editorService.handleOnChange(value, ev, skipUpdateRef)}
+    />
   );
 });
 

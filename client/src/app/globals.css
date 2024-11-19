@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('@radix-ui/colors/tomato-dark.css');
+@import url('@radix-ui/colors/mauve-dark.css');
+
+::-webkit-scrollbar {
+  @apply size-2;
+}
+/* Scrollbar track */
+::-webkit-scrollbar-track-piece {
+  @apply rounded-full bg-[#dddddd] dark:bg-[#333333];
+}
+/* Scrollbar handle */
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-[#5d73a5];
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -25,7 +40,7 @@
   }
 }
 
-@layer base {
+/*
   :root {
     --background: 341 37% 95%;
     --foreground: 341 5% 10%;
@@ -70,7 +85,9 @@
     --ring: 341 95.4% 66.1%;
     --radius: 0.5rem;
   }
+*/
 
+@layer base {
   :root {
     --background: 219 37% 95%;
     --foreground: 219 5% 10%;
@@ -118,6 +135,52 @@
     --input: 219 30% 50%;
     --ring: 219 93% 60%;
     --radius: 0.5rem;
+  }
+  .dark-editor {
+    --accentBase: var(--tomato-1);
+    --accentBgSubtle: var(--tomato-2);
+    --accentBg: var(--tomato-3);
+    --accentBgHover: var(--tomato-4);
+    --accentBgActive: var(--tomato-5);
+    --accentLine: var(--tomato-6);
+    --accentBorder: var(--tomato-7);
+    --accentBorderHover: var(--tomato-8);
+    --accentSolid: var(--tomato-9);
+    --accentSolidHover: var(--tomato-10);
+    --accentText: var(--tomato-11);
+    --accentTextContrast: var(--tomato-12);
+
+    --baseBase: var(--mauve-1);
+    --baseBgSubtle: var(--mauve-2);
+    --baseBg: var(--mauve-3);
+    --baseBgHover: var(--mauve-4);
+    --baseBgActive: var(--mauve-5);
+    --baseLine: var(--mauve-6);
+    --baseBorder: var(--mauve-7);
+    --baseBorderHover: var(--mauve-8);
+    --baseSolid: var(--mauve-9);
+    --baseSolidHover: var(--mauve-10);
+    --baseText: var(--mauve-11);
+    --baseTextContrast: var(--mauve-12);
+
+    --admonitionTipBg: var(--cyan4);
+    --admonitionTipBorder: var(--cyan8);
+
+    --admonitionInfoBg: var(--grass4);
+    --admonitionInfoBorder: var(--grass8);
+
+    --admonitionCautionBg: var(--amber4);
+    --admonitionCautionBorder: var(--amber8);
+
+    --admonitionDangerBg: var(--red4);
+    --admonitionDangerBorder: var(--red8);
+
+    --admonitionNoteBg: var(--mauve-4);
+    --admonitionNoteBorder: var(--mauve-8);
+
+    color: var(--baseText);
+    --basePageBg: black;
+    background: var(--basePageBg);
   }
 }
 
