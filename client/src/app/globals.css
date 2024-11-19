@@ -24,6 +24,8 @@
   --toolbar-bg-primary: #2678ca;
   --toolbar-bg-secondary: #3c3c3c;
   --toolbar-foreground: #fff;
+  --toolbar-accent: #2678ca;
+  --toolbar-text-accent: #fff;
 }
 
 @media (prefers-color-scheme: dark) {

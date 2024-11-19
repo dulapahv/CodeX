@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
 
 export async function POST(request: Request) {
@@ -11,13 +13,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Code is required' }, { status: 400 });
     }
 
+    if (!body.language) {
+      return NextResponse.json(
+        { error: 'Language is required' },
+        { status: 400 },
+      );
+    }
+
     const response = await fetch(PISTON_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        language: 'javascript',
+        language: body.language.toLowerCase(),
         version: '*',
         files: [{ content: body.code }],
         stdin: '',

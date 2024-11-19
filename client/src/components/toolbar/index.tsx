@@ -38,10 +38,9 @@ import { getOS, openLocal, saveLocal } from './utils';
 interface ToolbarProps {
   monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
-  roomId: string;
 }
 
-const Toolbar = ({ monaco, editor, roomId }: ToolbarProps) => {
+const Toolbar = ({ monaco, editor }: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const [miniMap, setMiniMap] = useState(false);

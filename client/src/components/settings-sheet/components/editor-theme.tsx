@@ -54,6 +54,14 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
           '--toolbar-foreground',
           '#fff',
         );
+        document.documentElement.style.setProperty(
+          '--toolbar-accent',
+          '#2678ca',
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-text-accent',
+          '#fff',
+        );
       } else {
         const themeData = require(`monaco-themes/themes/${value}.json`);
         document.documentElement.style.setProperty(
@@ -67,6 +75,14 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
         document.documentElement.style.setProperty(
           '--toolbar-foreground',
           themeData.colors['editor.foreground'],
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-accent',
+          themeData.colors['editorCursor.foreground'],
+        );
+        document.documentElement.style.setProperty(
+          '--toolbar-text-accent',
+          themeData.colors['editor.background'],
         );
       }
 

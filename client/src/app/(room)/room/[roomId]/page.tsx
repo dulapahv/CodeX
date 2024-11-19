@@ -22,7 +22,14 @@
 
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
@@ -37,12 +44,15 @@ import { leaveRoom } from '@/lib/utils';
 import { LeaveButton } from '@/components/leave-button';
 import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
+import { RunButton } from '@/components/run-button';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
 import {
   StatusBar,
   type StatusBarCursorPosition,
 } from '@/components/status-bar';
+import { Terminal } from '@/components/terminal';
+import type { ExecutionResult } from '@/components/terminal/types';
 import { Toolbar } from '@/components/toolbar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
@@ -58,6 +68,79 @@ interface RoomProps {
   };
 }
 
+const MemoizedToolbar = memo(function MemoizedToolbar({
+  monaco,
+  editor,
+  roomId,
+  users,
+  setOutput,
+}: {
+  monaco: Monaco;
+  editor: monaco.editor.IStandaloneCodeEditor;
+  roomId: string;
+  users: User[];
+  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
+}) {
+  return (
+    <div
+      className="flex items-center justify-between gap-x-2 p-1"
+      style={{ backgroundColor: 'var(--toolbar-bg-secondary)' }}
+    >
+      <div
+        className="animate-fade-in-top"
+        style={{ color: 'var(--toolbar-foreground)' }}
+        role="group"
+        aria-label="Editor Toolbar"
+      >
+        <Toolbar monaco={monaco} editor={editor} />
+      </div>
+      <RunButton monaco={monaco} editor={editor} output={setOutput} />
+      <nav aria-label="Collaboration Tools">
+        <div className="flex items-center gap-x-2">
+          <UserList users={users} />
+          <ShareButton roomId={roomId} />
+          <SettingsButton monaco={monaco} editor={editor} />
+          <LeaveButton roomId={roomId} />
+        </div>
+      </nav>
+    </div>
+  );
+});
+
+const MemoizedMarkdownEditor = memo(function MemoizedMarkdownEditor({
+  markdown,
+}: {
+  markdown: string;
+}) {
+  return <MarkdownEditor markdown={markdown} />;
+});
+
+const MemoizedTerminal = memo(function MemoizedTerminal({
+  results,
+}: {
+  results: ExecutionResult[];
+}) {
+  return <Terminal results={results} />;
+});
+
+const MemoizedStatusBar = memo(function MemoizedStatusBar({
+  monaco,
+  editor,
+  cursorPosition,
+}: {
+  monaco: Monaco;
+  editor: monaco.editor.IStandaloneCodeEditor;
+  cursorPosition: StatusBarCursorPosition;
+}) {
+  return (
+    <StatusBar
+      monaco={monaco}
+      editor={editor}
+      cursorPosition={cursorPosition}
+    />
+  );
+});
+
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
   const socket = getSocket();
@@ -72,43 +155,44 @@ export default function Room({ params }: RoomProps) {
       selected: 0,
     },
   );
+  const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const [users, setUsers] = useState<User[]>([]);
   const [defaultCode, setDefaultCode] = useState<string | null>(''); // ! CHANGE BACK TO NULL
-  const [mdContent, setMdContent] = useState<string | null>(null);
+  const [mdContent, setMdContent] = useState<string | null>(''); // ! CHANGE BACK TO NULL
 
   const disconnect = useCallback(() => {
     leaveRoom();
     socket.disconnect();
   }, [socket]);
 
+  // Memoized socket event handlers
+  const handleUsersUpdate = useCallback((usersDict: Record<string, string>) => {
+    userMap.clear();
+    userMap.addBulk(usersDict);
+    setUsers(userMap.getAll());
+  }, []);
+
+  const handleCodeReceive = useCallback((code: string) => {
+    setDefaultCode(code);
+  }, []);
+
+  const handleMarkdownReceive = useCallback((md: string) => {
+    setMdContent(md);
+  }, []);
+
   useEffect(() => {
-    // if (!socket.connected) { // ! UNCOMMENT
+    // if (!socket.connected) {
     //   router.replace(`/?room=${params.roomId}`);
     // }
 
-    // Request users and listen for updates
     socket.emit(RoomServiceMsg.GET_USERS);
-    socket.on(
-      RoomServiceMsg.UPDATE_USERS,
-      (usersDict: Record<string, string>) => {
-        userMap.clear();
-        userMap.addBulk(usersDict);
-        setUsers(userMap.getAll());
-      },
-    );
-
-    // Request code and listen for updates
     socket.emit(CodeServiceMsg.GET_CODE);
-    socket.on(CodeServiceMsg.RECEIVE_CODE, (code: string) => {
-      setDefaultCode(code);
-    });
-
-    // Request markdown content and listen for updates
     socket.emit(RoomServiceMsg.GET_MD);
-    socket.on(RoomServiceMsg.MD_RX, (md: string) => {
-      setMdContent(md);
-    });
+
+    socket.on(RoomServiceMsg.UPDATE_USERS, handleUsersUpdate);
+    socket.on(CodeServiceMsg.RECEIVE_CODE, handleCodeReceive);
+    socket.on(RoomServiceMsg.MD_RX, handleMarkdownReceive);
 
     window.addEventListener('popstate', disconnect);
 
@@ -120,7 +204,27 @@ export default function Room({ params }: RoomProps) {
       socket.off(RoomServiceMsg.MD_RX);
       userMap.clear();
     };
-  }, [disconnect, params.roomId, router, socket]);
+  }, [
+    disconnect,
+    params.roomId,
+    router,
+    socket,
+    handleUsersUpdate,
+    handleCodeReceive,
+    handleMarkdownReceive,
+  ]);
+
+  // Memoized editor setup callback
+  const handleMonacoSetup = useCallback((monacoInstance: Monaco) => {
+    setMonaco(monacoInstance);
+  }, []);
+
+  const handleEditorSetup = useCallback(
+    (editorInstance: monaco.editor.IStandaloneCodeEditor) => {
+      setEditor(editorInstance);
+    },
+    [],
+  );
 
   return (
     <main
@@ -129,27 +233,13 @@ export default function Room({ params }: RoomProps) {
     >
       <div className="h-9" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
-          <div
-            className="flex items-center gap-x-2 p-1"
-            style={{ backgroundColor: 'var(--toolbar-bg-secondary)' }}
-          >
-            <div
-              className="grow animate-fade-in-top"
-              style={{ color: 'var(--toolbar-foreground)' }}
-              role="group"
-              aria-label="Editor Toolbar"
-            >
-              <Toolbar monaco={monaco} editor={editor} roomId={params.roomId} />
-            </div>
-            <nav aria-label="Collaboration Tools">
-              <div className="flex items-center gap-x-2">
-                <UserList users={users} />
-                <ShareButton roomId={params.roomId} />
-                <SettingsButton monaco={monaco} editor={editor} />
-                <LeaveButton roomId={params.roomId} />
-              </div>
-            </nav>
-          </div>
+          <MemoizedToolbar
+            monaco={monaco}
+            editor={editor}
+            roomId={params.roomId}
+            setOutput={setOutput}
+            users={users}
+          />
         )}
       </div>
       {defaultCode !== null && mdContent !== null ? (
@@ -161,22 +251,39 @@ export default function Room({ params }: RoomProps) {
             collapsible
             minSize={10}
           >
-            <MarkdownEditor markdown={mdContent} />
+            <MemoizedMarkdownEditor markdown={mdContent} />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel
-            className="h-[calc(100%-24px)] animate-fade-in"
-            role="region"
-            aria-label="Code Editor"
-            defaultSize={75}
-            minSize={10}
-          >
-            <MonacoEditor
-              monacoRef={setMonaco}
-              editorRef={setEditor}
-              cursorPosition={setCursorPosition}
-              defaultCode={defaultCode}
-            />
+          <ResizablePanel defaultSize={75}>
+            <ResizablePanelGroup
+              direction="vertical"
+              className="!h-[calc(100%-24px)] overflow-clip"
+            >
+              <ResizablePanel
+                className="animate-fade-in"
+                role="region"
+                aria-label="Code Editor"
+                defaultSize={75}
+                minSize={10}
+              >
+                <MonacoEditor
+                  monacoRef={handleMonacoSetup}
+                  editorRef={handleEditorSetup}
+                  cursorPosition={setCursorPosition}
+                  defaultCode={defaultCode}
+                />
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel
+                className="animate-fade-in-bottom"
+                role="region"
+                aria-label="Terminal"
+                collapsible
+                minSize={10}
+              >
+                <MemoizedTerminal results={output} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
@@ -195,7 +302,7 @@ export default function Room({ params }: RoomProps) {
         </div>
       )}
       {monaco && editor && (
-        <StatusBar
+        <MemoizedStatusBar
           monaco={monaco}
           editor={editor}
           cursorPosition={cursorPosition}
