@@ -158,8 +158,8 @@ export default function Room({ params }: RoomProps) {
   const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [defaultCode, setDefaultCode] = useState<string | null>(''); // ! CHANGE BACK TO NULL
-  const [mdContent, setMdContent] = useState<string | null>(''); // ! CHANGE BACK TO NULL
+  const [defaultCode, setDefaultCode] = useState<string | null>(null); // ! CHANGE BACK TO NULL
+  const [mdContent, setMdContent] = useState<string | null>(null); // ! CHANGE BACK TO NULL
 
   const disconnect = useCallback(() => {
     leaveRoom();
@@ -182,9 +182,9 @@ export default function Room({ params }: RoomProps) {
   }, []);
 
   useEffect(() => {
-    // if (!socket.connected) {
-    //   router.replace(`/?room=${params.roomId}`);
-    // }
+    if (!socket.connected) {
+      router.replace(`/?room=${params.roomId}`);
+    }
 
     socket.emit(RoomServiceMsg.GET_USERS);
     socket.emit(CodeServiceMsg.GET_CODE);
