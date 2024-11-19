@@ -4,7 +4,7 @@ export const RunButton = () => {
   return (
     <Button
       onClick={() => {
-        console.log('Run code');
+        console.log('Run codes');
       }}
     >
       Run
