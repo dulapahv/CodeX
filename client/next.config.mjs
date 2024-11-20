@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  experimental: {
+    optimizePackageImports: ['@monaco-editor/react', '@mdxeditor/editor'],
+  },
+};
 
 export default nextConfig;
