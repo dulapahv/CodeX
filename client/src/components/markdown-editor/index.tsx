@@ -3,12 +3,6 @@
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
-// Create a loading placeholder component
-const EditorSkeleton = () => (
-  <div className="h-[300px] w-full animate-pulse rounded-md bg-muted" />
-);
-
-// Dynamic import the actual editor component
 const DynamicMarkdownEditor = dynamic(
   () => import('./markdown-editor-core').then((mod) => mod.MarkdownEditorCore),
   {
@@ -17,9 +11,13 @@ const DynamicMarkdownEditor = dynamic(
   },
 );
 
+const EditorSkeleton = () => (
+  <div className="size-full bg-[color:var(--panel-background)]" />
+);
+
 export const MarkdownEditor = ({ markdown }: { markdown: string }) => {
   return (
-    <Suspense fallback={<EditorSkeleton />}>
+    <Suspense fallback={null}>
       <DynamicMarkdownEditor markdown={markdown} />
     </Suspense>
   );

@@ -152,11 +152,11 @@ export default function Room({ params }: RoomProps) {
       selected: 0,
     },
   );
-  const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const [users, setUsers] = useState<User[]>([]);
   const [defaultCode, setDefaultCode] = useState<string | null>(null); // ! CHANGE BACK TO NULL
   const [mdContent, setMdContent] = useState<string | null>(null); // ! CHANGE BACK TO NULL
+  const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const disconnect = useCallback(() => {
     leaveRoom();

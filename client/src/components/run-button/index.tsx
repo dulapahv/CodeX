@@ -113,16 +113,16 @@ export const RunButton = ({
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
 
+      const resultWithTimestamp: ExecutionResult = {
+        ...result,
+        timestamp: endTime,
+        executionTime,
+        type: ExecutionResultType.OUTPUT,
+      };
       setOutput((currentOutput) => {
-        const resultWithTimestamp: ExecutionResult = {
-          ...result,
-          timestamp: endTime,
-          executionTime,
-          type: ExecutionResultType.OUTPUT,
-        };
-        socket.emit(RoomServiceMsg.TERM_TX, resultWithTimestamp);
         return [...currentOutput, resultWithTimestamp];
       });
+      socket.emit(RoomServiceMsg.TERM_TX, resultWithTimestamp);
     } catch (error) {
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
