@@ -34,13 +34,14 @@ import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
+import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { User } from '@common/types/user';
 
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
-import { leaveRoom } from '@/lib/utils';
+import { cn, leaveRoom } from '@/lib/utils';
 import { LeaveButton } from '@/components/leave-button';
 import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
@@ -82,13 +83,9 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
 }) {
   return (
-    <div
-      className="flex items-center justify-between gap-x-2 p-1"
-      style={{ backgroundColor: 'var(--toolbar-bg-secondary)' }}
-    >
+    <div className="flex items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
       <div
         className="animate-fade-in-top"
-        style={{ color: 'var(--toolbar-foreground)' }}
         role="group"
         aria-label="Editor Toolbar"
       >
@@ -158,8 +155,8 @@ export default function Room({ params }: RoomProps) {
   const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [defaultCode, setDefaultCode] = useState<string | null>(null); // ! CHANGE BACK TO NULL
-  const [mdContent, setMdContent] = useState<string | null>(null); // ! CHANGE BACK TO NULL
+  const [defaultCode, setDefaultCode] = useState<string | null>(''); // ! CHANGE BACK TO NULL
+  const [mdContent, setMdContent] = useState<string | null>(''); // ! CHANGE BACK TO NULL
 
   const disconnect = useCallback(() => {
     leaveRoom();
@@ -182,9 +179,9 @@ export default function Room({ params }: RoomProps) {
   }, []);
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
-    }
+    // if (!socket.connected) {
+    //   router.replace(`/?room=${params.roomId}`);
+    // }
 
     socket.emit(RoomServiceMsg.GET_USERS);
     socket.emit(CodeServiceMsg.GET_CODE);
@@ -228,7 +225,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main
-      className="flex h-full min-w-[425px] flex-col overflow-clip"
+      className="flex h-full min-w-[480px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
       <div className="h-9" role="toolbar" aria-label="Editor Controls">
@@ -245,16 +242,26 @@ export default function Room({ params }: RoomProps) {
       {defaultCode !== null && mdContent !== null ? (
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
-            className="animate-fade-in-left h-[calc(100%-24px)] [&>div]:h-full"
+            className={cn(
+              'h-[calc(100%-24px)] animate-fade-in-left border-t-[1px] border-muted-foreground [&>div]:h-full',
+              (!monaco || !editor) && 'hidden',
+            )}
             role="region"
             aria-label="Notepad"
             collapsible
             minSize={10}
+            defaultSize={25}
           >
             <MemoizedMarkdownEditor markdown={mdContent} />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={75}>
+          <ResizableHandle
+            withHandle={isMobile}
+            className={cn(
+              'bg-muted-foreground',
+              (!monaco || !editor) && 'hidden',
+            )}
+          />
+          <ResizablePanel defaultSize={75} minSize={10}>
             <ResizablePanelGroup
               direction="vertical"
               className="!h-[calc(100%-24px)] overflow-clip"
@@ -273,13 +280,23 @@ export default function Room({ params }: RoomProps) {
                   defaultCode={defaultCode}
                 />
               </ResizablePanel>
-              <ResizableHandle />
+              <ResizableHandle
+                withHandle={isMobile}
+                className={cn(
+                  'bg-muted-foreground',
+                  (!monaco || !editor) && 'hidden',
+                )}
+              />
               <ResizablePanel
-                className="animate-fade-in-bottom"
+                className={cn(
+                  'animate-fade-in-bottom',
+                  (!monaco || !editor) && 'hidden',
+                )}
                 role="region"
                 aria-label="Terminal"
                 collapsible
                 minSize={10}
+                defaultSize={25}
               >
                 <MemoizedTerminal results={output} />
               </ResizablePanel>

@@ -25,7 +25,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { Languages } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
@@ -72,21 +72,41 @@ const StatusBar = memo(function StatusBar({
   cursorPosition,
   className,
 }: StatusBarProps) {
+  const [editorTheme, setEditorTheme] = useState<string | null>(() => {
+    return localStorage.getItem('editorTheme');
+  });
+
+  useEffect(() => {
+    const updateTheme = (theme?: string | null) => {
+      const newTheme = theme ?? localStorage.getItem('editorTheme');
+      setEditorTheme(newTheme);
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'editorTheme') {
+        updateTheme(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+  }, []);
+
   if (!monaco || !editor) return null;
 
   return (
     <section
       className={cn(
-        'absolute bottom-0 h-6 w-full animate-fade-in py-1',
+        'absolute bottom-0 h-6 w-full animate-fade-in bg-[color:var(--toolbar-bg-primary)] py-1',
         className,
       )}
-      style={{ backgroundColor: 'var(--toolbar-bg-primary)' }}
       role="status"
       aria-label="Editor status bar"
     >
       <div
-        className="flex items-center justify-end gap-x-2 px-2 text-xs"
-        style={{ color: 'var(--toolbar-foreground)' }}
+        className={cn(
+          'flex items-center justify-end gap-x-2 px-2 text-xs',
+          editorTheme === 'light' && 'text-white',
+        )}
       >
         <div className="flex items-center">
           <MemoizedLanguageLabel />

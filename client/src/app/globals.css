@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('@radix-ui/colors/tomato-dark.css');
 @import url('@radix-ui/colors/mauve-dark.css');
 
 ::-webkit-scrollbar {
@@ -25,7 +24,8 @@
   --toolbar-bg-secondary: #3c3c3c;
   --toolbar-foreground: #fff;
   --toolbar-accent: #2678ca;
-  --toolbar-text-accent: #fff;
+  --panel-text-accent: #fff;
+  --panel-background: #1e1e1e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -139,18 +139,18 @@
     --radius: 0.5rem;
   }
   .dark-editor {
-    --accentBase: var(--tomato-1);
-    --accentBgSubtle: var(--tomato-2);
-    --accentBg: var(--tomato-3);
-    --accentBgHover: var(--tomato-4);
-    --accentBgActive: var(--tomato-5);
-    --accentLine: var(--tomato-6);
-    --accentBorder: var(--tomato-7);
-    --accentBorderHover: var(--tomato-8);
-    --accentSolid: var(--tomato-9);
-    --accentSolidHover: var(--tomato-10);
-    --accentText: var(--tomato-11);
-    --accentTextContrast: var(--tomato-12);
+    --accentBase: #0D1520;
+    --accentBgSubtle: #111927;
+    --accentBg: #0D2847;
+    --accentBgHover: #003362;
+    --accentBgActive: #004074;
+    --accentLine: #104D87;
+    --accentBorder: #205D9E;
+    --accentBorderHover: #2870BD;
+    --accentSolid: #0090FF;
+    --accentSolidHover: #3B9EFF;
+    --accentText: #70B8FF;
+    --accentTextContrast: #C2E6FF;
 
     --baseBase: var(--mauve-1);
     --baseBgSubtle: var(--mauve-2);
@@ -165,23 +165,23 @@
     --baseText: var(--mauve-11);
     --baseTextContrast: var(--mauve-12);
 
-    --admonitionTipBg: var(--cyan4);
-    --admonitionTipBorder: var(--cyan8);
+    --admonitionTipBg: #003848;
+    --admonitionTipBorder: #11809c;
 
-    --admonitionInfoBg: var(--grass4);
-    --admonitionInfoBorder: var(--grass8);
+    --admonitionInfoBg: #1d3a24;
+    --admonitionInfoBorder: #3e7949;
 
-    --admonitionCautionBg: var(--amber4);
-    --admonitionCautionBorder: var(--amber8);
+    --admonitionCautionBg: #3f2700;
+    --admonitionCautionBorder: #8f6424;
 
-    --admonitionDangerBg: var(--red4);
-    --admonitionDangerBorder: var(--red8);
+    --admonitionDangerBg: #500f1c;
+    --admonitionDangerBorder: #b54548;
 
     --admonitionNoteBg: var(--mauve-4);
     --admonitionNoteBorder: var(--mauve-8);
 
-    color: var(--baseText);
-    --basePageBg: black;
+    color: var(--foreground);
+    --basePageBg: var(--panel-background);
     background: var(--basePageBg);
   }
 }

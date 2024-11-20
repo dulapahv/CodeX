@@ -5,8 +5,11 @@ import { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
-import { cn } from '@/lib/utils';
-import type { ExecutionResult } from '@/components/terminal/types';
+import { cn, parseError } from '@/lib/utils';
+import {
+  ExecutionResultType,
+  type ExecutionResult,
+} from '@/components/terminal/types';
 import { Button } from '@/components/ui/button';
 
 interface RunButtonProps {
@@ -27,12 +30,47 @@ export const RunButton = ({
   const executeCode = async () => {
     if (!monaco || !editor) return;
 
+    const startTime = new Date();
+    setIsRunning(true);
+
     try {
-      setIsRunning(true);
       const code = editor.getValue();
 
+      // Log the initial "Running..." message
+      output((currentOutput) => [
+        ...currentOutput,
+        {
+          language: 'system',
+          version: '1.0.0',
+          run: {
+            stdout: '🚀 Executing code...',
+            stderr: '',
+            code: 0,
+            signal: null,
+            output: '',
+          },
+          timestamp: startTime,
+          type: ExecutionResultType.INFO,
+        },
+      ]);
+
       if (!code.trim()) {
-        console.warn('No code to execute');
+        output((currentOutput) => [
+          ...currentOutput,
+          {
+            language: 'system',
+            version: '1.0.0',
+            run: {
+              stdout: '⚠️ No code to execute',
+              stderr: '',
+              code: 0,
+              signal: null,
+              output: '',
+            },
+            timestamp: new Date(),
+            type: ExecutionResultType.WARNING,
+          },
+        ]);
         return;
       }
 
@@ -58,17 +96,21 @@ export const RunButton = ({
       }
 
       const result: ExecutionResult = await response.json();
+      const endTime = new Date();
+      const executionTime = endTime.getTime() - startTime.getTime();
 
-      // Use functional update to ensure we're working with the latest state
       output((currentOutput) => {
-        const resultWithTimestamp = {
+        const resultWithTimestamp: ExecutionResult = {
           ...result,
-          timestamp: new Date(),
+          timestamp: endTime,
+          executionTime,
+          type: ExecutionResultType.OUTPUT,
         };
         return [...currentOutput, resultWithTimestamp];
       });
     } catch (error) {
-      console.error('Failed to execute code:', error);
+      const endTime = new Date();
+      const executionTime = endTime.getTime() - startTime.getTime();
 
       output((currentOutput) => [
         ...currentOutput,
@@ -77,10 +119,7 @@ export const RunButton = ({
           version: '1.0.0',
           run: {
             stdout: '',
-            stderr:
-              error instanceof Error
-                ? error.message
-                : 'An error occurred during execution',
+            stderr: parseError(error),
             code: 1,
             signal: null,
             output:
@@ -88,7 +127,9 @@ export const RunButton = ({
                 ? error.message
                 : 'An error occurred during execution',
           },
-          timestamp: new Date(),
+          timestamp: endTime,
+          executionTime,
+          type: ExecutionResultType.ERROR,
         },
       ]);
     } finally {
@@ -100,13 +141,9 @@ export const RunButton = ({
     <Button
       onClick={executeCode}
       className={cn(
-        'h-7 animate-fade-in-top rounded-sm px-2 py-0 disabled:!opacity-50',
+        'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
         className,
       )}
-      style={{
-        backgroundColor: 'var(--toolbar-accent)',
-        color: 'var(--toolbar-text-accent)',
-      }}
       disabled={isRunning || !editor}
       aria-busy={isRunning}
       aria-label={isRunning ? 'Running code' : 'Run code'}

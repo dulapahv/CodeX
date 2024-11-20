@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/sheet';
 import { loginWithGithub } from '@/utils/login-with-github';
 
-import { AppThemeSettings } from './components/app-theme';
 import { EditorThemeSettings } from './components/editor-theme';
 
 interface SettingsSheetRef {
@@ -153,11 +152,6 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 Login with GitHub
               </Button>
             )}
-            <Separator role="separator" />
-            <Label className="text-base" id="general-section">
-              General
-            </Label>
-            <AppThemeSettings aria-labelledby="general-section" />
             <Separator role="separator" />
             <Label className="text-base" id="editor-section">
               Editor

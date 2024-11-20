@@ -9,4 +9,13 @@ export interface ExecutionResult {
     output: string;
   };
   timestamp?: Date;
+  executionTime?: number;
+  type?: ExecutionResultType;
+}
+
+export enum ExecutionResultType {
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error',
+  OUTPUT = 'output',
 }

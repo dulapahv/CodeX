@@ -177,6 +177,7 @@ const MonacoEditor = memo(function MonacoEditor({
 
   return (
     <Editor
+      className="border-t-[1px] border-t-muted-foreground"
       defaultLanguage="python"
       theme={theme}
       loading={<LoadingCard />}

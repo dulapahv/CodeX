@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import {
+  AdmonitionDirectiveDescriptor,
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
   codeBlockPlugin,
@@ -10,9 +11,11 @@ import {
   CreateLink,
   diffSourcePlugin,
   DiffSourceToggleWrapper,
+  directivesPlugin,
   frontmatterPlugin,
   headingsPlugin,
   imagePlugin,
+  InsertAdmonition,
   InsertCodeBlock,
   InsertTable,
   InsertThematicBreak,
@@ -73,18 +76,17 @@ const MarkdownEditor = ({ markdown }: MarkdownEditorProps) => {
       markdown={markdown}
       autoFocus={false}
       trim={false}
-      placeholder="All participants can see this note..."
+      placeholder="All participants can edit this note..."
       className={cn(
-        'flex w-full flex-col !bg-background [&>*:nth-child(2)>div>div>div]:h-full [&>*:nth-child(2)>div>div]:h-full [&>*:nth-child(2)>div]:h-full [&>*:nth-child(2)]:size-full [&>*:nth-child(2)]:overflow-auto last:[&>div>div]:!ml-0 first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:rounded-none first:[&>div]:border-b-[1px] first:[&>div]:bg-accent',
-        resolvedTheme === 'dark' && 'dark-theme dark-editor',
+        'flex w-full flex-col !bg-[color:var(--panel-background)] [&>*:nth-child(2)>div>div>div]:h-full [&>*:nth-child(2)>div>div]:h-full [&>*:nth-child(2)>div]:h-full [&>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto last:[&>div>div]:!ml-0 first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:rounded-none first:[&>div]:!bg-[color:var(--toolbar-bg-secondary)]',
+        resolvedTheme === 'dark' && '!dark-editor !dark-theme',
       )}
       contentEditableClassName={cn(
         GeistSans.className,
-        'h-full max-w-none prose dark:prose-invert before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:rounded [&>span]:prose-code:bg-foreground/20',
+        `h-full max-w-none prose dark:prose-invert prose-li:!no-underline after:prose-li:!top-[8.5px] before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:rounded [&>span]:prose-code:bg-foreground/20`,
         `[&>span]:${GeistMono.className}`,
       )}
       plugins={[
-        diffSourcePlugin(),
         listsPlugin(),
         quotePlugin(),
         headingsPlugin(),
@@ -96,6 +98,13 @@ const MarkdownEditor = ({ markdown }: MarkdownEditorProps) => {
         frontmatterPlugin(),
         codeBlockPlugin({ defaultCodeBlockLanguage: '' }),
         markdownShortcutPlugin(),
+        directivesPlugin({
+          directiveDescriptors: [AdmonitionDirectiveDescriptor],
+        }),
+        diffSourcePlugin({
+          diffMarkdown: markdown,
+          viewMode: 'rich-text',
+        }),
         // https://codemirror.net/5/mode/
         codeMirrorPlugin({
           codeBlockLanguages: {
@@ -138,6 +147,7 @@ const MarkdownEditor = ({ markdown }: MarkdownEditorProps) => {
                 <InsertTable />
                 <InsertThematicBreak />
                 <InsertCodeBlock />
+                <InsertAdmonition />
                 <Separator />
               </DiffSourceToggleWrapper>
             </>
