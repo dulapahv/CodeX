@@ -37,6 +37,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import './globals.css';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: SITE_NAME,
   description: SITE_DESCRIPTION,

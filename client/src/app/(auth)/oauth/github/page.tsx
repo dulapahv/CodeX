@@ -23,8 +23,6 @@ import { LoaderCircle } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-export const runtime = 'edge';
-
 interface SearchParamsProps {
   status: string;
 }

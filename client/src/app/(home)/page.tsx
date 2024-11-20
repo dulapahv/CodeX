@@ -13,8 +13,6 @@
 import { AboutButton } from '@/components/about-button';
 import { RoomAccessForm } from '@/components/room-access-form';
 
-export const runtime = 'edge';
-
 export default function Page() {
   return (
     <main
