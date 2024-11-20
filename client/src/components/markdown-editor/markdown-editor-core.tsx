@@ -81,7 +81,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
       )}
       contentEditableClassName={cn(
         GeistSans.className,
-        `h-full max-w-none prose dark:prose-invert prose-li:!no-underline after:prose-li:!top-[8.5px] before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:rounded [&>span]:prose-code:bg-foreground/20`,
+        `h-full max-w-none prose dark:prose-invert prose-li:!no-underline after:prose-li:!top-[8.5px] before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20 prose-code:font-normal prose-code:text-base`,
         `[&>span]:${GeistMono.className}`,
       )}
       plugins={[
