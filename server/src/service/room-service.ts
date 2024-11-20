@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 
 import { RoomServiceMsg } from '../../../common/types/message';
+import { ExecutionResult } from '../../../common/types/terminal';
 import { generateRoomID } from '../utils/generate-room-id';
 import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
@@ -176,4 +177,21 @@ export const updateNote = (socket: Socket, note: string): void => {
 
   socket.to(roomID).emit(RoomServiceMsg.MD_RX, note);
   roomNotes.set(roomID, note);
+};
+
+export const updateExecuting = (socket: Socket, executing: boolean): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  socket.to(roomID).emit(RoomServiceMsg.EXEC_RX, executing);
+};
+
+/**
+ * Update the terminal for a room
+ */
+export const updateTerminal = (socket: Socket, data: ExecutionResult): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) return;
+
+  socket.to(roomID).emit(RoomServiceMsg.TERM_RX, data);
 };

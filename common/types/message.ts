@@ -21,14 +21,18 @@ export enum RoomServiceMsg {
   GET_MD = 'L',
   MD_TX = 'M',
   MD_RX = 'N',
+  TERM_TX = 'O',
+  TERM_RX = 'P',
+  EXEC_TX = 'Q',
+  EXEC_RX = 'R',
 }
 
 export enum CodeServiceMsg {
-  GET_CODE = 'O',
-  RECEIVE_CODE = 'P',
-  CODE_TX = 'Q',
-  CODE_RX = 'R',
-  GET_LANG = 'S',
-  LANG_TX = 'T',
-  LANG_RX = 'U',
+  GET_CODE = 'R',
+  RECEIVE_CODE = 'S',
+  CODE_TX = 'T',
+  CODE_RX = 'U',
+  GET_LANG = 'V',
+  LANG_TX = 'W',
+  LANG_RX = 'X',
 }

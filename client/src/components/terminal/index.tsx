@@ -1,34 +1,60 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GeistMono } from 'geist/font/mono';
+
+import {
+  ExecutionResultType,
+  type ExecutionResult,
+} from '@common/types/terminal';
 
 import { SITE_NAME } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
-import { ExecutionResultType, type ExecutionResult } from './types';
-
 interface TerminalProps {
   results: ExecutionResult[];
+  onResultsChange?: (results: ExecutionResult[]) => void;
 }
 
-const Terminal = ({ results }: TerminalProps) => {
+const Terminal = ({ results, onResultsChange }: TerminalProps) => {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const [processedResults, setProcessedResults] = useState<ExecutionResult[]>(
+    [],
+  );
+
+  // Keep track of processed result timestamps to prevent duplicates
+  const processedTimestamps = useRef(new Set<string>());
 
   useEffect(() => {
-    // Delay scroll to ensure content is rendered
+    // Filter out duplicates based on timestamp
+    const newResults = results.filter((result) => {
+      const timestamp = new Date(result.timestamp ?? Date.now())
+        .getTime()
+        .toString();
+      if (processedTimestamps.current.has(timestamp)) {
+        return false;
+      }
+      processedTimestamps.current.add(timestamp);
+      return true;
+    });
+
+    if (newResults.length > 0) {
+      setProcessedResults((prev) => [...prev, ...newResults]);
+    }
+  }, [results]);
+
+  useEffect(() => {
+    if (onResultsChange) {
+      onResultsChange(processedResults);
+    }
+  }, [processedResults, onResultsChange]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       if (terminalRef.current) {
-        terminalRef.current.scrollTop = 0;
+        terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Auto-scroll to bottom when new content is added
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-    }
-  }, [results]);
+  }, [processedResults]);
 
   const formatTimestamp = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
@@ -47,26 +73,29 @@ const Terminal = ({ results }: TerminalProps) => {
     return `${(ms / 1000).toFixed(2)}s`;
   };
 
-  const renderWelcome = () => (
-    <div className="mb-4 space-y-2">
-      <div className="text-green-500">
-        ✨ Welcome to {SITE_NAME}
-        {'\n'}
-        ------------------------------------
+  const renderWelcome = useCallback(
+    () => (
+      <div className="mb-4 space-y-2">
+        <div className="text-green-500">
+          ✨ Welcome to {SITE_NAME}
+          {'\n'}
+          ------------------------------------
+        </div>
+        <div>
+          Ready to execute your code. Output will appear here.
+          {'\n'}
+          {'\n'}
+          Type your code in the editor and click run to get started.
+          {'\n'}
+          To select language, click on the language dropdown in the bottom right
+          corner.
+        </div>
       </div>
-      <div>
-        Ready to execute your code. Output will appear here.
-        {'\n'}
-        {'\n'}
-        Type your code in the editor and click run to get started.
-        {'\n'}
-        To select language, click on the language dropdown in the bottom right
-        corner.
-      </div>
-    </div>
+    ),
+    [],
   );
 
-  const getMessageColor = (type?: ExecutionResultType) => {
+  const getMessageColor = useCallback((type?: ExecutionResultType) => {
     switch (type) {
       case ExecutionResultType.WARNING:
         return 'text-yellow-500';
@@ -77,61 +106,62 @@ const Terminal = ({ results }: TerminalProps) => {
       default:
         return '';
     }
-  };
+  }, []);
 
-  const renderOutput = (result: ExecutionResult) => {
-    const timestamp = result.timestamp || new Date();
-    // const hasError = result.run.stderr || result.run.code !== 0;
-    const messageColor = getMessageColor(result.type);
+  const renderOutput = useCallback(
+    (result: ExecutionResult) => {
+      const timestamp = new Date(result.timestamp ?? Date.now());
+      const messageColor = getMessageColor(result.type);
 
-    return (
-      <div key={timestamp.getTime()} className="mb-2 border-b">
-        <div className="flex">
-          <span className="mr-4 text-muted-foreground">
-            [{formatTimestamp(timestamp)}]
-          </span>
-          <div className="flex-1">
-            {/* Show language and version info */}
-            {result.type === 'output' && (
-              <div className="text-muted-foreground">
-                Running {result.language} v{result.version}
-              </div>
-            )}
+      return (
+        <div
+          key={`${timestamp.getTime()}-${result.run.output}`}
+          className="mb-2 border-b"
+        >
+          <div className="flex">
+            <span className="mr-4 text-muted-foreground">
+              [{formatTimestamp(timestamp)}]
+            </span>
+            <div className="flex-1">
+              {result.type === 'output' && (
+                <div className="text-muted-foreground">
+                  Running {result.language} v{result.version}
+                </div>
+              )}
 
-            {/* Show stdout if exists */}
-            {result.run.stdout && (
-              <div
-                className={cn('whitespace-pre-wrap break-all', messageColor)}
-              >
-                {result.run.stdout}
-              </div>
-            )}
+              {result.run.stdout && (
+                <div
+                  className={cn('whitespace-pre-wrap break-all', messageColor)}
+                >
+                  {result.run.stdout}
+                </div>
+              )}
 
-            {/* Show stderr if exists */}
-            {result.run.stderr && (
-              <div className="whitespace-pre-wrap break-all text-red-500">
-                Error: {result.run.stderr}
-              </div>
-            )}
+              {result.run.stderr && (
+                <div className="whitespace-pre-wrap break-all text-red-500">
+                  Error: {result.run.stderr}
+                </div>
+              )}
 
-            {/* Show exit code if not 0 */}
-            {result.run.code !== 0 && (
-              <div className="text-red-500">
-                Process exited with code {result.run.code}
-              </div>
-            )}
+              {result.run.code !== 0 && (
+                <div className="text-red-500">
+                  Process exited with code {result.run.code}
+                </div>
+              )}
 
-            {/* Show execution time if available */}
-            {'executionTime' in result && result.type !== 'info' && (
-              <div className="mt-1 text-xs text-muted-foreground">
-                Execution time: {formatExecutionTime(result.executionTime ?? 0)}
-              </div>
-            )}
+              {'executionTime' in result && result.type !== 'info' && (
+                <div className="mt-1 text-xs text-muted-foreground">
+                  Execution time:{' '}
+                  {formatExecutionTime(result.executionTime ?? 0)}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    );
-  };
+      );
+    },
+    [getMessageColor],
+  );
 
   return (
     <div
@@ -145,7 +175,7 @@ const Terminal = ({ results }: TerminalProps) => {
         )}
       >
         {renderWelcome()}
-        {results.map((result) => renderOutput(result))}
+        {processedResults.map(renderOutput)}
       </div>
     </div>
   );

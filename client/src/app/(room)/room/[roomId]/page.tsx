@@ -37,6 +37,7 @@ import type * as monaco from 'monaco-editor';
 import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
+import type { ExecutionResult } from '@common/types/terminal';
 import type { User } from '@common/types/user';
 
 import { userMap } from '@/lib/services/user-map';
@@ -53,7 +54,6 @@ import {
   type StatusBarCursorPosition,
 } from '@/components/status-bar';
 import { Terminal } from '@/components/terminal';
-import type { ExecutionResult } from '@/components/terminal/types';
 import { Toolbar } from '@/components/toolbar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
@@ -91,7 +91,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
       >
         <Toolbar monaco={monaco} editor={editor} />
       </div>
-      <RunButton monaco={monaco} editor={editor} output={setOutput} />
+      <RunButton monaco={monaco} editor={editor} setOutput={setOutput} />
       <nav aria-label="Collaboration Tools">
         <div className="flex items-center gap-x-2">
           <UserList users={users} />
@@ -178,6 +178,10 @@ export default function Room({ params }: RoomProps) {
     setMdContent(md);
   }, []);
 
+  const handleTerminalReceive = useCallback((result: ExecutionResult) => {
+    setOutput((prev) => [...prev, result]);
+  }, []);
+
   useEffect(() => {
     if (!socket.connected) {
       router.replace(`/?room=${params.roomId}`);
@@ -190,6 +194,7 @@ export default function Room({ params }: RoomProps) {
     socket.on(RoomServiceMsg.UPDATE_USERS, handleUsersUpdate);
     socket.on(CodeServiceMsg.RECEIVE_CODE, handleCodeReceive);
     socket.on(RoomServiceMsg.MD_RX, handleMarkdownReceive);
+    socket.on(RoomServiceMsg.TERM_RX, handleTerminalReceive);
 
     window.addEventListener('popstate', disconnect);
 
@@ -199,6 +204,7 @@ export default function Room({ params }: RoomProps) {
       socket.off(CodeServiceMsg.RECEIVE_CODE);
       socket.off(CodeServiceMsg.LANG_RX);
       socket.off(RoomServiceMsg.MD_RX);
+      socket.off(RoomServiceMsg.TERM_RX);
       userMap.clear();
     };
   }, [
@@ -209,9 +215,9 @@ export default function Room({ params }: RoomProps) {
     handleUsersUpdate,
     handleCodeReceive,
     handleMarkdownReceive,
+    handleTerminalReceive,
   ]);
 
-  // Memoized editor setup callback
   const handleMonacoSetup = useCallback((monacoInstance: Monaco) => {
     setMonaco(monacoInstance);
   }, []);

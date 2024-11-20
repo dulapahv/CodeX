@@ -1,76 +1,90 @@
 'use client';
 
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
-import { cn, parseError } from '@/lib/utils';
+import { RoomServiceMsg } from '@common/types/message';
 import {
   ExecutionResultType,
   type ExecutionResult,
-} from '@/components/terminal/types';
+} from '@common/types/terminal';
+
+import { getSocket } from '@/lib/socket';
+import { cn, parseError } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 interface RunButtonProps {
   monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
-  output: Dispatch<SetStateAction<ExecutionResult[]>>;
+  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
   className?: string;
 }
 
 export const RunButton = ({
   monaco,
   editor,
-  output,
+  setOutput,
   className,
 }: RunButtonProps) => {
+  const socket = getSocket();
+
   const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    socket.on(RoomServiceMsg.EXEC_RX, (isExecuting: boolean) => {
+      setIsRunning(isExecuting);
+    });
+    return () => {
+      socket.off(RoomServiceMsg.EXEC_RX);
+    };
+  }, [socket]);
 
   const executeCode = async () => {
     if (!monaco || !editor) return;
 
     const startTime = new Date();
     setIsRunning(true);
+    socket.emit(RoomServiceMsg.EXEC_TX, true);
 
     try {
       const code = editor.getValue();
 
+      const res = {
+        language: 'system',
+        version: '1.0.0',
+        run: {
+          stdout: '🚀 Executing code...',
+          stderr: '',
+          code: 0,
+          signal: null,
+          output: '',
+        },
+        timestamp: startTime,
+        type: ExecutionResultType.INFO,
+      };
+
       // Log the initial "Running..." message
-      output((currentOutput) => [
-        ...currentOutput,
-        {
+      setOutput((currentOutput) => [...currentOutput, res]);
+      socket.emit(RoomServiceMsg.TERM_TX, res);
+
+      if (!code.trim()) {
+        const res = {
           language: 'system',
           version: '1.0.0',
           run: {
-            stdout: '🚀 Executing code...',
+            stdout: '⚠️ No code to execute',
             stderr: '',
             code: 0,
             signal: null,
             output: '',
           },
-          timestamp: startTime,
-          type: ExecutionResultType.INFO,
-        },
-      ]);
-
-      if (!code.trim()) {
-        output((currentOutput) => [
-          ...currentOutput,
-          {
-            language: 'system',
-            version: '1.0.0',
-            run: {
-              stdout: '⚠️ No code to execute',
-              stderr: '',
-              code: 0,
-              signal: null,
-              output: '',
-            },
-            timestamp: new Date(),
-            type: ExecutionResultType.WARNING,
-          },
-        ]);
+          timestamp: new Date(),
+          type: ExecutionResultType.WARNING,
+        };
+        setOutput((currentOutput) => [...currentOutput, res]);
+        socket.emit(RoomServiceMsg.TERM_TX, res);
         return;
       }
 
@@ -99,41 +113,42 @@ export const RunButton = ({
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
 
-      output((currentOutput) => {
+      setOutput((currentOutput) => {
         const resultWithTimestamp: ExecutionResult = {
           ...result,
           timestamp: endTime,
           executionTime,
           type: ExecutionResultType.OUTPUT,
         };
+        socket.emit(RoomServiceMsg.TERM_TX, resultWithTimestamp);
         return [...currentOutput, resultWithTimestamp];
       });
     } catch (error) {
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
 
-      output((currentOutput) => [
-        ...currentOutput,
-        {
-          language: 'error',
-          version: '1.0.0',
-          run: {
-            stdout: '',
-            stderr: parseError(error),
-            code: 1,
-            signal: null,
-            output:
-              error instanceof Error
-                ? error.message
-                : 'An error occurred during execution',
-          },
-          timestamp: endTime,
-          executionTime,
-          type: ExecutionResultType.ERROR,
+      const res = {
+        language: 'error',
+        version: '1.0.0',
+        run: {
+          stdout: '',
+          stderr: parseError(error),
+          code: 1,
+          signal: null,
+          output:
+            error instanceof Error
+              ? error.message
+              : 'An error occurred during execution',
         },
-      ]);
+        timestamp: endTime,
+        executionTime,
+        type: ExecutionResultType.ERROR,
+      };
+      setOutput((currentOutput) => [...currentOutput, res]);
+      socket.emit(RoomServiceMsg.TERM_TX, res);
     } finally {
       setIsRunning(false);
+      socket.emit(RoomServiceMsg.EXEC_TX, false);
     }
   };
 

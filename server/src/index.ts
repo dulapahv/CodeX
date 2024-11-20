@@ -7,6 +7,7 @@ import {
   UserServiceMsg,
 } from '../../common/types/message';
 import { Cursor, EditOp } from '../../common/types/operation';
+import { type ExecutionResult } from '../../common/types/terminal';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
@@ -80,6 +81,12 @@ io.on('connection', (socket) => {
   });
   socket.on(RoomServiceMsg.MD_TX, async (note: string) =>
     roomService.updateNote(socket, note),
+  );
+  socket.on(RoomServiceMsg.EXEC_TX, async (isExecuting: boolean) => {
+    roomService.updateExecuting(socket, isExecuting);
+  });
+  socket.on(RoomServiceMsg.TERM_TX, async (data: ExecutionResult) =>
+    roomService.updateTerminal(socket, data),
   );
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });
