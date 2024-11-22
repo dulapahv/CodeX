@@ -20,7 +20,7 @@ const PORT = 3001;
 const allowedOrigins = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
-  'https://dev-kasca.pages.dev',
+  'https://dev-kasca.dulapahv.dev',
 ];
 
 const app = App();
