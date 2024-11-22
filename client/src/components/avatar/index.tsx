@@ -49,7 +49,7 @@ interface AvatarProps {
 const sizeClasses = {
   sm: 'size-6 text-xs',
   md: 'size-7 text-sm',
-  lg: 'size-8 text-base',
+  lg: 'size-12 text-lg',
 };
 
 const Avatar = ({

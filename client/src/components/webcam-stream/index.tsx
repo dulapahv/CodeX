@@ -1,15 +1,27 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Mic, MicOff, Video, VideoOff, Volume2, VolumeOff } from 'lucide-react';
 import Peer from 'simple-peer';
-import { Camera, CameraOff } from 'lucide-react';
 
+import { storage } from '@/lib/services/storage';
+import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
+import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const WebcamStream = () => {
   const [cameraOn, setCameraOn] = useState(false);
+  const [micOn, setMicOn] = useState(false);
+  const [speakersOn, setSpeakersOn] = useState(false);
   const [peers, setPeers] = useState<{ [key: string]: Peer.Instance }>({});
-  const [remoteStreams, setRemoteStreams] = useState<{ [key: string]: MediaStream }>({});
-  
+  const [remoteStreams, setRemoteStreams] = useState<{
+    [key: string]: MediaStream;
+  }>({});
+
   const socket = getSocket();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -22,12 +34,12 @@ const WebcamStream = () => {
         video: true,
         audio: true,
       });
-      
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-      
+
       // Notify other clients in the room that we're ready to stream
       socket.emit('stream-ready');
     } catch (error) {
@@ -36,50 +48,53 @@ const WebcamStream = () => {
   }, [socket]);
 
   // Initialize peer connection with existing stream
-  const initPeer = useCallback((userID: string, initiator: boolean) => {
-    const peer = new Peer({
-      initiator,
-      trickle: false,
-      ...(streamRef.current && { stream: streamRef.current }),
-    });
-
-    // Handle receiving signal from remote peer
-    peer.on('signal', (signal) => {
-      socket.emit('signal', {
-        userID,
-        signal,
+  const initPeer = useCallback(
+    (userID: string, initiator: boolean) => {
+      const peer = new Peer({
+        initiator,
+        trickle: false,
+        ...(streamRef.current && { stream: streamRef.current }),
       });
-    });
 
-    // Handle receiving remote stream
-    peer.on('stream', (stream) => {
-      setRemoteStreams(prev => ({
-        ...prev,
-        [userID]: stream
-      }));
-    });
-
-    // Handle peer errors
-    peer.on('error', (err) => {
-      console.error('Peer connection error:', err);
-      // Clean up the problematic peer connection
-      if (peersRef.current[userID]) {
-        peersRef.current[userID].destroy();
-        delete peersRef.current[userID];
-        setPeers(prev => {
-          const newPeers = { ...prev };
-          delete newPeers[userID];
-          return newPeers;
+      // Handle receiving signal from remote peer
+      peer.on('signal', (signal) => {
+        socket.emit('signal', {
+          userID,
+          signal,
         });
-      }
-    });
+      });
 
-    // Store peer in refs and state
-    peersRef.current[userID] = peer;
-    setPeers(prev => ({ ...prev, [userID]: peer }));
+      // Handle receiving remote stream
+      peer.on('stream', (stream) => {
+        setRemoteStreams((prev) => ({
+          ...prev,
+          [userID]: stream,
+        }));
+      });
 
-    return peer;
-  }, [socket]);
+      // Handle peer errors
+      peer.on('error', (err) => {
+        console.error('Peer connection error:', err);
+        // Clean up the problematic peer connection
+        if (peersRef.current[userID]) {
+          peersRef.current[userID].destroy();
+          delete peersRef.current[userID];
+          setPeers((prev) => {
+            const newPeers = { ...prev };
+            delete newPeers[userID];
+            return newPeers;
+          });
+        }
+      });
+
+      // Store peer in refs and state
+      peersRef.current[userID] = peer;
+      setPeers((prev) => ({ ...prev, [userID]: peer }));
+
+      return peer;
+    },
+    [socket],
+  );
 
   // Toggle camera
   const toggleCamera = async () => {
@@ -90,17 +105,17 @@ const WebcamStream = () => {
       } else {
         // Stop all tracks
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current.getTracks().forEach((track) => track.stop());
         }
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
-        
+
         // Notify peers that camera is turning off
         socket.emit('camera-off');
-        
+
         // Clean up peer connections
-        Object.values(peersRef.current).forEach(peer => {
+        Object.values(peersRef.current).forEach((peer) => {
           peer.destroy();
         });
         peersRef.current = {};
@@ -139,12 +154,12 @@ const WebcamStream = () => {
       if (peersRef.current[userID]) {
         peersRef.current[userID].destroy();
         delete peersRef.current[userID];
-        setPeers(prev => {
+        setPeers((prev) => {
           const newPeers = { ...prev };
           delete newPeers[userID];
           return newPeers;
         });
-        setRemoteStreams(prev => {
+        setRemoteStreams((prev) => {
           const newStreams = { ...prev };
           delete newStreams[userID];
           return newStreams;
@@ -157,19 +172,19 @@ const WebcamStream = () => {
       socket.off('user-ready');
       socket.off('signal');
       socket.off('user-disconnected');
-      
+
       // Clean up all streams and connections
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
-      Object.values(peersRef.current).forEach(peer => peer.destroy());
+      Object.values(peersRef.current).forEach((peer) => peer.destroy());
       peersRef.current = {};
     };
   }, [socket, initPeer]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4">
+    <div className="relative flex h-full flex-col gap-4 bg-[color:var(--panel-background)]">
+      <div className="flex flex-wrap gap-2 overflow-y-auto">
         {/* Local video */}
         <div className="relative">
           <video
@@ -177,47 +192,109 @@ const WebcamStream = () => {
             autoPlay
             playsInline
             muted
-            className="w-full h-64 bg-gray-900 rounded-lg object-cover"
+            className="aspect-video scale-x-[-1] rounded-lg bg-black/40 object-cover"
           />
-          <div className="absolute bottom-4 left-4">
-            <Button 
-              onClick={toggleCamera}
-              variant={cameraOn ? "destructive" : "default"}
-              size="sm"
-            >
-              {cameraOn ? (
-                <>
-                  <CameraOff className="w-4 h-4 mr-2" />
-                  Turn off camera
-                </>
-              ) : (
-                <>
-                  <Camera className="w-4 h-4 mr-2" />
-                  Turn on camera
-                </>
-              )}
-            </Button>
+          {!cameraOn && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Avatar
+                user={{
+                  id: storage.getUserId() ?? '',
+                  username: userMap.get(storage.getUserId() ?? '') ?? '',
+                }}
+                size="lg"
+              />
+            </div>
+          )}
+          <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-1 py-px text-white">
+            {userMap.get(storage.getUserId() ?? '')} (You)
           </div>
         </div>
-        
+
         {/* Remote videos */}
         {Object.entries(remoteStreams).map(([userID, stream]) => (
           <div key={userID} className="relative">
             <video
               autoPlay
               playsInline
-              className="w-full h-64 bg-gray-900 rounded-lg object-cover"
-              ref={el => {
+              className="aspect-video scale-x-[-1] rounded-lg bg-gray-900 object-cover"
+              ref={(el) => {
                 if (el) {
                   el.srcObject = stream;
                 }
               }}
             />
-            <div className="absolute bottom-4 left-4 bg-black/50 text-white px-2 py-1 rounded">
+            <div className="absolute bottom-4 left-4 rounded bg-black/50 px-2 py-1 text-white">
               Remote User: {userID}
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Controls */}
+      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={toggleCamera}
+              variant={cameraOn ? 'default' : 'secondary'}
+              size="icon"
+              aria-label={cameraOn ? 'Turn off camera' : 'Turn on camera'}
+              type="button"
+              aria-haspopup="dialog"
+            >
+              {cameraOn ? (
+                <Video className="size-5" />
+              ) : (
+                <VideoOff className="size-5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {cameraOn ? 'Turn off camera' : 'Turn on camera'}
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => setMicOn((prev) => !prev)}
+              variant={micOn ? 'default' : 'secondary'}
+              size="icon"
+              aria-label={micOn ? 'Turn off microphone' : 'Turn on microphone'}
+              type="button"
+              aria-haspopup="dialog"
+            >
+              {micOn ? (
+                <Mic className="size-5" />
+              ) : (
+                <MicOff className="size-5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {micOn ? 'Turn off microphone' : 'Turn on microphone'}
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={() => setSpeakersOn((prev) => !prev)}
+              variant={speakersOn ? 'default' : 'secondary'}
+              size="icon"
+              aria-label={speakersOn ? 'Turn off speakers' : 'Turn on speakers'}
+              type="button"
+              aria-haspopup="dialog"
+            >
+              {speakersOn ? (
+                <Volume2 className="size-5" />
+              ) : (
+                <VolumeOff className="size-5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {speakersOn ? 'Turn off speakers' : 'Turn on speakers'}
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

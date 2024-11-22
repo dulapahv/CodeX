@@ -18,7 +18,7 @@ const Output = ({ result }: OutputProps) => {
   const messageColor = getMessageColor(result.type);
 
   return (
-    <div className="mb-2 border-b">
+    <div>
       <div className="flex">
         <span className="mr-4 text-muted-foreground">
           [{formatTimestamp(timestamp)}]

@@ -65,6 +65,7 @@ const config: Config = {
         'fade-in-bottom':
           'fade-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
         'fade-in-left': 'fade-in-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
+        'fade-in-right': 'fade-in-right 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
       },
       keyframes: {
         'scale-up-center': {
@@ -106,6 +107,16 @@ const config: Config = {
         'fade-in-left': {
           '0%': {
             transform: 'translateX(-25px)',
+            opacity: '0',
+          },
+          to: {
+            transform: 'translateX(0)',
+            opacity: '1',
+          },
+        },
+        'fade-in-right': {
+          '0%': {
+            transform: 'translateX(25px)',
             opacity: '0',
           },
           to: {

@@ -40,6 +40,7 @@ import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { ExecutionResult } from '@common/types/terminal';
 import type { User } from '@common/types/user';
 
+import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
@@ -63,7 +64,6 @@ import {
 } from '@/components/ui/resizable';
 import { UserList } from '@/components/user-list';
 import { WebcamStream } from '@/components/webcam-stream';
-import { storage } from '@/lib/services/storage';
 
 interface RoomProps {
   params: {
@@ -120,6 +120,10 @@ const MemoizedTerminal = memo(function MemoizedTerminal({
   results: ExecutionResult[];
 }) {
   return <Terminal results={results} />;
+});
+
+const MemoizedWebcamStream = memo(function MemoizedWebcamStream() {
+  return <WebcamStream />;
 });
 
 const MemoizedStatusBar = memo(function MemoizedStatusBar({
@@ -236,7 +240,6 @@ export default function Room({ params }: RoomProps) {
       className="flex h-full min-w-[480px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
-      <WebcamStream />
       <div className="h-9" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
           <MemoizedToolbar
@@ -310,6 +313,23 @@ export default function Room({ params }: RoomProps) {
                 <MemoizedTerminal results={output} />
               </ResizablePanel>
             </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle
+            withHandle={isMobile}
+            className="bg-muted-foreground"
+          />
+          <ResizablePanel
+            className={cn(
+              'animate-fade-in-right h-[calc(100%-24px)] border-t-[1px] border-muted-foreground',
+              (!monaco || !editor) && 'hidden',
+            )}
+            role="region"
+            aria-label="Webcam Stream"
+            collapsible
+            minSize={10}
+            defaultSize={20}
+          >
+            <MemoizedWebcamStream />
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
