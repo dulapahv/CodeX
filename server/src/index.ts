@@ -5,6 +5,7 @@ import {
   CodeServiceMsg,
   RoomServiceMsg,
   UserServiceMsg,
+  // WebRTCServiceMsg,
 } from '../../common/types/message';
 import { Cursor, EditOp } from '../../common/types/operation';
 import { type ExecutionResult } from '../../common/types/terminal';
@@ -12,12 +13,14 @@ import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
 
+// import * as webrtcService from './service/webrtc-service';
+
 const PORT = 3001;
 
 const allowedOrigins = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
-  'https://dev.kasca.pages.dev',
+  'https://dev-kasca.pages.dev',
 ];
 
 const app = App();
@@ -88,5 +91,27 @@ io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.TERM_TX, async (data: ExecutionResult) =>
     roomService.updateTerminal(socket, data),
   );
+  socket.on('stream-ready', () => {
+    // Notify all other users in the room that this user is ready to stream
+    const room = [...socket.rooms].find((room) => room !== socket.id);
+    if (room) {
+      socket.to(room).emit('user-ready', socket.id);
+    }
+  });
+
+  socket.on('signal', ({ userID, signal }) => {
+    // Forward the WebRTC signal to the specific user
+    socket.to(userID).emit('signal', {
+      userID: socket.id,
+      signal,
+    });
+  });
+  socket.on('camera-off', () => {
+    // Notify all other users in the room that this user's camera is off
+    const room = [...socket.rooms].find((room) => room !== socket.id);
+    if (room) {
+      socket.to(room).emit('user-disconnected', socket.id);
+    }
+  });
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });

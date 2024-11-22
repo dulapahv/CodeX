@@ -62,6 +62,8 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { UserList } from '@/components/user-list';
+import { WebcamStream } from '@/components/webcam-stream';
+import { storage } from '@/lib/services/storage';
 
 interface RoomProps {
   params: {
@@ -234,6 +236,7 @@ export default function Room({ params }: RoomProps) {
       className="flex h-full min-w-[480px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
+      <WebcamStream />
       <div className="h-9" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
           <MemoizedToolbar
