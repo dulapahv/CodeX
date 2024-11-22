@@ -40,7 +40,7 @@ const WebcamStream = () => {
     const peer = new Peer({
       initiator,
       trickle: false,
-      stream: streamRef.current,
+      ...(streamRef.current && { stream: streamRef.current }),
     });
 
     // Handle receiving signal from remote peer
