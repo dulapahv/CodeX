@@ -1,10 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, Video, VideoOff, Volume2, VolumeOff } from 'lucide-react';
 import Peer from 'simple-peer';
+import { toast } from 'sonner';
+
+import { StreamServiceMsg } from '@common/types/message';
+import type { User } from '@common/types/user';
 
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
+import { parseError } from '@/lib/utils';
 import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,13 +18,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const WebcamStream = () => {
+interface WebcamStreamProps {
+  users: User[];
+}
+
+const WebcamStream = ({ users }: WebcamStreamProps) => {
   const [cameraOn, setCameraOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [speakersOn, setSpeakersOn] = useState(false);
-  const [peers, setPeers] = useState<{ [key: string]: Peer.Instance }>({});
   const [remoteStreams, setRemoteStreams] = useState<{
-    [key: string]: MediaStream;
+    [key: string]: MediaStream | null;
   }>({});
 
   const socket = getSocket();
@@ -41,9 +49,9 @@ const WebcamStream = () => {
       }
 
       // Notify other clients in the room that we're ready to stream
-      socket.emit('stream-ready');
+      socket.emit(StreamServiceMsg.STREAM_READY);
     } catch (error) {
-      console.error('Error accessing media devices:', error);
+      toast.error(`Error accessing media devices.\n${parseError(error)}`);
     }
   }, [socket]);
 
@@ -52,16 +60,12 @@ const WebcamStream = () => {
     (userID: string, initiator: boolean) => {
       const peer = new Peer({
         initiator,
-        trickle: false,
         ...(streamRef.current && { stream: streamRef.current }),
       });
 
       // Handle receiving signal from remote peer
       peer.on('signal', (signal) => {
-        socket.emit('signal', {
-          userID,
-          signal,
-        });
+        socket.emit(StreamServiceMsg.SIGNAL, signal);
       });
 
       // Handle receiving remote stream
@@ -74,22 +78,16 @@ const WebcamStream = () => {
 
       // Handle peer errors
       peer.on('error', (err) => {
-        console.error('Peer connection error:', err);
+        toast.error(`Peer connection error:\n${parseError(err)}`);
         // Clean up the problematic peer connection
         if (peersRef.current[userID]) {
           peersRef.current[userID].destroy();
           delete peersRef.current[userID];
-          setPeers((prev) => {
-            const newPeers = { ...prev };
-            delete newPeers[userID];
-            return newPeers;
-          });
         }
       });
 
       // Store peer in refs and state
       peersRef.current[userID] = peer;
-      setPeers((prev) => ({ ...prev, [userID]: peer }));
 
       return peer;
     },
@@ -112,34 +110,31 @@ const WebcamStream = () => {
         }
 
         // Notify peers that camera is turning off
-        socket.emit('camera-off');
+        socket.emit(StreamServiceMsg.CAMERA_OFF);
 
         // Clean up peer connections
         Object.values(peersRef.current).forEach((peer) => {
           peer.destroy();
         });
         peersRef.current = {};
-        setPeers({});
         setRemoteStreams({});
         streamRef.current = null;
         setCameraOn(false);
       }
     } catch (error) {
-      console.error('Error toggling camera:', error);
+      toast.error(`Error toggling camera.\n${parseError(error)}`);
     }
   };
 
   // Handle socket events
   useEffect(() => {
     // When a new user joins and is ready to stream
-    socket.on('user-ready', (userID: string) => {
-      console.log('New user ready:', userID);
-      initPeer(userID, true);
-    });
+    socket.on(StreamServiceMsg.USER_READY, (userID: string) =>
+      initPeer(userID, true),
+    );
 
     // When receiving a signal from another peer
-    socket.on('signal', ({ userID, signal }) => {
-      console.log('Received signal from:', userID);
+    socket.on(StreamServiceMsg.SIGNAL, ({ userID, signal }) => {
       if (peersRef.current[userID]) {
         peersRef.current[userID].signal(signal);
       } else {
@@ -149,16 +144,10 @@ const WebcamStream = () => {
     });
 
     // When a user disconnects or turns off their camera
-    socket.on('user-disconnected', (userID: string) => {
-      console.log('User disconnected:', userID);
+    socket.on(StreamServiceMsg.USER_DISCONNECTED, (userID: string) => {
       if (peersRef.current[userID]) {
         peersRef.current[userID].destroy();
         delete peersRef.current[userID];
-        setPeers((prev) => {
-          const newPeers = { ...prev };
-          delete newPeers[userID];
-          return newPeers;
-        });
         setRemoteStreams((prev) => {
           const newStreams = { ...prev };
           delete newStreams[userID];
@@ -169,9 +158,9 @@ const WebcamStream = () => {
 
     // Clean up function
     return () => {
-      socket.off('user-ready');
-      socket.off('signal');
-      socket.off('user-disconnected');
+      socket.off(StreamServiceMsg.USER_READY);
+      socket.off(StreamServiceMsg.SIGNAL);
+      socket.off(StreamServiceMsg.USER_DISCONNECTED);
 
       // Clean up all streams and connections
       if (streamRef.current) {
@@ -184,50 +173,60 @@ const WebcamStream = () => {
 
   return (
     <div className="relative flex h-full flex-col gap-4 bg-[color:var(--panel-background)]">
-      <div className="flex flex-wrap gap-2 overflow-y-auto">
+      <div className="flex flex-wrap gap-2 p-2">
         {/* Local video */}
-        <div className="relative">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="aspect-video scale-x-[-1] rounded-lg bg-black/40 object-cover"
-          />
-          {!cameraOn && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Avatar
-                user={{
-                  id: storage.getUserId() ?? '',
-                  username: userMap.get(storage.getUserId() ?? '') ?? '',
-                }}
-                size="lg"
-              />
+        <div className="relative min-w-[200px] flex-1">
+          <div className="relative aspect-video w-full rounded-lg bg-black/40">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="h-full w-full scale-x-[-1] rounded-lg object-cover"
+            />
+            {!cameraOn && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Avatar
+                  user={{
+                    id: storage.getUserId() ?? '',
+                    username: userMap.get(storage.getUserId() ?? '') ?? '',
+                  }}
+                  size="lg"
+                />
+              </div>
+            )}
+            <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+              {userMap.get(storage.getUserId() ?? '')} (You)
             </div>
-          )}
-          <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-1 py-px text-white">
-            {userMap.get(storage.getUserId() ?? '')} (You)
           </div>
         </div>
 
         {/* Remote videos */}
-        {Object.entries(remoteStreams).map(([userID, stream]) => (
-          <div key={userID} className="relative">
-            <video
-              autoPlay
-              playsInline
-              className="aspect-video scale-x-[-1] rounded-lg bg-gray-900 object-cover"
-              ref={(el) => {
-                if (el) {
-                  el.srcObject = stream;
-                }
-              }}
-            />
-            <div className="absolute bottom-4 left-4 rounded bg-black/50 px-2 py-1 text-white">
-              Remote User: {userID}
+        {users
+          .filter((user) => user.id !== storage.getUserId())
+          .map((user) => (
+            <div key={user.id} className="relative min-w-[200px] flex-1">
+              <div className="relative aspect-video w-full rounded-lg bg-black/40">
+                {remoteStreams[user.id] ? (
+                  <video
+                    autoPlay
+                    playsInline
+                    className="h-full w-full scale-x-[-1] rounded-lg object-cover"
+                    ref={(element) => {
+                      if (element) element.srcObject = remoteStreams[user.id];
+                    }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Avatar user={user} size="lg" />
+                  </div>
+                )}
+                <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+                  {user.username}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* Controls */}

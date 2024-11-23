@@ -40,7 +40,6 @@ import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { ExecutionResult } from '@common/types/terminal';
 import type { User } from '@common/types/user';
 
-import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
@@ -122,8 +121,12 @@ const MemoizedTerminal = memo(function MemoizedTerminal({
   return <Terminal results={results} />;
 });
 
-const MemoizedWebcamStream = memo(function MemoizedWebcamStream() {
-  return <WebcamStream />;
+const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
+  users,
+}: {
+  users: User[];
+}) {
+  return <WebcamStream users={users} />;
 });
 
 const MemoizedStatusBar = memo(function MemoizedStatusBar({
@@ -193,24 +196,24 @@ export default function Room({ params }: RoomProps) {
       router.replace(`/?room=${params.roomId}`);
     }
 
-    socket.emit(RoomServiceMsg.GET_USERS);
-    socket.emit(CodeServiceMsg.GET_CODE);
-    socket.emit(RoomServiceMsg.GET_MD);
+    socket.emit(RoomServiceMsg.SYNC_USERS);
+    socket.emit(CodeServiceMsg.SYNC_CODE);
+    socket.emit(RoomServiceMsg.SYNC_MD);
 
-    socket.on(RoomServiceMsg.UPDATE_USERS, handleUsersUpdate);
-    socket.on(CodeServiceMsg.RECEIVE_CODE, handleCodeReceive);
-    socket.on(RoomServiceMsg.MD_RX, handleMarkdownReceive);
-    socket.on(RoomServiceMsg.TERM_RX, handleTerminalReceive);
+    socket.on(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
+    socket.on(CodeServiceMsg.SYNC_CODE, handleCodeReceive);
+    socket.on(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
+    socket.on(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
 
     window.addEventListener('popstate', disconnect);
 
     return () => {
       window.removeEventListener('popstate', disconnect);
-      socket.off(RoomServiceMsg.UPDATE_USERS);
-      socket.off(CodeServiceMsg.RECEIVE_CODE);
-      socket.off(CodeServiceMsg.LANG_RX);
-      socket.off(RoomServiceMsg.MD_RX);
-      socket.off(RoomServiceMsg.TERM_RX);
+      socket.off(RoomServiceMsg.SYNC_USERS);
+      socket.off(CodeServiceMsg.SYNC_CODE);
+      socket.off(CodeServiceMsg.UPDATE_LANG);
+      socket.off(RoomServiceMsg.UPDATE_MD);
+      socket.off(CodeServiceMsg.UPDATE_TERM);
       userMap.clear();
     };
   }, [
@@ -262,7 +265,7 @@ export default function Room({ params }: RoomProps) {
             aria-label="Notepad"
             collapsible
             minSize={10}
-            defaultSize={25}
+            defaultSize={20}
           >
             <MemoizedMarkdownEditor markdown={mdContent} />
           </ResizablePanel>
@@ -273,7 +276,7 @@ export default function Room({ params }: RoomProps) {
               (!monaco || !editor) && 'hidden',
             )}
           />
-          <ResizablePanel defaultSize={75} minSize={10}>
+          <ResizablePanel defaultSize={65} minSize={10}>
             <ResizablePanelGroup
               direction="vertical"
               className="!h-[calc(100%-24px)] overflow-clip"
@@ -320,16 +323,16 @@ export default function Room({ params }: RoomProps) {
           />
           <ResizablePanel
             className={cn(
-              'animate-fade-in-right h-[calc(100%-24px)] border-t-[1px] border-muted-foreground',
+              'h-[calc(100%-24px)] animate-fade-in-right border-t-[1px] border-muted-foreground',
               (!monaco || !editor) && 'hidden',
             )}
             role="region"
             aria-label="Webcam Stream"
             collapsible
             minSize={10}
-            defaultSize={20}
+            defaultSize={15}
           >
-            <MemoizedWebcamStream />
+            <MemoizedWebcamStream users={users} />
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (

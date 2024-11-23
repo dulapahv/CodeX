@@ -1,19 +1,18 @@
+import type { SignalData } from 'simple-peer';
 import { Server } from 'socket.io';
 import { App } from 'uWebSockets.js';
 
 import {
   CodeServiceMsg,
   RoomServiceMsg,
-  UserServiceMsg,
-  // WebRTCServiceMsg,
+  StreamServiceMsg,
 } from '../../common/types/message';
 import { Cursor, EditOp } from '../../common/types/operation';
 import { type ExecutionResult } from '../../common/types/terminal';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
-
-// import * as webrtcService from './service/webrtc-service';
+import * as webRTCService from './service/webrtc-service';
 
 const PORT = 3001;
 
@@ -61,57 +60,44 @@ io.on('connection', (socket) => {
     roomService.join(socket, io, roomID, name),
   );
   socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
-  socket.on(RoomServiceMsg.GET_USERS, async () => {
+  socket.on(RoomServiceMsg.SYNC_USERS, async () => {
     roomService.getUsersInRoom(socket, io);
   });
-  socket.on(CodeServiceMsg.GET_CODE, async () => {
+  socket.on(CodeServiceMsg.SYNC_CODE, async () => {
     codeService.syncCode(socket, io);
   });
-  socket.on(CodeServiceMsg.CODE_TX, async (op: EditOp) =>
+  socket.on(CodeServiceMsg.UPDATE_CODE, async (op: EditOp) =>
     codeService.updateCode(socket, op),
   );
-  socket.on(UserServiceMsg.CURSOR_TX, async (cursor: Cursor) =>
+  socket.on(CodeServiceMsg.UPDATE_CURSOR, async (cursor: Cursor) =>
     userService.updateCursor(socket, cursor),
   );
-  socket.on(CodeServiceMsg.GET_LANG, async () =>
+  socket.on(CodeServiceMsg.SYNC_LANG, async () =>
     codeService.syncLang(socket, io),
   );
-  socket.on(CodeServiceMsg.LANG_TX, async (langID: string) =>
+  socket.on(CodeServiceMsg.UPDATE_LANG, async (langID: string) =>
     codeService.updateLang(socket, langID),
   );
-  socket.on(RoomServiceMsg.GET_MD, async () => {
+  socket.on(RoomServiceMsg.SYNC_MD, async () => {
     roomService.syncNote(socket, io);
   });
-  socket.on(RoomServiceMsg.MD_TX, async (note: string) =>
+  socket.on(RoomServiceMsg.UPDATE_MD, async (note: string) =>
     roomService.updateNote(socket, note),
   );
-  socket.on(RoomServiceMsg.EXEC_TX, async (isExecuting: boolean) => {
+  socket.on(CodeServiceMsg.EXEC, async (isExecuting: boolean) => {
     roomService.updateExecuting(socket, isExecuting);
   });
-  socket.on(RoomServiceMsg.TERM_TX, async (data: ExecutionResult) =>
+  socket.on(CodeServiceMsg.UPDATE_TERM, async (data: ExecutionResult) =>
     roomService.updateTerminal(socket, data),
   );
-  socket.on('stream-ready', () => {
-    // Notify all other users in the room that this user is ready to stream
-    const room = [...socket.rooms].find((room) => room !== socket.id);
-    if (room) {
-      socket.to(room).emit('user-ready', socket.id);
-    }
-  });
-
-  socket.on('signal', ({ userID, signal }) => {
-    // Forward the WebRTC signal to the specific user
-    socket.to(userID).emit('signal', {
-      userID: socket.id,
-      signal,
-    });
-  });
-  socket.on('camera-off', () => {
-    // Notify all other users in the room that this user's camera is off
-    const room = [...socket.rooms].find((room) => room !== socket.id);
-    if (room) {
-      socket.to(room).emit('user-disconnected', socket.id);
-    }
-  });
+  socket.on(StreamServiceMsg.STREAM_READY, () =>
+    webRTCService.onStreamReady(socket),
+  );
+  socket.on(StreamServiceMsg.SIGNAL, (signal: SignalData) =>
+    webRTCService.handleSignal(socket, signal),
+  );
+  socket.on(StreamServiceMsg.CAMERA_OFF, () =>
+    webRTCService.onCameraOff(socket),
+  );
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });
