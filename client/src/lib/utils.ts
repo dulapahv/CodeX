@@ -12,7 +12,7 @@ export const createRoom = (name: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
     socket.emit(RoomServiceMsg.CREATE, name);
-    socket.on(RoomServiceMsg.CREATED, (roomId: string, userID: string) => {
+    socket.on(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
       roomId = formatRoomId(roomId);
 
       storage.setRoomId(roomId);
@@ -33,7 +33,7 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
     socket.on(RoomServiceMsg.NOT_FOUND, () => {
       reject('Room does not exist. Please check the room ID and try again.');
     });
-    socket.on(RoomServiceMsg.JOINED, (userID: string) => {
+    socket.on(RoomServiceMsg.JOIN, (userID: string) => {
       storage.setRoomId(roomId);
       storage.setUserId(userID);
       resolve(true);

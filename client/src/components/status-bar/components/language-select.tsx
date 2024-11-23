@@ -116,8 +116,8 @@ const LanguageSelection = memo(
         }
       };
 
-      socket.emit(CodeServiceMsg.GET_LANG);
-      socket.on(CodeServiceMsg.LANG_RX, handleLanguageChange);
+      socket.emit(CodeServiceMsg.SYNC_LANG);
+      socket.on(CodeServiceMsg.UPDATE_LANG, handleLanguageChange);
 
       // Get initial language
       const currentLanguage = model.getLanguageId();
@@ -135,12 +135,12 @@ const LanguageSelection = memo(
           .find((lang) => lang.id === e.newLanguage);
         if (newLanguage?.aliases?.[0]) {
           setSelectedLanguage(newLanguage.aliases[0]);
-          socket.emit(CodeServiceMsg.LANG_TX, newLanguage.id);
+          socket.emit(CodeServiceMsg.UPDATE_LANG, newLanguage.id);
         }
       });
 
       return () => {
-        socket.off(CodeServiceMsg.LANG_RX, handleLanguageChange);
+        socket.off(CodeServiceMsg.UPDATE_LANG, handleLanguageChange);
         disposable.dispose();
       };
     }, [editor, monaco, socket]);

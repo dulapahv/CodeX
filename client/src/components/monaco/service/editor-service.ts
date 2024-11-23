@@ -23,7 +23,7 @@ import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
 
-import { CodeServiceMsg, UserServiceMsg } from '@common/types/message';
+import { CodeServiceMsg } from '@common/types/message';
 import { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
@@ -89,12 +89,12 @@ export const handleOnMount = (
       ev.selection.startLineNumber === ev.selection.endLineNumber &&
       ev.selection.startColumn === ev.selection.endColumn
     ) {
-      socket.emit(UserServiceMsg.CURSOR_TX, [
+      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
         ev.selection.positionLineNumber,
         ev.selection.positionColumn,
       ] as Cursor);
     } else {
-      socket.emit(UserServiceMsg.CURSOR_TX, [
+      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
         ev.selection.positionLineNumber,
         ev.selection.positionColumn,
         ev.selection.startLineNumber,
@@ -123,7 +123,7 @@ export const handleOnChange = (
   const socket = getSocket();
 
   ev.changes.forEach((change) => {
-    socket.emit(CodeServiceMsg.CODE_TX, [
+    socket.emit(CodeServiceMsg.UPDATE_CODE, [
       change.text,
       change.range.startLineNumber,
       change.range.startColumn,

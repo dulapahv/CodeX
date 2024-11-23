@@ -65,7 +65,7 @@ export const syncCode = (socket: Socket, io: Server): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     const code = getCode(getUserRoom(socket));
-    io.to(socket.id).emit(CodeServiceMsg.RECEIVE_CODE, code);
+    io.to(socket.id).emit(CodeServiceMsg.SYNC_CODE, code);
   }
 };
 
@@ -79,7 +79,7 @@ export const syncLang = (socket: Socket, io: Server): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     const langId = getLang(roomID);
-    io.to(socket.id).emit(CodeServiceMsg.LANG_RX, langId);
+    io.to(socket.id).emit(CodeServiceMsg.UPDATE_LANG, langId);
   }
 };
 
@@ -93,7 +93,7 @@ export const updateLang = (socket: Socket, langId: string): void => {
   const customId = getCustomId(socket.id);
   if (customId) {
     setLang(roomID, langId);
-    socket.to(roomID).emit(CodeServiceMsg.LANG_RX, langId);
+    socket.to(roomID).emit(CodeServiceMsg.UPDATE_LANG, langId);
   }
 };
 
@@ -121,7 +121,7 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   if (!customId || !roomID) return;
 
   // Emit update with custom ID
-  socket.to(roomID).emit(CodeServiceMsg.CODE_RX, operation);
+  socket.to(roomID).emit(CodeServiceMsg.UPDATE_CODE, operation);
 
   const currentCode = getCode(roomID);
   const [txt, startLnNum, startCol, endLnNum, endCol] = operation;

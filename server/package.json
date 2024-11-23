@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
+    "@types/simple-peer": "^9.11.8",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",

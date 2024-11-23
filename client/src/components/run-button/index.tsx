@@ -5,7 +5,7 @@ import { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
-import { RoomServiceMsg } from '@common/types/message';
+import { CodeServiceMsg } from '@common/types/message';
 import {
   ExecutionResultType,
   type ExecutionResult,
@@ -33,11 +33,11 @@ export const RunButton = ({
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    socket.on(RoomServiceMsg.EXEC_RX, (isExecuting: boolean) => {
+    socket.on(CodeServiceMsg.EXEC, (isExecuting: boolean) => {
       setIsRunning(isExecuting);
     });
     return () => {
-      socket.off(RoomServiceMsg.EXEC_RX);
+      socket.off(CodeServiceMsg.EXEC);
     };
   }, [socket]);
 
@@ -46,7 +46,7 @@ export const RunButton = ({
 
     const startTime = new Date();
     setIsRunning(true);
-    socket.emit(RoomServiceMsg.EXEC_TX, true);
+    socket.emit(CodeServiceMsg.EXEC, true);
 
     try {
       const code = editor.getValue();
@@ -67,7 +67,7 @@ export const RunButton = ({
 
       // Log the initial "Running..." message
       setOutput((currentOutput) => [...currentOutput, res]);
-      socket.emit(RoomServiceMsg.TERM_TX, res);
+      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
 
       if (!code.trim()) {
         const res = {
@@ -84,7 +84,7 @@ export const RunButton = ({
           type: ExecutionResultType.WARNING,
         };
         setOutput((currentOutput) => [...currentOutput, res]);
-        socket.emit(RoomServiceMsg.TERM_TX, res);
+        socket.emit(CodeServiceMsg.UPDATE_TERM, res);
         return;
       }
 
@@ -122,7 +122,7 @@ export const RunButton = ({
       setOutput((currentOutput) => {
         return [...currentOutput, resultWithTimestamp];
       });
-      socket.emit(RoomServiceMsg.TERM_TX, resultWithTimestamp);
+      socket.emit(CodeServiceMsg.UPDATE_TERM, resultWithTimestamp);
     } catch (error) {
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
@@ -145,10 +145,10 @@ export const RunButton = ({
         type: ExecutionResultType.ERROR,
       };
       setOutput((currentOutput) => [...currentOutput, res]);
-      socket.emit(RoomServiceMsg.TERM_TX, res);
+      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
     } finally {
       setIsRunning(false);
-      socket.emit(RoomServiceMsg.EXEC_TX, false);
+      socket.emit(CodeServiceMsg.EXEC, false);
     }
   };
 

@@ -139,18 +139,18 @@
     --radius: 0.5rem;
   }
   .dark-editor {
-    --accentBase: #0D1520;
+    --accentBase: #0d1520;
     --accentBgSubtle: #111927;
-    --accentBg: #0D2847;
+    --accentBg: #0d2847;
     --accentBgHover: #003362;
     --accentBgActive: #004074;
-    --accentLine: #104D87;
-    --accentBorder: #205D9E;
-    --accentBorderHover: #2870BD;
-    --accentSolid: #0090FF;
-    --accentSolidHover: #3B9EFF;
-    --accentText: #70B8FF;
-    --accentTextContrast: #C2E6FF;
+    --accentLine: #104d87;
+    --accentBorder: #205d9e;
+    --accentBorderHover: #2870bd;
+    --accentSolid: #0090ff;
+    --accentSolidHover: #3b9eff;
+    --accentText: #70b8ff;
+    --accentTextContrast: #c2e6ff;
 
     --baseBase: var(--mauve-1);
     --baseBgSubtle: var(--mauve-2);

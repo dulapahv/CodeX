@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 
-import { RoomServiceMsg } from '../../../common/types/message';
+import { CodeServiceMsg, RoomServiceMsg } from '../../../common/types/message';
 import { ExecutionResult } from '../../../common/types/terminal';
 import { generateRoomID } from '../utils/generate-room-id';
 import { normalizeRoomId } from '../utils/normalize-room-id';
@@ -41,7 +41,7 @@ export const create = async (socket: Socket, name: string): Promise<void> => {
   // Initialize room cache
   roomUsersCache.set(roomID, { [customId]: name });
 
-  socket.emit(RoomServiceMsg.CREATED, roomID, customId);
+  socket.emit(RoomServiceMsg.CREATE, roomID, customId);
 };
 
 /**
@@ -69,8 +69,8 @@ export const join = async (
   roomUsersCache.set(roomID, users);
 
   // Emit events
-  socket.emit(RoomServiceMsg.JOINED, customId);
-  socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users);
+  socket.emit(RoomServiceMsg.JOIN, customId);
+  socket.to(roomID).emit(RoomServiceMsg.SYNC_USERS, users);
 };
 
 /**
@@ -98,8 +98,8 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
     }
 
     if (io.sockets.adapter.rooms.has(roomID)) {
-      socket.to(roomID).emit(RoomServiceMsg.USER_LEFT, customId);
-      socket.to(roomID).emit(RoomServiceMsg.UPDATE_USERS, users || {});
+      socket.to(roomID).emit(RoomServiceMsg.LEAVE, customId);
+      socket.to(roomID).emit(RoomServiceMsg.SYNC_USERS, users || {});
     }
 
     await socket.leave(roomID);
@@ -145,7 +145,7 @@ export const getUsersInRoom = (
   }
 
   // Update client
-  io.to(socket.id).emit(RoomServiceMsg.UPDATE_USERS, users);
+  io.to(socket.id).emit(RoomServiceMsg.SYNC_USERS, users);
   return users;
 };
 
@@ -165,7 +165,7 @@ export const syncNote = (socket: Socket, io: Server): void => {
   if (!roomID) return;
 
   const note = roomNotes.get(roomID) || '';
-  io.to(socket.id).emit(RoomServiceMsg.MD_RX, note);
+  io.to(socket.id).emit(RoomServiceMsg.UPDATE_MD, note);
 };
 
 /**
@@ -175,7 +175,7 @@ export const updateNote = (socket: Socket, note: string): void => {
   const roomID = getUserRoom(socket);
   if (!roomID) return;
 
-  socket.to(roomID).emit(RoomServiceMsg.MD_RX, note);
+  socket.to(roomID).emit(RoomServiceMsg.UPDATE_MD, note);
   roomNotes.set(roomID, note);
 };
 
@@ -183,7 +183,7 @@ export const updateExecuting = (socket: Socket, executing: boolean): void => {
   const roomID = getUserRoom(socket);
   if (!roomID) return;
 
-  socket.to(roomID).emit(RoomServiceMsg.EXEC_RX, executing);
+  socket.to(roomID).emit(CodeServiceMsg.EXEC, executing);
 };
 
 /**
@@ -193,5 +193,5 @@ export const updateTerminal = (socket: Socket, data: ExecutionResult): void => {
   const roomID = getUserRoom(socket);
   if (!roomID) return;
 
-  socket.to(roomID).emit(RoomServiceMsg.TERM_RX, data);
+  socket.to(roomID).emit(CodeServiceMsg.UPDATE_TERM, data);
 };

@@ -54,17 +54,17 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
   const markdownEditorRef = useRef<MDXEditorMethods>(null);
 
   useEffect(() => {
-    socket.on(RoomServiceMsg.MD_RX, (value: string) => {
+    socket.on(RoomServiceMsg.UPDATE_MD, (value: string) => {
       markdownEditorRef.current?.setMarkdown(value);
     });
 
     return () => {
-      socket.off(RoomServiceMsg.MD_RX);
+      socket.off(RoomServiceMsg.UPDATE_MD);
     };
   }, [socket]);
 
   const onChange = (value: string) => {
-    socket.emit(RoomServiceMsg.MD_TX, value);
+    socket.emit(RoomServiceMsg.UPDATE_MD, value);
   };
 
   return (

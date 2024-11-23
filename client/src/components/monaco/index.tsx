@@ -38,11 +38,7 @@ import Editor, { type Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useTheme } from 'next-themes';
 
-import {
-  CodeServiceMsg,
-  RoomServiceMsg,
-  UserServiceMsg,
-} from '@common/types/message';
+import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
@@ -102,11 +98,11 @@ const MonacoEditor = memo(function MonacoEditor({
   useEffect(() => {
     if (!isMonacoReady) return;
 
-    socket.on(CodeServiceMsg.CODE_RX, (op: EditOp) =>
+    socket.on(CodeServiceMsg.UPDATE_CODE, (op: EditOp) =>
       codeService.updateCode(op, editorInstanceRef, skipUpdateRef),
     );
 
-    socket.on(UserServiceMsg.CURSOR_RX, (userID: string, cursor: Cursor) =>
+    socket.on(CodeServiceMsg.UPDATE_CURSOR, (userID: string, cursor: Cursor) =>
       cursorService.updateCursor(
         userID,
         cursor,
@@ -117,15 +113,15 @@ const MonacoEditor = memo(function MonacoEditor({
       ),
     );
 
-    socket.on(RoomServiceMsg.USER_LEFT, (userID: string) =>
+    socket.on(RoomServiceMsg.LEAVE, (userID: string) =>
       cursorService.removeCursor(userID, cursorDecorationsRef),
     );
 
     // Cleanup socket listeners
     return () => {
-      socket.off(CodeServiceMsg.CODE_RX);
-      socket.off(UserServiceMsg.CURSOR_RX);
-      socket.off(RoomServiceMsg.USER_LEFT);
+      socket.off(CodeServiceMsg.UPDATE_CODE);
+      socket.off(CodeServiceMsg.UPDATE_CURSOR);
+      socket.off(RoomServiceMsg.LEAVE);
     };
   }, [isMonacoReady, socket]);
 

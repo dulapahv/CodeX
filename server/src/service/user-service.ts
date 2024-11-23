@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { UserServiceMsg } from '../../../common/types/message';
+import { CodeServiceMsg } from '../../../common/types/message';
 import { Cursor } from '../../../common/types/operation';
 import { getUserRoom } from './room-service';
 
@@ -81,7 +81,9 @@ export const updateCursor = (socket: Socket, cursor: Cursor): void => {
   const userData = socketToUserData.get(socket.id);
 
   if (userData) {
-    socket.to(roomId).emit(UserServiceMsg.CURSOR_RX, userData.customId, cursor);
+    socket
+      .to(roomId)
+      .emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
   }
 };
 
