@@ -25,7 +25,7 @@ interface WebcamStreamProps {
 const WebcamStream = ({ users }: WebcamStreamProps) => {
   const [cameraOn, setCameraOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
-  const [speakersOn, setSpeakersOn] = useState(false);
+  const [speakersOn, setSpeakersOn] = useState(true);
   const [remoteStreams, setRemoteStreams] = useState<{
     [key: string]: MediaStream | null;
   }>({});
@@ -115,13 +115,19 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: micOn,
+        audio: true, // Always request audio - we'll control it with track.enabled
       });
 
+      // Store the stream
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
+
+      // Set initial audio track state
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = micOn;
+      });
 
       // Update existing peer connections with the new stream
       Object.entries(peersRef.current).forEach(([userID, peer]) => {
@@ -147,7 +153,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
   // Initialize peer connections
   const initializePeerConnections = useCallback(() => {
-    // Always notify others we're ready to connect, even without media
     socket.emit(StreamServiceMsg.STREAM_READY);
   }, [socket]);
 
@@ -158,7 +163,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         let peer = peersRef.current[userID];
 
         if (!peer || peer.destroyed) {
-          // Store signal if peer doesn't exist yet
           if (!pendingSignalsRef.current[userID]) {
             pendingSignalsRef.current[userID] = [];
           }
@@ -194,15 +198,40 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         socket.emit(StreamServiceMsg.CAMERA_OFF);
         streamRef.current = null;
         setCameraOn(false);
+        setMicOn(false); // Reset mic state when camera is turned off
       }
     } catch (error) {
       toast.error(`Error toggling camera.\n${parseError(error)}`);
     }
   };
 
+  // Toggle microphone
+  const toggleMic = () => {
+    try {
+      if (!streamRef.current) {
+        toast.error('No active media stream');
+        return;
+      }
+
+      const audioTracks = streamRef.current.getAudioTracks();
+      if (audioTracks.length === 0) {
+        toast.error('No audio track found');
+        return;
+      }
+
+      const newMicState = !micOn;
+      audioTracks.forEach((track) => {
+        track.enabled = newMicState;
+      });
+
+      setMicOn(newMicState);
+    } catch (error) {
+      toast.error(`Error toggling microphone.\n${parseError(error)}`);
+    }
+  };
+
   // Handle socket events
   useEffect(() => {
-    // Initialize connections immediately without waiting for media
     initializePeerConnections();
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
@@ -329,10 +358,11 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              onClick={() => setMicOn((prev) => !prev)}
+              onClick={toggleMic}
               variant={micOn ? 'default' : 'secondary'}
               size="icon"
               aria-label={micOn ? 'Turn off microphone' : 'Turn on microphone'}
+              disabled={!cameraOn}
               type="button"
               aria-haspopup="dialog"
             >
