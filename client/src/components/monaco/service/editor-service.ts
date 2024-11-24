@@ -24,7 +24,7 @@ import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
 
 import { CodeServiceMsg } from '@common/types/message';
-import { Cursor, EditOp } from '@common/types/operation';
+import type { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';

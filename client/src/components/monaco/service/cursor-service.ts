@@ -29,7 +29,7 @@ import { MutableRefObject } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
-import { Cursor } from '@common/types/operation';
+import type { Cursor } from '@common/types/operation';
 
 import { userMap } from '@/lib/services/user-map';
 

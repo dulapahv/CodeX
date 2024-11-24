@@ -39,7 +39,7 @@ import type * as monaco from 'monaco-editor';
 import { useTheme } from 'next-themes';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
-import { Cursor, EditOp } from '@common/types/operation';
+import type { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';

@@ -282,7 +282,7 @@ export default function Room({ params }: RoomProps) {
               className="!h-[calc(100%-24px)] overflow-clip"
             >
               <ResizablePanel
-                className="animate-fade-in"
+                className="z-[1] animate-fade-in"
                 role="region"
                 aria-label="Code Editor"
                 defaultSize={75}

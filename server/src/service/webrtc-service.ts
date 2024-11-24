@@ -1,5 +1,5 @@
 import type { SignalData } from 'simple-peer';
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 
 import { StreamServiceMsg } from '../../../common/types/message';
 import * as roomService from './room-service';
@@ -32,5 +32,25 @@ export const onCameraOff = (socket: Socket) => {
     socket
       .to(room)
       .emit(StreamServiceMsg.CAMERA_OFF, userService.getCustomId(socket.id));
+  }
+};
+
+export const handleMicState = (socket: Socket, micOn: boolean) => {
+  const room = roomService.getUserRoom(socket);
+  if (room) {
+    socket.to(room).emit(StreamServiceMsg.MIC_STATE, {
+      userID: userService.getCustomId(socket.id),
+      micOn,
+    });
+  }
+};
+
+export const handleSpeakerState = (socket: Socket, speakersOn: boolean) => {
+  const room = roomService.getUserRoom(socket);
+  if (room) {
+    socket.to(room).emit(StreamServiceMsg.SPEAKER_STATE, {
+      userID: userService.getCustomId(socket.id),
+      speakersOn,
+    });
   }
 };

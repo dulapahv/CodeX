@@ -64,25 +64,25 @@ const DEFAULT_THEMES: Record<string, ThemeConfig> = {
 
 const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const { setTheme } = useTheme();
-
   const [open, setOpen] = useState(false);
-  const [editorTheme, setEditorTheme] = useState('');
+  const [editorTheme, setEditorTheme] = useState('vs-dark'); // Set default theme
 
   // Load theme from localStorage on component mount
   useEffect(() => {
-    const theme = localStorage.getItem('editorTheme');
-    if (theme) {
-      setEditorTheme(theme);
+    const savedTheme = localStorage.getItem('editorTheme');
+    if (savedTheme) {
+      setEditorTheme(savedTheme);
+    }
+    // Apply default theme if no saved theme exists
+    else {
+      handleThemeChange('vs-dark', DEFAULT_THEMES['vs-dark'].name);
     }
   }, []);
 
   const handleThemeChange = useCallback(
     (key: string, value: string) => {
-      const newTheme = key === editorTheme ? '' : key;
-      setEditorTheme(newTheme);
-
-      localStorage.setItem('editorTheme', newTheme);
-
+      setEditorTheme(key); // Always set the new theme
+      localStorage.setItem('editorTheme', key);
       setOpen(false);
 
       if (key in DEFAULT_THEMES) {
@@ -91,7 +91,6 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
         setCSSVariables(themeConfig.variables);
       } else {
         const themeData = require(`monaco-themes/themes/${value}.json`);
-
         setTheme(themeData.base === 'vs-dark' ? 'dark' : 'light');
 
         setCSSVariables({
@@ -124,7 +123,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
         monaco.editor.setTheme(key);
       }
     },
-    [monaco, editorTheme, setTheme],
+    [monaco, setTheme],
   );
 
   if (!monaco) return null;
@@ -148,9 +147,8 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
             aria-expanded={open}
             className="justify-between"
           >
-            {editorTheme
-              ? themes.find(([key]) => key === editorTheme)?.[1].name
-              : 'Select theme'}
+            {themes.find(([key]) => key === editorTheme)?.[1].name ||
+              'Dark (Visual Studio)'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

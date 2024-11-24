@@ -13,7 +13,7 @@
 }
 /* Scrollbar handle */
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-[#5d73a5];
+  @apply rounded-full bg-[#6e6e6e] px-1 hover:bg-[#424242] dark:bg-[#999999] dark:hover:bg-[#c2c2c2];
 }
 
 :root {

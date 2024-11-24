@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, Video, VideoOff, Volume2, VolumeOff } from 'lucide-react';
 import Peer from 'simple-peer';
 import { toast } from 'sonner';
@@ -9,7 +9,7 @@ import type { User } from '@common/types/user';
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
-import { parseError } from '@/lib/utils';
+import { cn, parseError } from '@/lib/utils';
 import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,6 +29,21 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const [remoteStreams, setRemoteStreams] = useState<{
     [key: string]: MediaStream | null;
   }>({});
+  const [remoteMicStates, setRemoteMicStates] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [remoteSpeakerStates, setRemoteSpeakerStates] = useState<{
+    [key: string]: boolean;
+  }>(() => {
+    // Initialize with default 'true' state for all users
+    return users.reduce(
+      (acc, user) => {
+        acc[user.id] = true;
+        return acc;
+      },
+      {} as { [key: string]: boolean },
+    );
+  });
 
   const socket = getSocket();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -221,9 +236,16 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       });
 
       setMicOn(newMicState);
+      socket.emit(StreamServiceMsg.MIC_STATE, newMicState);
     } catch (error) {
       toast.error(`Error toggling microphone.\n${parseError(error)}`);
     }
+  };
+
+  const toggleSpeakers = () => {
+    const newSpeakerState = !speakersOn;
+    setSpeakersOn(newSpeakerState);
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
   };
 
   // Handle socket events
@@ -233,6 +255,20 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       createPeer(userID, true);
     });
+
+    socket.on(
+      StreamServiceMsg.MIC_STATE,
+      ({ userID, micOn }: { userID: string; micOn: boolean }) => {
+        setRemoteMicStates((prev) => ({ ...prev, [userID]: micOn }));
+      },
+    );
+
+    socket.on(
+      StreamServiceMsg.SPEAKER_STATE,
+      ({ userID, speakersOn }: { userID: string; speakersOn: boolean }) => {
+        setRemoteSpeakerStates((prev) => ({ ...prev, [userID]: speakersOn }));
+      },
+    );
 
     socket.on(
       StreamServiceMsg.SIGNAL,
@@ -256,6 +292,8 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
       socket.off(StreamServiceMsg.USER_DISCONNECTED);
+      socket.off(StreamServiceMsg.MIC_STATE);
+      socket.off(StreamServiceMsg.SPEAKER_STATE);
 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -264,10 +302,50 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     };
   }, [socket, createPeer, handleSignal, cleanupPeer]);
 
+  const VideoControls = ({
+    isLocal,
+    userId,
+  }: {
+    isLocal: boolean;
+    userId: string;
+  }) => {
+    const micState = isLocal ? micOn : remoteMicStates[userId];
+    const speakerState = isLocal ? speakersOn : remoteSpeakerStates[userId];
+
+    return (
+      <div className="absolute right-2 top-2 flex gap-1">
+        <div
+          className={cn(
+            'rounded px-1.5 py-0.5',
+            micState ? 'bg-green-500/70' : 'bg-red-500/70',
+          )}
+        >
+          {micState ? (
+            <Mic className="size-4 text-white" />
+          ) : (
+            <MicOff className="size-4 text-white" />
+          )}
+        </div>
+        <div
+          className={cn(
+            'rounded px-1.5 py-0.5',
+            speakerState ? 'bg-green-500/70' : 'bg-red-500/70',
+          )}
+        >
+          {speakerState ? (
+            <Volume2 className="size-4 text-white" />
+          ) : (
+            <VolumeOff className="size-4 text-white" />
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
       <div
-        className="grid auto-rows-[1fr] gap-2 overflow-y-auto"
+        className="grid max-h-[95%] auto-rows-[1fr] gap-2 overflow-y-auto"
         style={{
           gridTemplateColumns:
             'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
@@ -275,7 +353,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       >
         {/* Local video */}
         <div className="relative">
-          <div className="relative aspect-video rounded-lg bg-black/40">
+          <div className="relative aspect-video rounded-lg bg-black/10 dark:bg-black/30">
             <video
               ref={videoRef}
               autoPlay
@@ -294,6 +372,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 />
               </div>
             )}
+            <VideoControls isLocal={true} userId={storage.getUserId() ?? ''} />
             <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
               {userMap.get(storage.getUserId() ?? '')} (You)
             </div>
@@ -305,7 +384,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           .filter((user) => user.id !== storage.getUserId())
           .map((user) => (
             <div key={user.id} className="relative">
-              <div className="relative aspect-video rounded-lg bg-black/40">
+              <div className="relative aspect-video rounded-lg bg-black/10 dark:bg-black/30">
                 {remoteStreams[user.id] ? (
                   <video
                     autoPlay
@@ -321,6 +400,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                     <Avatar user={user} size="lg" />
                   </div>
                 )}
+                <VideoControls isLocal={false} userId={user.id} />
                 <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
                   {user.username}
                 </div>
@@ -335,7 +415,11 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           <TooltipTrigger asChild>
             <Button
               onClick={toggleCamera}
-              variant={cameraOn ? 'default' : 'secondary'}
+              className={cn(
+                cameraOn
+                  ? 'bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]'
+                  : 'bg-foreground/10 hover:bg-foreground/20',
+              )}
               size="icon"
               aria-label={cameraOn ? 'Turn off camera' : 'Turn on camera'}
               type="button"
@@ -355,7 +439,11 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           <TooltipTrigger asChild>
             <Button
               onClick={toggleMic}
-              variant={micOn ? 'default' : 'secondary'}
+              className={cn(
+                micOn
+                  ? 'bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]'
+                  : 'bg-foreground/10 hover:bg-foreground/20',
+              )}
               size="icon"
               aria-label={micOn ? 'Turn off microphone' : 'Turn on microphone'}
               disabled={!cameraOn}
@@ -375,8 +463,12 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              onClick={() => setSpeakersOn((prev) => !prev)}
-              variant={speakersOn ? 'default' : 'secondary'}
+              onClick={toggleSpeakers}
+              className={cn(
+                speakersOn
+                  ? 'bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]'
+                  : 'bg-foreground/10 hover:bg-foreground/20',
+              )}
               size="icon"
               aria-label={speakersOn ? 'Turn off speakers' : 'Turn on speakers'}
               type="button"

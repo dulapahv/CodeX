@@ -7,8 +7,8 @@ import {
   RoomServiceMsg,
   StreamServiceMsg,
 } from '../../common/types/message';
-import { Cursor, EditOp } from '../../common/types/operation';
-import { type ExecutionResult } from '../../common/types/terminal';
+import type { Cursor, EditOp } from '../../common/types/operation';
+import type { ExecutionResult } from '../../common/types/terminal';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
 import * as userService from './service/user-service';
@@ -98,6 +98,12 @@ io.on('connection', (socket) => {
   );
   socket.on(StreamServiceMsg.CAMERA_OFF, () =>
     webRTCService.onCameraOff(socket),
+  );
+  socket.on(StreamServiceMsg.MIC_STATE, (micOn: boolean) =>
+    webRTCService.handleMicState(socket, micOn),
+  );
+  socket.on(StreamServiceMsg.SPEAKER_STATE, (speakersOn: boolean) =>
+    webRTCService.handleSpeakerState(socket, speakersOn),
   );
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });

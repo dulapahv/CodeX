@@ -51,24 +51,6 @@ export const RunButton = ({
     try {
       const code = editor.getValue();
 
-      const res = {
-        language: 'system',
-        version: '1.0.0',
-        run: {
-          stdout: '🚀 Executing code...',
-          stderr: '',
-          code: 0,
-          signal: null,
-          output: '',
-        },
-        timestamp: startTime,
-        type: ExecutionResultType.INFO,
-      };
-
-      // Log the initial "Running..." message
-      setOutput((currentOutput) => [...currentOutput, res]);
-      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
-
       if (!code.trim()) {
         const res = {
           language: 'system',
@@ -88,6 +70,23 @@ export const RunButton = ({
         return;
       }
 
+      const res = {
+        language: 'system',
+        version: '1.0.0',
+        run: {
+          stdout: '🚀 Executing code...',
+          stderr: '',
+          code: 0,
+          signal: null,
+          output: '',
+        },
+        timestamp: startTime,
+        type: ExecutionResultType.INFO,
+      };
+
+      setOutput((currentOutput) => [...currentOutput, res]);
+      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
+
       const model = editor.getModel();
       const currentLanguageId = model?.getLanguageId();
       const language = monaco.languages
@@ -106,7 +105,9 @@ export const RunButton = ({
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}\nThis language might not be supported or the server is down.\nFor list of supported languages, please see https://github.com/engineer-man/piston?tab=readme-ov-file#Supported-Languages.`,
+        );
       }
 
       const result: ExecutionResult = await response.json();
@@ -135,10 +136,7 @@ export const RunButton = ({
           stderr: parseError(error),
           code: 1,
           signal: null,
-          output:
-            error instanceof Error
-              ? error.message
-              : 'An error occurred during execution',
+          output: parseError(error),
         },
         timestamp: endTime,
         executionTime,

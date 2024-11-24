@@ -25,4 +25,6 @@ export enum StreamServiceMsg {
   STREAM = 'R',
   USER_DISCONNECTED = 'S',
   CAMERA_OFF = 'T',
+  MIC_STATE = 'U',
+  SPEAKER_STATE = 'V',
 }

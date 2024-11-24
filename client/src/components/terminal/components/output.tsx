@@ -26,7 +26,7 @@ const Output = ({ result }: OutputProps) => {
         <div className="flex-1">
           {result.type === 'output' && (
             <div className="text-muted-foreground">
-              Running {result.language} v{result.version}
+              {`${String(result.language).charAt(0).toUpperCase() + String(result.language).slice(1)} v${result.version} (${'executionTime' in result && formatExecutionTime(result.executionTime ?? 0)})`}
             </div>
           )}
 
@@ -45,12 +45,6 @@ const Output = ({ result }: OutputProps) => {
           {result.run.code !== 0 && (
             <div className="text-red-500">
               Process exited with code {result.run.code}
-            </div>
-          )}
-
-          {'executionTime' in result && result.type !== 'info' && (
-            <div className="mt-1 text-xs text-muted-foreground">
-              Execution time: {formatExecutionTime(result.executionTime ?? 0)}
             </div>
           )}
         </div>
