@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import { LoaderCircle, Play } from 'lucide-react';
+import { Info, LoaderCircle, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@common/types/message';
@@ -14,6 +14,11 @@ import {
 import { getSocket } from '@/lib/socket';
 import { cn, parseError } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface RunButtonProps {
   monaco: Monaco | null;
@@ -151,30 +156,66 @@ export const RunButton = ({
   };
 
   return (
-    <Button
-      onClick={executeCode}
-      className={cn(
-        'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
-        className,
-      )}
-      disabled={isRunning || !editor}
-      aria-busy={isRunning}
-      aria-label={isRunning ? 'Running code' : 'Run code'}
-    >
-      {isRunning ? (
-        <>
-          <LoaderCircle
-            className="mr-1 size-4 animate-spin"
-            aria-hidden="true"
-          />
-          Running...
-        </>
-      ) : (
-        <>
-          <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
-          Run Code
-        </>
-      )}
-    </Button>
+    <div className="flex items-center gap-1">
+      <Button
+        onClick={executeCode}
+        className={cn(
+          'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+          className,
+        )}
+        disabled={isRunning || !editor}
+        aria-busy={isRunning}
+        aria-label={isRunning ? 'Running code' : 'Run code'}
+      >
+        {isRunning ? (
+          <>
+            <LoaderCircle
+              className="mr-1 size-4 animate-spin"
+              aria-hidden="true"
+            />
+            <span>Running...</span>
+          </>
+        ) : (
+          <>
+            <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
+            <span>Run Code</span>
+          </>
+        )}
+      </Button>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 rounded-sm p-0 hover:bg-transparent hover:opacity-80"
+          >
+            <Info className="size-4 text-[color:var(--panel-text)]" />
+            <span className="sr-only">About code execution</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80">
+          <div className="space-y-2">
+            <h4 className="font-medium">Code Execution</h4>
+            <p className="text-sm text-muted-foreground">
+              Powered by Piston, an open-source code execution engine. Rate
+              limited to 5 requests per second.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              For a list of supported programming languages, visit the{' '}
+              <a
+                href="https://github.com/engineer-man/piston#Supported-Languages"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium underline underline-offset-4"
+              >
+                Piston documentation
+              </a>
+              .
+            </p>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
