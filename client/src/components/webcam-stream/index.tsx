@@ -34,47 +34,27 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<{ [key: string]: Peer.Instance }>({});
+  const pendingSignalsRef = useRef<{ [key: string]: any[] }>({});
 
-  // Get local media stream
-  const getMedia = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      // Update existing peer connections with the new stream
-      Object.entries(peersRef.current).forEach(([userID, peer]) => {
-        if (!peer.destroyed) {
-          streamRef.current?.getTracks().forEach((track) => {
-            try {
-              peer.addTrack(track, streamRef.current!);
-            } catch (error) {
-              console.error(`Error adding track for peer ${userID}:`, error);
-              // If we can't add tracks, recreate the peer
-              cleanupPeer(userID);
-              createPeer(userID, true);
-            }
-          });
+  // Clean up a peer connection
+  const cleanupPeer = useCallback((userID: string) => {
+    const peer = peersRef.current[userID];
+    if (peer) {
+      if (!peer.destroyed) {
+        try {
+          peer.destroy();
+        } catch (error) {
+          toast.warning(`Error destroying peer connection for ${userID}`);
         }
+      }
+      delete peersRef.current[userID];
+      setRemoteStreams((prev) => {
+        const newStreams = { ...prev };
+        delete newStreams[userID];
+        return newStreams;
       });
-
-      // Notify other clients in the room that we're ready to stream
-      socket.emit(StreamServiceMsg.STREAM_READY);
-    } catch (error) {
-      toast.error(`Error accessing media devices.\n${parseError(error)}`);
     }
-  }, [socket]);
-
-  // Initialize peer connections without media
-  const initializePeerConnections = useCallback(() => {
-    socket.emit(StreamServiceMsg.STREAM_READY);
-  }, [socket]);
+  }, []);
 
   // Create a new peer connection
   const createPeer = useCallback(
@@ -85,7 +65,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
         const peer = new Peer({
           initiator,
-          // Initialize peer with or without stream
           ...(streamRef.current && { stream: streamRef.current }),
         });
 
@@ -101,54 +80,76 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         });
 
         peer.on('error', (err) => {
-          console.error('Peer error:', err);
-          toast.error(`Peer connection error:\n${parseError(err)}`);
+          // Don't show error toast for expected state errors
+          if (!err.message.includes('state')) {
+            toast.error(`Peer connection error:\n${parseError(err)}`);
+          }
           cleanupPeer(userID);
         });
+
+        // Process any pending signals
+        const pendingSignals = pendingSignalsRef.current[userID] || [];
+        pendingSignals.forEach((signal) => {
+          try {
+            peer.signal(signal);
+          } catch (error) {
+            toast.warning(
+              `Error processing pending signal for ${userID}:\n${error}`,
+            );
+          }
+        });
+        delete pendingSignalsRef.current[userID];
 
         peersRef.current[userID] = peer;
         return peer;
       } catch (error) {
-        console.error('Error creating peer:', error);
         toast.error(`Error creating peer connection:\n${parseError(error)}`);
         return null;
       }
     },
-    [socket],
+    [socket, cleanupPeer],
   );
 
-  // Clean up a peer connection
-  const cleanupPeer = useCallback((userID: string) => {
-    const peer = peersRef.current[userID];
-    if (peer) {
-      if (!peer.destroyed) {
-        try {
-          // Remove all tracks before destroying
-          if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => {
-              try {
-                peer.removeTrack(track, streamRef.current!);
-              } catch (error) {
-                console.warn(
-                  `Error removing track from peer ${userID}:`,
-                  error,
-                );
-              }
-            });
-          }
-          peer.destroy();
-        } catch (error) {
-          console.warn(`Error destroying peer ${userID}:`, error);
-        }
-      }
-      delete peersRef.current[userID];
-      setRemoteStreams((prev) => {
-        const newStreams = { ...prev };
-        delete newStreams[userID];
-        return newStreams;
+  // Get local media stream
+  const getMedia = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: micOn,
       });
+
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+
+      // Update existing peer connections with the new stream
+      Object.entries(peersRef.current).forEach(([userID, peer]) => {
+        if (!peer.destroyed) {
+          // Add new tracks
+          streamRef.current?.getTracks().forEach((track) => {
+            try {
+              peer.addTrack(track, streamRef.current!);
+            } catch (error) {
+              // If we can't add tracks, recreate the peer
+              cleanupPeer(userID);
+              createPeer(userID, true);
+            }
+          });
+        }
+      });
+
+      // Notify other clients in the room that we're ready to stream
+      socket.emit(StreamServiceMsg.STREAM_READY);
+    } catch (error) {
+      toast.error(`Error accessing media devices.\n${parseError(error)}`);
     }
-  }, []);
+  }, [socket, createPeer, micOn, cleanupPeer]);
+
+  // Initialize peer connections without media
+  const initializePeerConnections = useCallback(() => {
+    socket.emit(StreamServiceMsg.STREAM_READY);
+  }, [socket]);
 
   // Handle incoming signals
   const handleSignal = useCallback(
@@ -157,14 +158,16 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         let peer = peersRef.current[userID];
 
         if (!peer || peer.destroyed) {
+          // Store signal if peer doesn't exist yet
+          if (!pendingSignalsRef.current[userID]) {
+            pendingSignalsRef.current[userID] = [];
+          }
+          pendingSignalsRef.current[userID].push(signal);
           peer = createPeer(userID, false) as Peer.Instance;
-        }
-
-        if (peer) {
+        } else {
           peer.signal(signal);
         }
       } catch (error) {
-        console.error('Error handling signal:', error);
         toast.error(`Error handling peer signal:\n${parseError(error)}`);
       }
     },
@@ -179,22 +182,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         setCameraOn(true);
       } else {
         if (streamRef.current) {
-          // Remove tracks from peer connections before stopping them
-          Object.entries(peersRef.current).forEach(([userID, peer]) => {
-            if (!peer.destroyed) {
-              streamRef.current?.getTracks().forEach((track) => {
-                try {
-                  peer.removeTrack(track, streamRef.current!);
-                } catch (error) {
-                  console.warn(
-                    `Error removing track from peer ${userID}:`,
-                    error,
-                  );
-                }
-              });
-            }
-          });
-
           // Stop all tracks
           streamRef.current.getTracks().forEach((track) => track.stop());
         }
@@ -220,21 +207,22 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     initializePeerConnections();
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
-      console.log('User ready:', userID);
       createPeer(userID, true);
     });
 
     socket.on(
       StreamServiceMsg.SIGNAL,
       ({ userID, signal }: { userID: string; signal: any }) => {
-        console.log('Received signal from:', userID);
         handleSignal(userID, signal);
       },
     );
 
-    socket.on(StreamServiceMsg.USER_DISCONNECTED, (userID: string) => {
-      console.log('User disconnected:', userID);
-      cleanupPeer(userID);
+    socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
+      setRemoteStreams((prev) => {
+        const newStreams = { ...prev };
+        delete newStreams[userID];
+        return newStreams;
+      });
     });
 
     return () => {

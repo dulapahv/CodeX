@@ -31,9 +31,6 @@ export const onCameraOff = (socket: Socket) => {
   if (room) {
     socket
       .to(room)
-      .emit(
-        StreamServiceMsg.USER_DISCONNECTED,
-        userService.getCustomId(socket.id),
-      );
+      .emit(StreamServiceMsg.CAMERA_OFF, userService.getCustomId(socket.id));
   }
 };
