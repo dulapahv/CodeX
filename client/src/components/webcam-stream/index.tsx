@@ -63,9 +63,10 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         // Clean up existing peer if it exists
         cleanupPeer(userID);
 
+        // Create peer with or without local stream
         const peer = new Peer({
           initiator,
-          ...(streamRef.current && { stream: streamRef.current }),
+          stream: streamRef.current || undefined,
         });
 
         peer.on('signal', (signal) => {
@@ -80,7 +81,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         });
 
         peer.on('error', (err) => {
-          // Don't show error toast for expected state errors
           if (!err.message.includes('state')) {
             toast.error(`Peer connection error:\n${parseError(err)}`);
           }
@@ -126,7 +126,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       // Update existing peer connections with the new stream
       Object.entries(peersRef.current).forEach(([userID, peer]) => {
         if (!peer.destroyed) {
-          // Add new tracks
           streamRef.current?.getTracks().forEach((track) => {
             try {
               peer.addTrack(track, streamRef.current!);
@@ -139,15 +138,16 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         }
       });
 
-      // Notify other clients in the room that we're ready to stream
-      socket.emit(StreamServiceMsg.STREAM_READY);
+      return true;
     } catch (error) {
       toast.error(`Error accessing media devices.\n${parseError(error)}`);
+      return false;
     }
-  }, [socket, createPeer, micOn, cleanupPeer]);
+  }, [createPeer, micOn, cleanupPeer]);
 
-  // Initialize peer connections without media
+  // Initialize peer connections
   const initializePeerConnections = useCallback(() => {
+    // Always notify others we're ready to connect, even without media
     socket.emit(StreamServiceMsg.STREAM_READY);
   }, [socket]);
 
@@ -178,11 +178,12 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const toggleCamera = async () => {
     try {
       if (!cameraOn) {
-        await getMedia();
-        setCameraOn(true);
+        const mediaStarted = await getMedia();
+        if (mediaStarted) {
+          setCameraOn(true);
+        }
       } else {
         if (streamRef.current) {
-          // Stop all tracks
           streamRef.current.getTracks().forEach((track) => track.stop());
         }
 
@@ -190,9 +191,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           videoRef.current.srcObject = null;
         }
 
-        // Notify other peers about camera state
         socket.emit(StreamServiceMsg.CAMERA_OFF);
-
         streamRef.current = null;
         setCameraOn(false);
       }
@@ -203,7 +202,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
   // Handle socket events
   useEffect(() => {
-    // Initialize peer connections without media when component mounts
+    // Initialize connections immediately without waiting for media
     initializePeerConnections();
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
@@ -225,16 +224,17 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       });
     });
 
+    const currentPeers = peersRef.current;
+
     return () => {
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
       socket.off(StreamServiceMsg.USER_DISCONNECTED);
 
-      // Clean up all peers and media streams
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
-      Object.keys(peersRef.current).forEach(cleanupPeer);
+      Object.keys(currentPeers).forEach(cleanupPeer);
     };
   }, [
     socket,
@@ -284,6 +284,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                   <video
                     autoPlay
                     playsInline
+                    muted={!speakersOn}
                     className="h-full w-full scale-x-[-1] rounded-lg object-cover"
                     ref={(element) => {
                       if (element) element.srcObject = remoteStreams[user.id];
