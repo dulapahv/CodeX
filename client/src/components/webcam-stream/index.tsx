@@ -81,9 +81,10 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         });
 
         peer.on('error', (err) => {
-          if (!err.message.includes('state')) {
-            toast.error(`Peer connection error:\n${parseError(err)}`);
-          }
+          // if (!err.message.includes('state')) {
+          //   toast.error(`Peer connection error:\n${parseError(err)}`);
+          // }
+          console.warn(`Peer connection error:\n${parseError(err)}`);
           cleanupPeer(userID);
         });
 
@@ -150,11 +151,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       return false;
     }
   }, [createPeer, micOn, cleanupPeer]);
-
-  // Initialize peer connections
-  const initializePeerConnections = useCallback(() => {
-    socket.emit(StreamServiceMsg.STREAM_READY);
-  }, [socket]);
 
   // Handle incoming signals
   const handleSignal = useCallback(
@@ -232,7 +228,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
   // Handle socket events
   useEffect(() => {
-    initializePeerConnections();
+    socket.emit(StreamServiceMsg.STREAM_READY);
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       createPeer(userID, true);
@@ -256,6 +252,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     const currentPeers = peersRef.current;
 
     return () => {
+      socket.off(StreamServiceMsg.STREAM_READY);
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
       socket.off(StreamServiceMsg.USER_DISCONNECTED);
@@ -265,26 +262,26 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       }
       Object.keys(currentPeers).forEach(cleanupPeer);
     };
-  }, [
-    socket,
-    createPeer,
-    handleSignal,
-    cleanupPeer,
-    initializePeerConnections,
-  ]);
+  }, [socket, createPeer, handleSignal, cleanupPeer]);
 
   return (
-    <div className="relative flex h-full flex-col gap-4 bg-[color:var(--panel-background)]">
-      <div className="flex flex-wrap gap-2 p-2">
+    <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
+      <div
+        className="grid auto-rows-[1fr] gap-2 overflow-y-auto"
+        style={{
+          gridTemplateColumns:
+            'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+        }}
+      >
         {/* Local video */}
-        <div className="relative min-w-[200px] flex-1">
-          <div className="relative aspect-video w-full rounded-lg bg-black/40">
+        <div className="relative">
+          <div className="relative aspect-video rounded-lg bg-black/40">
             <video
               ref={videoRef}
               autoPlay
               playsInline
               muted
-              className="h-full w-full scale-x-[-1] rounded-lg object-cover"
+              className="size-full scale-x-[-1] rounded-lg object-cover"
             />
             {!cameraOn && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -297,7 +294,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 />
               </div>
             )}
-            <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+            <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
               {userMap.get(storage.getUserId() ?? '')} (You)
             </div>
           </div>
@@ -307,14 +304,14 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         {users
           .filter((user) => user.id !== storage.getUserId())
           .map((user) => (
-            <div key={user.id} className="relative min-w-[200px] flex-1">
-              <div className="relative aspect-video w-full rounded-lg bg-black/40">
+            <div key={user.id} className="relative">
+              <div className="relative aspect-video rounded-lg bg-black/40">
                 {remoteStreams[user.id] ? (
                   <video
                     autoPlay
                     playsInline
                     muted={!speakersOn}
-                    className="h-full w-full scale-x-[-1] rounded-lg object-cover"
+                    className="size-full scale-x-[-1] rounded-lg object-cover"
                     ref={(element) => {
                       if (element) element.srcObject = remoteStreams[user.id];
                     }}
@@ -324,7 +321,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                     <Avatar user={user} size="lg" />
                   </div>
                 )}
-                <div className="absolute bottom-2 left-2 truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+                <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
                   {user.username}
                 </div>
               </div>
@@ -342,7 +339,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               size="icon"
               aria-label={cameraOn ? 'Turn off camera' : 'Turn on camera'}
               type="button"
-              aria-haspopup="dialog"
             >
               {cameraOn ? (
                 <Video className="size-5" />
@@ -364,7 +360,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               aria-label={micOn ? 'Turn off microphone' : 'Turn on microphone'}
               disabled={!cameraOn}
               type="button"
-              aria-haspopup="dialog"
             >
               {micOn ? (
                 <Mic className="size-5" />
@@ -378,14 +373,13 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           </TooltipContent>
         </Tooltip>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild>
             <Button
               onClick={() => setSpeakersOn((prev) => !prev)}
               variant={speakersOn ? 'default' : 'secondary'}
               size="icon"
               aria-label={speakersOn ? 'Turn off speakers' : 'Turn on speakers'}
               type="button"
-              aria-haspopup="dialog"
             >
               {speakersOn ? (
                 <Volume2 className="size-5" />
