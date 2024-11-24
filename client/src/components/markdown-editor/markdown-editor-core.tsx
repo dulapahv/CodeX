@@ -13,8 +13,10 @@ import {
   DiffSourceToggleWrapper,
   directivesPlugin,
   headingsPlugin,
+  imagePlugin,
   InsertAdmonition,
   InsertCodeBlock,
+  InsertImage,
   InsertTable,
   InsertThematicBreak,
   linkDialogPlugin,
@@ -76,7 +78,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
       trim={false}
       placeholder="All participants can edit this note..."
       className={cn(
-        'flex w-full flex-col !bg-[color:var(--panel-background)] [&>*:nth-child(2)>div>div>div]:h-full [&>*:nth-child(2)>div>div]:h-full [&>*:nth-child(2)>div]:h-full [&>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto last:[&>div>div]:!ml-0 first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:rounded-none first:[&>div]:!bg-[color:var(--toolbar-bg-secondary)]',
+        'flex w-full flex-col !bg-[color:var(--panel-background)] [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div]:!ml-0 [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
         resolvedTheme === 'dark' && '!dark-editor !dark-theme',
       )}
       contentEditableClassName={cn(
@@ -101,6 +103,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
           diffMarkdown: markdown,
           viewMode: 'rich-text',
         }),
+        imagePlugin(),
         // https://codemirror.net/5/mode/
         codeMirrorPlugin({
           codeBlockLanguages: {
@@ -140,8 +143,11 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
                 <BlockTypeSelect />
                 <Separator />
                 <CreateLink />
+                <InsertImage />
+                <Separator />
                 <InsertTable />
                 <InsertThematicBreak />
+                <Separator />
                 <InsertCodeBlock />
                 <InsertAdmonition />
                 <Separator />
