@@ -49,20 +49,19 @@ const DeviceControls = ({
   const validDevices = devices.filter((device) => device.deviceId !== '');
   const hasValidDevices = validDevices.length > 0;
 
-  const getDeviceKind = () => {
-    switch (label.toLowerCase()) {
-      case 'camera':
-        return 'videoinput';
-      case 'microphone':
-        return 'audioinput';
-      case 'speaker':
-        return 'audiooutput';
-      default:
-        return null;
-    }
-  };
-
   const requestPermissions = useCallback(async () => {
+    const getDeviceKind = () => {
+      switch (label.toLowerCase()) {
+        case 'camera':
+          return 'videoinput';
+        case 'microphone':
+          return 'audioinput';
+        case 'speaker':
+          return 'audiooutput';
+        default:
+          return null;
+      }
+    };
     try {
       const deviceKind = getDeviceKind();
       if (!deviceKind) return false;
