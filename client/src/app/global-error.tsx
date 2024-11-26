@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
+import Error from 'next/error';
 import Link from 'next/link';
+import * as Sentry from '@sentry/nextjs';
 import { Bug, RefreshCcw } from 'lucide-react';
 
-import { CONTACT_URL, IS_DEV_ENV } from '@/lib/constants';
+import { CONTACT_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -14,18 +17,16 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   const generateErrorReport = () => {
     const timestamp = new Date().toISOString();
     let errorMessage = `Error Details:
 Time: ${timestamp}
 Digest: ${error.digest || 'No digest available'}
 URL: ${window.location.href}`;
-
-    if (IS_DEV_ENV) {
-      errorMessage += `
-Message: ${error.message || 'Unknown error'}
-Stack: ${error.stack || 'No stack trace available'}`;
-    }
 
     return `${CONTACT_URL}?type=other&message=${encodeURIComponent(errorMessage)}`;
   };
