@@ -197,6 +197,47 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     };
   }, [socket]);
 
+  const handleDevicePermissionGranted = async (
+    deviceKind: 'videoinput' | 'audioinput' | 'audiooutput',
+  ) => {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+
+    // Update only the relevant device list
+    switch (deviceKind) {
+      case 'videoinput':
+        setVideoDevices(
+          devices
+            .filter((device) => device.kind === 'videoinput')
+            .map((device) => ({
+              deviceId: device.deviceId,
+              label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
+            })),
+        );
+        break;
+      case 'audioinput':
+        setAudioInputDevices(
+          devices
+            .filter((device) => device.kind === 'audioinput')
+            .map((device) => ({
+              deviceId: device.deviceId,
+              label:
+                device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
+            })),
+        );
+        break;
+      case 'audiooutput':
+        setAudioOutputDevices(
+          devices
+            .filter((device) => device.kind === 'audiooutput')
+            .map((device) => ({
+              deviceId: device.deviceId,
+              label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
+            })),
+        );
+        break;
+    }
+  };
+
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
       <div
@@ -298,9 +339,25 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 streamRef,
                 videoRef,
                 handleGetMedia,
+                setVideoDevices,
+                setAudioInputDevices,
+                setAudioOutputDevices,
               )
             }
             isEnabled={cameraOn}
+            onDevicePermissionGranted={async () => {
+              await enumerateDevices(
+                setVideoDevices,
+                setAudioInputDevices,
+                setAudioOutputDevices,
+                selectedVideoDevice,
+                setSelectedVideoDevice,
+                selectedAudioInput,
+                setSelectedAudioInput,
+                selectedAudioOutput,
+                setSelectedAudioOutput,
+              );
+            }}
           />
 
           {isMobile && cameraOn && (
@@ -331,11 +388,14 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           selectedDevice={selectedAudioInput}
           onDeviceSelect={async (deviceId) => {
             setSelectedAudioInput(deviceId);
-            if (cameraOn) await handleGetMedia();
+            if (streamRef.current) {
+              await handleGetMedia();
+            }
           }}
           onToggle={() => toggleMic(micOn, setMicOn, streamRef)}
           isEnabled={micOn}
-          disabled={!cameraOn}
+          disableToggle={!cameraOn}
+          onDevicePermissionGranted={handleDevicePermissionGranted}
         />
 
         <DeviceControls
@@ -355,6 +415,8 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           }}
           onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn)}
           isEnabled={speakerOn}
+          // Add this line to handle device enumeration:
+          onDevicePermissionGranted={handleDevicePermissionGranted}
         />
       </div>
     </div>
