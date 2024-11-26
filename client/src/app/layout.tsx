@@ -31,6 +31,7 @@ import {
   THEME_COLOR,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { Analytics } from '@/components/analytics';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -217,6 +218,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             }}
           />
         </div>
+        <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster
