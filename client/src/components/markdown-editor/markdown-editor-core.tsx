@@ -166,6 +166,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
                     reader.onload = () => {
                       const markdown = reader.result as string;
                       markdownEditorRef.current?.setMarkdown(markdown);
+                      socket.emit(RoomServiceMsg.UPDATE_MD, markdown);
                     };
                     reader.readAsText(file);
                   };
