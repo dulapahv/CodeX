@@ -31,7 +31,11 @@ import {
   toggleMic,
   toggleSpeaker,
 } from './utils/controls';
-import { enumerateDevices, initDevices } from './utils/device';
+import {
+  enumerateDevices,
+  handleDevicePermissionGranted,
+  initDevices,
+} from './utils/device';
 import { getMedia } from './utils/media';
 import { cleanupPeer, createPeer, handleSignal } from './utils/peer';
 
@@ -130,6 +134,9 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   useEffect(() => {
     socket.emit(StreamServiceMsg.STREAM_READY);
 
+    // Immediately emit the initial speaker state when connecting
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, true);
+
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       createPeer(
         userID,
@@ -139,6 +146,8 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         setRemoteStreams,
         pendingSignalsRef,
       );
+      // When a new user is ready, let them know our speaker state
+      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
     });
 
     socket.on(
@@ -178,9 +187,10 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     });
 
     const currentPeers = peersRef.current;
-    const currentStream = streamRef.current;
 
+    // Cleanup function
     return () => {
+      // Cleanup socket listeners
       socket.off(StreamServiceMsg.STREAM_READY);
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
@@ -188,55 +198,45 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.off(StreamServiceMsg.MIC_STATE);
       socket.off(StreamServiceMsg.SPEAKER_STATE);
 
-      if (currentStream) {
-        currentStream.getTracks().forEach((track) => track.stop());
+      // Stop all tracks in the local stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+        streamRef.current = null;
       }
-      Object.keys(currentPeers).forEach((userID) =>
-        cleanupPeer(userID, peersRef, setRemoteStreams),
-      );
+
+      // Clean up all peer connections
+      Object.keys(currentPeers).forEach((userID) => {
+        cleanupPeer(userID, peersRef, setRemoteStreams);
+      });
+
+      // Reset camera state
+      setCameraOn(false);
+      setMicOn(false);
+
+      // Notify others that camera is off
+      socket.emit(StreamServiceMsg.CAMERA_OFF);
+    };
+  }, [socket, speakerOn]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+      socket.emit(StreamServiceMsg.CAMERA_OFF);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      handleBeforeUnload();
     };
   }, [socket]);
-
-  const handleDevicePermissionGranted = async (
-    deviceKind: 'videoinput' | 'audioinput' | 'audiooutput',
-  ) => {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-
-    // Update only the relevant device list
-    switch (deviceKind) {
-      case 'videoinput':
-        setVideoDevices(
-          devices
-            .filter((device) => device.kind === 'videoinput')
-            .map((device) => ({
-              deviceId: device.deviceId,
-              label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
-            })),
-        );
-        break;
-      case 'audioinput':
-        setAudioInputDevices(
-          devices
-            .filter((device) => device.kind === 'audioinput')
-            .map((device) => ({
-              deviceId: device.deviceId,
-              label:
-                device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
-            })),
-        );
-        break;
-      case 'audiooutput':
-        setAudioOutputDevices(
-          devices
-            .filter((device) => device.kind === 'audiooutput')
-            .map((device) => ({
-              deviceId: device.deviceId,
-              label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
-            })),
-        );
-        break;
-    }
-  };
 
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
@@ -395,7 +395,14 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           onToggle={() => toggleMic(micOn, setMicOn, streamRef)}
           isEnabled={micOn}
           disableToggle={!cameraOn}
-          onDevicePermissionGranted={handleDevicePermissionGranted}
+          onDevicePermissionGranted={async (kind) => {
+            await handleDevicePermissionGranted(
+              kind,
+              setVideoDevices,
+              setAudioInputDevices,
+              setAudioOutputDevices,
+            );
+          }}
         />
 
         <DeviceControls
@@ -415,8 +422,14 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           }}
           onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn)}
           isEnabled={speakerOn}
-          // Add this line to handle device enumeration:
-          onDevicePermissionGranted={handleDevicePermissionGranted}
+          onDevicePermissionGranted={async (kind) => {
+            await handleDevicePermissionGranted(
+              kind,
+              setVideoDevices,
+              setAudioInputDevices,
+              setAudioOutputDevices,
+            );
+          }}
         />
       </div>
     </div>

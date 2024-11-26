@@ -7,6 +7,9 @@ import { StreamServiceMsg } from '@common/types/message';
 import { getSocket } from '@/lib/socket';
 import { parseError } from '@/lib/utils';
 
+import type { MediaDevice } from '../types';
+import { updateDeviceLabels } from './device';
+
 // Toggle camera
 export const toggleCamera = async (
   cameraOn: boolean,
@@ -15,11 +18,36 @@ export const toggleCamera = async (
   streamRef: MutableRefObject<MediaStream | null>,
   videoRef: MutableRefObject<HTMLVideoElement | null>,
   getMedia: () => Promise<boolean>,
+  setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
+  setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
+  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
 ) => {
   const socket = getSocket();
 
   try {
     if (!cameraOn) {
+      // Check permissions first
+      try {
+        const permissions = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        permissions.getTracks().forEach((track) => track.stop()); // Stop the temporary stream
+      } catch (error) {
+        // If permission check fails, try requesting it again
+        await navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            stream.getTracks().forEach((track) => track.stop());
+          })
+          .catch((error) => {
+            toast.error(
+              `Camera permission denied. Please allow camera access and try again.`,
+            );
+            return;
+          });
+      }
+
+      // Now try to get the media with selected devices
       const mediaStarted = await getMedia();
       if (mediaStarted) {
         setCameraOn(true);
@@ -39,7 +67,7 @@ export const toggleCamera = async (
       setMicOn(false); // Reset mic state when camera is turned off
     }
   } catch (error) {
-    toast.error(`Error toggling camera.\n${parseError(error)}`);
+    toast.error(`Error toggling camera: ${parseError(error)}`);
   }
 };
 
@@ -103,8 +131,13 @@ export const toggleSpeaker = (
   setSpeakersOn: Dispatch<SetStateAction<boolean>>,
 ) => {
   const socket = getSocket();
-
   const newSpeakerState = !speakerOn;
+
+  // Update local state
   setSpeakersOn(newSpeakerState);
-  socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
+
+  // Emit to other users with a small delay to ensure state is updated
+  setTimeout(() => {
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
+  }, 0);
 };

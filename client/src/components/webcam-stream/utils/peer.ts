@@ -13,9 +13,7 @@ export const createPeer = (
   initiator: boolean,
   streamRef: MutableRefObject<MediaStream | null>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   const socket = getSocket();
@@ -23,10 +21,11 @@ export const createPeer = (
     // Clean up existing peer if it exists
     cleanupPeer(userID, peersRef, setRemoteStreams);
 
-    // Create peer with or without local stream
+    // Create peer with stream config
     const peer = new Peer({
       initiator,
-      stream: streamRef.current || undefined,
+      // Only include stream if it exists and has active tracks
+      stream: streamRef.current?.getTracks().length ? streamRef.current : undefined,
     });
 
     peer.on('signal', (signal) => {
@@ -41,11 +40,12 @@ export const createPeer = (
     });
 
     peer.on('error', (err) => {
-      // if (!err.message.includes('state')) {
-      //   toast.error(`Peer connection error:\n${parseError(err)}`);
-      // }
       console.warn(`Peer connection error:\n${parseError(err)}`);
       cleanupPeer(userID, peersRef, setRemoteStreams);
+    });
+
+    peer.on('connect', () => {
+      console.log(`Peer connection established with ${userID}`);
     });
 
     // Process any pending signals
@@ -54,9 +54,7 @@ export const createPeer = (
       try {
         peer.signal(signal);
       } catch (error) {
-        toast.warning(
-          `Error processing pending signal for ${userID}:\n${error}`,
-        );
+        console.warn(`Error processing pending signal for ${userID}:\n${error}`);
       }
     });
     delete pendingSignalsRef.current[userID];
@@ -75,19 +73,20 @@ export const handleSignal = (
   userID: string,
   streamRef: MutableRefObject<MediaStream | null>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   try {
     let peer = peersRef.current[userID];
 
     if (!peer || peer.destroyed) {
+      // Store signal if peer doesn't exist yet
       if (!pendingSignalsRef.current[userID]) {
         pendingSignalsRef.current[userID] = [];
       }
       pendingSignalsRef.current[userID].push(signal);
+      
+      // Create new peer as non-initiator
       peer = createPeer(
         userID,
         false,
@@ -96,11 +95,13 @@ export const handleSignal = (
         setRemoteStreams,
         pendingSignalsRef,
       ) as Peer.Instance;
-    } else {
+    }
+
+    if (peer && !peer.destroyed) {
       peer.signal(signal);
     }
   } catch (error) {
-    toast.error(`Error handling peer signal:\n${parseError(error)}`);
+    console.error(`Error handling peer signal:\n${parseError(error)}`);
   }
 };
 
@@ -108,9 +109,7 @@ export const handleSignal = (
 export const cleanupPeer = (
   userID: string,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
 ) => {
   const peer = peersRef.current[userID];
   if (peer) {
@@ -118,14 +117,16 @@ export const cleanupPeer = (
       try {
         peer.destroy();
       } catch (error) {
-        toast.warning(`Error destroying peer connection for ${userID}`);
+        console.warn(`Error destroying peer connection for ${userID}`);
       }
     }
     delete peersRef.current[userID];
-    setRemoteStreams((prev) => {
-      const newStreams = { ...prev };
-      delete newStreams[userID];
-      return newStreams;
-    });
   }
+  
+  // Always clean up remote streams for this user
+  setRemoteStreams((prev) => {
+    const newStreams = { ...prev };
+    delete newStreams[userID];
+    return newStreams;
+  });
 };
