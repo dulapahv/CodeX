@@ -161,7 +161,7 @@ const DeviceControls = ({
           <TooltipTrigger asChild>
             <SelectTrigger
               className={cn(
-                'h-10 w-5 rounded-l-none border-0 p-0 hover:bg-foreground/20 [&>svg]:w-full',
+                'h-10 w-5 rounded-l-none border-0 p-0 hover:bg-foreground/20 [&>svg]:w-full [&>svg]:rotate-180',
                 disabled && 'cursor-not-allowed opacity-50',
               )}
               aria-label={`Select ${label} device`}

@@ -5,7 +5,7 @@ import {
   AdmonitionDirectiveDescriptor,
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
-  Button,
+  ButtonWithTooltip,
   codeBlockPlugin,
   codeMirrorPlugin,
   CodeToggle,
@@ -37,6 +37,7 @@ import {
 } from '@mdxeditor/editor';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
+import { FileUp, Save } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { RoomServiceMsg } from '@common/types/message';
@@ -132,30 +133,70 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
         }),
         toolbarPlugin({
           toolbarContents: () => (
-            <>
-              <DiffSourceToggleWrapper>
-                <UndoRedo />
-                <Separator />
-                <BoldItalicUnderlineToggles />
-                <CodeToggle />
-                <Separator />
-                <StrikeThroughSupSubToggles />
-                <Separator />
-                <ListsToggle />
-                <Separator />
-                <BlockTypeSelect />
-                <Separator />
-                <CreateLink />
-                <InsertImage />
-                <Separator />
-                <InsertTable />
-                <InsertThematicBreak />
-                <Separator />
-                <InsertCodeBlock />
-                <InsertAdmonition />
-                <Separator />
-              </DiffSourceToggleWrapper>
-            </>
+            <DiffSourceToggleWrapper>
+              <ButtonWithTooltip
+                title="Save Markdown"
+                onClick={() => {
+                  const markdown =
+                    markdownEditorRef.current?.getMarkdown() ?? '';
+                  const blob = new Blob([markdown], {
+                    type: 'text/markdown',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `kasca-note-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}.md`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
+              >
+                <Save className="size-5" />
+              </ButtonWithTooltip>
+              <ButtonWithTooltip
+                title="Open Markdown"
+                onClick={() => {
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.accept = '.md,text/*';
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      const markdown = reader.result as string;
+                      markdownEditorRef.current?.setMarkdown(markdown);
+                    };
+                    reader.readAsText(file);
+                  };
+                  input.click();
+                }}
+                className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
+              >
+                <FileUp className="size-5" />
+              </ButtonWithTooltip>
+              <Separator />
+              <UndoRedo />
+              <Separator />
+              <BoldItalicUnderlineToggles />
+              <CodeToggle />
+              <Separator />
+              <StrikeThroughSupSubToggles />
+              <Separator />
+              <ListsToggle />
+              <Separator />
+              <BlockTypeSelect />
+              <Separator />
+              <CreateLink />
+              <InsertImage />
+              <Separator />
+              <InsertTable />
+              <InsertThematicBreak />
+              <Separator />
+              <InsertCodeBlock />
+              <InsertAdmonition />
+              <Separator />
+            </DiffSourceToggleWrapper>
           ),
         }),
       ]}
