@@ -5,6 +5,7 @@ import {
   AdmonitionDirectiveDescriptor,
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
+  Button,
   codeBlockPlugin,
   codeMirrorPlugin,
   CodeToggle,
@@ -78,12 +79,12 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
       trim={false}
       placeholder="All participants can edit this note..."
       className={cn(
-        'flex w-full flex-col !bg-[color:var(--panel-background)] [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div]:!ml-0 [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
+        'flex w-full flex-col !bg-[color:var(--panel-background)] [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
         resolvedTheme === 'dark' && '!dark-editor !dark-theme',
       )}
       contentEditableClassName={cn(
         GeistSans.className,
-        `h-full max-w-none prose dark:prose-invert prose-li:!no-underline after:prose-li:!top-[8.5px] before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20 prose-code:font-normal prose-code:text-base`,
+        `prose h-full max-w-none dark:prose-invert prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none prose-li:!no-underline before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 after:prose-li:!top-1/2 after:prose-li:!-translate-y-1/2 after:prose-li:rotate-45 [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20`,
         `[&>span]:${GeistMono.className}`,
       )}
       plugins={[
@@ -107,25 +108,27 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
         // https://codemirror.net/5/mode/
         codeMirrorPlugin({
           codeBlockLanguages: {
-            js: 'JavaScript',
-            jsx: 'JSX',
-            ts: 'TypeScript',
-            tsx: 'TSX',
+            '': 'Plain Text',
+            c: 'C',
+            cpp: 'C++',
+            cs: 'C#',
             css: 'CSS',
             go: 'GO',
             html: 'HTML',
             java: 'Java',
+            js: 'JavaScript',
             json: 'JSON',
-            liquid: 'Liquid',
+            jsx: 'JSX',
             md: 'Markdown',
             php: 'PHP',
             py: 'Python',
             rs: 'Rust',
-            scss: 'Sass',
-            xml: 'XML',
+            sh: 'Shell',
+            ts: 'TypeScript',
+            tsx: 'TSX',
             yaml: 'YAML',
-            '': 'Plain Text',
           },
+          autoLoadLanguageSupport: true,
         }),
         toolbarPlugin({
           toolbarContents: () => (

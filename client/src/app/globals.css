@@ -5,15 +5,15 @@
 @import url('@radix-ui/colors/mauve-dark.css');
 
 ::-webkit-scrollbar {
-  @apply size-2;
+  @apply size-1.5 hover:size-2.5;
 }
 /* Scrollbar track */
 ::-webkit-scrollbar-track-piece {
-  @apply rounded-full bg-[#dddddd] dark:bg-[#333333];
+  @apply rounded-full bg-[#f5f5f5] dark:bg-[#262626];
 }
 /* Scrollbar handle */
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-[#6e6e6e] px-1 hover:bg-[#424242] dark:bg-[#999999] dark:hover:bg-[#c2c2c2];
+  @apply rounded-full bg-[#d4d4d4] hover:bg-[#a3a3a3] dark:bg-[#404040] dark:hover:bg-[#525252];
 }
 
 :root {
