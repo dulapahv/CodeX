@@ -52,13 +52,19 @@ export const ExecutionArgs = ({
               variant="ghost"
               size="icon"
               className={cn(
-                'h-7 w-7 rounded-sm hover:bg-transparent hover:opacity-80',
+                'relative h-7 w-7 rounded-sm hover:bg-transparent hover:opacity-80',
                 argsStr && 'bg-muted',
               )}
               disabled={disabled}
               aria-label="Program arguments"
             >
               <ChevronDown className="size-4 text-[color:var(--panel-text)]" />
+              {argsStr && (
+                <span
+                  className="animate-fade absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-500"
+                  aria-hidden="true"
+                />
+              )}
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
