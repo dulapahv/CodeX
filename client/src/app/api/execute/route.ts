@@ -20,6 +20,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const controller = new AbortController();
+    request.signal.addEventListener('abort', () => {
+      controller.abort();
+    });
+
     const response = await fetch(PISTON_API_URL, {
       method: 'POST',
       headers: {
@@ -31,7 +36,10 @@ export async function POST(request: Request) {
         files: [{ content: body.code }],
         stdin: '',
         args: [],
+        run_timeout: 30000, // 30 seconds timeout
+        compile_timeout: 30000,
       }),
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -42,6 +50,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return NextResponse.json(
+        { error: 'Code execution cancelled' },
+        { status: 499 }, // Using 499 Client Closed Request
+      );
+    }
+
     console.error('Code execution error:', error);
     return NextResponse.json(
       { error: 'Failed to execute code' },

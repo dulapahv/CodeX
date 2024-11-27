@@ -1,8 +1,6 @@
-'use client';
-
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import { Info, LoaderCircle, Play } from 'lucide-react';
+import { Info, Play, Square } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@common/types/message';
@@ -34,7 +32,7 @@ export const RunButton = ({
   className,
 }: RunButtonProps) => {
   const socket = getSocket();
-
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
@@ -46,12 +44,41 @@ export const RunButton = ({
     };
   }, [socket]);
 
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      const endTime = new Date();
+
+      const res = {
+        language: 'system',
+        version: '1.0.0',
+        run: {
+          stdout: '🛑 Code execution cancelled',
+          stderr: '',
+          code: 0,
+          signal: null,
+          output: '',
+        },
+        timestamp: endTime,
+        type: ExecutionResultType.WARNING,
+      };
+
+      setOutput((currentOutput) => [...currentOutput, res]);
+      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
+      setIsRunning(false);
+      socket.emit(CodeServiceMsg.EXEC, false);
+    }
+  };
+
   const executeCode = async () => {
     if (!monaco || !editor) return;
 
     const startTime = new Date();
     setIsRunning(true);
     socket.emit(CodeServiceMsg.EXEC, true);
+
+    // Create new AbortController for this execution
+    abortControllerRef.current = new AbortController();
 
     try {
       const code = editor.getValue();
@@ -107,6 +134,7 @@ export const RunButton = ({
           code,
           language: language?.id,
         }),
+        signal: abortControllerRef.current.signal,
       });
 
       if (!response.ok) {
@@ -125,11 +153,14 @@ export const RunButton = ({
         executionTime,
         type: ExecutionResultType.OUTPUT,
       };
-      setOutput((currentOutput) => {
-        return [...currentOutput, resultWithTimestamp];
-      });
+      setOutput((currentOutput) => [...currentOutput, resultWithTimestamp]);
       socket.emit(CodeServiceMsg.UPDATE_TERM, resultWithTimestamp);
     } catch (error) {
+      // Don't show error message if the request was cancelled
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
       const endTime = new Date();
       const executionTime = endTime.getTime() - startTime.getTime();
 
@@ -150,6 +181,7 @@ export const RunButton = ({
       setOutput((currentOutput) => [...currentOutput, res]);
       socket.emit(CodeServiceMsg.UPDATE_TERM, res);
     } finally {
+      abortControllerRef.current = null;
       setIsRunning(false);
       socket.emit(CodeServiceMsg.EXEC, false);
     }
@@ -157,31 +189,32 @@ export const RunButton = ({
 
   return (
     <div className="flex items-center gap-1">
-      <Button
-        onClick={executeCode}
-        className={cn(
-          'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
-          className,
-        )}
-        disabled={isRunning || !editor}
-        aria-busy={isRunning}
-        aria-label={isRunning ? 'Running code' : 'Run code'}
-      >
-        {isRunning ? (
-          <>
-            <LoaderCircle
-              className="mr-1 size-4 animate-spin"
-              aria-hidden="true"
-            />
-            <span>Running...</span>
-          </>
-        ) : (
-          <>
-            <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
-            <span>Run Code</span>
-          </>
-        )}
-      </Button>
+      {isRunning ? (
+        <Button
+          onClick={handleCancel}
+          className={cn(
+            'h-7 animate-fade-in-top rounded-sm bg-red-600 px-2 py-0 text-white hover:bg-red-700',
+            className,
+          )}
+          aria-label="Cancel execution"
+        >
+          <Square className="mr-1 size-4" aria-hidden="true" />
+          <span>Cancel</span>
+        </Button>
+      ) : (
+        <Button
+          onClick={executeCode}
+          className={cn(
+            'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+            className,
+          )}
+          disabled={!editor}
+          aria-label="Run code"
+        >
+          <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
+          <span>Run Code</span>
+        </Button>
+      )}
 
       <Popover>
         <PopoverTrigger asChild>
