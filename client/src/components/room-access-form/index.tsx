@@ -33,7 +33,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
-import { createRoom, joinRoom, parseError } from '@/lib/utils';
+import { parseError } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -51,6 +51,7 @@ import { RedirectingCard } from './components/redirecting-card';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
+import { createRoom, joinRoom } from './utils';
 
 const RoomAccessForm = () => {
   const router = useRouter();
@@ -78,37 +79,45 @@ const RoomAccessForm = () => {
     },
   } = useJoinRoomForm(room);
 
-  const handleJoinRoom = async (data: JoinRoomForm) => {
+  const handleJoinRoom = (data: JoinRoomForm) => {
     const { name, roomId } = data;
-    const joinPromise = joinRoom(roomId, name);
+    try {
+      const joinPromise = joinRoom(roomId, name);
 
-    toast.promise(joinPromise, {
-      loading: 'Joining room, please wait...',
-      success: () => {
-        router.push(`/room/${roomId}`);
-        return 'Joined room successfully. Happy coding!';
-      },
-      error: (error) => `Failed to join room.\n${parseError(error)}`,
-    });
+      toast.promise(joinPromise, {
+        loading: 'Joining room, please wait...',
+        success: () => {
+          router.push(`/room/${roomId}`);
+          return 'Joined room successfully. Happy coding!';
+        },
+        error: (error) => `Failed to join room.\n${parseError(error)}`,
+      });
 
-    return joinPromise;
+      return joinPromise;
+    } catch {
+      // Toast already handles the error
+    }
   };
 
   const handleCreateRoom = (data: CreateRoomForm) => {
-    const { name } = data;
-    const createPromise = createRoom(name);
+    try {
+      const { name } = data;
+      const createPromise = createRoom(name);
 
-    toast.promise(createPromise, {
-      loading: 'Creating room, please wait...',
-      success: (roomId) => {
-        router.push(`/room/${roomId}`);
-        navigator.clipboard.writeText(roomId);
-        return 'Room created successfully. Happy coding!';
-      },
-      error: (error) => `Failed to create room.\n${parseError(error)}`,
-    });
+      toast.promise(createPromise, {
+        loading: 'Creating room, please wait...',
+        success: (roomId) => {
+          router.push(`/room/${roomId}`);
+          navigator.clipboard.writeText(roomId);
+          return 'Room created successfully. Happy coding!';
+        },
+        error: (error) => `Failed to create room.\n${parseError(error)}`,
+      });
 
-    return createPromise;
+      return createPromise;
+    } catch {
+      // Toast already handles the error
+    }
   };
 
   const handleFormError = () => {

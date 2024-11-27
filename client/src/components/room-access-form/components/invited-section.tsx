@@ -46,7 +46,7 @@ import type { JoinRoomForm } from '../types';
 interface InvitedSectionProps {
   register: UseFormRegister<JoinRoomForm>;
   handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
-  onSubmit: (data: JoinRoomForm) => Promise<void> | Promise<any>;
+  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
   onError: () => void;
   errors: FieldErrors<JoinRoomForm>;
   isSubmitting: boolean;

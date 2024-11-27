@@ -17,13 +17,48 @@
  */
 
 import { ChangeEvent } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, type UseFormSetValue } from 'react-hook-form';
+import type { UseFormSetValue } from 'react-hook-form';
 
+import { RoomServiceMsg } from '@common/types/message';
+
+import { storage } from '@/lib/services/storage';
+import { getSocket } from '@/lib/socket';
 import { formatRoomId } from '@/utils/format-room-id';
 
 import type { JoinRoomForm } from './types';
-import { joinRoomSchema } from './validator';
+
+export const createRoom = (name: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const socket = getSocket();
+    socket.emit(RoomServiceMsg.CREATE, name);
+    socket.on(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
+      roomId = formatRoomId(roomId);
+
+      storage.setRoomId(roomId);
+      storage.setUserId(userID);
+
+      resolve(roomId);
+    });
+  });
+};
+
+export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    const socket = getSocket();
+
+    roomId = roomId.replace(/-/g, '');
+
+    socket.emit(RoomServiceMsg.JOIN, roomId, name);
+    socket.on(RoomServiceMsg.NOT_FOUND, () => {
+      reject('Room does not exist. Please check the room ID and try again.');
+    });
+    socket.on(RoomServiceMsg.JOIN, (userID: string) => {
+      storage.setRoomId(roomId);
+      storage.setUserId(userID);
+      resolve(true);
+    });
+  });
+};
 
 /**
  * Handles room ID input changes with formatting
@@ -43,20 +78,5 @@ export const onRoomIdChange = (
   // Update form value
   setValue('roomId', formattedValue, {
     shouldValidate: true,
-  });
-};
-
-/**
- * Custom hook for managing join room form state
- * @param roomId - Initial room ID to populate form
- * @returns React Hook Form instance with zod validation
- */
-export const useJoinRoomForm = (roomId: string) => {
-  return useForm<JoinRoomForm>({
-    resolver: zodResolver(joinRoomSchema),
-    defaultValues: {
-      name: '',
-      roomId: roomId,
-    },
   });
 };

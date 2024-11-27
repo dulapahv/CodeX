@@ -18,9 +18,9 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@types/simple-peer": "^9.11.8",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.1",
     "rimraf": "^6.0.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8",

@@ -111,7 +111,7 @@ export const RunButton = ({
 
       if (!response.ok) {
         throw new Error(
-          `HTTP error! status: ${response.status}\nThis language might not be supported or the server is down.\nFor list of supported languages, please see https://github.com/engineer-man/piston?tab=readme-ov-file#Supported-Languages.`,
+          `HTTP error! status: ${response.status}\nThis language may not be supported or the server is down.\nList of supported languages: https://github.com/engineer-man/piston?tab=readme-ov-file#Supported-Languages.`,
         );
       }
 

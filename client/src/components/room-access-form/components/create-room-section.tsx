@@ -45,7 +45,7 @@ import type { CreateRoomForm } from '../types';
 interface CreateRoomSectionProps {
   register: UseFormRegister<CreateRoomForm>;
   handleSubmit: UseFormHandleSubmit<CreateRoomForm>;
-  onSubmit: (data: CreateRoomForm) => Promise<void> | Promise<any>;
+  onSubmit: (data: CreateRoomForm) => Promise<string> | undefined;
   onError: () => void;
   errors: FieldErrors<CreateRoomForm>;
   isSubmitting: boolean;

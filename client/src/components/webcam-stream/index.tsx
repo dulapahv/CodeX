@@ -277,7 +277,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               remoteSpeakerStates={remoteSpeakerStates}
             />
             <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
-              {userMap.get(storage.getUserId() ?? '')} (You)
+              {userMap.get(storage.getUserId() ?? '')} (you)
             </div>
           </div>
         </div>

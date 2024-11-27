@@ -52,7 +52,7 @@ interface JoinRoomSectionProps {
   register: UseFormRegister<JoinRoomForm>;
   setValue: UseFormSetValue<JoinRoomForm>;
   handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
-  onSubmit: (data: JoinRoomForm) => Promise<void> | Promise<any>;
+  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
   onError: () => void;
   errors: FieldErrors<JoinRoomForm>;
   isSubmitting: boolean;
