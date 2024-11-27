@@ -52,7 +52,7 @@ export const ExecutionArgs = ({
               variant="ghost"
               size="icon"
               className={cn(
-                'relative h-7 w-7 rounded-sm hover:bg-transparent hover:opacity-80',
+                'relative size-7 rounded-sm hover:bg-transparent hover:opacity-80',
                 argsStr && 'bg-muted',
               )}
               disabled={disabled}
@@ -73,7 +73,7 @@ export const ExecutionArgs = ({
         </TooltipContent>
       </Tooltip>
 
-      <PopoverContent className="w-80 p-4" align="end">
+      <PopoverContent className="w-80 p-4">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="args-input">Program Arguments</Label>
