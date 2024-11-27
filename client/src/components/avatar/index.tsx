@@ -89,7 +89,9 @@ const Avatar = ({
       <TooltipTrigger asChild aria-label={`${displayName}'s avatar`}>
         {AvatarContent}
       </TooltipTrigger>
-      <TooltipContent role="tooltip">{displayName}</TooltipContent>
+      <TooltipContent role="tooltip" sideOffset={8}>
+        {displayName}
+      </TooltipContent>
     </Tooltip>
   );
 };

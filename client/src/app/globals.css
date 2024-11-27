@@ -4,6 +4,10 @@
 
 @import url('@radix-ui/colors/mauve-dark.css');
 
+*::selection {
+  @apply bg-[#fb568a] text-red-100;
+}
+
 ::-webkit-scrollbar {
   @apply size-1.5 hover:size-2.5;
 }

@@ -70,7 +70,7 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
             <Settings className="size-4" aria-hidden="true" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent role="tooltip">
+        <TooltipContent role="tooltip" sideOffset={8}>
           <p>Settings</p>
         </TooltipContent>
       </Tooltip>

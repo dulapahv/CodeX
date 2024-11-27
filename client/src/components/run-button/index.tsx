@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import { Info, Play, StopCircle } from 'lucide-react';
+import { Info, OctagonX, Play, StopCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@common/types/message';
@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
 import { ExecutionArgs } from './components/input-args';
 
@@ -195,72 +196,83 @@ export const RunButton = ({
 
   return (
     <div className="flex items-center gap-1">
-      <Button
-        onClick={isRunning ? cancelExecution : executeCode}
-        className={cn(
-          'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
-          className,
-        )}
-        disabled={!editor}
-        aria-busy={isRunning}
-        aria-label={isRunning ? 'Cancel execution' : 'Run code'}
-      >
-        {isRunning ? (
-          <>
-            <StopCircle
-              className="mr-1 size-4 text-red-500"
-              aria-hidden="true"
-            />
-            <span>Cancel</span>
-          </>
-        ) : (
-          <>
-            <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
-            <span>Run Code</span>
-          </>
-        )}
-      </Button>
+      <div>
+        <Button
+          onClick={isRunning ? cancelExecution : executeCode}
+          className={cn(
+            'h-7 animate-fade-in-top rounded-r-none bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+            isRunning && 'bg-red-600 hover:bg-red-700',
+            className,
+          )}
+          disabled={!editor}
+          aria-busy={isRunning}
+          aria-label={isRunning ? 'Cancel execution' : 'Run code'}
+        >
+          {isRunning ? (
+            <>
+              <OctagonX className="mr-1 size-4" aria-hidden="true" />
+              <span>Cancel</span>
+            </>
+          ) : (
+            <>
+              <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
+              <span>Run Code</span>
+            </>
+          )}
+        </Button>
 
-      <ExecutionArgs
-        onArgsChange={setArgs}
-        onStdinChange={setStdin}
-        disabled={isRunning || !editor}
-      />
+        <ExecutionArgs
+          onArgsChange={setArgs}
+          onStdinChange={setStdin}
+          disabled={isRunning || !editor}
+        />
+      </div>
 
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 rounded-sm p-0 hover:bg-transparent hover:opacity-80"
+            className="size-7 rounded-sm p-0 hover:bg-transparent hover:opacity-80"
           >
             <Info className="size-4 text-[color:var(--panel-text)]" />
             <span className="sr-only">About code execution</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80">
-          <div className="space-y-2">
-            <h4 className="font-medium">Code Execution</h4>
-            <p className="text-sm text-muted-foreground">
-              Powered by Piston, an open-source code execution engine. You can
-              cancel execution at any time by clicking the stop button.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Use the dropdown menu to add command-line arguments to your
-              program.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              For a list of supported programming languages, visit the{' '}
-              <a
-                href="https://github.com/engineer-man/piston#Supported-Languages"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium underline underline-offset-4"
-              >
-                Piston documentation
-              </a>
-              .
-            </p>
+        <PopoverContent className="w-80" sideOffset={8}>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Code Execution</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  You can cancel execution at any time by clicking the stop
+                  button.
+                </p>
+                <p>
+                  Use the dropdown menu to add command-line arguments and input
+                  to your program.
+                </p>
+                <p>
+                  For a list of supported programming languages, visit the{' '}
+                  <a
+                    href="https://github.com/engineer-man/piston#Supported-Languages"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium underline underline-offset-4"
+                  >
+                    Piston documentation
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="text-xs text-muted-foreground">
+              <p>Powered by Piston, an open-source code execution engine.</p>
+              <p>⚠️ Rate limited to 5 requests per second</p>
+            </div>
           </div>
         </PopoverContent>
       </Popover>

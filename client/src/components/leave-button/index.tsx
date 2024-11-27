@@ -74,7 +74,12 @@ const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
             />
           </Button>
         </TooltipTrigger>
-        <TooltipContent role="tooltip" aria-label="Leave Room">
+        <TooltipContent
+          role="tooltip"
+          aria-label="Leave Room"
+          sideOffset={8}
+          className="mr-1"
+        >
           <p>Leave Room</p>
         </TooltipContent>
       </Tooltip>

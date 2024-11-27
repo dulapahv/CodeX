@@ -192,7 +192,7 @@ const LanguageSelection = memo(
                     </div>
                     <Check
                       className={cn(
-                        'ml-2 h-4 w-4 flex-shrink-0 transition-opacity',
+                        'ml-2 size-4 flex-shrink-0 transition-opacity',
                         selectedLanguage === language.alias
                           ? 'opacity-100'
                           : 'opacity-0',

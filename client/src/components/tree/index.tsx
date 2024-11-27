@@ -178,19 +178,19 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                       >
                         {item.icon && (
                           <item.icon
-                            className="mr-2 h-4 w-4 shrink-0 text-accent-foreground/50"
+                            className="mr-2 size-4 shrink-0 text-accent-foreground/50"
                             aria-hidden="true"
                           />
                         )}
                         {!item.icon && FolderIcon && (
                           <FolderIcon
-                            className="mr-2 h-4 w-4 shrink-0 text-accent-foreground/50"
+                            className="mr-2 size-4 shrink-0 text-accent-foreground/50"
                             aria-hidden="true"
                           />
                         )}
                         <span className="truncate text-sm">{item.name}</span>
                         {item.isLoading && (
-                          <LoaderCircle className="ml-2 h-4 w-4 animate-spin" />
+                          <LoaderCircle className="ml-2 size-4 animate-spin" />
                         )}
                       </AccordionTrigger>
                       <AccordionContent className="ml-4 pl-2">
@@ -256,13 +256,13 @@ const Leaf = forwardRef<
     >
       {item.icon && (
         <item.icon
-          className="mr-2 h-4 w-4 shrink-0 text-accent-foreground/50"
+          className="mr-2 size-4 shrink-0 text-accent-foreground/50"
           aria-hidden="true"
         />
       )}
       {!item.icon && Icon && (
         <Icon
-          className="mr-2 h-4 w-4 shrink-0 text-accent-foreground/50"
+          className="mr-2 size-4 shrink-0 text-accent-foreground/50"
           aria-hidden="true"
         />
       )}
@@ -286,7 +286,7 @@ const AccordionTrigger = forwardRef<
       {...props}
     >
       {children}
-      <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-accent-foreground/50 transition-transform duration-200" />
+      <ChevronRight className="ml-auto size-4 shrink-0 text-accent-foreground/50 transition-transform duration-200" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));

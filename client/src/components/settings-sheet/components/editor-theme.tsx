@@ -149,7 +149,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
           >
             {themes.find(([key]) => key === editorTheme)?.[1].name ||
               'Dark (Visual Studio)'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0">
@@ -166,7 +166,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
                   >
                     <Check
                       className={cn(
-                        'mr-2 h-4 w-4',
+                        'mr-2 size-4',
                         key === editorTheme ? 'opacity-100' : 'opacity-0',
                       )}
                     />

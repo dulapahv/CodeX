@@ -63,8 +63,8 @@ export const ExecutionArgs = ({
               variant="ghost"
               size="icon"
               className={cn(
-                'relative h-7 w-7 rounded-sm hover:bg-transparent hover:opacity-80',
-                hasInput && 'bg-muted',
+                'relative size-7 animate-fade-in-top rounded-l-none border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+                disabled && 'bg-red-600',
               )}
               disabled={disabled}
               aria-label="Program arguments and input"
@@ -72,14 +72,14 @@ export const ExecutionArgs = ({
               <ChevronDown className="size-4 text-[color:var(--panel-text)]" />
               {hasInput && (
                 <span
-                  className="animate-fade absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-500"
+                  className="absolute -right-0.5 -top-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
                   aria-hidden="true"
                 />
               )}
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent side="top">
+        <TooltipContent sideOffset={8}>
           {hasInput ? (
             <div className="space-y-1">
               {argsStr && <div>Arguments: {argsStr}</div>}
@@ -91,7 +91,7 @@ export const ExecutionArgs = ({
         </TooltipContent>
       </Tooltip>
 
-      <PopoverContent className="w-80 p-4" align="end">
+      <PopoverContent className="w-80 p-4" sideOffset={8}>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="args-input">Program Arguments</Label>
@@ -112,7 +112,7 @@ export const ExecutionArgs = ({
               placeholder="Enter input that your program expects to receive..."
               value={stdin}
               onChange={(e) => handleStdinChange(e.target.value)}
-              className="h-20 resize-y text-sm"
+              className="max-h-[50vh] min-h-[10vh] resize-y text-sm"
             />
           </div>
 
@@ -121,12 +121,10 @@ export const ExecutionArgs = ({
             <p className="mt-1 font-medium">Arguments:</p>
             <ul className="ml-4 list-disc">
               <li>1 2 3</li>
-              <li>&quot;hello world&quot; test.txt</li>
-              <li>--name &quot;John Doe&quot; --age 30</li>
+              <li>&quot;hello world&quot; 42 Bangkok</li>
             </ul>
             <p className="mt-2 font-medium">Program Input:</p>
             <ul className="ml-4 list-disc">
-              <li>For input() statements</li>
               <li>One input per line</li>
               <li>Will be fed to program in order</li>
             </ul>

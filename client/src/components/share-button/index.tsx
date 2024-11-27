@@ -61,7 +61,7 @@ const ShareButton = ({ roomId }: RoomProps) => {
               <span>Share</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent role="tooltip" side="bottom">
+          <TooltipContent role="tooltip" sideOffset={8}>
             <p>Share this room with others</p>
           </TooltipContent>
         </Tooltip>

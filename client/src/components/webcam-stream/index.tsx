@@ -265,6 +265,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                     username: userMap.get(storage.getUserId() ?? '') ?? '',
                   }}
                   size="lg"
+                  showTooltip={false}
                 />
               </div>
             )}
@@ -300,7 +301,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Avatar user={user} size="lg" />
+                    <Avatar user={user} size="lg" showTooltip={false} />
                   </div>
                 )}
                 <VideoControls
