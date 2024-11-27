@@ -23,7 +23,7 @@ interface ExecutionArgsProps {
   disabled?: boolean;
 }
 
-export const ExecutionArgs = ({
+const ArgsInputPopover = ({
   onArgsChange,
   onStdinChange,
   disabled,
@@ -134,3 +134,5 @@ export const ExecutionArgs = ({
     </Popover>
   );
 };
+
+export { ArgsInputPopover };
