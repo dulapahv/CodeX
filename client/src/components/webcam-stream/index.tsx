@@ -218,7 +218,9 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       // Notify others that camera is off
       socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
-  }, [socket, speakerOn]);
+    // Don't include speakersOn in the dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
