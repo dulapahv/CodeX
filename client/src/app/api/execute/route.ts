@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         version: '*',
         files: [{ content: body.code }],
         stdin: '',
-        args: [],
+        args: Array.isArray(body.args) ? body.args : [], // Safely handle args
         run_timeout: 30000, // 30 seconds timeout
         compile_timeout: 30000,
       }),
@@ -47,6 +47,11 @@ export async function POST(request: Request) {
     }
 
     const data = await response.json();
+
+    // Add args to output for debugging purposes
+    if (body.args?.length > 0) {
+      data.args = body.args;
+    }
 
     return NextResponse.json(data);
   } catch (error) {

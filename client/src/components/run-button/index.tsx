@@ -1,13 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
-import { Info, Play, Square } from 'lucide-react';
+import { Info, Play, StopCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@common/types/message';
-import {
-  ExecutionResultType,
-  type ExecutionResult,
-} from '@common/types/terminal';
+import { ExecutionResultType, type ExecutionResult } from '@common/types/terminal';
 
 import { getSocket } from '@/lib/socket';
 import { cn, parseError } from '@/lib/utils';
@@ -17,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { ExecutionArgs } from './components/input-args';
 
 interface RunButtonProps {
   monaco: Monaco | null;
@@ -34,6 +32,7 @@ export const RunButton = ({
   const socket = getSocket();
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [args, setArgs] = useState<string[]>([]);
 
   useEffect(() => {
     socket.on(CodeServiceMsg.EXEC, (isExecuting: boolean) => {
@@ -44,11 +43,11 @@ export const RunButton = ({
     };
   }, [socket]);
 
-  const handleCancel = () => {
+  const cancelExecution = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       const endTime = new Date();
-
+      
       const res = {
         language: 'system',
         version: '1.0.0',
@@ -62,7 +61,7 @@ export const RunButton = ({
         timestamp: endTime,
         type: ExecutionResultType.WARNING,
       };
-
+      
       setOutput((currentOutput) => [...currentOutput, res]);
       socket.emit(CodeServiceMsg.UPDATE_TERM, res);
       setIsRunning(false);
@@ -133,6 +132,7 @@ export const RunButton = ({
         body: JSON.stringify({
           code,
           language: language?.id,
+          args: args,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -189,32 +189,30 @@ export const RunButton = ({
 
   return (
     <div className="flex items-center gap-1">
-      {isRunning ? (
-        <Button
-          onClick={handleCancel}
-          className={cn(
-            'h-7 animate-fade-in-top rounded-sm bg-red-600 px-2 py-0 text-white hover:bg-red-700',
-            className,
-          )}
-          aria-label="Cancel execution"
-        >
-          <Square className="mr-1 size-4" aria-hidden="true" />
-          <span>Cancel</span>
-        </Button>
-      ) : (
-        <Button
-          onClick={executeCode}
-          className={cn(
-            'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
-            className,
-          )}
-          disabled={!editor}
-          aria-label="Run code"
-        >
-          <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
-          <span>Run Code</span>
-        </Button>
-      )}
+      <Button
+        onClick={isRunning ? cancelExecution : executeCode}
+        className={cn(
+          'h-7 animate-fade-in-top rounded-sm bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+          className,
+        )}
+        disabled={!editor}
+        aria-busy={isRunning}
+        aria-label={isRunning ? 'Cancel execution' : 'Run code'}
+      >
+        {isRunning ? (
+          <>
+            <StopCircle className="mr-1 size-4 text-red-500" aria-hidden="true" />
+            <span>Cancel</span>
+          </>
+        ) : (
+          <>
+            <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
+            <span>Run Code</span>
+          </>
+        )}
+      </Button>
+
+      <ExecutionArgs onArgsChange={setArgs} disabled={isRunning || !editor} />
 
       <Popover>
         <PopoverTrigger asChild>
@@ -231,8 +229,11 @@ export const RunButton = ({
           <div className="space-y-2">
             <h4 className="font-medium">Code Execution</h4>
             <p className="text-sm text-muted-foreground">
-              Powered by Piston, an open-source code execution engine. Rate
-              limited to 5 requests per second.
+              Powered by Piston, an open-source code execution engine. You can cancel execution 
+              at any time by clicking the stop button.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Use the dropdown menu to add command-line arguments to your program.
             </p>
             <p className="text-sm text-muted-foreground">
               For a list of supported programming languages, visit the{' '}
