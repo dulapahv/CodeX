@@ -4,9 +4,16 @@ export const runtime = 'edge';
 
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
 
+interface RequestBody {
+  code: string;
+  language: string;
+  args?: string[];
+  stdin?: string;
+}
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body: RequestBody = await request.json();
 
     // Validate request body
     if (!body.code) {
@@ -34,8 +41,8 @@ export async function POST(request: Request) {
         language: body.language.toLowerCase(),
         version: '*',
         files: [{ content: body.code }],
-        stdin: '',
-        args: Array.isArray(body.args) ? body.args : [], // Safely handle args
+        stdin: body.stdin || '',
+        args: Array.isArray(body.args) ? body.args : [],
         run_timeout: 30000, // 30 seconds timeout
         compile_timeout: 30000,
       }),
@@ -48,12 +55,17 @@ export async function POST(request: Request) {
 
     const data = await response.json();
 
-    // Add args to output for debugging purposes
-    if (body.args?.length > 0) {
-      data.args = body.args;
-    }
+    // Add execution metadata to response
+    const metadata = {
+      args: body.args || [],
+      stdin: body.stdin || '',
+      timestamp: new Date().toISOString(),
+    };
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      ...data,
+      metadata,
+    });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       return NextResponse.json(
