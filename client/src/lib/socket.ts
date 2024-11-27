@@ -20,8 +20,6 @@ export const getSocket = (): Socket => {
   if (!socketInstance || !socketInstance.connected) {
     socketInstance = io(BASE_SERVER_URL, {
       autoConnect: false,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
     });
   }
 
