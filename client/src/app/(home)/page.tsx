@@ -1,3 +1,4 @@
+import React from 'react';
 import Image from 'next/image';
 import {
   Code2,
@@ -60,7 +61,7 @@ const showcaseImages: ShowcaseImage[] = [
 
 const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
   <div className="group relative mb-4 w-full overflow-hidden rounded-lg border bg-background/50 shadow-sm backdrop-blur">
-    <div className="relative h-40 w-full sm:h-48">
+    <div className="relative aspect-video w-full">
       <Image
         src={image.src}
         alt={image.alt}
@@ -116,21 +117,21 @@ const ShowcaseGrid = () => {
   );
 };
 
-export default function Page() {
+const Page = () => {
   return (
-    <main className="relative flex min-h-dvh flex-col items-start justify-start lg:flex-row lg:items-center lg:justify-between">
+    <main className="relative grid min-h-dvh w-full grid-cols-1 lg:grid-cols-2">
       {/* Left Section - Form */}
-      <div className="w-full p-4 lg:w-1/2 lg:p-8">
-        <div className="mx-auto max-w-lg">
-          <div className="mb-6 text-left">
+      <div className="flex w-full items-center justify-center p-4 lg:p-8">
+        <div className="w-full max-w-xl">
+          <div className="mb-6">
             <div className="space-y-6">
-              <h1 className="flex flex-row items-start gap-2 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+              <h1 className="flex flex-row items-start gap-2 text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
                 <Image
                   src="/images/kasca-logo.svg"
                   alt="Kasca Logo"
-                  width={64}
-                  height={64}
-                  className="my-auto size-16 md:size-20 lg:size-24"
+                  width={96}
+                  height={96}
+                  className="size-16 lg:size-24"
                   priority
                 />
                 <div className="flex flex-col items-start text-start">
@@ -153,8 +154,8 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Right Section - Responsive Grid */}
-      <div className="w-full lg:w-1/2">
+      {/* Right Section - Showcase Grid */}
+      <div className="relative flex w-full items-center justify-center">
         <ShowcaseGrid />
         {/* Gradient overlay - Only visible on larger screens */}
         <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/80 via-transparent to-transparent to-50% lg:block" />
@@ -163,4 +164,6 @@ export default function Page() {
       <AboutButton />
     </main>
   );
-}
+};
+
+export default Page;
