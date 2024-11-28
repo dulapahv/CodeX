@@ -7,7 +7,7 @@ import { parseError } from '@/lib/utils';
 
 import { cleanupPeer, createPeer } from './peer';
 
-// Get local media stream
+// Get local media stream with proper camera constraints
 export const getMedia = async (
   selectedVideoDevice: string,
   selectedAudioInput: string,
@@ -17,9 +17,7 @@ export const getMedia = async (
   streamRef: MutableRefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   try {
@@ -28,16 +26,30 @@ export const getMedia = async (
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
 
-    // Build constraints based on selected devices
+    // Build video constraints based on platform and selected device
+    const videoConstraints: MediaTrackConstraints = isMobile
+      ? {
+          facingMode: cameraFacingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          aspectRatio: { ideal: 16/9 },
+        }
+      : {
+          deviceId: selectedVideoDevice ? { exact: selectedVideoDevice } : undefined,
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          aspectRatio: { ideal: 16/9 },
+        };
+
+    // Build audio constraints
+    const audioConstraints: boolean | MediaTrackConstraints = selectedAudioInput
+      ? { deviceId: { exact: selectedAudioInput } }
+      : true;
+
+    // Complete constraints object
     const constraints: MediaStreamConstraints = {
-      video: isMobile
-        ? { facingMode: cameraFacingMode }
-        : selectedVideoDevice
-          ? { deviceId: { exact: selectedVideoDevice } }
-          : true,
-      audio: selectedAudioInput
-        ? { deviceId: { exact: selectedAudioInput } }
-        : true,
+      video: videoConstraints,
+      audio: audioConstraints,
     };
 
     // Try to get the stream with exact constraints first
@@ -60,9 +72,13 @@ export const getMedia = async (
         exactError,
       );
 
-      // Fallback to basic constraints
+      // Fallback to basic constraints with ideal values
       const fallbackStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          aspectRatio: { ideal: 16/9 },
+        },
         audio: true,
       });
 
