@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,14 @@ const ArgsInputPopover = ({
     onStdinChange(value);
   };
 
+  const clearArgs = () => {
+    handleArgsChange('');
+  };
+
+  const clearStdin = () => {
+    handleStdinChange('');
+  };
+
   const hasInput = argsStr || stdin;
 
   return (
@@ -95,25 +103,51 @@ const ArgsInputPopover = ({
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="args-input">Program Arguments</Label>
-            <Input
-              id="args-input"
-              type="text"
-              placeholder='e.g. arg1 "arg with spaces" arg3'
-              value={argsStr}
-              onChange={(e) => handleArgsChange(e.target.value)}
-              className="h-8 text-sm"
-            />
+            <div className="relative">
+              <Input
+                id="args-input"
+                type="text"
+                placeholder='e.g. arg1 "arg with spaces" arg3'
+                value={argsStr}
+                onChange={(e) => handleArgsChange(e.target.value)}
+                className="h-8 pr-8 text-sm"
+              />
+              {argsStr && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 size-6 -translate-y-1/2 rounded-full text-muted-foreground hover:text-foreground"
+                  onClick={clearArgs}
+                  aria-label="Clear arguments"
+                >
+                  <X className="size-4" />
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="stdin-input">Program Input (stdin)</Label>
-            <Textarea
-              id="stdin-input"
-              placeholder="Enter input that your program expects to receive..."
-              value={stdin}
-              onChange={(e) => handleStdinChange(e.target.value)}
-              className="max-h-[50vh] min-h-[10vh] resize-y text-sm"
-            />
+            <div className="relative">
+              <Textarea
+                id="stdin-input"
+                placeholder="Enter input that your program expects to receive..."
+                value={stdin}
+                onChange={(e) => handleStdinChange(e.target.value)}
+                className="max-h-[50vh] min-h-[10vh] resize-y pr-8 text-sm"
+              />
+              {stdin && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-2 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  onClick={clearStdin}
+                  aria-label="Clear program input"
+                >
+                  <X className="size-4" />
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="text-xs text-muted-foreground">
