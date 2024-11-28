@@ -1,8 +1,3 @@
-/**
- * Root page component with improved UI.
- * Features a split layout with form and showcase sections.
- */
-
 import Image from 'next/image';
 import {
   Code2,
@@ -22,6 +17,7 @@ interface ShowcaseImage {
   alt: string;
   title: string;
   description: string;
+  icon: React.ReactNode;
 }
 
 const showcaseImages: ShowcaseImage[] = [
@@ -30,55 +26,99 @@ const showcaseImages: ShowcaseImage[] = [
     alt: 'Real-time collaboration demo',
     title: 'Real-time Collaboration',
     description: 'Code together in real-time with cursor sharing',
+    icon: <Code2 className="size-4" />,
   },
   {
     src: '/images/2.png',
     alt: 'Shared terminal interface',
     title: 'Shared Terminal',
     description: 'Execute code and see results together',
+    icon: <Terminal className="size-4" />,
   },
   {
     src: '/images/3.png',
     alt: 'Video streaming feature',
     title: 'Video Streaming',
     description: 'Connect with webcam for better collaboration',
+    icon: <VideoIcon className="size-4" />,
   },
   {
     src: '/images/4.png',
     alt: 'GitHub integration',
     title: 'GitHub Integration',
     description: 'Save and load code directly from GitHub',
+    icon: <GitBranchPlus className="size-4" />,
   },
   {
     src: '/images/5.png',
     alt: 'Shared notes feature',
     title: 'Shared Notes',
     description: 'Collaborate on notes with Markdown support',
+    icon: <Pencil className="size-4" />,
   },
 ];
 
 const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
-  <div className="group relative mb-4 h-fit w-[25rem] rounded-lg border bg-background/50 shadow-sm backdrop-blur transition-all hover:shadow-lg">
-    <div className="relative h-48 w-full">
+  <div className="group relative mb-4 w-full overflow-hidden rounded-lg border bg-background/50 shadow-sm backdrop-blur">
+    <div className="relative h-40 w-full sm:h-48">
       <Image
         src={image.src}
         alt={image.alt}
         fill
-        className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-t-lg"
+        className="rounded-t-lg object-cover transition-transform duration-300"
       />
     </div>
     <div className="p-4">
-      <h3 className="mb-1 text-sm font-semibold tracking-tight">
-        {image.title}
-      </h3>
+      <div className="mb-2 flex items-center gap-2">
+        <span className="rounded-full bg-primary/10 p-2 text-primary">
+          {image.icon}
+        </span>
+        <h3 className="text-sm font-semibold tracking-tight">{image.title}</h3>
+      </div>
       <p className="text-xs text-muted-foreground">{image.description}</p>
     </div>
   </div>
 );
 
+const ShowcaseGrid = () => {
+  if (isMobile) {
+    return (
+      <div className="grid w-full gap-4 px-4 pb-8 pt-4">
+        {showcaseImages.map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+    );
+  }
+
+  const columnOne = showcaseImages.slice(0, 2);
+  const columnTwo = showcaseImages.slice(2, 4);
+  const columnThree = showcaseImages.slice(4);
+
+  return (
+    <div className="grid w-full grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 lg:px-8">
+      <div className="space-y-6">
+        {columnOne.map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+      <div className="space-y-6 md:mt-12">
+        {columnTwo.map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+      <div className="space-y-6 lg:mt-24">
+        {columnThree.map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function Page() {
   return (
-    <main className="relative flex min-h-dvh flex-col items-start justify-start overflow-hidden lg:flex-row lg:items-center lg:justify-center">
+    <main className="relative flex min-h-dvh flex-col items-start justify-start lg:flex-row lg:items-center lg:justify-between">
       {/* Left Section - Form */}
       <div className="w-full p-4 lg:w-1/2 lg:p-8">
         <div className="mx-auto max-w-lg">
@@ -90,7 +130,7 @@ export default function Page() {
                   alt="Kasca Logo"
                   width={64}
                   height={64}
-                  className="my-auto size-20 lg:size-24"
+                  className="my-auto size-16 md:size-20 lg:size-24"
                   priority
                 />
                 <div className="flex flex-col items-start text-start">
@@ -113,24 +153,11 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Right Section - Fixed Size Cards */}
-      <div className="relative hidden w-full lg:block lg:h-dvh lg:w-1/2">
-        <div className="absolute inset-0 flex">
-          <div className="grid grid-cols-2 gap-6 pl-8">
-            {showcaseImages.map((image, index) => (
-              <div
-                key={image.title}
-                className={`transform translate-x-12 ${
-                  index % 2 === 0 ? 'translate-y-12' : '-translate-y-12'
-                }`}
-              >
-                <ShowcaseCard image={image} />
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Gradient overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-background/80 via-transparent to-transparent" />
+      {/* Right Section - Responsive Grid */}
+      <div className="w-full lg:w-1/2">
+        <ShowcaseGrid />
+        {/* Gradient overlay - Only visible on larger screens */}
+        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/80 via-transparent to-transparent to-50% lg:block" />
       </div>
 
       <AboutButton />
