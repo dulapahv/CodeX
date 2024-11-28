@@ -7,9 +7,6 @@ import { StreamServiceMsg } from '@common/types/message';
 import { getSocket } from '@/lib/socket';
 import { parseError } from '@/lib/utils';
 
-import type { MediaDevice } from '../types';
-import { updateDeviceLabels } from './device';
-
 // Toggle camera
 export const toggleCamera = async (
   cameraOn: boolean,
@@ -18,41 +15,34 @@ export const toggleCamera = async (
   streamRef: MutableRefObject<MediaStream | null>,
   videoRef: MutableRefObject<HTMLVideoElement | null>,
   getMedia: () => Promise<boolean>,
-  setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
 ) => {
   const socket = getSocket();
 
   try {
     if (!cameraOn) {
-      // Check permissions first
+      // Request both permissions at once instead of separately
       try {
         const permissions = await navigator.mediaDevices.getUserMedia({
           video: true,
+          audio: true,
         });
-        permissions.getTracks().forEach((track) => track.stop()); // Stop the temporary stream
-      } catch (error) {
-        // If permission check fails, try requesting it again
-        await navigator.mediaDevices
-          .getUserMedia({ video: true })
-          .then((stream) => {
-            stream.getTracks().forEach((track) => track.stop());
-          })
-          .catch((error) => {
-            toast.error(
-              `Camera permission denied. Please allow camera access and try again.`,
-            );
-            return;
-          });
-      }
+        // Stop the temporary stream immediately
+        permissions.getTracks().forEach((track) => track.stop());
 
-      // Now try to get the media with selected devices
-      const mediaStarted = await getMedia();
-      if (mediaStarted) {
-        setCameraOn(true);
+        // Get the actual media stream with selected devices
+        const mediaStarted = await getMedia();
+        if (mediaStarted) {
+          setCameraOn(true);
+        }
+      } catch (error) {
+        // Handle permission denial
+        toast.error(
+          'Please allow camera and microphone access to use this feature.',
+        );
+        return;
       }
     } else {
+      // Turning off camera
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
@@ -64,7 +54,7 @@ export const toggleCamera = async (
       socket.emit(StreamServiceMsg.CAMERA_OFF);
       streamRef.current = null;
       setCameraOn(false);
-      setMicOn(false); // Reset mic state when camera is turned off
+      setMicOn(false);
     }
   } catch (error) {
     toast.error(`Error toggling camera: ${parseError(error)}`);

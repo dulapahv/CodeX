@@ -342,9 +342,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 streamRef,
                 videoRef,
                 handleGetMedia,
-                setVideoDevices,
-                setAudioInputDevices,
-                setAudioOutputDevices,
               )
             }
             isEnabled={cameraOn}
