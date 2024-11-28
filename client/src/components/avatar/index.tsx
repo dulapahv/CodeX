@@ -26,11 +26,18 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import { isMobile } from 'react-device-detect';
+
 import type { User } from '@common/types/user';
 
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { cn } from '@/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Tooltip,
   TooltipContent,
@@ -84,8 +91,27 @@ const Avatar = ({
     return AvatarContent;
   }
 
+  // Use Popover for mobile devices and Tooltip for desktop
+  if (isMobile) {
+    return (
+      <Popover>
+        <PopoverTrigger asChild aria-label={`${displayName}'s avatar`}>
+          {AvatarContent}
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-auto p-2 text-sm"
+          side="top"
+          sideOffset={8}
+          role="tooltip"
+        >
+          {displayName}
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
   return (
-    <Tooltip>
+    <Tooltip delayDuration={0}>
       <TooltipTrigger asChild aria-label={`${displayName}'s avatar`}>
         {AvatarContent}
       </TooltipTrigger>
