@@ -1,4 +1,11 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { GeistMono } from 'geist/font/mono';
 import { Check, Copy, Image as LuImage } from 'lucide-react';
 import QRCode from 'react-qr-code';
@@ -43,7 +50,8 @@ interface ShareDialogRef {
 const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const [activeTab, setActiveTab] = useState('links');
+    const wakeLockRef = useRef<WakeLockSentinel | null>(null);
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
     const [copyStatus, setCopyStatus] = useState<CopyStatus>({
@@ -52,8 +60,53 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
       qrCodeCopied: false,
     });
 
+    // Request wake lock when QR tab is active
+    const requestWakeLock = async () => {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLockRef.current = await navigator.wakeLock.request('screen');
+        } catch (err) {
+          console.warn('Wake Lock request failed:', err);
+        }
+      }
+    };
+
+    // Release wake lock when QR tab is inactive
+    const releaseWakeLock = () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current
+          .release()
+          .then(() => {
+            wakeLockRef.current = null;
+          })
+          .catch((err) => {
+            console.warn('Wake Lock release failed:', err);
+          });
+      }
+    };
+
+    // Handle tab changes
+    const handleTabChange = (value: string) => {
+      setActiveTab(value);
+      if (value === 'qr') {
+        requestWakeLock();
+      } else {
+        releaseWakeLock();
+      }
+    };
+
     const openDialog = useCallback(() => setIsOpen(true), []);
-    const closeDialog = useCallback(() => setIsOpen(false), []);
+    const closeDialog = useCallback(() => {
+      setIsOpen(false);
+      releaseWakeLock();
+    }, []);
+
+    // Cleanup wake lock on unmount
+    useEffect(() => {
+      return () => {
+        releaseWakeLock();
+      };
+    }, []);
 
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
@@ -73,6 +126,8 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
       <div className="flex h-full flex-col">
         <Tabs
           defaultValue="links"
+          value={activeTab}
+          onValueChange={handleTabChange}
           className="w-full"
           aria-label="Share options"
         >
@@ -182,7 +237,10 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           >
             <div className="flex flex-col items-center space-y-4">
               <div
-                className="rounded-lg bg-white p-4"
+                className={cn(
+                  'rounded-lg bg-white p-4 transition-all duration-300',
+                  activeTab === 'qr' && 'brightness-110',
+                )}
                 role="img"
                 aria-label="QR code for room link"
               >
@@ -278,6 +336,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   },
 );
 
-ShareDialog.displayName = 'LeaveDialog';
+ShareDialog.displayName = 'ShareDialog';
 
 export { ShareDialog, type ShareDialogRef };
