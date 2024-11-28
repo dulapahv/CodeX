@@ -1,31 +1,6 @@
 /**
  * Join Form component that handles room creation and joining functionality.
  * Provides a form interface for creating new rooms or joining existing ones.
- *
- * @remarks
- * This component:
- * - Handles room creation via [`createRoom`](src/lib/utils.ts)
- * - Handles room joining via [`joinRoom`](src/lib/utils.ts)
- * - Manages form state via custom hooks:
- *   - [`useCreateRoomForm`]
- *     (src/components/join-form/hooks/useCreateRoomForm.ts)
- *   - [`useJoinRoomForm`](src/components/join-form/hooks/useJoinRoomForm.ts)
- * - Shows loading and error states
- * - Supports invitation links via URL parameters
- * - Provides navigation via Next.js router
- *
- * Uses the following components:
- * - [`Card`](src/components/ui/card.tsx) for layout
- * - [`Separator`](src/components/ui/separator.tsx) for visual dividers
- * - Form sections for different actions:
- *   - [`CreateRoomSection`]
- *     (src/components/join-form/components/create-room-section.tsx)
- *   - [`JoinRoomSection`]
- *     (src/components/join-form/components/join-room-section.tsx)
- *   - [`InvitedSection`]
- *     (src/components/join-form/components/invited-section.tsx)
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';
@@ -53,7 +28,11 @@ import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
 import { createRoom, joinRoom } from './utils';
 
-const RoomAccessForm = () => {
+interface RoomAccessFormProps {
+  hideTitle?: boolean;
+}
+
+const RoomAccessForm = ({ hideTitle = false }: RoomAccessFormProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const room = searchParams.get('room') || '';
@@ -130,21 +109,23 @@ const RoomAccessForm = () => {
 
   return (
     <Card
-      className="w-[480px] animate-fade-in bg-background/50 backdrop-blur delay-75"
+      className="w-[480px] bg-background/50 backdrop-blur delay-75"
       role="region"
       aria-label="Room access form"
     >
-      <CardHeader className="p-4 pt-6 md:p-6">
-        <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
-        {!room && (
-          <CardDescription id="form-description">
-            Create or join a room to start coding.
-          </CardDescription>
-        )}
-      </CardHeader>
+      {!hideTitle && (
+        <CardHeader className="p-4 pt-6 md:p-6">
+          <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
+          {!room && (
+            <CardDescription id="form-description">
+              Create or join a room to start coding.
+            </CardDescription>
+          )}
+        </CardHeader>
+      )}
       <CardContent
-        className="px-4 pb-6 md:px-6 md:pt-0"
-        aria-describedby={!room ? 'form-description' : undefined}
+        className={`px-4 pb-6 md:px-6 ${hideTitle ? 'pt-6' : 'md:pt-0'}`}
+        aria-describedby={!room && !hideTitle ? 'form-description' : undefined}
       >
         <div className="grid w-full items-center gap-6" role="group">
           {room ? (
@@ -169,10 +150,7 @@ const RoomAccessForm = () => {
                 isSubmitting={isJoining}
                 isCreating={isCreating}
               />
-              <BackButton
-                onClick={() => router.push('/')}
-                disabled={isJoining}
-              />
+              <BackButton onClick={() => router.push('/')} disabled={isJoining} />
             </>
           ) : (
             <>
