@@ -92,18 +92,24 @@ const ShowcaseGrid = () => {
     );
   }
 
-  const columnOne = showcaseImages.slice(0, 3);
-  const columnTwo = showcaseImages.slice(3, 5);
+  const columnOne = showcaseImages.slice(0, 2);
+  const columnTwo = showcaseImages.slice(2, 4);
+  const thirdColumn = showcaseImages.slice(4);
 
   return (
-    <div className="grid grid-cols-1 w-full justify-center md:flex items-center gap-x-6 overflow-hidden p-4 md:px-0 max-w-xl">
+    <div className="grid w-full grid-cols-1 justify-center gap-x-6 overflow-hidden p-4 md:flex md:px-0">
       <div className="space-y-6">
         {columnOne.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
-      <div className="space-y-6">
+      <div className="mt-12 space-y-6">
         {columnTwo.map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+      <div className="mt-24 space-y-6">
+        {thirdColumn.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
@@ -113,9 +119,9 @@ const ShowcaseGrid = () => {
 
 const Page = () => {
   return (
-    <main className="relative grid min-h-dvh w-full grid-cols-1 lg:grid-cols-2">
+    <main className="relative flex h-dvh w-full">
       {/* Left Section - Form */}
-      <div className="flex w-full items-center justify-center p-4 lg:p-8">
+      <div className="flex w-5/12 items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-xl">
           <div className="mb-6">
             <div className="space-y-6">
@@ -149,7 +155,7 @@ const Page = () => {
       </div>
 
       {/* Right Section - Showcase Grid */}
-      <div className="relative flex w-full items-center justify-center">
+      <div className="relative flex w-7/12 items-center justify-center">
         <ShowcaseGrid />
         {/* Gradient overlay - Only visible on larger screens */}
         <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/80 via-transparent to-transparent lg:block" />
