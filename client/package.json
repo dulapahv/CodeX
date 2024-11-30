@@ -26,7 +26,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@sentry/nextjs": "^8.40.0",
+    "@sentry/nextjs": "^8.41.0",
     "@tailwindcss/typography": "^0.5.15",
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
@@ -54,9 +54,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.5",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
-    "@types/node": "^20.17.8",
+    "@types/node": "^20.17.9",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/simple-peer": "^9.11.8",

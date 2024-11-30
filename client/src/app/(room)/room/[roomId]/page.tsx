@@ -76,12 +76,24 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   roomId,
   users,
   setOutput,
+  showMarkdown,
+  showTerminal,
+  showWebcam,
+  setShowMarkdown,
+  setShowTerminal,
+  setShowWebcam,
 }: {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
   roomId: string;
   users: User[];
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
+  showMarkdown: boolean;
+  showTerminal: boolean;
+  showWebcam: boolean;
+  setShowMarkdown: Dispatch<SetStateAction<boolean>>;
+  setShowTerminal: Dispatch<SetStateAction<boolean>>;
+  setShowWebcam: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="flex items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
@@ -90,7 +102,16 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
         role="group"
         aria-label="Editor Toolbar"
       >
-        <Toolbar monaco={monaco} editor={editor} />
+        <Toolbar
+          monaco={monaco}
+          editor={editor}
+          setShowMarkdown={setShowMarkdown}
+          setShowTerminal={setShowTerminal}
+          setShowWebcam={setShowWebcam}
+          showMarkdown={showMarkdown}
+          showTerminal={showTerminal}
+          showWebcam={showWebcam}
+        />
       </div>
       <RunButton monaco={monaco} editor={editor} setOutput={setOutput} />
       <nav aria-label="Collaboration Tools">
@@ -151,6 +172,9 @@ export default function Room({ params }: RoomProps) {
   const router = useRouter();
   const socket = getSocket();
 
+  const [showMarkdown, setShowMarkdown] = useState(true);
+  const [showTerminal, setShowTerminal] = useState(true);
+  const [showWebcam, setShowWebcam] = useState(true);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -251,6 +275,12 @@ export default function Room({ params }: RoomProps) {
             roomId={params.roomId}
             setOutput={setOutput}
             users={users}
+            setShowMarkdown={setShowMarkdown}
+            setShowTerminal={setShowTerminal}
+            setShowWebcam={setShowWebcam}
+            showMarkdown={showMarkdown}
+            showTerminal={showTerminal}
+            showWebcam={showWebcam}
           />
         )}
       </div>
@@ -260,6 +290,7 @@ export default function Room({ params }: RoomProps) {
             className={cn(
               'h-[calc(100%-24px)] animate-fade-in-left border-t-[1px] border-muted-foreground [&>div]:h-full',
               (!monaco || !editor) && 'hidden',
+              !showMarkdown && 'hidden',
             )}
             role="region"
             aria-label="Notepad"
@@ -274,8 +305,10 @@ export default function Room({ params }: RoomProps) {
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
+              !showMarkdown && 'hidden',
             )}
           />
+
           <ResizablePanel defaultSize={65} minSize={10}>
             <ResizablePanelGroup
               direction="vertical"
@@ -300,12 +333,14 @@ export default function Room({ params }: RoomProps) {
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
+                  !showTerminal && 'hidden',
                 )}
               />
               <ResizablePanel
                 className={cn(
                   'animate-fade-in-bottom',
                   (!monaco || !editor) && 'hidden',
+                  !showTerminal && 'hidden',
                 )}
                 role="region"
                 aria-label="Terminal"
@@ -319,12 +354,17 @@ export default function Room({ params }: RoomProps) {
           </ResizablePanel>
           <ResizableHandle
             withHandle={isMobile}
-            className="bg-muted-foreground"
+            className={cn(
+              'bg-muted-foreground',
+              (!monaco || !editor) && 'hidden',
+              !showWebcam && 'hidden',
+            )}
           />
           <ResizablePanel
             className={cn(
               'h-[calc(100%-24px)] animate-fade-in-right border-t-[1px] border-muted-foreground',
               (!monaco || !editor) && 'hidden',
+              !showWebcam && 'hidden',
             )}
             role="region"
             aria-label="Webcam Stream"

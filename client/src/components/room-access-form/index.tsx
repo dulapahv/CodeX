@@ -9,13 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { parseError } from '@/lib/utils';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 import { BackButton } from './components/back-button';
@@ -28,11 +22,7 @@ import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
 import { createRoom, joinRoom } from './utils';
 
-interface RoomAccessFormProps {
-  hideTitle?: boolean;
-}
-
-const RoomAccessForm = ({ hideTitle = false }: RoomAccessFormProps) => {
+const RoomAccessForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const room = searchParams.get('room') || '';
@@ -113,20 +103,7 @@ const RoomAccessForm = ({ hideTitle = false }: RoomAccessFormProps) => {
       role="region"
       aria-label="Room access form"
     >
-      {!hideTitle && (
-        <CardHeader className="p-4 pt-6 md:p-6">
-          <CardTitle>Kasca - Code Collaboration Platform</CardTitle>
-          {!room && (
-            <CardDescription id="form-description">
-              Create or join a room to start coding.
-            </CardDescription>
-          )}
-        </CardHeader>
-      )}
-      <CardContent
-        className={`px-4 pb-6 md:px-6 ${hideTitle ? 'pt-6' : 'md:pt-0'}`}
-        aria-describedby={!room && !hideTitle ? 'form-description' : undefined}
-      >
+      <CardContent className="px-4 pb-6 pt-6 md:px-6">
         <div className="grid w-full items-center gap-6" role="group">
           {room ? (
             <>
@@ -135,7 +112,7 @@ const RoomAccessForm = ({ hideTitle = false }: RoomAccessFormProps) => {
                 role="status"
                 aria-live="polite"
               >
-                <p>You&apos;ve been invited to join a coding session!</p>
+                <p>You&apos;ve been invited to a coding session!</p>
                 <p className="text-lg">
                   Room: <span className="font-bold">{room}</span>
                 </p>
@@ -150,7 +127,10 @@ const RoomAccessForm = ({ hideTitle = false }: RoomAccessFormProps) => {
                 isSubmitting={isJoining}
                 isCreating={isCreating}
               />
-              <BackButton onClick={() => router.push('/')} disabled={isJoining} />
+              <BackButton
+                onClick={() => router.push('/')}
+                disabled={isJoining}
+              />
             </>
           ) : (
             <>

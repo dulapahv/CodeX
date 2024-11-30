@@ -92,24 +92,18 @@ const ShowcaseGrid = () => {
     );
   }
 
-  const columnOne = showcaseImages.slice(0, 2);
-  const columnTwo = showcaseImages.slice(2, 4);
-  const columnThree = showcaseImages.slice(4);
+  const columnOne = showcaseImages.slice(0, 3);
+  const columnTwo = showcaseImages.slice(3, 5);
 
   return (
-    <div className="grid w-full grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 lg:px-8">
+    <div className="grid grid-cols-1 w-full justify-center md:flex items-center gap-x-6 overflow-hidden p-4 md:px-0 max-w-xl">
       <div className="space-y-6">
         {columnOne.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
-      <div className="space-y-6 md:mt-12">
+      <div className="space-y-6">
         {columnTwo.map((image) => (
-          <ShowcaseCard key={image.title} image={image} />
-        ))}
-      </div>
-      <div className="space-y-6 lg:mt-24">
-        {columnThree.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
@@ -150,7 +144,7 @@ const Page = () => {
               </p>
             </div>
           </div>
-          <RoomAccessForm hideTitle />
+          <RoomAccessForm />
         </div>
       </div>
 

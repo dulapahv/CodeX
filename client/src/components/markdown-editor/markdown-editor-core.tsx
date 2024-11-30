@@ -85,8 +85,28 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
       )}
       contentEditableClassName={cn(
         GeistSans.className,
-        `prose h-full max-w-none dark:prose-invert prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none prose-li:!no-underline before:prose-li:!top-1/2 before:prose-li:-translate-y-1/2 after:prose-li:!top-1/2 after:prose-li:!-translate-y-1/2 after:prose-li:rotate-45 [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20`,
-        `[&>span]:${GeistMono.className}`,
+        `prose h-full max-w-none dark:prose-invert
+        first:prose-headings:mt-0
+        prose-h1:text-3xl prose-h1:font-extrabold prose-h1:my-6
+        prose-h2:text-2xl prose-h2:my-4
+        prose-h3:text-xl prose-h3:my-2
+        prose-h4:text-lg prose-h4:my-0
+        prose-h5:text-base prose-h5:my-0
+        prose-h6:text-base prose-h6:my-0
+        prose-p:leading-7
+        prose-blockquote:border-l-4 prose-blockquote:border-foreground/30 prose-blockquote:italic
+        prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none
+        prose-pre:bg-muted prose-pre:rounded-lg
+        prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/80 prose-a:transition-opacity
+        prose-em:italic prose-em:text-foreground/90
+        prose-li:!no-underline before:prose-li:!top-1/2
+        before:prose-li:-translate-y-1/2 after:prose-li:!top-1/2
+        after:prose-li:!-translate-y-1/2 after:prose-li:rotate-45
+        prose-hr:border-foreground/30
+        prose-img:rounded-lg
+        [&>span]:prose-code:rounded [&>span]:prose-code:border
+        [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20
+        [&>span]:prose-code:px-1.5 [&>span]:prose-code:py-0.5`,
       )}
       plugins={[
         listsPlugin(),

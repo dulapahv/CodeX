@@ -20,9 +20,19 @@ interface MobileMenuProps {
   actions: ToolbarActions;
   miniMap: boolean;
   wordWrap: boolean;
+  markdown: boolean;
+  terminal: boolean;
+  webcam: boolean;
 }
 
-const MobileMenu = ({ actions, miniMap, wordWrap }: MobileMenuProps) => {
+const MobileMenu = ({
+  actions,
+  miniMap,
+  wordWrap,
+  markdown,
+  terminal,
+  webcam,
+}: MobileMenuProps) => {
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -125,6 +135,12 @@ const MobileMenu = ({ actions, miniMap, wordWrap }: MobileMenuProps) => {
               <MenubarItem onSelect={actions.commandPalette}>
                 Command Palette
               </MenubarItem>
+              <MenubarCheckboxItem
+                onCheckedChange={actions.wordWrap}
+                checked={wordWrap}
+              >
+                Word Wrap
+              </MenubarCheckboxItem>
               <MenubarSeparator />
               <MenubarCheckboxItem
                 onCheckedChange={actions.minimap}
@@ -133,10 +149,22 @@ const MobileMenu = ({ actions, miniMap, wordWrap }: MobileMenuProps) => {
                 Minimap
               </MenubarCheckboxItem>
               <MenubarCheckboxItem
-                onCheckedChange={actions.wordWrap}
-                checked={wordWrap}
+                onCheckedChange={actions.toggleMarkdownPanel}
+                checked={markdown}
               >
-                Word Wrap
+                Markdown Editor
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem
+                onCheckedChange={actions.toggleTerminalPanel}
+                checked={terminal}
+              >
+                Terminal
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem
+                onCheckedChange={actions.toggleWebcamPanel}
+                checked={webcam}
+              >
+                Webcam Stream
               </MenubarCheckboxItem>
             </MenubarSubContent>
           </MenubarSub>

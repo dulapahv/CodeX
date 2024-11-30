@@ -5,7 +5,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
@@ -38,9 +38,24 @@ import { getOS, openLocal, saveLocal } from './utils';
 interface ToolbarProps {
   monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
+  setShowMarkdown: Dispatch<SetStateAction<boolean>>;
+  setShowTerminal: Dispatch<SetStateAction<boolean>>;
+  setShowWebcam: Dispatch<SetStateAction<boolean>>;
+  showMarkdown: boolean;
+  showTerminal: boolean;
+  showWebcam: boolean;
 }
 
-const Toolbar = ({ monaco, editor }: ToolbarProps) => {
+const Toolbar = ({
+  monaco,
+  editor,
+  setShowMarkdown,
+  setShowTerminal,
+  setShowWebcam,
+  showMarkdown,
+  showTerminal,
+  showWebcam,
+}: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const [miniMap, setMiniMap] = useState(false);
@@ -184,14 +199,17 @@ const Toolbar = ({ monaco, editor }: ToolbarProps) => {
         editor.trigger('keyboard', 'editor.action.quickCommand', null);
       }, 1);
     },
-    minimap: () => {
-      editor.updateOptions({ minimap: { enabled: !miniMap } });
-      setMiniMap(!miniMap);
-    },
     wordWrap: () => {
       editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
       setWordWrap(!wordWrap);
     },
+    minimap: () => {
+      editor.updateOptions({ minimap: { enabled: !miniMap } });
+      setMiniMap(!miniMap);
+    },
+    toggleMarkdownPanel: () => setShowMarkdown((show) => !show),
+    toggleTerminalPanel: () => setShowTerminal((show) => !show),
+    toggleWebcamPanel: () => setShowWebcam((show) => !show),
     manual: () => {
       window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
@@ -206,12 +224,18 @@ const Toolbar = ({ monaco, editor }: ToolbarProps) => {
           actions={toolbarActions}
           miniMap={miniMap}
           wordWrap={wordWrap}
+          markdown={showMarkdown}
+          terminal={showTerminal}
+          webcam={showWebcam}
         />
       ) : (
         <MobileMenu
           actions={toolbarActions}
           miniMap={miniMap}
           wordWrap={wordWrap}
+          markdown={showMarkdown}
+          terminal={showTerminal}
+          webcam={showWebcam}
         />
       )}
       <OpenFromGithubDialog

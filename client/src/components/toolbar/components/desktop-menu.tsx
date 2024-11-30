@@ -18,6 +18,9 @@ interface DesktopMenuProps {
   actions: ToolbarActions;
   miniMap: boolean;
   wordWrap: boolean;
+  markdown: boolean;
+  terminal: boolean;
+  webcam: boolean;
 }
 
 const DesktopMenu = ({
@@ -25,6 +28,9 @@ const DesktopMenu = ({
   actions,
   miniMap,
   wordWrap,
+  markdown,
+  terminal,
+  webcam,
 }: DesktopMenuProps) => {
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -144,6 +150,12 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.commandPalette}>
             Command Palette <MenubarShortcut>F1</MenubarShortcut>
           </MenubarItem>
+          <MenubarCheckboxItem
+            onCheckedChange={actions.wordWrap}
+            checked={wordWrap}
+          >
+            Word Wrap
+          </MenubarCheckboxItem>
           <MenubarSeparator />
           <MenubarCheckboxItem
             onCheckedChange={actions.minimap}
@@ -152,10 +164,22 @@ const DesktopMenu = ({
             Minimap
           </MenubarCheckboxItem>
           <MenubarCheckboxItem
-            onCheckedChange={actions.wordWrap}
-            checked={wordWrap}
+            onCheckedChange={actions.toggleMarkdownPanel}
+            checked={markdown}
           >
-            Word Wrap
+            Markdown Editor
+          </MenubarCheckboxItem>
+          <MenubarCheckboxItem
+            onCheckedChange={actions.toggleTerminalPanel}
+            checked={terminal}
+          >
+            Terminal
+          </MenubarCheckboxItem>
+          <MenubarCheckboxItem
+            onCheckedChange={actions.toggleWebcamPanel}
+            checked={webcam}
+          >
+            Webcam Stream
           </MenubarCheckboxItem>
         </MenubarContent>
       </MenubarMenu>
