@@ -32,6 +32,7 @@ import {
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Analytics } from '@/components/analytics';
+import AnimatedGridBackground from '@/components/animated-grid-background';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -197,26 +198,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <div
           aria-hidden="true"
           role="presentation"
-          className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50"
+          className="fixed inset-0 -z-10 bg-black/10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50 dark:bg-transparent"
         />
-        <div
-          aria-hidden="true"
-          role="presentation"
-          className="pointer-events-none fixed inset-0 -z-10 size-full select-none"
-        >
-          <Image
-            src="/images/grid.svg"
-            alt=""
-            fill
-            priority
-            className="object-cover dark:opacity-50"
-            style={{
-              maskImage:
-                'linear-gradient(to bottom, transparent, 20%, white, 80%, transparent)',
-              WebkitMaskImage:
-                'linear-gradient(to bottom, transparent, 20%, white, 80%, transparent)',
-            }}
-          />
+        <div className="fixed inset-0 -z-10">
+          <AnimatedGridBackground />
         </div>
         <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>

@@ -158,7 +158,7 @@ const Page = () => {
       <div className="relative flex w-7/12 items-center justify-center">
         <ShowcaseGrid />
         {/* Gradient overlay - Only visible on larger screens */}
-        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/80 via-transparent to-transparent lg:block" />
+        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/30 via-transparent to-transparent dark:from-background/60 lg:block" />
       </div>
 
       <AboutButton />
