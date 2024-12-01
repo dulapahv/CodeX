@@ -1,16 +1,14 @@
-import React from 'react';
 import Image from 'next/image';
 import {
   Code2,
   GitBranchPlus,
   Pencil,
   Terminal,
-  Users,
   Video as VideoIcon,
 } from 'lucide-react';
-import { isMobile } from 'react-device-detect';
 
 import { AboutButton } from '@/components/about-button';
+import { AnimatedGridBackground } from '@/components/animated-grid-bg';
 import { RoomAccessForm } from '@/components/room-access-form';
 
 interface ShowcaseImage {
@@ -74,41 +72,33 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
         <span className="rounded-full bg-primary/10 p-2 text-primary">
           {image.icon}
         </span>
-        <h3 className="text-sm font-semibold tracking-tight">{image.title}</h3>
+        <h3 className="text-base font-semibold tracking-tight">
+          {image.title}
+        </h3>
       </div>
-      <p className="text-xs text-muted-foreground">{image.description}</p>
+      <p className="text-sm text-muted-foreground">{image.description}</p>
     </div>
   </div>
 );
 
 const ShowcaseGrid = () => {
-  if (isMobile) {
-    return (
-      <div className="grid w-full gap-4 px-4 pb-8 pt-4">
-        {showcaseImages.map((image) => (
-          <ShowcaseCard key={image.title} image={image} />
-        ))}
-      </div>
-    );
-  }
-
   const columnOne = showcaseImages.slice(0, 2);
   const columnTwo = showcaseImages.slice(2, 4);
   const thirdColumn = showcaseImages.slice(4);
 
   return (
-    <div className="grid w-full grid-cols-1 justify-center gap-x-6 overflow-hidden p-4 md:flex md:px-0">
+    <div className="grid w-full grid-cols-1 gap-x-6 overflow-y-auto p-4 min-[560px]:grid-cols-2 min-[560px]:p-8 md:grid-cols-3 min-[1189px]:px-0">
       <div className="space-y-6">
         {columnOne.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
-      <div className="mt-12 space-y-6">
+      <div className="mt-6 space-y-6 min-[560px]:mt-12">
         {columnTwo.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
-      <div className="mt-24 space-y-6">
+      <div className="mt-6 space-y-6 min-[560px]:-mt-2 md:mt-24">
         {thirdColumn.map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
@@ -119,50 +109,58 @@ const ShowcaseGrid = () => {
 
 const Page = () => {
   return (
-    <main className="relative flex h-dvh w-full">
-      {/* Left Section - Form */}
-      <div className="flex w-5/12 items-center justify-center p-4 lg:p-8">
-        <div className="w-full max-w-xl">
-          <div className="mb-6">
-            <div className="space-y-6">
-              <h1 className="flex flex-row items-start gap-2 text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
-                <Image
-                  src="/images/kasca-logo.svg"
-                  alt="Kasca Logo"
-                  width={96}
-                  height={96}
-                  className="size-16 lg:size-24"
-                  priority
-                />
-                <div className="flex flex-col items-start text-start">
-                  <span>Code Together</span>
-                  <span className="flex items-end gap-2 lg:items-baseline">
-                    <span>on</span>
-                    <span className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]">
-                      Kasca
+    <>
+      <div
+        aria-hidden="true"
+        role="presentation"
+        className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50"
+      />
+      <div className="fixed inset-0 -z-10">
+        <AnimatedGridBackground />
+      </div>
+      <main className="relative flex min-h-full w-full flex-col overflow-hidden min-[1189px]:flex-row">
+        {/* Left Section - Form */}
+        <div className="flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8 min-[1189px]:h-dvh min-[1189px]:w-5/12 min-[1189px]:items-center">
+          <div className="w-full max-w-xl">
+            <div className="mb-6">
+              <div className="space-y-6">
+                <h1 className="flex flex-row items-start gap-2 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                  <Image
+                    src="/images/kasca-logo.svg"
+                    alt="Kasca Logo"
+                    width={96}
+                    height={96}
+                    className="size-20 min-[1189px]:size-24"
+                    priority
+                  />
+                  <div className="flex flex-col items-start text-start">
+                    <span>Code together</span>
+                    <span className="flex items-end gap-2 min-[1189px]:items-baseline">
+                      <span>now on</span>
+                      <span className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]">
+                        Kasca
+                      </span>
                     </span>
-                  </span>
-                </div>
-              </h1>
-              <p className="text-lg text-foreground/80 lg:text-xl">
-                Real-time code collaboration with live sync, terminal, and video
-                chat. Start now by creating or joining a room.
-              </p>
+                  </div>
+                </h1>
+                <p className="text-lg text-foreground/90 sm:text-xl">
+                  Your collaborative coding space with shared workspace,
+                  terminal, video, and notes. Start now, no sign-up required.
+                </p>
+              </div>
             </div>
+            <RoomAccessForm />
           </div>
-          <RoomAccessForm />
         </div>
-      </div>
 
-      {/* Right Section - Showcase Grid */}
-      <div className="relative flex w-7/12 items-center justify-center">
-        <ShowcaseGrid />
-        {/* Gradient overlay - Only visible on larger screens */}
-        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-background/30 via-transparent to-transparent dark:from-background/60 lg:block" />
-      </div>
+        {/* Right Section - Showcase Grid */}
+        <div className="relative flex w-full flex-1 items-center justify-center overflow-y-auto min-[1189px]:w-7/12 min-[1189px]:pr-8">
+          <ShowcaseGrid />
+        </div>
 
-      <AboutButton />
-    </main>
+        <AboutButton />
+      </main>
+    </>
   );
 };
 

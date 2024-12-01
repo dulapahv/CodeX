@@ -18,7 +18,6 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
-import Image from 'next/image';
 import { GeistSans } from 'geist/font/sans';
 
 import {
@@ -32,7 +31,6 @@ import {
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Analytics } from '@/components/analytics';
-import AnimatedGridBackground from '@/components/animated-grid-background';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -193,16 +191,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn('h-dvh text-pretty antialiased', GeistSans.className)}
+        className={cn(
+          'dark h-dvh text-pretty antialiased',
+          GeistSans.className,
+        )}
       >
-        <div
-          aria-hidden="true"
-          role="presentation"
-          className="fixed inset-0 -z-10 bg-black/10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50 dark:bg-transparent"
-        />
-        <div className="fixed inset-0 -z-10">
-          <AnimatedGridBackground />
-        </div>
         <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>

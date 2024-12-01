@@ -99,12 +99,12 @@ const RoomAccessForm = () => {
 
   return (
     <Card
-      className="w-[480px] bg-background/50 backdrop-blur delay-75"
+      className="border-none bg-black/20 backdrop-blur-sm"
       role="region"
       aria-label="Room access form"
     >
-      <CardContent className="px-4 pb-6 pt-6 md:px-6">
-        <div className="grid w-full items-center gap-6" role="group">
+      <CardContent className="px-4 py-4 sm:py-6 sm:px-6">
+        <div className="grid w-full items-center gap-4 sm:gap-6" role="group">
           {room ? (
             <>
               <div
@@ -112,11 +112,15 @@ const RoomAccessForm = () => {
                 role="status"
                 aria-live="polite"
               >
-                <p>You&apos;ve been invited to a coding session!</p>
-                <p className="text-lg">
+                <p className="text-lg sm:text-xl">
+                  You&apos;ve been invited to a coding session!
+                </p>
+                <p className="text-base sm:text-lg">
                   Room: <span className="font-bold">{room}</span>
                 </p>
-                <p className="text-sm">Enter your name to join the room</p>
+                <p className="text-lg sm:text-xl">
+                  Enter your name to join the room
+                </p>
               </div>
               <InvitedSection
                 register={registerJoin}

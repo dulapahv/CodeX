@@ -41,6 +41,7 @@ import type {
   UseFormSetValue,
 } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -77,10 +78,10 @@ export const JoinRoomSection = ({
     <section aria-labelledby="join-room-heading">
       <form
         onSubmit={handleSubmit((data) => onSubmit(data), onError)}
-        className="flex flex-col space-y-4"
+        className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
       >
-        <h3 id="join-room-heading" className="text-lg font-medium">
+        <h3 id="join-room-heading" className="text-lg font-medium sm:text-xl">
           Join a Room
         </h3>
         <div
@@ -88,11 +89,13 @@ export const JoinRoomSection = ({
           role="group"
           aria-labelledby="room-id"
         >
-          <Label htmlFor="room-id">Room ID</Label>
+          <Label htmlFor="room-id" className="text-sm sm:text-base">
+            Room ID
+          </Label>
           <Input
             id="room-id"
             placeholder="XXXX-XXXX"
-            className={GeistMono.className}
+            className={cn(GeistMono.className, 'text-sm sm:text-base')}
             disabled={isDisabled}
             aria-required="true"
             aria-invalid={errors.roomId ? 'true' : 'false'}
@@ -112,10 +115,13 @@ export const JoinRoomSection = ({
           role="group"
           aria-labelledby="name-join"
         >
-          <Label htmlFor="name-join">Name</Label>
+          <Label htmlFor="name-join" className="text-sm sm:text-base">
+            Name
+          </Label>
           <Input
             id="name-join"
             placeholder="Enter your name"
+            className="text-sm sm:text-base"
             disabled={isDisabled}
             aria-required="true"
             aria-invalid={errors.name ? 'true' : 'false'}
@@ -130,19 +136,19 @@ export const JoinRoomSection = ({
         </div>
         <Button
           type="submit"
-          className="bg-primary"
+          className="bg-primary text-sm sm:text-base"
           disabled={isDisabled}
           aria-busy={isSubmitting}
         >
           {isSubmitting && (
             <LoaderCircle
-              className="mr-2 size-4 animate-spin"
+              className="mr-2 size-4 animate-spin sm:size-5"
               aria-hidden="true"
             />
           )}
-          <span>{isSubmitting ? 'Joining...' : 'Join Room'}</span>
+          {isSubmitting ? 'Joining...' : 'Join Room'}
           {!isSubmitting && (
-            <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+            <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />
           )}
         </Button>
       </form>

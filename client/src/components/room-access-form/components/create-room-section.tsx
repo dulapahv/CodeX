@@ -69,10 +69,10 @@ export const CreateRoomSection = ({
     <section aria-labelledby="create-room-heading">
       <form
         onSubmit={handleSubmit((data) => onSubmit(data), onError)}
-        className="flex flex-col space-y-4"
+        className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
       >
-        <h3 id="create-room-heading" className="text-lg font-medium">
+        <h3 id="create-room-heading" className="text-lg font-medium sm:text-xl">
           Create a Room
         </h3>
         <div
@@ -80,12 +80,13 @@ export const CreateRoomSection = ({
           role="group"
           aria-labelledby={inputId}
         >
-          <Label htmlFor={inputId} className="text-sm font-medium">
+          <Label htmlFor={inputId} className="text-sm font-medium sm:text-base">
             Name
           </Label>
           <Input
             id={inputId}
             placeholder="Enter your name"
+            className="text-sm sm:text-base"
             disabled={isDisabled}
             aria-required="true"
             aria-invalid={errors.name ? 'true' : 'false'}
@@ -100,19 +101,19 @@ export const CreateRoomSection = ({
         </div>
         <Button
           type="submit"
-          className="bg-primary"
+          className="bg-primary text-sm sm:text-base"
           disabled={isDisabled}
           aria-busy={isSubmitting}
         >
           {isSubmitting ? (
             <LoaderCircle
-              className="mr-2 size-4 animate-spin"
+              className="mr-2 size-4 animate-spin sm:size-5"
               aria-hidden="true"
             />
           ) : (
-            <CirclePlus className="mr-2 size-4" aria-hidden="true" />
+            <CirclePlus className="mr-2 size-4 sm:size-5" aria-hidden="true" />
           )}
-          <span>{isSubmitting ? 'Creating...' : 'Create Room'}</span>
+          {isSubmitting ? 'Creating...' : 'Create Room'}
         </Button>
       </form>
     </section>

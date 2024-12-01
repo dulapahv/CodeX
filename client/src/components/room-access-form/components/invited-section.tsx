@@ -77,10 +77,13 @@ export const InvitedSection = ({
           role="group"
           aria-labelledby="name-join"
         >
-          <Label htmlFor="name-join">Name</Label>
+          <Label htmlFor="name-join" className="text-sm sm:text-base">
+            Name
+          </Label>
           <Input
             id="name-join"
             placeholder="Enter your name"
+            className="text-sm sm:text-base"
             disabled={isDisabled}
             aria-required="true"
             aria-invalid={errors.name ? 'true' : 'false'}
@@ -95,19 +98,19 @@ export const InvitedSection = ({
         </div>
         <Button
           type="submit"
-          className="bg-primary"
+          className="bg-primary text-sm sm:text-base"
           disabled={isDisabled}
           aria-busy={isSubmitting}
         >
           {isSubmitting && (
             <LoaderCircle
-              className="mr-2 size-4 animate-spin"
+              className="mr-2 size-4 animate-spin sm:size-5"
               aria-hidden="true"
             />
           )}
-          <span>{isSubmitting ? 'Joining...' : 'Join Room'}</span>
+          {isSubmitting ? 'Joining...' : 'Join Room'}
           {!isSubmitting && (
-            <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+            <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />
           )}
         </Button>
       </form>
