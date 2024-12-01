@@ -58,7 +58,7 @@ const showcaseImages: ShowcaseImage[] = [
 ];
 
 const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
-  <div className="group relative mb-4 w-full overflow-hidden rounded-lg border bg-background/50 shadow-sm backdrop-blur">
+  <div className="group relative mb-4 w-full overflow-hidden rounded-lg border-none bg-black/20 backdrop-blur-sm">
     <div className="relative aspect-video w-full">
       <Image
         src={image.src}
@@ -69,7 +69,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
     </div>
     <div className="p-4">
       <div className="mb-2 flex items-center gap-2">
-        <span className="rounded-full bg-primary/10 p-2 text-primary">
+        <span className="rounded-full bg-[#f6d84f]/10 p-2 text-[#f6d84f]">
           {image.icon}
         </span>
         <h3 className="text-base font-semibold tracking-tight">
