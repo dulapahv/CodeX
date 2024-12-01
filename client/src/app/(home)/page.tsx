@@ -76,7 +76,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
           {image.title}
         </h3>
       </div>
-      <p className="text-sm text-muted-foreground">{image.description}</p>
+      <p className="text-sm text-foreground/60">{image.description}</p>
     </div>
   </div>
 );
