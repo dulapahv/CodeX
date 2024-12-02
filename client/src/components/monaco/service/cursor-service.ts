@@ -32,7 +32,7 @@ import type * as monaco from 'monaco-editor';
 import type { Cursor } from '@common/types/operation';
 
 import { userMap } from '@/lib/services/user-map';
-
+import { storage } from '@/lib/services/storage';
 import { createCursorStyle } from '../utils';
 
 /**
@@ -57,6 +57,11 @@ export const updateCursor = (
   const editor = editorInstanceRef.current;
   const monacoInstance = monacoInstanceRef.current;
   if (!editor || !monacoInstance) return;
+
+  // Prevent duplicate cursor events
+  if (storage.getFollowUserId() === userID) {
+    editor.revealLineInCenterIfOutsideViewport(cursor[0]); // Scroll to cursor line
+  };
 
   const name = userMap.get(userID) || 'Unknown';
 

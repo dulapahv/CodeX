@@ -5,12 +5,15 @@ import { App } from 'uWebSockets.js';
 import {
   CodeServiceMsg,
   RoomServiceMsg,
+  ScrollServiceMsg,
   StreamServiceMsg,
 } from '../../common/types/message';
 import type { Cursor, EditOp } from '../../common/types/operation';
+import type { Scroll } from '../../common/types/scroll';
 import type { ExecutionResult } from '../../common/types/terminal';
 import * as codeService from './service/code-service';
 import * as roomService from './service/room-service';
+import * as scrollService from './service/scroll-service';
 import * as userService from './service/user-service';
 import * as webRTCService from './service/webrtc-service';
 
@@ -77,6 +80,9 @@ io.on('connection', (socket) => {
   );
   socket.on(CodeServiceMsg.UPDATE_LANG, async (langID: string) =>
     codeService.updateLang(socket, langID),
+  );
+  socket.on(ScrollServiceMsg.UPDATE_SCROLL, async (scroll: Scroll) =>
+    scrollService.updateScroll(socket, scroll),
   );
   socket.on(RoomServiceMsg.SYNC_MD, async () => {
     roomService.syncNote(socket, io);

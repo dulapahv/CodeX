@@ -51,6 +51,7 @@ interface AvatarProps {
   readonly size?: 'sm' | 'md' | 'lg';
   readonly className?: string;
   readonly showTooltip?: boolean;
+  readonly animate?: boolean;
 }
 
 const sizeClasses = {
@@ -64,6 +65,7 @@ const Avatar = ({
   size = 'md',
   className,
   showTooltip = true,
+  animate = true,
 }: AvatarProps) => {
   const initials = getInitials(user.username);
   const colors = userMap.getColors(user.id);
@@ -73,7 +75,8 @@ const Avatar = ({
   const AvatarContent = (
     <div
       className={cn(
-        'flex animate-scale-up-center cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 font-medium text-[#fff] dark:border-black/50',
+        'flex cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 font-medium text-[#fff] dark:border-black/50',
+        animate && 'animate-scale-up-center',
         sizeClasses[size],
         className,
       )}

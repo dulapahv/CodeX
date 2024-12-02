@@ -38,8 +38,13 @@ import Editor, { type Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useTheme } from 'next-themes';
 
-import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
+import {
+  CodeServiceMsg,
+  RoomServiceMsg,
+  ScrollServiceMsg,
+} from '@common/types/message';
 import type { Cursor, EditOp } from '@common/types/operation';
+import { Scroll } from '@common/types/scroll';
 
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';
@@ -48,6 +53,7 @@ import { LoadingCard } from './components/loading-card';
 import * as codeService from './service/code-service';
 import * as cursorService from './service/cursor-service';
 import * as editorService from './service/editor-service';
+import * as scrollService from './service/scroll-service';
 
 interface MonacoEditorProps {
   monacoRef: (monaco: Monaco) => void;
@@ -113,6 +119,12 @@ const MonacoEditor = memo(function MonacoEditor({
       ),
     );
 
+    socket.on(
+      ScrollServiceMsg.UPDATE_SCROLL,
+      (userID: string, scroll: Scroll) =>
+        scrollService.updateScroll(editorInstanceRef, userID, scroll),
+    );
+
     socket.on(RoomServiceMsg.LEAVE, (userID: string) =>
       cursorService.removeCursor(userID, cursorDecorationsRef),
     );
@@ -121,6 +133,7 @@ const MonacoEditor = memo(function MonacoEditor({
     return () => {
       socket.off(CodeServiceMsg.UPDATE_CODE);
       socket.off(CodeServiceMsg.UPDATE_CURSOR);
+      socket.off(ScrollServiceMsg.UPDATE_SCROLL);
       socket.off(RoomServiceMsg.LEAVE);
     };
   }, [isMonacoReady, socket]);

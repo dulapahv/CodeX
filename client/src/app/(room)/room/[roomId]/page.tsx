@@ -43,6 +43,7 @@ import type { User } from '@common/types/user';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
+import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
 import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
@@ -118,6 +119,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
         <div className="flex items-center gap-x-2">
           <UserList users={users} />
           <ShareButton roomId={roomId} />
+          <FollowUser users={users} />
           <SettingsButton monaco={monaco} editor={editor} />
           <LeaveButton roomId={roomId} />
         </div>

@@ -165,13 +165,14 @@ const LanguageSelection = memo(
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="mb-1 mr-1 w-64 p-0"
+          className="mr-1 w-64 p-0"
+          sideOffset={8}
           onOpenAutoFocus={(event) => {
             if (isMobile) event.preventDefault();
           }}
         >
           <Command>
-            <CommandInput placeholder="Search language..." className="h-9" />
+            <CommandInput placeholder="Search languages..." className="h-9" />
             <CommandList>
               <CommandEmpty>No language found.</CommandEmpty>
               <CommandGroup>

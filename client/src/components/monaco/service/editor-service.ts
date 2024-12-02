@@ -23,7 +23,7 @@ import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
 
-import { CodeServiceMsg } from '@common/types/message';
+import { CodeServiceMsg, ScrollServiceMsg } from '@common/types/message';
 import type { Cursor, EditOp } from '@common/types/operation';
 
 import { getSocket } from '@/lib/socket';
@@ -77,35 +77,40 @@ export const handleOnMount = (
     ],
   });
 
-  const cursorSelectionDisposable = editor.onDidChangeCursorSelection((ev) => {
+  const cursorSelectionDisposable = editor.onDidChangeCursorSelection((e) => {
     setCursorPosition({
-      line: ev.selection.positionLineNumber,
-      column: ev.selection.positionColumn,
-      selected: editor.getModel()?.getValueLengthInRange(ev.selection) || 0,
+      line: e.selection.positionLineNumber,
+      column: e.selection.positionColumn,
+      selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0,
     });
 
     // If the selection is empty, send only the cursor position
     if (
-      ev.selection.startLineNumber === ev.selection.endLineNumber &&
-      ev.selection.startColumn === ev.selection.endColumn
+      e.selection.startLineNumber === e.selection.endLineNumber &&
+      e.selection.startColumn === e.selection.endColumn
     ) {
       socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
-        ev.selection.positionLineNumber,
-        ev.selection.positionColumn,
+        e.selection.positionLineNumber,
+        e.selection.positionColumn,
       ] as Cursor);
     } else {
       socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
-        ev.selection.positionLineNumber,
-        ev.selection.positionColumn,
-        ev.selection.startLineNumber,
-        ev.selection.startColumn,
-        ev.selection.endLineNumber,
-        ev.selection.endColumn,
+        e.selection.positionLineNumber,
+        e.selection.positionColumn,
+        e.selection.startLineNumber,
+        e.selection.startColumn,
+        e.selection.endLineNumber,
+        e.selection.endColumn,
       ] as Cursor);
     }
   });
 
+  const scrollDisposable = editor.onDidScrollChange((e) => {
+    socket.emit(ScrollServiceMsg.UPDATE_SCROLL, [e.scrollLeft, e.scrollTop]);
+  });
+
   disposablesRef.current.push(cursorSelectionDisposable);
+  disposablesRef.current.push(scrollDisposable);
 };
 
 /**

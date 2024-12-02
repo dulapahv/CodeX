@@ -1,6 +1,7 @@
 interface StorageData {
   roomId: string | null;
   userId: string | null;
+  followUserId: string | null;
 }
 
 export class Storage {
@@ -10,6 +11,7 @@ export class Storage {
     this.data = {
       roomId: null,
       userId: null,
+      followUserId: null,
     };
   }
 
@@ -31,6 +33,15 @@ export class Storage {
     this.data.userId = userId;
   }
 
+  // Follow User ID methods
+  getFollowUserId(): string | null {
+    return this.data.followUserId;
+  }
+
+  setFollowUserId(followUserId: string | null): void {
+    this.data.followUserId = followUserId;
+  }
+
   // Combined methods
   getAll(): StorageData {
     return { ...this.data };
@@ -40,6 +51,7 @@ export class Storage {
     this.data = {
       roomId: null,
       userId: null,
+      followUserId: null,
     };
   }
 

@@ -94,7 +94,11 @@ const RoomAccessForm = () => {
   };
 
   if (createSuccessful || joinSuccessful) {
-    return <RedirectingCard />;
+    return (
+      <div className="my-32">
+        <RedirectingCard />
+      </div>
+    );
   }
 
   return (
@@ -103,7 +107,7 @@ const RoomAccessForm = () => {
       role="region"
       aria-label="Room access form"
     >
-      <CardContent className="px-4 py-4 sm:py-6 sm:px-6">
+      <CardContent className="px-4 py-4 sm:px-6 sm:py-6">
         <div className="grid w-full items-center gap-4 sm:gap-6" role="group">
           {room ? (
             <>

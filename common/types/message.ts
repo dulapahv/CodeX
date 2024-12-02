@@ -18,13 +18,17 @@ export enum CodeServiceMsg {
   UPDATE_TERM = 'N',
 }
 
+export enum ScrollServiceMsg {
+  UPDATE_SCROLL = 'O',
+}
+
 export enum StreamServiceMsg {
-  USER_READY = 'O',
-  STREAM_READY = 'P',
-  SIGNAL = 'Q',
-  STREAM = 'R',
-  USER_DISCONNECTED = 'S',
-  CAMERA_OFF = 'T',
-  MIC_STATE = 'U',
-  SPEAKER_STATE = 'V',
+  USER_READY = 'P',
+  STREAM_READY = 'Q',
+  SIGNAL = 'R',
+  STREAM = 'S',
+  USER_DISCONNECTED = 'T',
+  CAMERA_OFF = 'U',
+  MIC_STATE = 'V',
+  SPEAKER_STATE = 'W',
 }
