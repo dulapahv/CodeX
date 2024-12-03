@@ -31,9 +31,38 @@ import type * as monaco from 'monaco-editor';
 
 import type { Cursor } from '@common/types/operation';
 
-import { userMap } from '@/lib/services/user-map';
 import { storage } from '@/lib/services/storage';
+import { userMap } from '@/lib/services/user-map';
+
 import { createCursorStyle } from '../utils';
+
+const VIEWPORT_PADDING = 0.1; // pixels to consider as padding when checking if line is in viewport
+
+/**
+ * Checks if a line number is within the editor's viewport
+ */
+const isLineInViewport = (
+  monaco: Monaco,
+  editor: monaco.editor.IStandaloneCodeEditor,
+  lineNumber: number,
+  padding: number = VIEWPORT_PADDING,
+): boolean => {
+  const visibleRanges = editor.getVisibleRanges();
+  if (!visibleRanges.length) return false;
+
+  // Get viewport information
+  const viewportTop = visibleRanges[0].startLineNumber;
+  const viewportBottom = visibleRanges[visibleRanges.length - 1].endLineNumber;
+
+  // Convert padding to approximate line numbers
+  const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+  const paddingLines = Math.ceil(padding / lineHeight);
+
+  return (
+    lineNumber >= viewportTop - paddingLines &&
+    lineNumber <= viewportBottom + paddingLines
+  );
+};
 
 /**
  * Show cursor and selection when other users type or select text.
@@ -60,8 +89,12 @@ export const updateCursor = (
 
   // Prevent duplicate cursor events
   if (storage.getFollowUserId() === userID) {
-    editor.revealLineInCenterIfOutsideViewport(cursor[0]); // Scroll to cursor line
-  };
+    const cursorLine = cursor[0];
+    // Only center the line if it's outside the viewport
+    if (!isLineInViewport(monacoInstance, editor, cursorLine)) {
+      editor.revealLineInCenter(cursorLine);
+    }
+  }
 
   const name = userMap.get(userID) || 'Unknown';
 
