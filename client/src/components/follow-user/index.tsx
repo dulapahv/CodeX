@@ -97,7 +97,7 @@ const FollowUser = ({ users }: UserListProps) => {
               <CommandItem
                 value="none"
                 onSelect={handleSelect}
-                className="flex items-center justify-between p-2"
+                className="flex h-10 items-center justify-between p-2"
               >
                 <span>Don&apos;t follow anyone</span>
                 {value === null && <Check className="size-4 flex-shrink-0" />}
