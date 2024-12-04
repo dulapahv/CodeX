@@ -19,18 +19,42 @@ import * as webRTCService from './service/webrtc-service';
 
 const PORT = 3001;
 
-const allowedOrigins = [
+// Base allowed origins that are always allowed
+const baseOrigins = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
   'https://dev-kasca.dulapahv.dev',
 ];
 
+const isVercelDeployment = (origin: string): boolean => {
+  // Following Vercel's Git deployment URL pattern:
+  // <project-name>-<unique-hash>-<scope-slug>.vercel.app
+  // We'll match for our project name "kasca-client"
+  const vercelPattern =
+    /^https:\/\/kasca-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
+  return vercelPattern.test(origin);
+};
+
 const app = App();
 
 const io = new Server({
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      // Check if origin is in baseOrigins or matches Vercel deployment pattern
+      if (baseOrigins.includes(origin) || isVercelDeployment(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
+    credentials: true, // Allow credentials if you need them
   },
 });
 io.attachApp(app);
