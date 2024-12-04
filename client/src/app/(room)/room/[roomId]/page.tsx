@@ -23,12 +23,12 @@
 'use client';
 
 import {
-  Dispatch,
   memo,
-  SetStateAction,
   useCallback,
   useEffect,
   useState,
+  type Dispatch,
+  type SetStateAction,
 } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';

@@ -1,14 +1,13 @@
 import {
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
 import { GeistMono } from 'geist/font/mono';
 import { Check, Copy, Image as LuImage } from 'lucide-react';
-import QRCode from 'react-qr-code';
+import { QRCodeCanvas } from 'qrcode.react';
 
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -49,64 +48,20 @@ interface ShareDialogRef {
 
 const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('links');
-    const wakeLockRef = useRef<WakeLockSentinel | null>(null);
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('links');
     const [copyStatus, setCopyStatus] = useState<CopyStatus>({
       roomIdCopied: false,
       roomLinkCopied: false,
       qrCodeCopied: false,
     });
 
-    // Request wake lock when QR tab is active
-    const requestWakeLock = async () => {
-      if ('wakeLock' in navigator) {
-        try {
-          wakeLockRef.current = await navigator.wakeLock.request('screen');
-        } catch (err) {
-          console.warn('Wake Lock request failed:', err);
-        }
-      }
-    };
-
-    // Release wake lock when QR tab is inactive
-    const releaseWakeLock = () => {
-      if (wakeLockRef.current) {
-        wakeLockRef.current
-          .release()
-          .then(() => {
-            wakeLockRef.current = null;
-          })
-          .catch((err) => {
-            console.warn('Wake Lock release failed:', err);
-          });
-      }
-    };
-
-    // Handle tab changes
-    const handleTabChange = (value: string) => {
-      setActiveTab(value);
-      if (value === 'qr') {
-        requestWakeLock();
-      } else {
-        releaseWakeLock();
-      }
-    };
+    const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
-    const closeDialog = useCallback(() => {
-      setIsOpen(false);
-      releaseWakeLock();
-    }, []);
-
-    // Cleanup wake lock on unmount
-    useEffect(() => {
-      return () => {
-        releaseWakeLock();
-      };
-    }, []);
+    const closeDialog = useCallback(() => setIsOpen(false), []);
 
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
@@ -119,7 +74,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
     }
 
     function handleCopyQRCode() {
-      copyQRCode(setCopyStatus);
+      copyQRCode(qrCodeRef, setCopyStatus);
     }
 
     const content = (
@@ -127,7 +82,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
         <Tabs
           defaultValue="links"
           value={activeTab}
-          onValueChange={handleTabChange}
+          onValueChange={setActiveTab}
           className="w-full"
           aria-label="Share options"
         >
@@ -236,20 +191,20 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             aria-label="Share via QR code"
           >
             <div className="flex flex-col items-center space-y-4">
-              <div
-                className={cn(
-                  'rounded-lg bg-white p-4 transition-all duration-300',
-                  activeTab === 'qr' && 'brightness-110',
-                )}
-                role="img"
-                aria-label="QR code for room link"
-              >
-                <QRCode
-                  value={`${window.location.origin}/room/${roomId}`}
-                  size={Math.min(256, window.innerWidth - 96)}
-                  id="qr-code"
-                />
-              </div>
+              <QRCodeCanvas
+                ref={qrCodeRef}
+                value={`${window.location.origin}/room/${roomId}`}
+                title={`QR code to join room ${roomId}`}
+                size={Math.min(256, window.innerWidth - 96)}
+                marginSize={2}
+                className="rounded-lg"
+                imageSettings={{
+                  src: '/images/kasca-logo.svg',
+                  height: 48,
+                  width: 48,
+                  excavate: true,
+                }}
+              />
               <Button
                 onClick={handleCopyQRCode}
                 size="sm"
@@ -272,7 +227,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
                     aria-hidden="true"
                   />
                 )}
-                <span>Copy QR Code as Image</span>
+                <span>Copy QR Code</span>
               </Button>
             </div>
           </TabsContent>

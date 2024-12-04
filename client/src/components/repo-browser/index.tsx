@@ -1,13 +1,13 @@
 import {
-  ChangeEvent,
-  Dispatch,
   memo,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
 } from 'react';
 import { Search } from 'lucide-react';
 import { useDebounce } from 'use-debounce';

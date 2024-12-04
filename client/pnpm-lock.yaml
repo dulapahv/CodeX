@@ -89,6 +89,9 @@ importers:
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      qrcode.react:
+        specifier: ^4.1.0
+        version: 4.1.0(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -101,9 +104,6 @@ importers:
       react-hook-form:
         specifier: ^7.53.2
         version: 7.53.2(react@18.3.1)
-      react-qr-code:
-        specifier: ^2.0.15
-        version: 2.0.15(react@18.3.1)
       react-resizable-panels:
         specifier: ^2.1.7
         version: 2.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3629,8 +3629,10 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qr.js@0.0.0:
-    resolution: {integrity: sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==}
+  qrcode.react@4.1.0:
+    resolution: {integrity: sha512-uqXVIIVD/IPgWLYxbOczCNAQw80XCM/LulYDADF+g2xDsPj5OoRwSWtIS4jGyp295wyjKstfG1qIv/I2/rNWpQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -3669,11 +3671,6 @@ packages:
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
-  react-qr-code@2.0.15:
-    resolution: {integrity: sha512-MkZcjEXqVKqXEIMVE0mbcGgDpkfSdd8zhuzXEl9QzYeNcw8Hq2oVIzDLWuZN2PQBwM5PWjc2S31K8Q1UbcFMfw==}
-    peerDependencies:
-      react: '*'
 
   react-remove-scroll-bar@2.3.6:
     resolution: {integrity: sha512-DtSYaao4mBmX+HDo5YWYdBWQwYIQQshUV/dVxFxK+KM26Wjwp1gZ6rv6OC3oujI6Bfu6Xyg3TwK533AQutsn/g==}
@@ -8634,7 +8631,9 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qr.js@0.0.0: {}
+  qrcode.react@4.1.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   queue-microtask@1.2.3: {}
 
@@ -8670,12 +8669,6 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
-
-  react-qr-code@2.0.15(react@18.3.1):
-    dependencies:
-      prop-types: 15.8.1
-      qr.js: 0.0.0
-      react: 18.3.1
 
   react-remove-scroll-bar@2.3.6(@types/react@18.3.12)(react@18.3.1):
     dependencies:

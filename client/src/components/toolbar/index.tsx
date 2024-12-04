@@ -5,7 +5,13 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 

@@ -1,4 +1,9 @@
-import { Dispatch, MutableRefObject, RefObject, SetStateAction } from 'react';
+import type {
+  Dispatch,
+  MutableRefObject,
+  RefObject,
+  SetStateAction,
+} from 'react';
 import { isMobile } from 'react-device-detect';
 import type Peer from 'simple-peer';
 import { toast } from 'sonner';
@@ -17,7 +22,9 @@ export const getMedia = async (
   streamRef: MutableRefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   try {
@@ -32,13 +39,15 @@ export const getMedia = async (
           facingMode: cameraFacingMode,
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          aspectRatio: { ideal: 16/9 },
+          aspectRatio: { ideal: 16 / 9 },
         }
       : {
-          deviceId: selectedVideoDevice ? { exact: selectedVideoDevice } : undefined,
+          deviceId: selectedVideoDevice
+            ? { exact: selectedVideoDevice }
+            : undefined,
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          aspectRatio: { ideal: 16/9 },
+          aspectRatio: { ideal: 16 / 9 },
         };
 
     // Build audio constraints
@@ -77,7 +86,7 @@ export const getMedia = async (
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          aspectRatio: { ideal: 16/9 },
+          aspectRatio: { ideal: 16 / 9 },
         },
         audio: true,
       });

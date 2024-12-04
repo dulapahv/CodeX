@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'sonner';
 

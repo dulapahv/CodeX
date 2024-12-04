@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { Monaco } from '@monaco-editor/react';
 import { OctagonX, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';

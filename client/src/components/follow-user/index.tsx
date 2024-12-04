@@ -97,19 +97,19 @@ const FollowUser = ({ users }: UserListProps) => {
               <CommandItem
                 value="none"
                 onSelect={handleSelect}
-                className="flex h-10 items-center justify-between p-2"
+                className="flex h-9 items-center justify-between px-2 py-1.5"
               >
-                <span>Don&apos;t follow anyone</span>
+                <span className="truncate text-ellipsis">
+                  Don&apos;t follow anyone
+                </span>
                 {value === null && <Check className="size-4 flex-shrink-0" />}
               </CommandItem>
-            </CommandGroup>
-            <CommandGroup>
               {filteredUsers.map((user) => (
                 <CommandItem
                   key={user.id}
                   value={user.id}
                   onSelect={handleSelect}
-                  className="flex items-center justify-between p-2"
+                  className="flex items-center justify-between px-2 py-1.5"
                 >
                   <div className="flex items-center gap-2">
                     <Avatar
@@ -118,7 +118,9 @@ const FollowUser = ({ users }: UserListProps) => {
                       showTooltip={false}
                       animate={false}
                     />
-                    <span>{user.username}</span>
+                    <span className="max-w-44 truncate text-ellipsis">
+                      {user.username}
+                    </span>
                   </div>
                   {value === user.id && (
                     <Check className="size-4 flex-shrink-0" />

@@ -18,7 +18,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';

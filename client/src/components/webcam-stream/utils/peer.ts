@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import Peer from 'simple-peer';
 import { toast } from 'sonner';
 
@@ -13,7 +13,9 @@ export const createPeer = (
   initiator: boolean,
   streamRef: MutableRefObject<MediaStream | null>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   const socket = getSocket();
@@ -25,7 +27,9 @@ export const createPeer = (
     const peer = new Peer({
       initiator,
       // Only include stream if it exists and has active tracks
-      stream: streamRef.current?.getTracks().length ? streamRef.current : undefined,
+      stream: streamRef.current?.getTracks().length
+        ? streamRef.current
+        : undefined,
     });
 
     peer.on('signal', (signal) => {
@@ -54,7 +58,9 @@ export const createPeer = (
       try {
         peer.signal(signal);
       } catch (error) {
-        console.warn(`Error processing pending signal for ${userID}:\n${error}`);
+        console.warn(
+          `Error processing pending signal for ${userID}:\n${error}`,
+        );
       }
     });
     delete pendingSignalsRef.current[userID];
@@ -73,7 +79,9 @@ export const handleSignal = (
   userID: string,
   streamRef: MutableRefObject<MediaStream | null>,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
   pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
 ) => {
   try {
@@ -85,7 +93,7 @@ export const handleSignal = (
         pendingSignalsRef.current[userID] = [];
       }
       pendingSignalsRef.current[userID].push(signal);
-      
+
       // Create new peer as non-initiator
       peer = createPeer(
         userID,
@@ -109,7 +117,9 @@ export const handleSignal = (
 export const cleanupPeer = (
   userID: string,
   peersRef: MutableRefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
 ) => {
   const peer = peersRef.current[userID];
   if (peer) {
@@ -122,7 +132,7 @@ export const cleanupPeer = (
     }
     delete peersRef.current[userID];
   }
-  
+
   // Always clean up remote streams for this user
   setRemoteStreams((prev) => {
     const newStreams = { ...prev };

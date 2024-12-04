@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
