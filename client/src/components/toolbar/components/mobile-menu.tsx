@@ -47,7 +47,7 @@ const MobileMenu = ({
   }, []);
 
   return (
-    <Menubar className="flex h-fit animate-fade-in border-none bg-transparent p-0 sm:hidden">
+    <Menubar className="flex h-fit animate-fade-in border-none bg-transparent p-0">
       <MenubarMenu>
         <MenubarTrigger
           ref={menuTriggerRef}
