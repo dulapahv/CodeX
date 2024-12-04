@@ -99,7 +99,7 @@ const FollowUser = ({ users }: UserListProps) => {
                 onSelect={handleSelect}
                 className="flex h-9 items-center justify-between px-2 py-1.5"
               >
-                <span className="truncate text-ellipsis">
+                <span className="max-w-44 truncate text-ellipsis">
                   Don&apos;t follow anyone
                 </span>
                 {value === null && <Check className="size-4 flex-shrink-0" />}
