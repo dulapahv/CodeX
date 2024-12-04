@@ -135,6 +135,7 @@ const MobileMenu = ({
               <MenubarItem onSelect={actions.commandPalette}>
                 Command Palette
               </MenubarItem>
+              <MenubarSeparator />
               <MenubarCheckboxItem
                 onCheckedChange={actions.wordWrap}
                 checked={wordWrap}

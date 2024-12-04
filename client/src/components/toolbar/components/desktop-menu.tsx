@@ -150,6 +150,7 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.commandPalette}>
             Command Palette <MenubarShortcut>F1</MenubarShortcut>
           </MenubarItem>
+          <MenubarSeparator />
           <MenubarCheckboxItem
             onCheckedChange={actions.wordWrap}
             checked={wordWrap}
