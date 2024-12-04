@@ -120,7 +120,7 @@ const RoomAccessForm = () => {
                   You&apos;ve been invited to a coding session!
                 </p>
                 <p className="text-base sm:text-lg">
-                  Room: <span className="font-bold">{room}</span>
+                  Room: <span className="font-mono font-bold">{room}</span>
                 </p>
                 <p className="text-lg sm:text-xl">
                   Enter your name to join the room

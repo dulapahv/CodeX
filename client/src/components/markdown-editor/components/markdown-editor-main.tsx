@@ -35,8 +35,6 @@ import {
   UndoRedo,
   type MDXEditorMethods,
 } from '@mdxeditor/editor';
-import { GeistMono } from 'geist/font/mono';
-import { GeistSans } from 'geist/font/sans';
 import { FileUp, Save } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -51,7 +49,7 @@ interface MarkdownEditorProps {
   markdown: string;
 }
 
-const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
+const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   const { resolvedTheme } = useTheme();
   const socket = getSocket();
 
@@ -80,11 +78,10 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
       trim={false}
       placeholder="All participants can edit this note..."
       className={cn(
-        'flex w-full flex-col !bg-[color:var(--panel-background)] [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
+        'flex w-full flex-col !bg-[color:var(--panel-background)] !font-sans [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
         resolvedTheme === 'dark' && '!dark-editor !dark-theme',
       )}
       contentEditableClassName={cn(
-        GeistSans.className,
         `prose h-full max-w-none dark:prose-invert
         first:prose-headings:mt-0
         prose-h1:text-3xl prose-h1:font-extrabold prose-h1:my-6
@@ -95,7 +92,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
         prose-h6:text-base prose-h6:my-0
         prose-p:leading-7
         prose-blockquote:border-l-4 prose-blockquote:border-foreground/30 prose-blockquote:italic
-        prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none
+        prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:!font-mono [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20 [&>span]:prose-code:px-1.5 [&>span]:prose-code:py-0.5
         prose-pre:bg-muted prose-pre:rounded-lg
         prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/80 prose-a:transition-opacity
         prose-em:italic prose-em:text-foreground/90
@@ -104,9 +101,7 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
         after:prose-li:!-translate-y-1/2 after:prose-li:rotate-45
         prose-hr:border-foreground/30
         prose-img:rounded-lg
-        [&>span]:prose-code:rounded [&>span]:prose-code:border
-        [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20
-        [&>span]:prose-code:px-1.5 [&>span]:prose-code:py-0.5`,
+        `,
       )}
       plugins={[
         listsPlugin(),
@@ -225,4 +220,4 @@ const MarkdownEditorCore = ({ markdown }: MarkdownEditorProps) => {
   );
 };
 
-export { MarkdownEditorCore };
+export { MarkdownEditorMain };

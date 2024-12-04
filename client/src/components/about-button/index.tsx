@@ -17,7 +17,7 @@ const AboutButton = () => {
   return (
     <>
       <Tooltip>
-        <TooltipTrigger asChild>
+        <TooltipTrigger asChild className="dark">
           <Button
             variant="ghost"
             size="icon"
@@ -27,12 +27,12 @@ const AboutButton = () => {
             aria-haspopup="dialog"
             onClick={() => aboutDialogRef.current?.openDialog()}
           >
-            <Info className="size-5" />
+            <Info className="size-5 text-white" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">About</TooltipContent>
       </Tooltip>
-      <AboutDialog ref={aboutDialogRef} />
+      <AboutDialog ref={aboutDialogRef} className="dark" />
     </>
   );
 };

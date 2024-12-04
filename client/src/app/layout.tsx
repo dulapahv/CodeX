@@ -37,6 +37,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import './globals.css';
 
+import { GeistMono } from 'geist/font/mono';
+
 export const runtime = 'edge';
 
 export const metadata: Metadata = {
@@ -189,13 +191,12 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          'dark h-dvh text-pretty antialiased',
-          GeistSans.className,
-        )}
-      >
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="h-dvh text-pretty antialiased">
         <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>

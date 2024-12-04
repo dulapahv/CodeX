@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { GeistMono } from 'geist/font/mono';
 import { Check, Copy, Image as LuImage } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -110,7 +109,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
                   id="room-id"
                   value={roomId}
                   readOnly
-                  className={cn('text-sm', GeistMono.className)}
+                  className="font-mono text-sm"
                   aria-label="Room ID for sharing"
                 />
                 <Button
@@ -148,7 +147,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
                     id="room-link"
                     value={`${window.location.origin}/room/${roomId}`}
                     readOnly
-                    className={cn('text-sm', GeistMono.className)}
+                    className="font-mono text-sm"
                     aria-label="Shareable room link"
                   />
                 )}

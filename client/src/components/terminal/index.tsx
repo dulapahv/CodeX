@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { GeistMono } from 'geist/font/mono';
 
 import type { ExecutionResult } from '@common/types/terminal';
 
@@ -36,12 +35,7 @@ const Terminal = ({ results, onResultsChange }: TerminalProps) => {
       ref={terminalRef}
       className="h-full overflow-y-auto bg-[color:var(--panel-background)] p-4"
     >
-      <div
-        className={cn(
-          GeistMono.className,
-          'flex flex-col space-y-2 divide-y whitespace-pre-wrap text-sm *:border-muted-foreground/40 *:pt-2',
-        )}
-      >
+      <div className="flex flex-col space-y-2 divide-y whitespace-pre-wrap font-mono text-sm *:border-muted-foreground/40 *:pt-2">
         <WelcomeMsg />
         {results.map((result, index) => (
           <Output key={index} result={result} />

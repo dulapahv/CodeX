@@ -32,7 +32,6 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { GeistMono } from 'geist/font/mono';
 import { ArrowRight, LoaderCircle } from 'lucide-react';
 import type {
   FieldErrors,
@@ -95,7 +94,7 @@ export const JoinRoomSection = ({
           <Input
             id="room-id"
             placeholder="XXXX-XXXX"
-            className={cn(GeistMono.className, 'text-sm sm:text-base')}
+            className="font-mono text-sm sm:text-base"
             disabled={isDisabled}
             aria-required="true"
             aria-invalid={errors.roomId ? 'true' : 'false'}

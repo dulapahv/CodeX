@@ -38,7 +38,8 @@ const showcaseImages: ShowcaseImage[] = [
     src: '/images/3.png',
     alt: 'Video and voice communication',
     title: 'Video & Voice',
-    description: 'Real-time video and voice communication for richer collaboration',
+    description:
+      'Real-time video and voice communication for richer collaboration',
     icon: <VideoIcon className="size-4" />,
   },
   {
@@ -64,6 +65,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
         src={image.src}
         alt={image.alt}
         fill
+        sizes="100vw"
         className="rounded-t-lg object-cover transition-transform duration-300"
       />
     </div>
@@ -72,7 +74,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
         <span className="rounded-full bg-[#f6d84f]/10 p-2 text-[#f6d84f]">
           {image.icon}
         </span>
-        <h3 className="text-base font-semibold tracking-tight">
+        <h3 className="text-base font-semibold tracking-tight text-foreground">
           {image.title}
         </h3>
       </div>
@@ -113,12 +115,17 @@ const Page = () => {
       <div
         aria-hidden="true"
         role="presentation"
+        className="fixed inset-0 -z-10 bg-[#111623]"
+      />
+      <div
+        aria-hidden="true"
+        role="presentation"
         className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#5bb3fb]/50"
       />
-      <div className="fixed inset-0 -z-10">
+      <div className="dark fixed inset-0 -z-10">
         <AnimatedGridBackground />
       </div>
-      <main className="relative flex min-h-full w-full flex-col overflow-hidden min-[1189px]:flex-row">
+      <main className="dark relative flex min-h-full w-full flex-col overflow-hidden min-[1189px]:flex-row">
         {/* Left Section - Form */}
         <div className="flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8 min-[1189px]:h-dvh min-[1189px]:w-5/12 min-[1189px]:items-center">
           <div className="w-full max-w-xl">
@@ -154,11 +161,13 @@ const Page = () => {
         </div>
 
         {/* Right Section - Showcase Grid */}
-        <div className="relative flex w-full flex-1 items-center justify-center overflow-y-auto min-[1189px]:w-7/12 min-[1189px]:pr-8">
+        <div className="dark relative flex w-full flex-1 items-center justify-center overflow-y-auto min-[1189px]:w-7/12 min-[1189px]:pr-8">
           <ShowcaseGrid />
         </div>
 
-        <AboutButton />
+        <div className="dark">
+          <AboutButton />
+        </div>
       </main>
     </>
   );
