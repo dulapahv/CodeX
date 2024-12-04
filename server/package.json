@@ -9,10 +9,10 @@
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write ."
   },
-  "packageManager": "pnpm@9.14.2",
+  "packageManager": "pnpm@9.14.4",
   "dependencies": {
     "socket.io": "^4.8.1",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.49.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.51.0"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
