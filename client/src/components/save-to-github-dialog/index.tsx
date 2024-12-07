@@ -247,7 +247,7 @@ const SaveToGithubDialog = forwardRef<
               {githubUser && (
                 <div className="w-full">
                   <p className="break-all text-xs text-muted-foreground">
-                    Saving to{' '}
+                    Save to{' '}
                     <span className="font-semibold">
                       {getDisplayPath(
                         repo,

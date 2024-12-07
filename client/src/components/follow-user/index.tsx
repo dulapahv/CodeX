@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Navigation, NavigationOff } from 'lucide-react';
 import { isMobile } from 'react-device-detect';
 
@@ -38,8 +38,22 @@ const FollowUser = ({ users }: UserListProps) => {
   const currentUserId = storage.getUserId();
   const filteredUsers = users.filter((user) => user.id !== currentUserId);
 
+  useEffect(() => {
+    const followedUserId = storage.getFollowUserId();
+    if (followedUserId) {
+      const isUserStillPresent = users.some(
+        (user) => user.id === followedUserId,
+      );
+      if (!isUserStillPresent) {
+        setValue(null);
+        storage.setFollowUserId(null);
+      }
+    }
+  }, [users]);
+
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === 'none' ? null : currentValue;
+    const newVal = currentValue.split('$')[0];
+    const newValue = newVal === 'none' ? null : newVal;
     setValue(newValue);
     storage.setFollowUserId(newValue);
     setOpen(false);
@@ -69,7 +83,7 @@ const FollowUser = ({ users }: UserListProps) => {
               {value === null ? (
                 <NavigationOff className="size-4 text-[color:var(--panel-text)]" />
               ) : (
-                <Navigation className="size-4 text-[color:var(--panel-text)]" />
+                <Navigation className="size-4 animate-pulse fill-[#f6d84f] text-[#f6d84f]" />
               )}
             </Button>
           </PopoverTrigger>
@@ -107,7 +121,7 @@ const FollowUser = ({ users }: UserListProps) => {
               {filteredUsers.map((user) => (
                 <CommandItem
                   key={user.id}
-                  value={user.id}
+                  value={`${user.id}$${user.username}`}
                   onSelect={handleSelect}
                   className="flex items-center justify-between px-2 py-1.5"
                 >

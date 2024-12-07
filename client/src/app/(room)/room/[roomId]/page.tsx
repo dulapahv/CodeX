@@ -34,7 +34,6 @@ import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
-import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { ExecutionResult } from '@common/types/terminal';
@@ -138,10 +137,12 @@ const MemoizedMarkdownEditor = memo(function MemoizedMarkdownEditor({
 
 const MemoizedTerminal = memo(function MemoizedTerminal({
   results,
+  setResults,
 }: {
   results: ExecutionResult[];
+  setResults: Dispatch<SetStateAction<ExecutionResult[]>>;
 }) {
-  return <Terminal results={results} />;
+  return <Terminal results={results} setResults={setResults} />;
 });
 
 const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
@@ -303,7 +304,6 @@ export default function Room({ params }: RoomProps) {
             <MemoizedMarkdownEditor markdown={mdContent} />
           </ResizablePanel>
           <ResizableHandle
-            withHandle={isMobile}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
@@ -331,7 +331,6 @@ export default function Room({ params }: RoomProps) {
                 />
               </ResizablePanel>
               <ResizableHandle
-                withHandle={isMobile}
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
@@ -350,12 +349,11 @@ export default function Room({ params }: RoomProps) {
                 minSize={10}
                 defaultSize={25}
               >
-                <MemoizedTerminal results={output} />
+                <MemoizedTerminal results={output} setResults={setOutput} />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle
-            withHandle={isMobile}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',

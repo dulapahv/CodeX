@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import Error from 'next/error';
 import Link from 'next/link';
 import * as Sentry from '@sentry/nextjs';
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
 import { Bug, RefreshCcw } from 'lucide-react';
 
 import { CONTACT_URL } from '@/lib/constants';
@@ -32,7 +34,7 @@ URL: ${window.location.href}`;
   };
 
   return (
-    <html>
+    <html className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
           <Alert className="max-w-lg">

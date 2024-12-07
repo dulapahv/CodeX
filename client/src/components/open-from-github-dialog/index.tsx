@@ -227,7 +227,7 @@ const OpenFromGithubDialog = forwardRef<
               {githubUser && (
                 <div className="w-full">
                   <p className="break-all text-xs text-muted-foreground">
-                    Opening{' '}
+                    Open{' '}
                     <span className="font-semibold">
                       {getDisplayPath(
                         repo,

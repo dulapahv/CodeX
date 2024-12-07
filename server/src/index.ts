@@ -54,7 +54,6 @@ const io = new Server({
       }
     },
     methods: ['GET', 'POST'],
-    credentials: true, // Allow credentials if you need them
   },
 });
 io.attachApp(app);

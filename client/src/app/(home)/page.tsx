@@ -1,11 +1,6 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
-import {
-  Code2,
-  GitBranchPlus,
-  Pencil,
-  Terminal,
-  Video as VideoIcon,
-} from 'lucide-react';
+import { Code2, GitBranchPlus, Pencil, Terminal, Video } from 'lucide-react';
 
 import { AboutButton } from '@/components/about-button';
 import { AnimatedGridBackground } from '@/components/animated-grid-bg';
@@ -16,7 +11,7 @@ interface ShowcaseImage {
   alt: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }
 
 const showcaseImages: ShowcaseImage[] = [
@@ -38,9 +33,8 @@ const showcaseImages: ShowcaseImage[] = [
     src: '/images/3.png',
     alt: 'Video and voice communication',
     title: 'Video & Voice',
-    description:
-      'Real-time video and voice communication for richer collaboration',
-    icon: <VideoIcon className="size-4" />,
+    description: 'Real-time video and voice communication',
+    icon: <Video className="size-4" />,
   },
   {
     src: '/images/4.png',

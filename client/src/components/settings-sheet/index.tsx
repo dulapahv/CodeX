@@ -106,9 +106,15 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
             role="group"
             aria-label="Settings Options"
           >
-            <Label className="text-base" id="github-section">
-              GitHub Connection
-            </Label>
+            <div>
+              <Label className="text-base" id="github-section">
+                GitHub Connection
+              </Label>
+              <div className="text-sm text-muted-foreground">
+                Connect to GitHub to save your work and open files from your
+                repositories.
+              </div>
+            </div>
             {isLoading ? (
               <div
                 className="flex items-center justify-center py-2"

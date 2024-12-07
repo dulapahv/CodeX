@@ -18,6 +18,7 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
+import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 
 import {
@@ -29,15 +30,12 @@ import {
   SITE_NAME,
   THEME_COLOR,
 } from '@/lib/constants';
-import { cn } from '@/lib/utils';
 import { Analytics } from '@/components/analytics';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 import './globals.css';
-
-import { GeistMono } from 'geist/font/mono';
 
 export const runtime = 'edge';
 

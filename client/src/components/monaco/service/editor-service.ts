@@ -26,6 +26,7 @@ import themeList from 'monaco-themes/themes/themelist.json';
 import { CodeServiceMsg, ScrollServiceMsg } from '@common/types/message';
 import type { Cursor, EditOp } from '@common/types/operation';
 
+import { storage } from '@/lib/services/storage';
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';
 
@@ -106,6 +107,7 @@ export const handleOnMount = (
   });
 
   const scrollDisposable = editor.onDidScrollChange((e) => {
+    if (storage.getFollowUserId()) return; // If following another user, do not emit scroll events
     socket.emit(ScrollServiceMsg.UPDATE_SCROLL, [e.scrollLeft, e.scrollTop]);
   });
 
