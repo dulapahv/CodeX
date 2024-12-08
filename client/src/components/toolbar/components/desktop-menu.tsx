@@ -57,10 +57,10 @@ const DesktopMenu = ({
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>
           <MenubarItem onSelect={actions.openLocal}>
-            Open Local File <MenubarShortcut>{modKey}+O</MenubarShortcut>
+            Open from Local <MenubarShortcut>{modKey}+O</MenubarShortcut>
           </MenubarItem>
           <MenubarItem onSelect={actions.openGitHub}>
-            Open GitHub File <MenubarShortcut>{modKey}+Shift+O</MenubarShortcut>
+            Open from GitHub <MenubarShortcut>{modKey}+Shift+O</MenubarShortcut>
           </MenubarItem>
           <MenubarItem onSelect={actions.saveLocal}>
             Save to local <MenubarShortcut>{modKey}+S</MenubarShortcut>

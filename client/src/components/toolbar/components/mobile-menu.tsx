@@ -63,10 +63,10 @@ const MobileMenu = ({
             </MenubarSubTrigger>
             <MenubarSubContent>
               <MenubarItem onSelect={actions.openLocal}>
-                Open Local File
+                Open from Local
               </MenubarItem>
               <MenubarItem onSelect={actions.openGitHub}>
-                Open GitHub File
+                Open from GitHub
               </MenubarItem>
               <MenubarItem onSelect={actions.saveLocal}>
                 Save to local
