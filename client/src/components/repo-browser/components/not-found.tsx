@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 interface RepoBrowserProps {
   searchQuery: string;
-  searchInputRef: RefObject<HTMLInputElement>;
+  searchInputRef: RefObject<HTMLInputElement | null>;
 }
 
 export const NotFound = ({ searchQuery, searchInputRef }: RepoBrowserProps) => (
