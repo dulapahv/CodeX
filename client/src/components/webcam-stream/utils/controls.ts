@@ -20,26 +20,11 @@ export const toggleCamera = async (
 
   try {
     if (!cameraOn) {
-      // Request both permissions at once instead of separately
-      try {
-        const permissions = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        // Stop the temporary stream immediately
-        permissions.getTracks().forEach((track) => track.stop());
-
-        // Get the actual media stream with selected devices
-        const mediaStarted = await getMedia();
-        if (mediaStarted) {
-          setCameraOn(true);
-        }
-      } catch (error) {
-        // Handle permission denial
-        toast.error(
-          'Please allow camera and microphone access to use this feature.',
-        );
-        return;
+      // Get the media stream directly with selected devices
+      // No need for separate permission check since we already did it on mount
+      const mediaStarted = await getMedia();
+      if (mediaStarted) {
+        setCameraOn(true);
       }
     } else {
       // Turning off camera

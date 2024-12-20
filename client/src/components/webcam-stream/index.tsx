@@ -47,6 +47,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const [cameraOn, setCameraOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(true);
+  const [hasRequestedPermissions, setHasRequestedPermissions] = useState(false);
   const [remoteStreams, setRemoteStreams] = useState<
     Record<string, MediaStream | null>
   >({});
@@ -55,16 +56,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   >({});
   const [remoteSpeakerStates, setRemoteSpeakerStates] = useState<
     Record<string, boolean>
-  >(() => {
-    // Initialize with default 'true' state for all users
-    return users.reduce(
-      (acc, user) => {
-        acc[user.id] = true;
-        return acc;
-      },
-      {} as Record<string, boolean>,
-    );
-  });
+  >({});
 
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
   const [audioInputDevices, setAudioInputDevices] = useState<MediaDevice[]>([]);
@@ -83,6 +75,55 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const streamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Record<string, Peer.Instance>>({});
   const pendingSignalsRef = useRef<Record<string, any[]>>({});
+
+  // Request permissions on mount
+  useEffect(() => {
+    const requestInitialPermissions = async () => {
+      if (hasRequestedPermissions) return;
+
+      try {
+        // Instead of getUserMedia, use enumerateDevices first
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasLabels = devices.some((device) => device.label !== '');
+
+        // Only request permissions if we don't have them yet
+        if (!hasLabels) {
+          // Request with minimal constraints to avoid unnecessary device activation
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' }, // minimal constraint
+            audio: true,
+          });
+          // Stop the temporary stream immediately
+          stream.getTracks().forEach((track) => track.stop());
+        }
+
+        // Update device lists after permissions
+        await enumerateDevices(
+          setVideoDevices,
+          setAudioInputDevices,
+          setAudioOutputDevices,
+          selectedVideoDevice,
+          setSelectedVideoDevice,
+          selectedAudioInput,
+          setSelectedAudioInput,
+          selectedAudioOutput,
+          setSelectedAudioOutput,
+        );
+
+        setHasRequestedPermissions(true);
+      } catch (error) {
+        console.warn('Initial permission request failed:', error);
+        // Don't show error toast here as it might be intrusive
+      }
+    };
+
+    requestInitialPermissions();
+  }, [
+    hasRequestedPermissions,
+    selectedAudioInput,
+    selectedAudioOutput,
+    selectedVideoDevice,
+  ]);
 
   const handleGetMedia = useCallback(async () => {
     return getMedia(
@@ -132,22 +173,25 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
   // Handle socket events
   useEffect(() => {
-    socket.emit(StreamServiceMsg.STREAM_READY);
+    // Only emit stream ready after permissions are requested
+    if (hasRequestedPermissions) {
+      socket.emit(StreamServiceMsg.STREAM_READY);
+    }
 
-    // Immediately emit the initial speaker state when connecting
     socket.emit(StreamServiceMsg.SPEAKER_STATE, true);
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
-      createPeer(
-        userID,
-        true,
-        streamRef,
-        peersRef,
-        setRemoteStreams,
-        pendingSignalsRef,
-      );
-      // When a new user is ready, let them know our speaker state
-      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
+      if (hasRequestedPermissions) {
+        createPeer(
+          userID,
+          true,
+          streamRef,
+          peersRef,
+          setRemoteStreams,
+          pendingSignalsRef,
+        );
+        socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
+      }
     });
 
     socket.on(
@@ -167,14 +211,16 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     socket.on(
       StreamServiceMsg.SIGNAL,
       ({ userID, signal }: { userID: string; signal: any }) => {
-        handleSignal(
-          signal,
-          userID,
-          streamRef,
-          peersRef,
-          setRemoteStreams,
-          pendingSignalsRef,
-        );
+        if (hasRequestedPermissions) {
+          handleSignal(
+            signal,
+            userID,
+            streamRef,
+            peersRef,
+            setRemoteStreams,
+            pendingSignalsRef,
+          );
+        }
       },
     );
 
@@ -188,9 +234,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
     const currentPeers = peersRef.current;
 
-    // Cleanup function
     return () => {
-      // Cleanup socket listeners
       socket.off(StreamServiceMsg.STREAM_READY);
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
@@ -198,29 +242,21 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.off(StreamServiceMsg.MIC_STATE);
       socket.off(StreamServiceMsg.SPEAKER_STATE);
 
-      // Stop all tracks in the local stream
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-        });
+        streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
       }
 
-      // Clean up all peer connections
       Object.keys(currentPeers).forEach((userID) => {
         cleanupPeer(userID, peersRef, setRemoteStreams);
       });
 
-      // Reset camera state
       setCameraOn(false);
       setMicOn(false);
 
-      // Notify others that camera is off
       socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
-    // Don't include speakersOn in the dependency array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket]);
+  }, [socket, speakerOn, hasRequestedPermissions]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
