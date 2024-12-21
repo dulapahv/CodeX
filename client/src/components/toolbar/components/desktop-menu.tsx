@@ -21,6 +21,7 @@ interface DesktopMenuProps {
   markdown: boolean;
   terminal: boolean;
   webcam: boolean;
+  sandpack: boolean;
 }
 
 const DesktopMenu = ({
@@ -31,6 +32,7 @@ const DesktopMenu = ({
   markdown,
   terminal,
   webcam,
+  sandpack,
 }: DesktopMenuProps) => {
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -181,6 +183,12 @@ const DesktopMenu = ({
             checked={webcam}
           >
             Webcam Stream
+          </MenubarCheckboxItem>
+          <MenubarCheckboxItem
+            onCheckedChange={actions.toggleSandpackPanel}
+            checked={sandpack}
+          >
+            Code Preview
           </MenubarCheckboxItem>
         </MenubarContent>
       </MenubarMenu>

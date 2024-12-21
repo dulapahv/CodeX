@@ -7,19 +7,31 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const AboutPopover = () => (
   <Popover>
-    <PopoverTrigger asChild>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent hover:opacity-80"
-      >
-        <Info className="size-4 text-[color:var(--panel-text)]" />
-        <span className="sr-only">About code execution</span>
-      </Button>
-    </PopoverTrigger>
+    <Tooltip>
+      <PopoverTrigger asChild>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent hover:opacity-80"
+          >
+            <Info className="size-4 text-[color:var(--panel-text)]" />
+            <span className="sr-only">About code execution</span>
+          </Button>
+        </TooltipTrigger>
+      </PopoverTrigger>
+      <TooltipContent>
+        <p>About code execution</p>
+      </TooltipContent>
+    </Tooltip>
     <PopoverContent className="w-80" sideOffset={8}>
       <div className="space-y-4">
         <div className="space-y-2">
@@ -44,14 +56,25 @@ const AboutPopover = () => (
               </a>
               .
             </p>
+            <p>⚠️ Rate limited to 5 requests per second</p>
           </div>
         </div>
 
         <Separator />
 
         <div className="text-xs text-muted-foreground">
-          <p>Powered by Piston, an open-source code execution engine.</p>
-          <p>⚠️ Rate limited to 5 requests per second</p>
+          <p>
+            Powered by{' '}
+            <a
+              href="https://github.com/engineer-man/piston"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium underline underline-offset-2"
+            >
+              Piston
+            </a>
+            , a high performance general purpose code execution engine.
+          </p>
         </div>
       </div>
     </PopoverContent>

@@ -51,6 +51,8 @@ export interface ToolbarActions {
   toggleTerminalPanel: () => void;
   /** Toggle webcam stream panel */
   toggleWebcamPanel: () => void;
+  /** Toggle Sandpack panel */
+  toggleSandpackPanel: () => void;
   /** Toggle word wrap */
   wordWrap: () => void;
   /** Manual */

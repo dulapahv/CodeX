@@ -14,8 +14,8 @@ type RoomData = {
 // Core data structure for room management
 const roomData = new Map<string, RoomData>();
 
-// Default language ID for Python
-const DEFAULT_LANG_ID = 'python';
+// Default language ID for HTML
+const DEFAULT_LANG_ID = 'html';
 
 /**
  * Room existence check - O(1) operation

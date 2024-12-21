@@ -23,6 +23,7 @@ interface MobileMenuProps {
   markdown: boolean;
   terminal: boolean;
   webcam: boolean;
+  sandpack: boolean;
 }
 
 const MobileMenu = ({
@@ -32,6 +33,7 @@ const MobileMenu = ({
   markdown,
   terminal,
   webcam,
+  sandpack,
 }: MobileMenuProps) => {
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -166,6 +168,12 @@ const MobileMenu = ({
                 checked={webcam}
               >
                 Webcam Stream
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem
+                onCheckedChange={actions.toggleSandpackPanel}
+                checked={sandpack}
+              >
+                Code Preview
               </MenubarCheckboxItem>
             </MenubarSubContent>
           </MenubarSub>

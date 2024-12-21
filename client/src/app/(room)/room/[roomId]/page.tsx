@@ -1,25 +1,3 @@
-/**
- * Room page component that handles the collaborative code editing experience.
- * Manages room state, user connections, and code synchronization between clients.
- *
- * @remarks
- * This component:
- * - Establishes socket connection for real-time collaboration
- * - Renders Monaco editor with collaborative features
- * - Handles user presence/absence in the room
- * - Syncs code changes between connected users
- * - Provides toolbar controls and user interface elements
- * - Manages disconnection and cleanup when leaving room
- *
- * Uses the following services and components:
- * - [`userMap`](src/lib/services/user-map.ts) for managing connected users
- * - [`getSocket`](src/lib/socket.ts) for WebSocket connections
- * - [`MonacoEditor`](src/components/monaco/index.tsx) for code editing
- * - [`Toolbar`](src/components/toolbar/index.tsx) for editor controls
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
- */
-
 'use client';
 
 import {
@@ -31,14 +9,17 @@ import {
   type SetStateAction,
 } from 'react';
 import { useRouter } from 'next/navigation';
+import { SandpackProvider } from '@codesandbox/sandpack-react';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
+import { useTheme } from 'next-themes';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { ExecutionResult } from '@common/types/terminal';
 import type { User } from '@common/types/user';
 
+import { SANDPACK_CDN } from '@/lib/constants';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
@@ -47,6 +28,7 @@ import { LeaveButton } from '@/components/leave-button';
 import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
 import { RunButton } from '@/components/run-button';
+import { Sandpack } from '@/components/sandpack';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
 import {
@@ -79,9 +61,11 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   showMarkdown,
   showTerminal,
   showWebcam,
+  showSandpack,
   setShowMarkdown,
   setShowTerminal,
   setShowWebcam,
+  setShowSandpack,
 }: {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
@@ -91,9 +75,11 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   showMarkdown: boolean;
   showTerminal: boolean;
   showWebcam: boolean;
+  showSandpack: boolean;
   setShowMarkdown: Dispatch<SetStateAction<boolean>>;
   setShowTerminal: Dispatch<SetStateAction<boolean>>;
   setShowWebcam: Dispatch<SetStateAction<boolean>>;
+  setShowSandpack: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="flex items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
@@ -108,9 +94,11 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
           setShowMarkdown={setShowMarkdown}
           setShowTerminal={setShowTerminal}
           setShowWebcam={setShowWebcam}
+          setShowSandpack={setShowSandpack}
           showMarkdown={showMarkdown}
           showTerminal={showTerminal}
           showWebcam={showWebcam}
+          showSandpack={showSandpack}
         />
       </div>
       <RunButton monaco={monaco} editor={editor} setOutput={setOutput} />
@@ -173,11 +161,13 @@ const MemoizedStatusBar = memo(function MemoizedStatusBar({
 
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const socket = getSocket();
 
   const [showMarkdown, setShowMarkdown] = useState(true);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showWebcam, setShowWebcam] = useState(true);
+  const [showSandpack, setShowSandpack] = useState(true);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -281,9 +271,11 @@ export default function Room({ params }: RoomProps) {
             setShowMarkdown={setShowMarkdown}
             setShowTerminal={setShowTerminal}
             setShowWebcam={setShowWebcam}
+            setShowSandpack={setShowSandpack}
             showMarkdown={showMarkdown}
             showTerminal={showTerminal}
             showWebcam={showWebcam}
+            showSandpack={showSandpack}
           />
         )}
       </div>
@@ -323,12 +315,59 @@ export default function Room({ params }: RoomProps) {
                 defaultSize={75}
                 minSize={10}
               >
-                <MonacoEditor
-                  monacoRef={handleMonacoSetup}
-                  editorRef={handleEditorSetup}
-                  cursorPosition={setCursorPosition}
-                  defaultCode={defaultCode}
-                />
+                <SandpackProvider
+                  theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                  template="static"
+                  className="!h-full"
+                  files={{
+                    'index.html': `<!DOCTYPE html>
+<html>
+<head>
+  ${SANDPACK_CDN}
+</head>
+<body class="h-screen">
+  ${monaco ? monaco.editor.getModels()[0].getValue() : ''}
+</body>
+</html>
+`,
+                  }}
+                  options={{
+                    initMode: 'user-visible',
+                  }}
+                >
+                  <ResizablePanelGroup
+                    direction="horizontal"
+                    className="border-t-[1px] border-t-muted-foreground"
+                  >
+                    <ResizablePanel defaultSize={60} minSize={10}>
+                      <MonacoEditor
+                        monacoRef={handleMonacoSetup}
+                        editorRef={handleEditorSetup}
+                        cursorPosition={setCursorPosition}
+                        defaultCode={defaultCode}
+                      />
+                    </ResizablePanel>
+                    <ResizableHandle
+                      className={cn(
+                        'bg-muted-foreground',
+                        (!monaco || !editor) && 'hidden',
+                        !showSandpack && 'hidden',
+                      )}
+                    />
+                    <ResizablePanel
+                      defaultSize={40}
+                      minSize={10}
+                      collapsible
+                      className={cn(
+                        'animate-fade-in-right',
+                        (!monaco || !editor) && 'hidden',
+                        !showSandpack && 'hidden',
+                      )}
+                    >
+                      <Sandpack />
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </SandpackProvider>
               </ResizablePanel>
               <ResizableHandle
                 className={cn(

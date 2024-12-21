@@ -47,9 +47,11 @@ interface ToolbarProps {
   setShowMarkdown: Dispatch<SetStateAction<boolean>>;
   setShowTerminal: Dispatch<SetStateAction<boolean>>;
   setShowWebcam: Dispatch<SetStateAction<boolean>>;
+  setShowSandpack: Dispatch<SetStateAction<boolean>>;
   showMarkdown: boolean;
   showTerminal: boolean;
   showWebcam: boolean;
+  showSandpack: boolean;
 }
 
 const Toolbar = ({
@@ -58,9 +60,11 @@ const Toolbar = ({
   setShowMarkdown,
   setShowTerminal,
   setShowWebcam,
+  setShowSandpack,
   showMarkdown,
   showTerminal,
   showWebcam,
+  showSandpack,
 }: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -216,6 +220,7 @@ const Toolbar = ({
     toggleMarkdownPanel: () => setShowMarkdown((show) => !show),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
     toggleWebcamPanel: () => setShowWebcam((show) => !show),
+    toggleSandpackPanel: () => setShowSandpack((show) => !show),
     manual: () => {
       window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
@@ -233,6 +238,7 @@ const Toolbar = ({
           markdown={showMarkdown}
           terminal={showTerminal}
           webcam={showWebcam}
+          sandpack={showSandpack}
         />
       ) : (
         <MobileMenu
@@ -242,6 +248,7 @@ const Toolbar = ({
           markdown={showMarkdown}
           terminal={showTerminal}
           webcam={showWebcam}
+          sandpack={showSandpack}
         />
       )}
       <OpenFromGithubDialog

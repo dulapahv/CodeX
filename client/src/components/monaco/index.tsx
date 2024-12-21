@@ -1,31 +1,3 @@
-/**
- * A collaborative Monaco Editor component that handles real-time code
- * synchronization and cursor tracking between multiple users.
- *
- * @example
- * ```tsx
- * <MonacoEditor
- *   monacoRef={setMonaco}
- *   editorRef={setEditor}
- *   defaultCode="console.log('hello world')"
- * />
- * ```
- *
- * @param props - Component props
- * @param props.monacoRef - Callback to get Monaco instance
- * @param props.editorRef - Callback to get editor instance
- * @param props.defaultCode - Initial code content
- *
- * @remarks
- * Uses the following services:
- * - [`codeService`](./service/code-service.ts) for code synchronization
- * - [`cursorService`](./service/cursor-service.ts) for cursor tracking
- * - [`editorService`](./service/editor-service.ts) for editor configuration
- * - [`getSocket`](src/lib/socket.ts) for real-time communication
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
- */
-
 import {
   memo,
   useEffect,
@@ -69,6 +41,7 @@ const MonacoEditor = memo(function MonacoEditor({
   defaultCode,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
+
   const socket = getSocket();
 
   const [theme, setTheme] = useState<string>('vs-dark');
@@ -186,8 +159,7 @@ const MonacoEditor = memo(function MonacoEditor({
 
   return (
     <Editor
-      className="border-t-[1px] border-t-muted-foreground"
-      defaultLanguage="python"
+      defaultLanguage="html"
       theme={theme}
       loading={<LoadingCard />}
       beforeMount={editorService.handleBeforeMount}
@@ -195,7 +167,9 @@ const MonacoEditor = memo(function MonacoEditor({
       onChange={(
         value: string | undefined,
         ev: monaco.editor.IModelContentChangedEvent,
-      ) => editorService.handleOnChange(value, ev, skipUpdateRef)}
+      ) => {
+        editorService.handleOnChange(value, ev, skipUpdateRef);
+      }}
     />
   );
 });

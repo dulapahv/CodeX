@@ -65,7 +65,7 @@ const LanguageSelection = memo(
   ({
     monaco,
     editor,
-    defaultLanguage = 'Python',
+    defaultLanguage = 'html',
     className,
   }: LanguageSelectionProps) => {
     const socket = useMemo(() => getSocket(), []);
