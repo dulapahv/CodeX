@@ -69,7 +69,7 @@ const HelpPopover = () => {
                       href="https://github.com/dulapahv/kasca/manual#code-preview-example"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-foreground underline underline-offset-2 transition-all hover:text-muted-foreground"
+                      className="inline-flex items-center gap-1 text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
                     >
                       See code preview examples
                       <span className="sr-only">(opens in new tab)</span>
@@ -108,7 +108,7 @@ const HelpPopover = () => {
                 href="https://sandpack.codesandbox.io/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium underline underline-offset-2"
+                className="font-medium text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
               >
                 Sandpack
               </a>
