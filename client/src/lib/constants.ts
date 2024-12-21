@@ -57,3 +57,24 @@ export const SANDPACK_CDN = `
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 `;
+
+export const PRE_INSTALLED_LIBS = [
+  { name: 'TailwindCSS', version: '3.x' },
+  { name: 'Animate.css', version: '4.1.1' },
+  { name: 'AOS', version: '2.3.1' },
+  { name: 'Swiper', version: '11.x' },
+  { name: 'HTMX', version: '2.0.4' },
+  { name: 'Lucide Icons', version: 'latest' },
+  { name: 'Alpine.js', version: '3.x' },
+  { name: 'GSAP', version: '3.12.5' },
+  { name: 'Popper', version: '2.x' },
+  { name: 'Tippy.js', version: '6.x' },
+  { name: 'React', version: '18.x' },
+  { name: 'React DOM', version: '18.x' },
+  { name: 'PropTypes', version: 'latest' },
+  { name: 'Recharts', version: 'latest' },
+  { name: 'Chart.js', version: 'latest' },
+  { name: 'Lodash', version: '4.17.21' },
+  { name: 'Day.js', version: '1.11.10' },
+  { name: 'Sortable.js', version: '1.15.0' },
+];

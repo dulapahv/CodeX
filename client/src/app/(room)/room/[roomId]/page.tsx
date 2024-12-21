@@ -9,17 +9,14 @@ import {
   type SetStateAction,
 } from 'react';
 import { useRouter } from 'next/navigation';
-import { SandpackProvider } from '@codesandbox/sandpack-react';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
-import { useTheme } from 'next-themes';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
 import type { ExecutionResult } from '@common/types/terminal';
 import type { User } from '@common/types/user';
 
-import { SANDPACK_CDN } from '@/lib/constants';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
@@ -141,6 +138,14 @@ const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
   return <WebcamStream users={users} />;
 });
 
+const MemoizedSandpack = memo(function MemoizedSandpack({
+  value,
+}: {
+  value: string;
+}) {
+  return <Sandpack value={value} />;
+});
+
 const MemoizedStatusBar = memo(function MemoizedStatusBar({
   monaco,
   editor,
@@ -161,7 +166,6 @@ const MemoizedStatusBar = memo(function MemoizedStatusBar({
 
 export default function Room({ params }: RoomProps) {
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
   const socket = getSocket();
 
   const [showMarkdown, setShowMarkdown] = useState(true);
@@ -315,59 +319,38 @@ export default function Room({ params }: RoomProps) {
                 defaultSize={75}
                 minSize={10}
               >
-                <SandpackProvider
-                  theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                  template="static"
-                  className="!h-full"
-                  files={{
-                    'index.html': `<!DOCTYPE html>
-<html>
-<head>
-  ${SANDPACK_CDN}
-</head>
-<body class="h-screen">
-  ${monaco ? monaco.editor.getModels()[0].getValue() : ''}
-</body>
-</html>
-`,
-                  }}
-                  options={{
-                    initMode: 'user-visible',
-                  }}
+                <ResizablePanelGroup
+                  direction="horizontal"
+                  className="border-t-[1px] border-t-muted-foreground"
                 >
-                  <ResizablePanelGroup
-                    direction="horizontal"
-                    className="border-t-[1px] border-t-muted-foreground"
-                  >
-                    <ResizablePanel defaultSize={60} minSize={10}>
-                      <MonacoEditor
-                        monacoRef={handleMonacoSetup}
-                        editorRef={handleEditorSetup}
-                        cursorPosition={setCursorPosition}
-                        defaultCode={defaultCode}
-                      />
-                    </ResizablePanel>
-                    <ResizableHandle
-                      className={cn(
-                        'bg-muted-foreground',
-                        (!monaco || !editor) && 'hidden',
-                        !showSandpack && 'hidden',
-                      )}
+                  <ResizablePanel defaultSize={60} minSize={10}>
+                    <MonacoEditor
+                      monacoRef={handleMonacoSetup}
+                      editorRef={handleEditorSetup}
+                      cursorPosition={setCursorPosition}
+                      defaultCode={defaultCode}
                     />
-                    <ResizablePanel
-                      defaultSize={40}
-                      minSize={10}
-                      collapsible
-                      className={cn(
-                        'animate-fade-in-right',
-                        (!monaco || !editor) && 'hidden',
-                        !showSandpack && 'hidden',
-                      )}
-                    >
-                      <Sandpack />
-                    </ResizablePanel>
-                  </ResizablePanelGroup>
-                </SandpackProvider>
+                  </ResizablePanel>
+                  <ResizableHandle
+                    className={cn(
+                      'bg-muted-foreground',
+                      (!monaco || !editor) && 'hidden',
+                      !showSandpack && 'hidden',
+                    )}
+                  />
+                  <ResizablePanel
+                    defaultSize={40}
+                    minSize={10}
+                    collapsible
+                    className={cn(
+                      'animate-fade-in-right',
+                      (!monaco || !editor) && 'hidden',
+                      !showSandpack && 'hidden',
+                    )}
+                  >
+                    {editor && <MemoizedSandpack value={editor.getValue()} />}
+                  </ResizablePanel>
+                </ResizablePanelGroup>
               </ResizablePanel>
               <ResizableHandle
                 className={cn(

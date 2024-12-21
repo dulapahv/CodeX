@@ -50,7 +50,7 @@ const AboutPopover = () => (
                 href="https://github.com/engineer-man/piston#Supported-Languages"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium underline underline-offset-4"
+                className="font-medium text-foreground underline underline-offset-4 transition-all hover:text-muted-foreground"
               >
                 Piston documentation
               </a>
@@ -69,7 +69,7 @@ const AboutPopover = () => (
               href="https://github.com/engineer-man/piston"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium underline underline-offset-2"
+              className="font-medium text-foreground underline underline-offset-2 transition-all hover:text-muted-foreground"
             >
               Piston
             </a>
