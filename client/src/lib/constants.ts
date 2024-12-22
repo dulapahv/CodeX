@@ -24,7 +24,7 @@ export const NAME_MAX_LENGTH = 64;
 export const SITE_NAME = 'Kasca - Code Collaboration Platform';
 export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_DESCRIPTION =
-  'Kasca is a lightweight online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required.';
+  'Kasca: Real-time code collaboration with shared terminal, live UI preview, GitHub integration, shared notes, and video/voice chat—no signed-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
 export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/ogp.png`;
