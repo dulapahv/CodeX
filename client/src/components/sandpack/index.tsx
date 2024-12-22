@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 
 import { SANDPACK_CDN } from '@/lib/constants';
 
-import { HelpPopover } from './comoponents/help-popover';
+import { HelpPopover } from './components/help-popover';
 
 interface SandpackProps {
   value: string;

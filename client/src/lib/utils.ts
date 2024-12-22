@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { RoomServiceMsg } from '@common/types/message';
 
+import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from '@/lib/constants';
 import { getSocket } from '@/lib/socket';
 
 import { storage } from './services/storage';
@@ -28,6 +29,38 @@ export const parseError = (error: unknown): string => {
     return error;
   }
   return 'An unknown error occurred';
+};
+
+export const formatRoomId = (value: string) => {
+  // Remove any non-alphanumeric characters
+  const cleaned = value.replace(/[^A-Z0-9]/g, '');
+
+  // Limit to 8 characters
+  const truncated = cleaned.slice(0, 8);
+
+  // Add dash after first 4 characters if length > 4
+  if (truncated.length > 4) {
+    return `${truncated.slice(0, 4)}-${truncated.slice(4)}`;
+  }
+
+  return truncated;
+};
+
+export const loginWithGithub = () => {
+  const width = 790;
+  const height = 720;
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2;
+
+  if (window.authWindow?.closed === false) {
+    window.authWindow.focus();
+  } else {
+    window.authWindow = window.open(
+      `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
+      '_blank',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
+    );
+  }
 };
 
 /**

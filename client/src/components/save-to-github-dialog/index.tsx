@@ -10,6 +10,7 @@ import { LoaderCircle, Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
+import { loginWithGithub } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { RepoBrowser } from '@/components/repo-browser';
 import {
@@ -35,7 +36,6 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { loginWithGithub } from '@/utils/login-with-github';
 
 import { useCommitForm } from './hooks/useCommitForm';
 import { getDisplayPath } from './utils/get-display-path';

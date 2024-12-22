@@ -10,6 +10,7 @@ import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
+import { loginWithGithub } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -20,7 +21,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { loginWithGithub } from '@/utils/login-with-github';
 
 import { EditorThemeSettings } from './components/editor-theme';
 

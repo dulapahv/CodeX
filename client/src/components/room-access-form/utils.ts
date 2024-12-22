@@ -23,7 +23,7 @@ import { RoomServiceMsg } from '@common/types/message';
 
 import { storage } from '@/lib/services/storage';
 import { getSocket } from '@/lib/socket';
-import { formatRoomId } from '@/utils/format-room-id';
+import { formatRoomId } from '@/lib/utils';
 
 import type { JoinRoomForm } from './types';
 

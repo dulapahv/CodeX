@@ -279,7 +279,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
       <div
-        className="grid max-h-[95%] auto-rows-[1fr] gap-2 overflow-y-auto"
+        className="grid auto-rows-[1fr] gap-2 overflow-y-auto"
         style={{
           gridTemplateColumns:
             'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',

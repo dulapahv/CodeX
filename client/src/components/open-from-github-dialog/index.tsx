@@ -11,6 +11,7 @@ import { LoaderCircle, Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
+import { loginWithGithub } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { RepoBrowser } from '@/components/repo-browser';
 import {
@@ -35,7 +36,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { loginWithGithub } from '@/utils/login-with-github';
 
 import { getDisplayPath } from './utils';
 
