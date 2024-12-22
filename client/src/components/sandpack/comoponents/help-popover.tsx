@@ -42,7 +42,7 @@ const HelpPopover = () => {
                 <h5 className="mb-2 font-medium">Usage Instructions</h5>
                 <ul className="list-inside list-disc space-y-1">
                   <li>Only HTML code is supported</li>
-                  <li>TailwindCSS utility classes are available</li>
+                  <li>Tailwind CSS utility classes are available</li>
                   <li>
                     Add custom styles with{' '}
                     <code className="rounded bg-muted px-1 text-xs">

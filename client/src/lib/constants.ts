@@ -59,7 +59,7 @@ export const SANDPACK_CDN = `
 `;
 
 export const PRE_INSTALLED_LIBS = [
-  { name: 'TailwindCSS', version: '3.x' },
+  { name: 'Tailwind CSS', version: '3.x' },
   { name: 'Animate.css', version: '4.1.1' },
   { name: 'AOS', version: '2.3.1' },
   { name: 'Swiper', version: '11.x' },
