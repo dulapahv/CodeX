@@ -90,7 +90,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               aria-label="Kasca application preview"
             >
               <Image
-                src="/images/cover.png"
+                src="/images/ogp.png"
                 alt="Kasca application interface preview"
                 className="absolute rounded-md object-cover"
                 fill
@@ -190,7 +190,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
           <div className="w-full px-4" aria-label="Kasca application preview">
             <div className="relative aspect-[600/315] w-full max-w-full">
               <Image
-                src="/images/cover.png"
+                src="/images/ogp.png"
                 alt="Kasca application interface preview"
                 className="rounded-md object-cover"
                 fill
