@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ElementType } from 'react';
 import { toast } from 'sonner';
 
 import { cn } from '@/lib/utils';
@@ -18,7 +18,7 @@ import {
 import type { MediaDevice } from '../types';
 
 interface DeviceButtonProps {
-  icon: React.ElementType;
+  icon: ElementType;
   label: string;
   devices: MediaDevice[];
   selectedDevice: string;

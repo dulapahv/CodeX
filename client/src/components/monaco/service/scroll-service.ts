@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 import type * as monaco from 'monaco-editor';
 
 import type { Scroll } from '@common/types/scroll';
@@ -6,7 +6,7 @@ import type { Scroll } from '@common/types/scroll';
 import { storage } from '@/lib/services/storage';
 
 export const updateScroll = (
-  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
   userID: string,
   scroll: Scroll,
 ): void => {

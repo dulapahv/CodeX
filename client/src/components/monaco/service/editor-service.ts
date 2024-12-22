@@ -18,7 +18,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
@@ -52,7 +52,7 @@ export const handleBeforeMount = (monaco: Monaco): void => {
 export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monaco: Monaco,
-  disposablesRef: MutableRefObject<monaco.IDisposable[]>,
+  disposablesRef: RefObject<monaco.IDisposable[]>,
   setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
   defaultCode?: string,
 ): void => {
@@ -124,7 +124,7 @@ export const handleOnMount = (
 export const handleOnChange = (
   value: string | undefined,
   ev: monaco.editor.IModelContentChangedEvent,
-  skipUpdateRef: MutableRefObject<boolean>,
+  skipUpdateRef: RefObject<boolean>,
 ): void => {
   if (skipUpdateRef.current) return;
   const socket = getSocket();

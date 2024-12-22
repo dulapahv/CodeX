@@ -1,4 +1,4 @@
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import Peer from 'simple-peer';
 import { toast } from 'sonner';
 
@@ -11,12 +11,12 @@ import { parseError } from '@/lib/utils';
 export const createPeer = (
   userID: string,
   initiator: boolean,
-  streamRef: MutableRefObject<MediaStream | null>,
-  peersRef: MutableRefObject<Record<string, Peer.Instance>>,
+  streamRef: RefObject<MediaStream | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, any[]>>,
 ) => {
   const socket = getSocket();
   try {
@@ -77,12 +77,12 @@ export const createPeer = (
 export const handleSignal = (
   signal: any,
   userID: string,
-  streamRef: MutableRefObject<MediaStream | null>,
-  peersRef: MutableRefObject<Record<string, Peer.Instance>>,
+  streamRef: RefObject<MediaStream | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, any[]>>,
 ) => {
   try {
     let peer = peersRef.current[userID];
@@ -116,7 +116,7 @@ export const handleSignal = (
 // Clean up a peer connection
 export const cleanupPeer = (
   userID: string,
-  peersRef: MutableRefObject<Record<string, Peer.Instance>>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,

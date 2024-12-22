@@ -1,9 +1,4 @@
-import type {
-  Dispatch,
-  MutableRefObject,
-  RefObject,
-  SetStateAction,
-} from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { isMobile } from 'react-device-detect';
 import type Peer from 'simple-peer';
 import { toast } from 'sonner';
@@ -19,13 +14,13 @@ export const getMedia = async (
   selectedAudioOutput: string,
   cameraFacingMode: 'user' | 'environment',
   micOn: boolean,
-  streamRef: MutableRefObject<MediaStream | null>,
-  videoRef: RefObject<HTMLVideoElement>,
-  peersRef: MutableRefObject<Record<string, Peer.Instance>>,
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, any[]>>,
 ) => {
   try {
     // Stop any existing tracks
@@ -112,15 +107,15 @@ export const getMedia = async (
 // Helper function to handle successful stream acquisition
 const handleStreamSuccess = (
   stream: MediaStream,
-  streamRef: MutableRefObject<MediaStream | null>,
-  videoRef: RefObject<HTMLVideoElement>,
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
   selectedAudioOutput: string,
   micOn: boolean,
-  peersRef: MutableRefObject<Record<string, Peer.Instance>>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: MutableRefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, any[]>>,
 ) => {
   // Store the stream
   streamRef.current = stream;

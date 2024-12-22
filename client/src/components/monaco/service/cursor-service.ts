@@ -25,7 +25,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv[5]ev)
  */
 
-import { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
@@ -76,12 +76,12 @@ const isLineInViewport = (
 export const updateCursor = (
   userID: string,
   cursor: Cursor,
-  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  monacoInstanceRef: MutableRefObject<Monaco | null>,
-  cursorDecorationsRef: MutableRefObject<
+  editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  monacoInstanceRef: RefObject<Monaco | null>,
+  cursorDecorationsRef: RefObject<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >,
-  cleanupTimeoutsRef: MutableRefObject<Record<string, NodeJS.Timeout>>,
+  cleanupTimeoutsRef: RefObject<Record<string, NodeJS.Timeout>>,
 ): void => {
   const editor = editorInstanceRef.current;
   const monacoInstance = monacoInstanceRef.current;
@@ -192,7 +192,7 @@ export const updateCursor = (
  */
 export const removeCursor = (
   userID: string,
-  cursorDecorationsRef: MutableRefObject<
+  cursorDecorationsRef: RefObject<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >,
 ): void => {

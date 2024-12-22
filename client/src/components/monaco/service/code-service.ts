@@ -13,7 +13,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { MutableRefObject } from 'react';
+import type { RefObject } from 'react';
 import type * as monaco from 'monaco-editor';
 
 import type { EditOp } from '@common/types/operation';
@@ -38,8 +38,8 @@ import type { EditOp } from '@common/types/operation';
  */
 export const updateCode = (
   op: EditOp,
-  editorInstanceRef: MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  skipUpdateRef: MutableRefObject<boolean>,
+  editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  skipUpdateRef: RefObject<boolean>,
 ): void => {
   const editor = editorInstanceRef.current;
   if (!editor) return;

@@ -1,4 +1,4 @@
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { isMobile } from 'react-device-detect';
 import { toast } from 'sonner';
 
@@ -12,8 +12,8 @@ export const toggleCamera = async (
   cameraOn: boolean,
   setCameraOn: Dispatch<SetStateAction<boolean>>,
   setMicOn: Dispatch<SetStateAction<boolean>>,
-  streamRef: MutableRefObject<MediaStream | null>,
-  videoRef: MutableRefObject<HTMLVideoElement | null>,
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
   getMedia: () => Promise<boolean>,
 ) => {
   const socket = getSocket();
@@ -51,7 +51,7 @@ export const rotateCamera = async (
   cameraOn: boolean,
   cameraFacingMode: string,
   setCameraFacingMode: Dispatch<SetStateAction<'user' | 'environment'>>,
-  streamRef: MutableRefObject<MediaStream | null>,
+  streamRef: RefObject<MediaStream | null>,
   getMedia: () => Promise<boolean>,
 ) => {
   if (!isMobile) return;
@@ -73,7 +73,7 @@ export const rotateCamera = async (
 export const toggleMic = (
   micOn: boolean,
   setMicOn: Dispatch<SetStateAction<boolean>>,
-  streamRef: MutableRefObject<MediaStream | null>,
+  streamRef: RefObject<MediaStream | null>,
 ) => {
   const socket = getSocket();
 

@@ -1,4 +1,4 @@
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
@@ -12,7 +12,7 @@ import { getSocket } from '@/lib/socket';
 import { parseError } from '@/lib/utils';
 
 export const cancelExecution = (
-  abortControllerRef: MutableRefObject<AbortController | null>,
+  abortControllerRef: RefObject<AbortController | null>,
   setIsRunning: Dispatch<SetStateAction<boolean>>,
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>,
 ) => {
@@ -47,7 +47,7 @@ export const executeCode = async (
   editor: monaco.editor.IStandaloneCodeEditor | null,
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>,
   setIsRunning: Dispatch<SetStateAction<boolean>>,
-  abortControllerRef: MutableRefObject<AbortController | null>,
+  abortControllerRef: RefObject<AbortController | null>,
   args: string[],
   stdin: string,
 ) => {
