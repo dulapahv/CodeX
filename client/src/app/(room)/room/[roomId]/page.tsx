@@ -262,7 +262,7 @@ export default function Room({ params }: RoomProps) {
 
   return (
     <main
-      className="flex h-full min-w-[480px] flex-col overflow-clip"
+      className="flex h-full min-w-[500px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
       <div className="h-9" role="toolbar" aria-label="Editor Controls">

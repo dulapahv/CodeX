@@ -22,16 +22,7 @@ const Sandpack = ({ value }: SandpackProps) => {
       template="static"
       className="!h-full"
       files={{
-        'index.html': `<!DOCTYPE html>
-<html>
-<head>
-${SANDPACK_CDN}
-</head>
-<body class="h-screen">
-${value}
-</body>
-</html>
-`,
+        'index.html': `<!DOCTYPE html><html><head>${SANDPACK_CDN}</head><body class="h-screen">${value}</body></html>`,
       }}
       options={{
         initMode: 'user-visible',

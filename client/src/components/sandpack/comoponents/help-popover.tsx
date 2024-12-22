@@ -33,7 +33,7 @@ const HelpPopover = () => {
           <p>Help with code preview</p>
         </TooltipContent>
       </Tooltip>
-      <PopoverContent className="w-96" sideOffset={8}>
+      <PopoverContent className="mr-1 w-96 overflow-auto [@media(max-height:800px)]:max-h-96">
         <div className="space-y-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">Code Preview</h4>

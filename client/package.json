@@ -71,7 +71,7 @@
     "typescript": "^5.7.2",
     "use-resize-observer": "^9.1.0"
   },
-  "packageManager": "pnpm@9.14.4",
+  "packageManager": "pnpm@9.15.1",
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
     "utf-8-validate": "^6.0.5"

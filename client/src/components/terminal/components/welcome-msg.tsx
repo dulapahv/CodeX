@@ -16,7 +16,7 @@ const WelcomeMsg = () => {
         />
         <span>Welcome to {SITE_NAME}</span>
       </div>
-      <div className="text-green-500">------------------------------------</div>
+      <div className="text-green-500">---------------------------------</div>
       <div>
         This is a shared terminal. All participants can view the output here.
         {'\n'}
