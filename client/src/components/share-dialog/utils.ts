@@ -6,7 +6,7 @@ import type { CopyStatus } from './types';
  * Attempts to copy a QR code canvas to clipboard with fallbacks
  */
 export const copyQRCode = async (
-  qrCodeRef: RefObject<HTMLCanvasElement>,
+  qrCodeRef: RefObject<HTMLCanvasElement | null>,
   setCopyStatus: Dispatch<SetStateAction<CopyStatus>>,
 ) => {
   try {
