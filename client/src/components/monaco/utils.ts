@@ -49,6 +49,7 @@ export const createCursorStyle = (
     height: 6px;
     background-color: ${bgColor};
     transform: translateY(-100%);
+    z-index: 100;
   }
   .cursor-${userID}::after {
     content: "${name.replace(/"/g, '\\"')}";
