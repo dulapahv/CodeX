@@ -19,7 +19,7 @@ interface ShowcaseImage {
 
 const showcaseImages: ShowcaseImage[] = [
   {
-    src: '/images/1.png',
+    src: '/images/showcase/collab.png',
     alt: 'Real-time collaboration',
     title: 'Real-time Collaboration',
     description:
@@ -27,7 +27,7 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <Code2 className="size-4" />,
   },
   {
-    src: '/images/2.png',
+    src: '/images/showcase/terminal.png',
     alt: 'Shared terminal',
     title: 'Shared Terminal',
     description:
@@ -35,7 +35,7 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <Terminal className="size-4" />,
   },
   {
-    src: '/images/5.png',
+    src: '/images/showcase/preview.png',
     alt: 'Real-time UI preview',
     title: 'Live UI Preview',
     description:
@@ -43,7 +43,7 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <LayoutTemplate className="size-4" />,
   },
   {
-    src: '/images/4.png',
+    src: '/images/showcase/github.png',
     alt: 'GitHub integrated',
     title: 'GitHub Integrated',
     description:
@@ -51,7 +51,7 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <GitPullRequestCreateArrow className="size-4" />,
   },
   {
-    src: '/images/5.png',
+    src: '/images/showcase/notes.png',
     alt: 'Shared notes',
     title: 'Shared Notes',
     description:
@@ -59,7 +59,7 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <Pencil className="size-4" />,
   },
   {
-    src: '/images/3.png',
+    src: '/images/showcase/video.png',
     alt: 'Video and voice communication',
     title: 'Video & Voice',
     description: 'Communicate with your team using video and voice chat',
