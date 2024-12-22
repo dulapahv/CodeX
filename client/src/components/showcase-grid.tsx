@@ -31,7 +31,7 @@ const showcaseImages: ShowcaseImage[] = [
     alt: 'Shared terminal',
     title: 'Shared Terminal',
     description:
-      'Execute code and see results together with support of over 80 languages',
+      'Execute code and see results together with over 80 supported languages',
     icon: <Terminal className="size-4" />,
   },
   {
@@ -47,7 +47,7 @@ const showcaseImages: ShowcaseImage[] = [
     alt: 'GitHub integrated',
     title: 'GitHub Integrated',
     description:
-      'Import code from GitHub and commit changes directly to GitHub',
+      'Pull from and commit to GitHub easily with repository tree explorer',
     icon: <GitPullRequestCreateArrow className="size-4" />,
   },
   {
