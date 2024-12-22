@@ -19,20 +19,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { LoaderCircle } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-interface SearchParamsProps {
-  status: string;
-}
-
-export default function Page({
-  searchParams,
-}: {
-  searchParams: SearchParamsProps;
-}) {
-  const { status } = searchParams;
+export default function Page() {
+  const searchParams = useSearchParams();
+  const status = searchParams.get('status');
   const isSuccessful = status === 'success';
 
   useEffect(() => {

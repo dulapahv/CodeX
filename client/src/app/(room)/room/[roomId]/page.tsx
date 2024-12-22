@@ -2,6 +2,7 @@
 
 import {
   memo,
+  use,
   useCallback,
   useEffect,
   useState,
@@ -42,12 +43,6 @@ import {
 } from '@/components/ui/resizable';
 import { UserList } from '@/components/user-list';
 import { WebcamStream } from '@/components/webcam-stream';
-
-interface RoomProps {
-  params: {
-    roomId: string;
-  };
-}
 
 const MemoizedToolbar = memo(function MemoizedToolbar({
   monaco,
@@ -164,7 +159,14 @@ const MemoizedStatusBar = memo(function MemoizedStatusBar({
   );
 });
 
-export default function Room({ params }: RoomProps) {
+interface SearchParamsProps {
+  roomId: string;
+}
+
+export default function Room(props: {
+  searchParams: Promise<SearchParamsProps>;
+}) {
+  const { roomId } = use(props.searchParams);
   const router = useRouter();
   const socket = getSocket();
 
@@ -215,7 +217,7 @@ export default function Room({ params }: RoomProps) {
 
   useEffect(() => {
     if (!socket.connected) {
-      router.replace(`/?room=${params.roomId}`);
+      router.replace(`/?room=${roomId}`);
     }
 
     socket.emit(RoomServiceMsg.SYNC_USERS);
@@ -240,7 +242,7 @@ export default function Room({ params }: RoomProps) {
     };
   }, [
     disconnect,
-    params.roomId,
+    roomId,
     router,
     socket,
     handleUsersUpdate,
@@ -270,7 +272,7 @@ export default function Room({ params }: RoomProps) {
           <MemoizedToolbar
             monaco={monaco}
             editor={editor}
-            roomId={params.roomId}
+            roomId={roomId || ''}
             setOutput={setOutput}
             users={users}
             setShowMarkdown={setShowMarkdown}

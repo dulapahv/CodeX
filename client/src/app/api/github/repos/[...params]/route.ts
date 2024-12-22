@@ -35,8 +35,9 @@ export const runtime = 'edge';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { params: string[] } },
+  props: { params: Promise<{ params: string[] }> },
 ) {
+  const params = await props.params;
   try {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access_token')?.value;

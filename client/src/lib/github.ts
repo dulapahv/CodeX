@@ -1,3 +1,4 @@
+import type { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -13,23 +14,35 @@ interface GithubUser {
   login: string;
 }
 
+const ACCESS_TOKEN = 'access_token' as const;
+const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+
 // Centralized cookie management
 export const authCookie = {
-  set: (token: string) => {
-    cookies().set('access_token', token, {
-      secure: !IS_DEV_ENV,
+  set: async (token: string, isDev: boolean = IS_DEV_ENV) => {
+    const cookieStore = await cookies();
+    const options = {
+      secure: !isDev,
       httpOnly: true,
-      sameSite: IS_DEV_ENV ? 'lax' : 'strict',
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+      sameSite: isDev ? ('lax' as const) : ('strict' as const),
+      expires: new Date(Date.now() + SEVEN_DAYS),
+    };
+
+    cookieStore.set(ACCESS_TOKEN, token, options);
   },
-  get: () => cookies().get('access_token'),
-  delete: () => cookies().delete('access_token'),
+  get: async (): Promise<RequestCookie | undefined> => {
+    const cookieStore = await cookies();
+    return cookieStore.get('access_token');
+  },
+  delete: async () => {
+    const cookieStore = await cookies();
+    cookieStore.delete('access_token');
+  },
 };
 
 // Shared authentication check
 export const verifyGithubAuth = async () => {
-  const token = authCookie.get();
+  const token = await authCookie.get();
   if (!token) return null;
 
   try {
@@ -57,26 +70,30 @@ export const githubAuthHandlers = {
   },
 
   async callback(code: string) {
-    const response = await fetch(
-      `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
-      {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-      },
-    );
+    try {
+      const response = await fetch(
+        `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
+        {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+        },
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if ('error' in data) {
-      return { error: data.error, description: data.error_description };
+      if ('error' in data) {
+        return { error: data.error, description: data.error_description };
+      }
+
+      await authCookie.set(data.access_token);
+      return { success: true };
+    } catch (error) {
+      return { error: 'Authentication failed', description: String(error) };
     }
-
-    authCookie.set(data.access_token);
-    return { success: true };
   },
 
   async logout() {
-    authCookie.delete();
+    await authCookie.delete();
     return NextResponse.json({ success: true });
   },
 };
