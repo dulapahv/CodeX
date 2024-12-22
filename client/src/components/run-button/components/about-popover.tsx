@@ -38,11 +38,11 @@ const AboutPopover = () => (
           <h4 className="font-medium">Code Execution</h4>
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
-              You can cancel execution at any time by clicking the stop button.
-            </p>
-            <p>
               Use the dropdown menu to add command-line arguments and input to
               your program.
+            </p>
+            <p>
+              You can cancel execution at any time by clicking the stop button.
             </p>
             <p>
               For a list of supported programming languages, visit the{' '}

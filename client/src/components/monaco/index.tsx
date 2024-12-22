@@ -32,6 +32,7 @@ interface MonacoEditorProps {
   editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
   defaultCode?: string;
+  setCode: (code: string) => void;
 }
 
 const MonacoEditor = memo(function MonacoEditor({
@@ -39,6 +40,7 @@ const MonacoEditor = memo(function MonacoEditor({
   editorRef,
   cursorPosition,
   defaultCode,
+  setCode,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
 
@@ -77,9 +79,9 @@ const MonacoEditor = memo(function MonacoEditor({
   useEffect(() => {
     if (!isMonacoReady) return;
 
-    socket.on(CodeServiceMsg.UPDATE_CODE, (op: EditOp) =>
-      codeService.updateCode(op, editorInstanceRef, skipUpdateRef),
-    );
+    socket.on(CodeServiceMsg.UPDATE_CODE, (op: EditOp) => {
+      codeService.updateCode(op, editorInstanceRef, skipUpdateRef);
+    });
 
     socket.on(CodeServiceMsg.UPDATE_CURSOR, (userID: string, cursor: Cursor) =>
       cursorService.updateCursor(
@@ -169,6 +171,7 @@ const MonacoEditor = memo(function MonacoEditor({
         ev: monaco.editor.IModelContentChangedEvent,
       ) => {
         editorService.handleOnChange(value, ev, skipUpdateRef);
+        setCode(value || '');
       }}
     />
   );

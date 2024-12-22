@@ -172,6 +172,7 @@ export default function Room({ params }: RoomProps) {
   const [showTerminal, setShowTerminal] = useState(true);
   const [showWebcam, setShowWebcam] = useState(true);
   const [showSandpack, setShowSandpack] = useState(true);
+  const [code, setCode] = useState<string | null>(null);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -184,8 +185,8 @@ export default function Room({ params }: RoomProps) {
   );
 
   const [users, setUsers] = useState<User[]>([]);
-  const [defaultCode, setDefaultCode] = useState<string | null>(null); // ! CHANGE BACK TO NULL
-  const [mdContent, setMdContent] = useState<string | null>(null); // ! CHANGE BACK TO NULL
+  const [defaultCode, setDefaultCode] = useState<string | null>(null);
+  const [mdContent, setMdContent] = useState<string | null>(null);
   const [output, setOutput] = useState<ExecutionResult[]>([]);
 
   const disconnect = useCallback(() => {
@@ -329,6 +330,7 @@ export default function Room({ params }: RoomProps) {
                       editorRef={handleEditorSetup}
                       cursorPosition={setCursorPosition}
                       defaultCode={defaultCode}
+                      setCode={setCode}
                     />
                   </ResizablePanel>
                   <ResizableHandle
@@ -348,7 +350,7 @@ export default function Room({ params }: RoomProps) {
                       !showSandpack && 'hidden',
                     )}
                   >
-                    {editor && <MemoizedSandpack value={editor.getValue()} />}
+                    {editor && <MemoizedSandpack value={code || defaultCode} />}
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </ResizablePanel>

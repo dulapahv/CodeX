@@ -18,7 +18,6 @@
 
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { SandpackProvider } from '@codesandbox/sandpack-react';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 

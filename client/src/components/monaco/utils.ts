@@ -40,6 +40,16 @@ export const createCursorStyle = (
     background-color: ${bgColor} !important;
     width: 2px !important;
   }
+  .cursor-${userID}::before {
+    content: "";
+    position: absolute;
+    ${isFirstLine ? 'top: 25px;' : 'top: 0px;'}
+    left: 0px;
+    width: 6px;
+    height: 6px;
+    background-color: ${bgColor};
+    transform: translateY(-100%);
+  }
   .cursor-${userID}::after {
     content: "${name.replace(/"/g, '\\"')}";
     background-color: ${bgColor};
