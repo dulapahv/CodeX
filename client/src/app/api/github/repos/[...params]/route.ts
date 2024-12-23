@@ -27,7 +27,7 @@
  */
 
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { GITHUB_API_URL } from '@/lib/constants';
 

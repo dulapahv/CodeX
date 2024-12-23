@@ -10,7 +10,7 @@ import { OctagonX, Play } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@common/types/message';
-import { type ExecutionResult } from '@common/types/terminal';
+import type { ExecutionResult } from '@common/types/terminal';
 
 import { getSocket } from '@/lib/socket';
 import { cn } from '@/lib/utils';

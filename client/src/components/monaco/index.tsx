@@ -16,7 +16,7 @@ import {
   ScrollServiceMsg,
 } from '@common/types/message';
 import type { Cursor, EditOp } from '@common/types/operation';
-import { Scroll } from '@common/types/scroll';
+import type { Scroll } from '@common/types/scroll';
 
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';

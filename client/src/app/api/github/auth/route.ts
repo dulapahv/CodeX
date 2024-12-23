@@ -31,7 +31,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { githubAuthHandlers } from '@/lib/github';
 
