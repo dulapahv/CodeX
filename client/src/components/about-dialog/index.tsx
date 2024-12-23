@@ -7,13 +7,7 @@ import {
 } from 'react';
 import Image from 'next/image';
 
-import {
-  CONTACT_URL,
-  GITHUB_URL,
-  PORTFOLIO_URL,
-  REPO_URL,
-  SITE_NAME,
-} from '@/lib/constants';
+import { SITE_NAME } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
@@ -37,6 +31,8 @@ import {
 } from '@/components/ui/drawer';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+
+import { ExternalLink } from './components/external-link';
 
 interface AboutDialogRef {
   openDialog: () => void;
@@ -108,54 +104,17 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               )}
             </div>
 
-            <Separator aria-hidden="true" />
+            <Separator />
 
             <div className="space-y-2 text-foreground">
-              <p className="text-center">Made with 💕 by dulapahv</p>
+              <p className="text-center">
+                Made with 💕 by <span className="font-medium">dulapahv</span>
+              </p>
               <nav
                 className="grid grid-cols-4 gap-2"
                 aria-label="External links"
               >
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={PORTFOLIO_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Visit portfolio website (opens in new tab)"
-                  >
-                    My Portfolio
-                  </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={GITHUB_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Visit GitHub profile (opens in new tab)"
-                  >
-                    GitHub Profile
-                  </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={REPO_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Visit Kasca GitHub repository (opens in new tab)"
-                  >
-                    Kasca GitHub
-                  </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a
-                    href={CONTACT_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Contact me (opens in new tab)"
-                  >
-                    Contact Me
-                  </a>
-                </Button>
+                <ExternalLink />
               </nav>
             </div>
 
@@ -176,7 +135,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="text-left">{SITE_NAME}</DrawerTitle>
-            <DrawerDescription className="pt-2 text-left text-base text-foreground">
+            <DrawerDescription className="pt-2 text-left text-base">
               This project is part of the course &quot;COMPSCI4025P Level 4
               Individual Project&quot; at the University of Glasgow.
             </DrawerDescription>
@@ -209,48 +168,11 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
           </div>
 
           <div className="mx-4 space-y-2">
-            <p className="text-center">Made with 💕 by dulapahv</p>
+            <p className="text-center">
+              Made with 💕 by <span className="font-medium">dulapahv</span>
+            </p>
             <nav className="grid grid-cols-2 gap-2" aria-label="External links">
-              <Button variant="outline" size="sm" asChild>
-                <a
-                  href={PORTFOLIO_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Visit portfolio website (opens in new tab)"
-                >
-                  My Portfolio
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <a
-                  href={GITHUB_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Visit GitHub profile (opens in new tab)"
-                >
-                  GitHub Profile
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <a
-                  href={REPO_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Visit Kasca GitHub repository (opens in new tab)"
-                >
-                  Kasca GitHub
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <a
-                  href={CONTACT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Contact me (opens in new tab)"
-                >
-                  Contact Me
-                </a>
-              </Button>
+              <ExternalLink />
             </nav>
           </div>
 

@@ -158,7 +158,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 Login with GitHub
               </Button>
             )}
-            <Separator role="separator" />
+            <Separator />
             <Label className="text-base" id="editor-section">
               Editor
             </Label>

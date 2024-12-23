@@ -153,7 +153,7 @@ const RoomAccessForm = () => {
                   isJoining={isJoining}
                 />
               </section>
-              <Separator role="separator" />
+              <Separator />
               <section aria-label="Join existing room">
                 <JoinRoomSection
                   register={registerJoin}
