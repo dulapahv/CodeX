@@ -24,10 +24,10 @@ export const NAME_MAX_LENGTH = 64;
 export const SITE_NAME = 'Kasca - Code Collaboration Platform';
 export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_DESCRIPTION =
-  'Kasca: Real-time code collaboration with shared terminal, live UI preview, GitHub integration, shared notes, and video/voice chat—no signed-up required.';
+  'Your collaborative coding space with shared workspace, terminal, video, and notes. Code together now on Kasca, no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
-export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/ogp.png`;
+export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/cover.png`;
 export const THEME_COLOR = '#4a7af6';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
