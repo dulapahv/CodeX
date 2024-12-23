@@ -21,7 +21,7 @@ const AboutPopover = () => (
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent hover:opacity-80"
+            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent [&>svg]:transition-opacity hover:[&>svg]:opacity-70"
           >
             <Info className="size-4 text-[color:var(--panel-text)]" />
             <span className="sr-only">About code execution</span>

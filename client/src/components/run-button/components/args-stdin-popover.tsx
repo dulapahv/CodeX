@@ -71,7 +71,7 @@ const ArgsInputPopover = ({
               variant="ghost"
               size="icon"
               className={cn(
-                'relative size-7 animate-fade-in-top rounded-l-none border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+                'relative size-7 rounded-l-none border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
                 disabled && 'bg-red-600',
               )}
               disabled={disabled}
