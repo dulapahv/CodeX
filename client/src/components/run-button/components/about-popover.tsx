@@ -73,7 +73,6 @@ const AboutPopover = () => (
             >
               Piston
             </a>
-            , a high performance general purpose code execution engine.
           </p>
         </div>
       </div>

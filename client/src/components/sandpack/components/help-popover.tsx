@@ -111,7 +111,6 @@ const HelpPopover = () => (
             >
               Sandpack
             </a>
-            , a component toolkit for live running code editing experiences.
           </p>
         </div>
       </div>
