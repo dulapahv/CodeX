@@ -182,7 +182,7 @@ const OpenFromGithubDialog = forwardRef<
             className="text-center text-sm text-muted-foreground"
             id="login-prompt"
           >
-            Please log in with GitHub to save your code.
+            Please log in with GitHub to open your code.
           </p>
           <Button
             onClick={loginWithGithub}
