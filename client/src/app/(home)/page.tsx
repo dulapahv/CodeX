@@ -46,8 +46,9 @@ const Page = () => (
                 </div>
               </h1>
               <p className="text-lg text-foreground/90 sm:text-xl">
-                Your collaborative coding space with shared workspace, terminal,
-                video, and notes. Start now, no sign-up required.
+                Your collaborative coding space, reimagined. Start now,
+                <br />
+                no sign-up required.
               </p>
             </div>
           </div>
