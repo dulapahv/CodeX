@@ -1,4 +1,4 @@
-import { RefObject } from 'react';
+import type { RefObject } from 'react';
 import { FolderSearch } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';

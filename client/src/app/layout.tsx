@@ -16,7 +16,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
