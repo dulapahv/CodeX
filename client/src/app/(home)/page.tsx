@@ -45,10 +45,9 @@ const Page = () => (
                   </span>
                 </div>
               </h1>
-              <p className="text-lg text-foreground/90 sm:text-xl">
-                Your collaborative coding space, reimagined. Start now,
-                <br />
-                no sign-up required.
+              <p className="w-full whitespace-pre-line text-lg text-foreground/90 sm:w-[93%] sm:text-xl">
+                Your collaborative coding space, reimagined. Start now, no
+                sign-up required.
               </p>
             </div>
           </div>
