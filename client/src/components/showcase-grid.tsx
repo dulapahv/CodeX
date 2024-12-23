@@ -36,7 +36,7 @@ const showcaseImages: ShowcaseImage[] = [
   },
   {
     src: '/images/showcase/preview.png',
-    alt: 'Real-time UI preview',
+    alt: 'Live UI preview',
     title: 'Live UI Preview',
     description:
       'Preview UI changes instantly with loaded libraries like Tailwind CSS, and more',
@@ -59,7 +59,7 @@ const showcaseImages: ShowcaseImage[] = [
   },
   {
     src: '/images/showcase/video.png',
-    alt: 'Video and voice communication',
+    alt: 'Video and voice',
     title: 'Video & Voice',
     description: 'Communicate with your team using video and voice chat',
     icon: <Video className="size-4" />,
