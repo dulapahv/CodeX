@@ -242,34 +242,32 @@ const Leaf = forwardRef<
     isSelected?: boolean;
     Icon?: LucideIcon;
   }
->(({ className, item, isSelected, Icon, ...props }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
-        className,
-        isSelected &&
-          'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
-      )}
-      {...props}
-    >
-      {item.icon && (
-        <item.icon
-          className="mr-2 size-4 shrink-0 text-accent-foreground/50"
-          aria-hidden="true"
-        />
-      )}
-      {!item.icon && Icon && (
-        <Icon
-          className="mr-2 size-4 shrink-0 text-accent-foreground/50"
-          aria-hidden="true"
-        />
-      )}
-      <span className="flex-grow truncate text-sm">{item.name}</span>
-    </div>
-  );
-});
+>(({ className, item, isSelected, Icon, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
+      className,
+      isSelected &&
+        'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
+    )}
+    {...props}
+  >
+    {item.icon && (
+      <item.icon
+        className="mr-2 size-4 shrink-0 text-accent-foreground/50"
+        aria-hidden="true"
+      />
+    )}
+    {!item.icon && Icon && (
+      <Icon
+        className="mr-2 size-4 shrink-0 text-accent-foreground/50"
+        aria-hidden="true"
+      />
+    )}
+    <span className="flex-grow truncate text-sm">{item.name}</span>
+  </div>
+));
 Leaf.displayName = 'Leaf';
 
 const AccordionTrigger = forwardRef<

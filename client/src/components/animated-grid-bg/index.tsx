@@ -12,7 +12,7 @@ import {
 
 import { useMediaQuery } from '@/hooks/use-media-query';
 
-import type { GridConfig, Light, LightStyles, MousePosition } from './types';
+import type { GridConfig, Light, LightStyles } from './types';
 
 const AnimatedGridBackground = () => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -24,10 +24,6 @@ const AnimatedGridBackground = () => {
   });
 
   const [lights, setLights] = useState<Light[]>([]);
-  const [mousePosition, setMousePosition] = useState<MousePosition>({
-    x: 0,
-    y: 0,
-  });
 
   // Motion values for parallax effect
   const mouseX = useMotionValue(0);
@@ -54,7 +50,6 @@ const AnimatedGridBackground = () => {
 
       mouseX.set(x);
       mouseY.set(y);
-      setMousePosition({ x, y });
     },
     [mouseX, mouseY],
   );

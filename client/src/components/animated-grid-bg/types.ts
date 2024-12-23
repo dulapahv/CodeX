@@ -11,11 +11,6 @@ export interface Light {
   duration: number;
 }
 
-export interface MousePosition {
-  x: number;
-  y: number;
-}
-
 interface LightStyle {
   trail: {
     width?: string;

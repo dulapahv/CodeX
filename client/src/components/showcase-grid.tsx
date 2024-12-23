@@ -92,50 +92,48 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
   </div>
 );
 
-const ShowcaseGrid = () => {
-  return (
-    <div className="grid w-full auto-rows-max gap-6">
-      {/* Mobile: Single column */}
-      <div className="grid grid-cols-1 gap-6 p-4 min-[560px]:hidden">
-        {showcaseImages.map((image) => (
+const ShowcaseGrid = () => (
+  <div className="grid w-full auto-rows-max gap-6">
+    {/* Mobile: Single column */}
+    <div className="grid grid-cols-1 gap-6 p-4 min-[560px]:hidden">
+      {showcaseImages.map((image) => (
+        <ShowcaseCard key={image.title} image={image} />
+      ))}
+    </div>
+
+    {/* Tablet: Two columns with stagger */}
+    <div className="hidden grid-cols-2 gap-6 p-8 min-[560px]:grid min-[1189px]:hidden">
+      <div className="space-y-6">
+        {showcaseImages.slice(0, 3).map((image) => (
           <ShowcaseCard key={image.title} image={image} />
         ))}
       </div>
-
-      {/* Tablet: Two columns with stagger */}
-      <div className="hidden grid-cols-2 gap-6 p-8 min-[560px]:grid min-[1189px]:hidden">
-        <div className="space-y-6">
-          {showcaseImages.slice(0, 3).map((image) => (
-            <ShowcaseCard key={image.title} image={image} />
-          ))}
-        </div>
-        <div className="mt-12 space-y-6">
-          {showcaseImages.slice(3, 6).map((image) => (
-            <ShowcaseCard key={image.title} image={image} />
-          ))}
-        </div>
-      </div>
-
-      {/* Desktop: Three columns with stagger */}
-      <div className="hidden grid-cols-3 gap-6 min-[1189px]:grid">
-        <div className="space-y-6">
-          {showcaseImages.slice(0, 2).map((image) => (
-            <ShowcaseCard key={image.title} image={image} />
-          ))}
-        </div>
-        <div className="mt-12 space-y-6">
-          {showcaseImages.slice(2, 4).map((image) => (
-            <ShowcaseCard key={image.title} image={image} />
-          ))}
-        </div>
-        <div className="mt-24 space-y-6">
-          {showcaseImages.slice(4, 6).map((image) => (
-            <ShowcaseCard key={image.title} image={image} />
-          ))}
-        </div>
+      <div className="mt-12 space-y-6">
+        {showcaseImages.slice(3, 6).map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
       </div>
     </div>
-  );
-};
+
+    {/* Desktop: Three columns with stagger */}
+    <div className="hidden grid-cols-3 gap-6 min-[1189px]:grid">
+      <div className="space-y-6">
+        {showcaseImages.slice(0, 2).map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+      <div className="mt-12 space-y-6">
+        {showcaseImages.slice(2, 4).map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+      <div className="mt-24 space-y-6">
+        {showcaseImages.slice(4, 6).map((image) => (
+          <ShowcaseCard key={image.title} image={image} />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export { ShowcaseGrid };
