@@ -46,8 +46,7 @@ const showcaseImages: ShowcaseImage[] = [
     src: '/images/showcase/github.png',
     alt: 'GitHub integrated',
     title: 'GitHub Integrated',
-    description:
-      'Pull from and commit to GitHub easily with repository tree explorer',
+    description: 'Save your work and open files from your repositories',
     icon: <GitPullRequestCreateArrow className="size-4" />,
   },
   {
