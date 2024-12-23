@@ -27,7 +27,7 @@ export const SITE_DESCRIPTION =
   'Your collaborative coding space with shared workspace, terminal, video, and notes. Code together now on Kasca, no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
-export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/ogp.png`;
+export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/kasca.png`;
 export const THEME_COLOR = '#101723';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
