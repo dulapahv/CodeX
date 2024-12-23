@@ -24,7 +24,7 @@ export const NAME_MAX_LENGTH = 64;
 export const SITE_NAME = 'Kasca - Code Collaboration Platform';
 export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_DESCRIPTION =
-  'Your collaborative coding space with shared workspace, terminal, video, and notes. Code together now on Kasca, no sign-up required.';
+  'Your collaborative coding space, reimagined. Code together now on Kasca, no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
 export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/kasca.png`;

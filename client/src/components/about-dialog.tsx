@@ -12,7 +12,6 @@ import {
   GITHUB_URL,
   PORTFOLIO_URL,
   REPO_URL,
-  SITE_DESCRIPTION,
   SITE_NAME,
 } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -81,7 +80,8 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
             <DialogHeader className="text-left text-foreground">
               <DialogTitle>{SITE_NAME}</DialogTitle>
               <DialogDescription className="pt-2 text-base">
-                {SITE_DESCRIPTION}
+                This project is part of the course &quot;COMPSCI4025P Level 4
+                Individual Project&quot; at the University of Glasgow.
               </DialogDescription>
             </DialogHeader>
 
@@ -111,13 +111,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
             <Separator aria-hidden="true" />
 
             <div className="space-y-2 text-foreground">
-              <p>
-                This project is part of the course &quot;COMPSCI4025P Level 4
-                Individual Project&quot; at the University of Glasgow.
-              </p>
-              <p className="pt-2 text-center font-medium">
-                Made with 💕 by dulapahv
-              </p>
+              <p className="text-center">Made with 💕 by dulapahv</p>
               <nav
                 className="grid grid-cols-4 gap-2"
                 aria-label="External links"
@@ -129,7 +123,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
                     rel="noopener noreferrer"
                     aria-label="Visit portfolio website (opens in new tab)"
                   >
-                    Portfolio
+                    My Portfolio
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
@@ -159,7 +153,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
                     rel="noopener noreferrer"
                     aria-label="Contact me (opens in new tab)"
                   >
-                    Contact
+                    Contact Me
                   </a>
                 </Button>
               </nav>
@@ -183,7 +177,8 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
           <DrawerHeader>
             <DrawerTitle className="text-left">{SITE_NAME}</DrawerTitle>
             <DrawerDescription className="pt-2 text-left text-base text-foreground">
-              {SITE_DESCRIPTION}
+              This project is part of the course &quot;COMPSCI4025P Level 4
+              Individual Project&quot; at the University of Glasgow.
             </DrawerDescription>
           </DrawerHeader>
 
@@ -214,13 +209,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
           </div>
 
           <div className="mx-4 space-y-2">
-            <p>
-              This project is part of the course &quot;COMPSCI4025P Level 4
-              Individual Project&quot; at the University of Glasgow.
-            </p>
-            <p className="pt-2 text-center font-medium">
-              Made with 💕 by dulapahv
-            </p>
+            <p className="text-center">Made with 💕 by dulapahv</p>
             <nav className="grid grid-cols-2 gap-2" aria-label="External links">
               <Button variant="outline" size="sm" asChild>
                 <a
@@ -229,7 +218,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
                   rel="noopener noreferrer"
                   aria-label="Visit portfolio website (opens in new tab)"
                 >
-                  Portfolio
+                  My Portfolio
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
@@ -259,7 +248,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
                   rel="noopener noreferrer"
                   aria-label="Contact me (opens in new tab)"
                 >
-                  Contact
+                  Contact Me
                 </a>
               </Button>
             </nav>
