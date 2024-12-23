@@ -21,7 +21,7 @@ const AboutButton = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="fixed bottom-2 right-4 hover:bg-accent/50 rounded-full"
+            className="fixed bottom-2 right-4 rounded-full hover:bg-accent/50"
             aria-label="About"
             type="button"
             aria-haspopup="dialog"

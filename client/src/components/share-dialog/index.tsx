@@ -8,7 +8,6 @@ import {
 import { Check, Copy, Image as LuImage } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
-import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
