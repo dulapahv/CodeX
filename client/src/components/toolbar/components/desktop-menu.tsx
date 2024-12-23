@@ -61,7 +61,7 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.openLocal}>
             Open from Local <MenubarShortcut>{modKey}+O</MenubarShortcut>
           </MenubarItem>
-          <MenubarItem onSelect={actions.openGitHub}>
+          <MenubarItem onSelect={actions.openGitHub} className="gap-x-4">
             Open from GitHub <MenubarShortcut>{modKey}+Shift+O</MenubarShortcut>
           </MenubarItem>
           <MenubarItem onSelect={actions.saveLocal}>
@@ -136,7 +136,7 @@ const DesktopMenu = ({
             Duplicate Selection
           </MenubarItem>
           <MenubarSeparator />
-          <MenubarItem onSelect={actions.addCursorAbove}>
+          <MenubarItem onSelect={actions.addCursorAbove} className="gap-x-4">
             Add Cursor Above <MenubarShortcut>{modKey}+Alt+↑</MenubarShortcut>
           </MenubarItem>
           <MenubarItem onSelect={actions.addCursorBelow}>
