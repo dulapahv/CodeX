@@ -194,6 +194,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <meta name="darkreader-lock" />
+      </head>
       <body className="h-dvh text-pretty antialiased">
         <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>

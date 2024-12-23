@@ -290,7 +290,8 @@ export default function Room(props: {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             className={cn(
-              'h-[calc(100%-24px)] animate-fade-in-left border-t-[1px] border-muted-foreground [&>div]:h-full',
+              'h-[calc(100%-24px)] animate-fade-in-left [&>div]:h-full',
+              monaco && editor && 'border-t border-muted-foreground',
               (!monaco || !editor) && 'hidden',
               !showMarkdown && 'hidden',
             )}
@@ -324,7 +325,9 @@ export default function Room(props: {
               >
                 <ResizablePanelGroup
                   direction="horizontal"
-                  className="border-t-[1px] border-t-muted-foreground"
+                  className={cn(
+                    monaco && editor && 'border-t border-muted-foreground',
+                  )}
                 >
                   <ResizablePanel defaultSize={60} minSize={10}>
                     <MonacoEditor
@@ -388,7 +391,8 @@ export default function Room(props: {
           />
           <ResizablePanel
             className={cn(
-              'h-[calc(100%-24px)] animate-fade-in-right border-t-[1px] border-muted-foreground',
+              'h-[calc(100%-24px)] animate-fade-in-right',
+              monaco && editor && 'border-t border-muted-foreground',
               (!monaco || !editor) && 'hidden',
               !showWebcam && 'hidden',
             )}

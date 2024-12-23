@@ -28,7 +28,7 @@ export const SITE_DESCRIPTION =
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
 export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/cover.png`;
-export const THEME_COLOR = '#4a7af6';
+export const THEME_COLOR = '#101723';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
 export const CONTACT_URL = 'https://dulapahv.dev/contact';
