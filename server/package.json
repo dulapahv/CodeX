@@ -6,8 +6,8 @@
     "dev": "nodemon src/index.ts",
     "start": "nodemon src/index.ts",
     "build": "rimraf dist && tsc",
-    "lint:check": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "packageManager": "pnpm@9.15.1",
   "dependencies": {

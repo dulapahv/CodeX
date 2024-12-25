@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint:check": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "lint:check": "eslint --ext .ts,.tsx .",
+    "lint:fix": "eslint --ext .ts,.tsx --fix .",
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.19.10",
@@ -48,7 +50,7 @@
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.1",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "use-debounce": "^10.0.4",
     "vaul": "^1.1.2",
     "zod": "^3.24.1"
