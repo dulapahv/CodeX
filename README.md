@@ -1,10 +1,14 @@
 # Kasca - Code Collaboration Platform
 
+<div align="center">
+  <img src="client/public/images/kasca.png?raw=true" width="600" alt="kasca cover image"/>
+</div>
+
 Kasca is an online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required. Experience seamless collaboration with features like real-time cursor sharing, live UI preview, and integrated video communication.
 
 > This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
-For detailed usage instructions and feature documentation, please see [manual.md](manual.md).
+For detailed usage instructions and feature documentation, please see **[manual.md](manual.md)**.
 
 ## Features
 
