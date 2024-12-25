@@ -4,6 +4,8 @@ Kasca is an online code collaboration platform that enables real-time coding wit
 
 > This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
+For detailed usage instructions and feature documentation, please see [manual.md](manual.md).
+
 ## Features
 
 - **Real-time Collaboration** - Code together in real-time with cursor sharing, highlighting, and follow mode
@@ -26,6 +28,7 @@ Kasca is an online code collaboration platform that enables real-time coding wit
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
+  - [User Manual](#user-manual)
   - [License](#license)
 
 ## Prerequisites
@@ -156,6 +159,16 @@ pnpm format:fix     # Fix formatting issues
 1. Create a new branch for your feature
 2. Commit changes following [Angular Commit Message Conventions](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
 3. Submit a Pull Request with a description of your changes
+
+## User Manual
+
+For detailed information about using Kasca, including:
+
+- Feature guides
+- Keyboard shortcuts
+- Troubleshooting
+
+Please refer to our [User Manual](manual.md).
 
 ## License
 
