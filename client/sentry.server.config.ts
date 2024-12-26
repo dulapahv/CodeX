@@ -6,14 +6,19 @@ import * as Sentry from '@sentry/nextjs';
 
 import { IS_DEV_ENV } from '@/lib/constants';
 
-Sentry.init({
-  dsn: 'https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832',
+// Don't initialize Sentry in CI
+const isCi = process.env.CI === 'true';
 
-  enabled: !IS_DEV_ENV,
+if (!isCi) {
+  Sentry.init({
+    dsn: 'https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832',
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+    enabled: !IS_DEV_ENV,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-});
+    // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+    tracesSampleRate: 1,
+
+    // Setting this option to true will print useful information to the console while you're setting up Sentry.
+    debug: false,
+  });
+}
