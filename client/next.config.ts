@@ -3,6 +3,8 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {};
 
+const isCi = process.env.CI === 'true';
+
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
@@ -41,4 +43,10 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: isCi,
+  },
+
+  telemetry: !isCi,
 });
