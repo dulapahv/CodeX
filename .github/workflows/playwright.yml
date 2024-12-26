@@ -32,6 +32,18 @@ jobs:
             client/pnpm-lock.yaml
             server/pnpm-lock.yaml
 
+      # Next.js Cache
+      - name: Cache Next.js bundle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ github.workspace }}/client/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('client/pnpm-lock.yaml') }}-${{ hashFiles('client/src/**/*.{js,jsx,ts,tsx}') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('client/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
       # Server caching
       - name: Cache server
         id: cache-server
@@ -44,18 +56,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-server-
 
-      # Client caching
-      - name: Cache client
+      # Client dependencies cache
+      - name: Cache client dependencies
         id: cache-client
         uses: actions/cache@v4
         with:
           path: |
-            client/.next
             client/node_modules
             client/.eslintcache
-          key: ${{ runner.os }}-client-${{ hashFiles('client/pnpm-lock.yaml', 'client/tsconfig.json', 'client/next.config.mjs') }}
+          key: ${{ runner.os }}-client-deps-${{ hashFiles('client/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-client-
+            ${{ runner.os }}-client-deps-
 
       # Playwright browsers cache
       - name: Cache Playwright browsers
@@ -91,7 +102,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: ./client
-        run: pnpm exec playwright test
+        run: pnpm exec playwright test --timeout 30000
 
       - name: Upload test results
         if: always()
