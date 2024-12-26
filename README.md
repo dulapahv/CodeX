@@ -129,7 +129,7 @@ pnpm build
   - [shadcn/ui](https://ui.shadcn.com/)
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/)
   - [Socket.IO Client](https://socket.io)
-  - [Sandpack](https://sandpack.io)
+  - [Sandpack](https://sandpack.codesandbox.io/)
   - [MDXEditor](https://mdxeditor.dev/)
   - [simple-peer (WebRTC)](https://github.com/feross/simple-peer)
   - [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev/)
