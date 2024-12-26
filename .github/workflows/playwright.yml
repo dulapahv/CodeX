@@ -13,6 +13,7 @@ jobs:
       NEXT_PUBLIC_API_URL: http://localhost:3001
       NEXT_PUBLIC_SOCKET_URL: http://localhost:3001
       NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: production
       CI: true
 
     steps:
@@ -33,7 +34,8 @@ jobs:
             server/pnpm-lock.yaml
 
       # Server caching
-      - name: Cache server build
+      - name: Cache server
+        id: cache-server
         uses: actions/cache@v4
         with:
           path: |
@@ -44,7 +46,8 @@ jobs:
             ${{ runner.os }}-server-
 
       # Client caching
-      - name: Cache client build
+      - name: Cache client
+        id: cache-client
         uses: actions/cache@v4
         with:
           path: |
@@ -57,6 +60,7 @@ jobs:
 
       # Playwright browsers cache
       - name: Cache Playwright browsers
+        id: cache-playwright
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
@@ -65,34 +69,35 @@ jobs:
             ${{ runner.os }}-playwright-
 
       - name: Install server dependencies
-        if: steps.cache-server.outputs.cache-hit != 'true'
         working-directory: ./server
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm add -D ts-node @types/node
 
       - name: Install client dependencies
-        if: steps.cache-client.outputs.cache-hit != 'true'
         working-directory: ./client
         run: pnpm install --no-frozen-lockfile
-
-      - name: Install Playwright browsers
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        working-directory: ./client
-        run: pnpm exec playwright install --with-deps
 
       - name: Build server
         working-directory: ./server
-        run: pnpm build
+        run: |
+          pnpm build
+          ls -la dist/
 
       - name: Start server
         working-directory: ./server
         run: |
-          node dist/index.js &
+          pnpm start &
           echo "Waiting for server to start..."
           sleep 10
 
       - name: Build client
         working-directory: ./client
         run: pnpm build
+
+      - name: Install Playwright browsers
+        working-directory: ./client
+        run: pnpm exec playwright install --with-deps
 
       - name: Run Playwright tests
         working-directory: ./client
