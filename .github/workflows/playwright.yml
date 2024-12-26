@@ -102,7 +102,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: ./client
-        run: pnpm exec playwright test --timeout 30000
+        run: pnpm exec playwright test
 
       - name: Upload test results
         if: always()
