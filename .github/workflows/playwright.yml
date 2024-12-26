@@ -10,18 +10,15 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_API_URL: http://localhost:3001
-      NEXT_PUBLIC_SOCKET_URL: http://localhost:3001
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
       CI: true
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 9.15.1
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
