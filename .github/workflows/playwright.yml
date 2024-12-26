@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      SENTRY_AUTH_TOKEN: '' # Disable Sentry for tests
 
     steps:
       - name: 📥 Checkout code
