@@ -6,6 +6,8 @@
 
 Kasca is an online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required. Experience seamless collaboration with features like real-time cursor sharing, live UI preview, and integrated video communication.
 
+**✨ Try now at [kasca.dulapahv.dev](https://kasca.dulapahv.dev/)**
+
 > This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
 For detailed usage instructions and feature documentation, please see **[manual.md](manual.md)**.
@@ -40,9 +42,9 @@ For detailed usage instructions and feature documentation, please see **[manual.
 Before you begin, ensure you have the following installed:
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
-- A package manager (pnpm recommended, npm works too)
+- A package manager ([pnpm](https://pnpm.io/) recommended)
 
-> While this project uses pnpm for development, you can use npm instead. Simply replace `pnpm` with `npm` in all commands. However, we recommend using pnpm for its better performance and disk space efficiency.
+> While this project uses pnpm for development, you can use [npm](https://www.npmjs.com/) instead. Simply replace `pnpm` with `npm` in all commands. However, we recommend using pnpm for its better performance and disk space efficiency.
 
 ## Project Structure
 
