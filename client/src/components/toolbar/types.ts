@@ -45,8 +45,8 @@ export interface ToolbarActions {
   commandPalette: () => void;
   /** Toggle minimap visibility */
   minimap: () => void;
-  /** Toggle markdown editor panel */
-  toggleMarkdownPanel: () => void;
+  /** Toggle notepad panel */
+  toggleNotepadPanel: () => void;
   /** Toggle terminal panel */
   toggleTerminalPanel: () => void;
   /** Toggle webcam stream panel */

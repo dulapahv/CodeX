@@ -152,10 +152,10 @@ const MobileMenu = ({
                 Minimap
               </MenubarCheckboxItem>
               <MenubarCheckboxItem
-                onCheckedChange={actions.toggleMarkdownPanel}
+                onCheckedChange={actions.toggleNotepadPanel}
                 checked={markdown}
               >
-                Markdown Editor
+                Notepad
               </MenubarCheckboxItem>
               <MenubarCheckboxItem
                 onCheckedChange={actions.toggleTerminalPanel}
@@ -173,7 +173,7 @@ const MobileMenu = ({
                 onCheckedChange={actions.toggleSandpackPanel}
                 checked={sandpack}
               >
-                Code Preview
+                Live Preview
               </MenubarCheckboxItem>
             </MenubarSubContent>
           </MenubarSub>

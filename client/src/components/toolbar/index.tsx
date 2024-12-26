@@ -217,7 +217,7 @@ const Toolbar = ({
       editor.updateOptions({ minimap: { enabled: !miniMap } });
       setMiniMap(!miniMap);
     },
-    toggleMarkdownPanel: () => setShowMarkdown((show) => !show),
+    toggleNotepadPanel: () => setShowMarkdown((show) => !show),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
     toggleWebcamPanel: () => setShowWebcam((show) => !show),
     toggleSandpackPanel: () => setShowSandpack((show) => !show),
