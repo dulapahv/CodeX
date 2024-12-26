@@ -32,46 +32,71 @@ jobs:
             client/pnpm-lock.yaml
             server/pnpm-lock.yaml
 
-      - name: List directory contents
-        run: |
-          echo "Root directory:"
-          ls -la
-          echo "Server directory:"
-          ls -la server/
-          echo "Client directory:"
-          ls -la client/
+      # Server caching
+      - name: Cache server build
+        uses: actions/cache@v4
+        with:
+          path: |
+            server/dist
+            server/node_modules
+          key: ${{ runner.os }}-server-${{ hashFiles('server/pnpm-lock.yaml', 'server/tsconfig.json') }}
+          restore-keys: |
+            ${{ runner.os }}-server-
+
+      # Client caching
+      - name: Cache client build
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/.next
+            client/node_modules
+            client/.eslintcache
+          key: ${{ runner.os }}-client-${{ hashFiles('client/pnpm-lock.yaml', 'client/tsconfig.json', 'client/next.config.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-client-
+
+      # Playwright browsers cache
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install server dependencies
+        if: steps.cache-server.outputs.cache-hit != 'true'
         working-directory: ./server
-        run: |
-          echo "Using pnpm version:"
-          pnpm --version
-          pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Install client dependencies
+        if: steps.cache-client.outputs.cache-hit != 'true'
         working-directory: ./client
-        run: |
-          echo "Using pnpm version:"
-          pnpm --version
-          pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         working-directory: ./client
         run: pnpm exec playwright install --with-deps
+
+      - name: Build server
+        working-directory: ./server
+        run: pnpm build
 
       - name: Start server
         working-directory: ./server
         run: |
-          pnpm build
-          pnpm start &
+          node dist/index.js &
           echo "Waiting for server to start..."
           sleep 10
 
-      - name: Build and test client
+      - name: Build client
         working-directory: ./client
-        run: |
-          pnpm build
-          pnpm exec playwright test
+        run: pnpm build
+
+      - name: Run Playwright tests
+        working-directory: ./client
+        run: pnpm exec playwright test
 
       - name: Upload test results
         if: always()
