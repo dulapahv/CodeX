@@ -4,7 +4,7 @@
   <img src="client/public/images/kasca.png?raw=true" width="600" alt="kasca cover image"/>
 </div>
 
-Kasca is an online code collaboration platform that enables real-time coding with others, featuring integrated Git support and no sign-up required. Experience seamless collaboration with features like real-time cursor sharing, live UI preview, and integrated video communication.
+**Kasca is an online code collaboration platform that enables real-time coding, cursor sharing, live UI preview, and video communication with integrated Git support—no sign-up required.**
 
 **✨ Try now at [kasca.dulapahv.dev](https://kasca.dulapahv.dev/)**
 
