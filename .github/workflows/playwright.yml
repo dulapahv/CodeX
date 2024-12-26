@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: 🎭 Playwright Tests
 on:
   push:
     branches: [main, master]
@@ -7,20 +7,22 @@ on:
 
 jobs:
   test:
+    name: 🧪 Run E2E Tests
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       CI: true
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: 📦 Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - name: Setup Node.js
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -30,7 +32,7 @@ jobs:
             server/pnpm-lock.yaml
 
       # Next.js Cache
-      - name: Cache Next.js bundle
+      - name: 💾 Cache Next.js bundle
         uses: actions/cache@v4
         with:
           path: |
@@ -42,7 +44,7 @@ jobs:
             ${{ runner.os }}-nextjs-
 
       # Server caching
-      - name: Cache server
+      - name: 💾 Cache server build
         id: cache-server
         uses: actions/cache@v4
         with:
@@ -54,7 +56,7 @@ jobs:
             ${{ runner.os }}-server-
 
       # Client dependencies cache
-      - name: Cache client dependencies
+      - name: 💾 Cache client dependencies
         id: cache-client
         uses: actions/cache@v4
         with:
@@ -66,7 +68,7 @@ jobs:
             ${{ runner.os }}-client-deps-
 
       # Playwright browsers cache
-      - name: Cache Playwright browsers
+      - name: 💾 Cache Playwright browsers
         id: cache-playwright
         uses: actions/cache@v4
         with:
@@ -75,41 +77,47 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install and build server
+      - name: 🏗️ Install and build server
         working-directory: ./server
         run: |
-          echo "Installing server dependencies..."
+          echo "📦 Installing server dependencies..."
           NODE_ENV=development pnpm install
-          echo "Building server..."
+          echo "🔨 Building server..."
           pnpm build
 
-      - name: Install client dependencies
+      - name: 🏗️ Install and build client
         working-directory: ./client
         run: |
-          echo "Installing client dependencies..."
+          echo "📦 Installing client dependencies..."
           NODE_ENV=development pnpm install
+          echo "🔨 Running type check and linting..."
+          pnpm lint:check
+          echo "🔨 Building client..."
+          NODE_ENV=production pnpm build
 
-      - name: Build client
-        working-directory: ./client
-        run: NODE_ENV=production pnpm build
-
-      - name: Install Playwright browsers
+      - name: 🎭 Install Playwright browsers
         working-directory: ./client
         run: pnpm exec playwright install --with-deps
 
-      - name: Run Playwright tests
+      - name: 🧪 Run Playwright tests
         working-directory: ./client
-        run: pnpm exec playwright test
+        env:
+          # These variables are needed for tests
+          PLAYWRIGHT_HTML_REPORT: playwright-report
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
+        run: pnpm test:e2e
 
-      - name: Upload test results
+      - name: 📊 Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: client/playwright-report/
+          path: |
+            client/playwright-report/
+            client/test-results.xml
           retention-days: 30
 
-      - name: Upload test screenshots
+      - name: 📸 Upload test screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
