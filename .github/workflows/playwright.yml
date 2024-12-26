@@ -21,8 +21,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
-          run_install: false
+          version: 9.15.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,13 +32,28 @@ jobs:
             client/pnpm-lock.yaml
             server/pnpm-lock.yaml
 
+      - name: List directory contents
+        run: |
+          echo "Root directory:"
+          ls -la
+          echo "Server directory:"
+          ls -la server/
+          echo "Client directory:"
+          ls -la client/
+
       - name: Install server dependencies
         working-directory: ./server
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "Using pnpm version:"
+          pnpm --version
+          pnpm install --no-frozen-lockfile
 
       - name: Install client dependencies
         working-directory: ./client
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "Using pnpm version:"
+          pnpm --version
+          pnpm install --no-frozen-lockfile
 
       - name: Install Playwright Browsers
         working-directory: ./client
@@ -50,7 +64,8 @@ jobs:
         run: |
           pnpm build
           pnpm start &
-          sleep 5
+          echo "Waiting for server to start..."
+          sleep 10
 
       - name: Build and test client
         working-directory: ./client
