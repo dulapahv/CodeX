@@ -9,22 +9,30 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:3001
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      PLAYWRIGHT_HTML_REPORT: /playwright-report
+      CI: true
 
     steps:
       - uses: actions/checkout@v4
 
+      # Install pnpm first
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      # Then setup Node.js with pnpm caching
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'pnpm'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
+      # Cache pnpm store
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -38,6 +46,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      # Install dependencies
       - name: Install dependencies (Server)
         run: |
           cd server
@@ -48,11 +57,13 @@ jobs:
           cd client
           pnpm install
 
+      # Install Playwright
       - name: Install Playwright Browsers
         run: |
           cd client
           pnpm exec playwright install --with-deps
 
+      # Build applications
       - name: Build server
         run: |
           cd server
@@ -63,15 +74,16 @@ jobs:
           cd client
           pnpm build
 
+      # Run tests
       - name: Run Playwright tests
         run: |
           cd client
           pnpm exec playwright test
         env:
-          # Add any environment variables needed for tests
           CI: true
           NODE_ENV: test
 
+      # Upload artifacts
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
