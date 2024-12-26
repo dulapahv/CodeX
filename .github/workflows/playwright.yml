@@ -22,44 +22,41 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: 'pnpm'
+          cache-dependency-path: |
+            client/pnpm-lock.yaml
+            server/pnpm-lock.yaml
 
-      - name: Install dependencies (Server)
-        run: |
-          cd server
-          pnpm install
+      - name: Install server dependencies
+        working-directory: ./server
+        run: pnpm install --frozen-lockfile
 
-      - name: Install dependencies (Client)
-        run: |
-          cd client
-          pnpm install
+      - name: Install client dependencies
+        working-directory: ./client
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
-        run: |
-          cd client
-          pnpm exec playwright install --with-deps
+        working-directory: ./client
+        run: pnpm exec playwright install --with-deps
 
-      - name: Build server
+      - name: Start server
+        working-directory: ./server
         run: |
-          cd server
           pnpm build
+          pnpm start &
+          sleep 5
 
-      - name: Build client
+      - name: Build and test client
+        working-directory: ./client
         run: |
-          cd client
           pnpm build
-
-      - name: Run Playwright tests
-        run: |
-          cd client
           pnpm exec playwright test
-        env:
-          CI: true
-          NODE_ENV: test
 
       - name: Upload test results
         if: always()
