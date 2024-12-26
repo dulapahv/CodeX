@@ -13,7 +13,6 @@ jobs:
       NEXT_PUBLIC_API_URL: http://localhost:3001
       NEXT_PUBLIC_SOCKET_URL: http://localhost:3001
       NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NODE_ENV: production
       CI: true
 
     steps:
@@ -72,13 +71,13 @@ jobs:
         working-directory: ./server
         run: |
           echo "Installing server dependencies..."
-          pnpm install --no-frozen-lockfile
-          pnpm add -D @types/node ts-node
+          # Install all dependencies including devDependencies
+          NODE_ENV=development pnpm install
           echo "Building server..."
           echo "Current directory contents:"
           ls -la
           echo "TypeScript version:"
-          ./node_modules/.bin/tsc --version
+          pnpm tsc --version
           echo "Running build..."
           pnpm build
           echo "Build complete. Dist contents:"
@@ -86,18 +85,20 @@ jobs:
 
       - name: Install client dependencies
         working-directory: ./client
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          echo "Installing client dependencies..."
+          NODE_ENV=development pnpm install
 
       - name: Start server
         working-directory: ./server
         run: |
-          pnpm start &
+          NODE_ENV=production pnpm start &
           echo "Waiting for server to start..."
           sleep 10
 
       - name: Build client
         working-directory: ./client
-        run: pnpm build
+        run: NODE_ENV=production pnpm build
 
       - name: Install Playwright browsers
         working-directory: ./client
