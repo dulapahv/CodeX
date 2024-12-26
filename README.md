@@ -127,16 +127,19 @@ pnpm build
   - [TypeScript](https://www.typescriptlang.org)
   - [Tailwind CSS](https://tailwindcss.com)
   - [shadcn/ui](https://ui.shadcn.com/)
-  - [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+  - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
   - [Socket.IO Client](https://socket.io)
-  - [Sandpack](https://sandpack.codesandbox.io/)
-  - [MDXEditor](https://mdxeditor.dev/)
-  - [simple-peer (WebRTC)](https://github.com/feross/simple-peer)
+  - [Sandpack](https://sandpack.codesandbox.io/) (live code preview)
+  - [MDXEditor](https://mdxeditor.dev/) (rich text editor)
+  - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
   - [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev/)
 - **Backend:**
   - [Node.js](https://nodejs.org)
   - [TypeScript](https://www.typescriptlang.org)
   - [Socket.IO](https://socket.io) (binded to [µWebSockets.js](https://github.com/uNetworking/uWebSockets.js) server)
+- **External Services:**
+  - [Piston API](https://github.com/engineer-man/piston) (code execution)
+  - [GitHub API](https://docs.github.com/en/rest) (repository management)
 
 ## Coding Style
 
