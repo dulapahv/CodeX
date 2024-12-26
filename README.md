@@ -145,11 +145,11 @@ pnpm build
 
 We use several tools to maintain code quality:
 
-- **[ESLint](https://eslint.org/)** for static code analysis (frontend only)
-- **[Prettier](https://prettier.io/)** for code formatting
-- **[prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss)** for Tailwind CSS class sorting
-- **[prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports)** for import statement organization
-- **[prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames)** for wrapping long Tailwind CSS class names
+- [ESLint](https://eslint.org/) for static code analysis (frontend only)
+- [Prettier](https://prettier.io/) for code formatting
+- [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) for Tailwind CSS class sorting
+- [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) for import statement organization
+- [prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames) for wrapping long Tailwind CSS class names
 
 Check and fix code style:
 
@@ -179,7 +179,7 @@ For detailed information about using Kasca, including:
 - Keyboard shortcuts
 - Troubleshooting
 
-Please refer to our [User Manual](manual.md).
+Please refer to our **[User Manual](manual.md)**.
 
 ## License
 
