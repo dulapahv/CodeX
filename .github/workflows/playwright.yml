@@ -1,0 +1,89 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path | tr -d '\n')" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies (Server)
+        run: |
+          cd server
+          pnpm install
+
+      - name: Install dependencies (Client)
+        run: |
+          cd client
+          pnpm install
+
+      - name: Install Playwright Browsers
+        run: |
+          cd client
+          pnpm exec playwright install --with-deps
+
+      - name: Build server
+        run: |
+          cd server
+          pnpm build
+
+      - name: Build client
+        run: |
+          cd client
+          pnpm build
+
+      - name: Run Playwright tests
+        run: |
+          cd client
+          pnpm exec playwright test
+        env:
+          # Add any environment variables needed for tests
+          CI: true
+          NODE_ENV: test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: client/playwright-report/
+          retention-days: 30
+
+      - name: Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots
+          path: client/test-results/
+          retention-days: 30
