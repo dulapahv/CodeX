@@ -138,8 +138,8 @@ pnpm build
   - [TypeScript](https://www.typescriptlang.org)
   - [Socket.IO](https://socket.io) (binded to [µWebSockets.js](https://github.com/uNetworking/uWebSockets.js) server)
 - **External Services:**
-  - [Piston API](https://github.com/engineer-man/piston) (code execution)
-  - [GitHub API](https://docs.github.com/en/rest) (repository management)
+  - [Piston](https://github.com/engineer-man/piston) (code execution)
+  - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
 
 ## Coding Style
 
