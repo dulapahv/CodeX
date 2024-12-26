@@ -1,8 +1,20 @@
 # Kasca - Code Collaboration Platform
 
 <div align="center">
-  <img src="client/public/images/kasca.png?raw=true" width="600" alt="kasca cover image"/>
+  <a href="https://kasca.dulapahv.dev/">
+    <img src="client/public/images/kasca.png?raw=true" width="600" alt="kasca cover image"/>
+  </a>
 </div>
+
+<br />
+
+<div align="center">
+  <a href="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml"><img src="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml/badge.svg"></a>
+  <a href="https://github.com/dulapahv/Kasca/issues"><img src="https://img.shields.io/github/issues/dulapahv/Kasca.svg?style=flat" /></a>
+  <a href="https://codeclimate.com/github/dulapahv/Kasca/maintainability"><img src="https://api.codeclimate.com/v1/badges/61eccf756cc4c1b09acc/maintainability" /></a>
+</div>
+
+<br />
 
 **Kasca is an online code collaboration platform that enables real-time coding, cursor sharing, live UI preview, and video communication with integrated Git support—no sign-up required.**
 
