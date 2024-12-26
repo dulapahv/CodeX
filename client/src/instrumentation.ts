@@ -1,13 +1,18 @@
 import * as Sentry from '@sentry/nextjs';
 
-export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('../sentry.server.config');
-  }
+const isCi = process.env.CI === 'true';
 
-  if (process.env.NEXT_RUNTIME === 'edge') {
-    await import('../sentry.edge.config');
+export async function register() {
+  if (!isCi) {
+    if (process.env.NEXT_RUNTIME === 'nodejs') {
+      await import('../sentry.server.config');
+    }
+
+    if (process.env.NEXT_RUNTIME === 'edge') {
+      await import('../sentry.edge.config');
+    }
   }
 }
 
-export const onRequestError = Sentry.captureRequestError;
+// Only capture errors when not in CI
+export const onRequestError = isCi ? undefined : Sentry.captureRequestError;
