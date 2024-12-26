@@ -166,3 +166,7 @@
     visibility: hidden;
   }
 }
+
+.mdxeditor-diff-source-wrapper > div._markdownParseError_uazmk_1211 {
+  @apply !h-fit;
+}
