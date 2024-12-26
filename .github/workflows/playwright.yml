@@ -68,21 +68,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install server dependencies
+      - name: Install and build server
         working-directory: ./server
         run: |
+          echo "Installing server dependencies..."
           pnpm install --no-frozen-lockfile
-          pnpm add -D ts-node @types/node
+          pnpm add -D @types/node ts-node
+          echo "Building server..."
+          echo "Current directory contents:"
+          ls -la
+          echo "TypeScript version:"
+          ./node_modules/.bin/tsc --version
+          echo "Running build..."
+          pnpm build
+          echo "Build complete. Dist contents:"
+          ls -la dist/
 
       - name: Install client dependencies
         working-directory: ./client
         run: pnpm install --no-frozen-lockfile
-
-      - name: Build server
-        working-directory: ./server
-        run: |
-          pnpm build
-          ls -la dist/
 
       - name: Start server
         working-directory: ./server
