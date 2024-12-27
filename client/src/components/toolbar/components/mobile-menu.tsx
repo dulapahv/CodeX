@@ -149,7 +149,7 @@ const MobileMenu = ({
                 onCheckedChange={actions.minimap}
                 checked={miniMap}
               >
-                Minimap
+                Editor Minimap
               </MenubarCheckboxItem>
               <MenubarCheckboxItem
                 onCheckedChange={actions.toggleNotepadPanel}
