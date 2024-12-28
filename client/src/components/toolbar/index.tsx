@@ -265,7 +265,7 @@ const Toolbar = ({
         callback={() => openFromGithubDialogRef.current?.openDialog()}
       />
       <SaveToGithubDialog ref={saveToGithubDialogRef} editor={editor} />
-      <SettingsSheet ref={settingsSheetRef} monaco={monaco} editor={editor} />
+      <SettingsSheet ref={settingsSheetRef} monaco={monaco} />
       <LeaveDialog ref={leaveDialogRef} />
       <AboutDialog ref={aboutDialogRef} />
     </>

@@ -36,11 +36,10 @@ import {
 } from '@/components/ui/tooltip';
 
 interface LeaveButtonProps {
-  readonly roomId: string;
   readonly className?: string;
 }
 
-const LeaveButton = ({ roomId, className }: LeaveButtonProps) => {
+const LeaveButton = ({ className }: LeaveButtonProps) => {
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
 
   const handleButtonClick = () => {

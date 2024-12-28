@@ -62,7 +62,6 @@ interface TreeProps extends HTMLAttributes<HTMLDivElement> {
   data: TreeDataItem[] | TreeDataItem;
   initialSelectedItemId?: string;
   onSelectChange?: (item: TreeDataItem) => void;
-  expandAll?: boolean;
 }
 
 const Tree = forwardRef<HTMLDivElement, TreeProps>(
@@ -71,7 +70,6 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
       data,
       initialSelectedItemId,
       onSelectChange,
-      expandAll,
       className,
       ...props
     },
@@ -163,7 +161,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                   <AccordionPrimitive.Root
                     type="multiple"
                     defaultValue={expandedIds}
-                    onValueChange={(value) => {
+                    onValueChange={() => {
                       onExpand(item.id);
                     }}
                   >

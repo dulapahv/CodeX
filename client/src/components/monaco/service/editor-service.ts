@@ -36,6 +36,7 @@ import type { StatusBarCursorPosition } from '@/components/status-bar';
  */
 export const handleBeforeMount = (monaco: Monaco): void => {
   Object.entries(themeList).forEach(([key, value]) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const themeData = require(`monaco-themes/themes/${value}.json`);
     monaco.editor.defineTheme(key, themeData);
   });

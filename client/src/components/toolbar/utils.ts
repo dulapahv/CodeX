@@ -9,6 +9,7 @@ import { parseError } from '@/lib/utils';
  * @returns The current operating system
  */
 export const getOS = (): string => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userAgent = navigator.userAgent || (window as any).opera;
 
   if (/windows phone/i.test(userAgent)) {

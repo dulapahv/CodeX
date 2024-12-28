@@ -74,7 +74,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const peersRef = useRef<Record<string, Peer.Instance>>({});
-  const pendingSignalsRef = useRef<Record<string, any[]>>({});
+  const pendingSignalsRef = useRef<Record<string, unknown[]>>({});
 
   // Request permissions on mount
   useEffect(() => {
@@ -210,7 +210,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
     socket.on(
       StreamServiceMsg.SIGNAL,
-      ({ userID, signal }: { userID: string; signal: any }) => {
+      ({ userID, signal }: { userID: string; signal: unknown }) => {
         if (hasRequestedPermissions) {
           handleSignal(
             signal,
@@ -450,6 +450,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             setSelectedAudioOutput(deviceId);
             if (videoRef.current && 'setSinkId' in videoRef.current) {
               try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 await (videoRef.current as any).setSinkId(deviceId);
               } catch (error) {
                 toast.error(`Error setting audio output: ${parseError(error)}`);

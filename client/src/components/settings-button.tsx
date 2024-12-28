@@ -29,7 +29,6 @@
 import { useRef } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { Settings } from 'lucide-react';
-import type * as monaco from 'monaco-editor';
 
 import {
   SettingsSheet,
@@ -44,10 +43,9 @@ import {
 
 interface SettingsButtonProps {
   monaco: Monaco;
-  editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
-const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
+const SettingsButton = ({ monaco }: SettingsButtonProps) => {
   const settingsSheetRef = useRef<SettingsSheetRef>(null);
 
   const handleButtonClick = () => {
@@ -77,7 +75,6 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
       <SettingsSheet
         ref={settingsSheetRef}
         monaco={monaco}
-        editor={editor}
         aria-label="Editor Settings"
       />
     </>

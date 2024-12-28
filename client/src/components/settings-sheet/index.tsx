@@ -8,7 +8,6 @@ import {
 } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
-import type * as monaco from 'monaco-editor';
 
 import { loginWithGithub } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,11 +30,10 @@ interface SettingsSheetRef {
 
 interface SettingsSheetProps {
   monaco: Monaco | null;
-  editor: monaco.editor.IStandaloneCodeEditor | null;
 }
 
 const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
-  ({ monaco, editor }, ref) => {
+  ({ monaco }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [githubUser, setGithubUser] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);

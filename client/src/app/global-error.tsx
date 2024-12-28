@@ -25,7 +25,7 @@ export default function GlobalError({
 
   const generateErrorReport = () => {
     const timestamp = new Date().toISOString();
-    let errorMessage = `Error Details:
+    const errorMessage = `Error Details:
 Time: ${timestamp}
 Digest: ${error.digest || 'No digest available'}
 URL: ${window.location.href}`;

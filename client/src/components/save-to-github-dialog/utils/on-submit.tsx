@@ -15,7 +15,7 @@ export const onSubmit = (
   content: string,
   closeDialog: () => void,
 ) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const createPromise = commitChanges(
       data,
       selectedItem,

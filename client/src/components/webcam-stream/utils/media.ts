@@ -20,7 +20,7 @@ export const getMedia = async (
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: RefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
 ) => {
   try {
     // Stop any existing tracks
@@ -115,7 +115,7 @@ const handleStreamSuccess = (
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: RefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
 ) => {
   // Store the stream
   streamRef.current = stream;
@@ -124,6 +124,7 @@ const handleStreamSuccess = (
     // Set audio output if supported
     if ('setSinkId' in videoRef.current && selectedAudioOutput) {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (videoRef.current as any).setSinkId(selectedAudioOutput);
       } catch (error) {
         console.warn('Error setting audio output device:', error);

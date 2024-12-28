@@ -28,7 +28,7 @@ import { formatRoomId } from '@/lib/utils';
 import type { JoinRoomForm } from './types';
 
 export const createRoom = (name: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const socket = getSocket();
     socket.emit(RoomServiceMsg.CREATE, name);
     socket.on(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {

@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import {
   formatExecutionTime,
   formatTimestamp,
-  getHash,
   getMessageColor,
 } from '../utils';
 

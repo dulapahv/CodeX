@@ -67,18 +67,6 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const [open, setOpen] = useState(false);
   const [editorTheme, setEditorTheme] = useState('vs-dark'); // Set default theme
 
-  // Load theme from localStorage on component mount
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('editorTheme');
-    if (savedTheme) {
-      setEditorTheme(savedTheme);
-    }
-    // Apply default theme if no saved theme exists
-    else {
-      handleThemeChange('vs-dark', DEFAULT_THEMES['vs-dark'].name);
-    }
-  }, []);
-
   const handleThemeChange = useCallback(
     (key: string, value: string) => {
       setEditorTheme(key); // Always set the new theme
@@ -90,6 +78,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
         setTheme(key === 'vs-dark' ? 'dark' : 'light');
         setCSSVariables(themeConfig.variables);
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const themeData = require(`monaco-themes/themes/${value}.json`);
         setTheme(themeData.base === 'vs-dark' ? 'dark' : 'light');
 
@@ -125,6 +114,18 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
     },
     [monaco, setTheme],
   );
+
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('editorTheme');
+    if (savedTheme) {
+      setEditorTheme(savedTheme);
+    }
+    // Apply default theme if no saved theme exists
+    else {
+      handleThemeChange('vs-dark', DEFAULT_THEMES['vs-dark'].name);
+    }
+  }, [handleThemeChange]);
 
   if (!monaco) return null;
 

@@ -9,7 +9,7 @@ import { getSocket } from '@/lib/socket';
 import { storage } from './services/storage';
 
 export const leaveRoom = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  return new Promise(() => {
     const socket = getSocket();
 
     socket.emit(RoomServiceMsg.LEAVE);

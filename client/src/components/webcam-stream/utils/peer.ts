@@ -16,6 +16,7 @@ export const createPeer = (
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pendingSignalsRef: RefObject<Record<string, any[]>>,
 ) => {
   const socket = getSocket();
@@ -75,6 +76,7 @@ export const createPeer = (
 
 // Handle incoming signals
 export const handleSignal = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   signal: any,
   userID: string,
   streamRef: RefObject<MediaStream | null>,
@@ -82,7 +84,7 @@ export const handleSignal = (
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
-  pendingSignalsRef: RefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
 ) => {
   try {
     let peer = peersRef.current[userID];
@@ -127,7 +129,9 @@ export const cleanupPeer = (
       try {
         peer.destroy();
       } catch (error) {
-        console.warn(`Error destroying peer connection for ${userID}`);
+        console.warn(
+          `Error destroying peer connection for ${userID}.\n${error}`,
+        );
       }
     }
     delete peersRef.current[userID];
