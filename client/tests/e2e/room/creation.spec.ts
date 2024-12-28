@@ -1,6 +1,10 @@
+/**
+ * Room creation and joining tests
+ */
+
 import { expect, test } from '@playwright/test';
 
-import { createRoom } from '../../utils/setup';
+import { createRoom } from '@/tests/utils/setup';
 
 test.describe('Room Creation', () => {
   test('should create a new room', async ({ page }) => {

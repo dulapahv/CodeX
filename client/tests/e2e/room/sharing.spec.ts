@@ -1,6 +1,10 @@
+/**
+ * Room sharing and invitation tests
+ */
+
 import { expect, test } from '@playwright/test';
 
-import { createRoom, joinRoom } from '../../utils/setup';
+import { createRoom, joinRoom } from '@/tests/utils/setup';
 
 test.describe('Room Sharing', () => {
   test('should handle room sharing functionality', async ({ page }) => {
