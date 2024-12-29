@@ -414,7 +414,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               <ArrowUpFromLine className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Export settings</TooltipContent>
+          <TooltipContent className="mr-1">Export settings</TooltipContent>
         </Tooltip>
         <input
           ref={fileInputRef}

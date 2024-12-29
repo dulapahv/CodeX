@@ -32,7 +32,7 @@ const AboutPopover = () => (
         <p>About code execution</p>
       </TooltipContent>
     </Tooltip>
-    <PopoverContent className="w-80" sideOffset={8}>
+    <PopoverContent className="w-[340px]" sideOffset={8}>
       <div className="space-y-4">
         <div className="space-y-2">
           <h4 className="font-medium">Code Execution</h4>
@@ -45,7 +45,7 @@ const AboutPopover = () => (
               You can cancel execution at any time by clicking the stop button.
             </p>
             <p>
-              For a list of supported programming languages, visit the{' '}
+              For a list of supported programming languages, refer to the{' '}
               <a
                 href="https://github.com/engineer-man/piston#Supported-Languages"
                 target="_blank"

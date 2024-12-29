@@ -118,7 +118,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
             <SheetDescription>
-              Configure your editor and connection settings here.
+              Configure your editor and GitHub connection.
             </SheetDescription>
           </SheetHeader>
           <div
