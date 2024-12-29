@@ -9,8 +9,10 @@ import {
 import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
+import type * as monaco from 'monaco-editor';
 
 import { cn, loginWithGithub } from '@/lib/utils';
+import { EditorConfig } from '@/components/editor-config';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -36,11 +38,12 @@ interface SettingsSheetRef {
 }
 
 interface SettingsSheetProps {
-  monaco: Monaco | null;
+  monaco: Monaco;
+  editor: monaco.editor.IStandaloneCodeEditor;
 }
 
 const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
-  ({ monaco }, ref) => {
+  ({ monaco, editor }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [githubUser, setGithubUser] = useState<GithubUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -110,6 +113,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           role="dialog"
           aria-label="Editor Settings"
           aria-modal="true"
+          className="w-[calc(100%-10%)] overflow-y-auto sm:min-w-[540px]"
         >
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
@@ -176,7 +180,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                     {!imageLoaded ? (
                       <Skeleton className="h-4 w-24" />
                     ) : (
-                      <span className="max-w-[150px] truncate font-medium">
+                      <span className="max-w-[100px] truncate font-medium sm:max-w-[300px]">
                         {githubUser.username}
                       </span>
                     )}
@@ -213,16 +217,34 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
             <Separator />
             <div>
               <Label className="text-base" id="editor-section">
-                Editor
+                Editor Settings
               </Label>
               <div className="text-sm text-muted-foreground">
-                Customize the appearance of the editor and its features.
+                Customize the appearance of the editor and other settings. For
+                more information on editor settings, refer to the{' '}
+                <a
+                  href="https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
+                >
+                  Monaco Editor documentation
+                </a>
+                .
               </div>
             </div>
             <EditorThemeSettings
               monaco={monaco}
               aria-labelledby="editor-section"
             />
+            <div className="top-16 space-y-2">
+              <Label className="font-normal">Settings</Label>
+              <EditorConfig
+                monaco={monaco}
+                editor={editor}
+                aria-labelledby="editor-section"
+              />
+            </div>
           </div>
         </SheetContent>
       </Sheet>

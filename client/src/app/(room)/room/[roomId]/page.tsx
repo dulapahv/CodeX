@@ -100,7 +100,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
           <UserList users={users} />
           <ShareButton roomId={roomId} />
           <FollowUser users={users} />
-          <SettingsButton monaco={monaco} />
+          <SettingsButton monaco={monaco} editor={editor} />
           <LeaveButton />
         </div>
       </nav>

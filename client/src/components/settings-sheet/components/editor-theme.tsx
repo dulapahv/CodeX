@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/popover';
 
 interface EditorThemeSettingsProps {
-  monaco: Monaco | null;
+  monaco: Monaco;
 }
 
 const setCSSVariables = (variables: Record<string, string>) => {
@@ -126,8 +126,6 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
       handleThemeChange('vs-dark', DEFAULT_THEMES['vs-dark'].name);
     }
   }, [handleThemeChange]);
-
-  if (!monaco) return null;
 
   // Combine default and custom themes with explicit typing
   const themes = Object.entries({
