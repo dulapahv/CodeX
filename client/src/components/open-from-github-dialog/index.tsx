@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
@@ -182,14 +183,21 @@ const OpenFromGithubDialog = forwardRef<
             className="text-center text-sm text-muted-foreground"
             id="login-prompt"
           >
-            Please log in with GitHub to open your code.
+            Please connect to GitHub to open files from your repositories.
           </p>
           <Button
             onClick={loginWithGithub}
             variant="outline"
             aria-describedby="login-prompt"
           >
-            Login with GitHub
+            <Image
+              src="/images/github.svg"
+              alt="GitHub logo"
+              className="mr-2"
+              width={16}
+              height={16}
+            />
+            Connect to GitHub
           </Button>
         </>
       ) : null}

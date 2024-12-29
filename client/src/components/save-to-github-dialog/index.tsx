@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import Image from 'next/image';
 import { LoaderCircle, Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
@@ -148,14 +149,21 @@ const SaveToGithubDialog = forwardRef<
             className="text-center text-sm text-muted-foreground"
             id="login-prompt"
           >
-            Please log in with GitHub to save your code.
+            Please connect to GitHub to save your work to a repository.
           </p>
           <Button
             onClick={loginWithGithub}
             variant="outline"
             aria-describedby="login-prompt"
           >
-            Login with GitHub
+            <Image
+              src="/images/github.svg"
+              alt="GitHub logo"
+              className="mr-2"
+              width={16}
+              height={16}
+            />
+            Connect to GitHub
           </Button>
         </>
       ) : null}
