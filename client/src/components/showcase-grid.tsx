@@ -73,6 +73,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
         src={image.src}
         alt={image.alt}
         fill
+        priority
         sizes="(min-width: 1189px) 33vw, (min-width: 560px) 50vw, 100vw"
         className="rounded-t-lg object-cover transition-transform duration-300"
       />
