@@ -23,11 +23,11 @@ import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
 import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
-import { MarkdownEditor } from '@/components/markdown-editor';
+import { LivePreview } from '@/components/live-preview';
 import { MonacoEditor } from '@/components/monaco';
+import { Notepad } from '@/components/notepad';
 import { RemotePointers } from '@/components/remote-pointers';
 import { RunButton } from '@/components/run-button';
-import { Sandpack } from '@/components/sandpack';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
 import {
@@ -51,28 +51,28 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   roomId,
   users,
   setOutput,
-  showMarkdown,
+  showNotepad,
   showTerminal,
   showWebcam,
-  showSandpack,
-  setShowMarkdown,
+  showLivePreview,
+  setShowNotepad,
   setShowTerminal,
   setShowWebcam,
-  setShowSandpack,
+  setShowLivePreview,
 }: {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
   roomId: string;
   users: User[];
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
-  showMarkdown: boolean;
+  showNotepad: boolean;
   showTerminal: boolean;
   showWebcam: boolean;
-  showSandpack: boolean;
-  setShowMarkdown: Dispatch<SetStateAction<boolean>>;
+  showLivePreview: boolean;
+  setShowNotepad: Dispatch<SetStateAction<boolean>>;
   setShowTerminal: Dispatch<SetStateAction<boolean>>;
   setShowWebcam: Dispatch<SetStateAction<boolean>>;
-  setShowSandpack: Dispatch<SetStateAction<boolean>>;
+  setShowLivePreview: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="flex items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
@@ -84,14 +84,14 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
         <Toolbar
           monaco={monaco}
           editor={editor}
-          setShowMarkdown={setShowMarkdown}
+          setShowNotepad={setShowNotepad}
           setShowTerminal={setShowTerminal}
           setShowWebcam={setShowWebcam}
-          setShowSandpack={setShowSandpack}
-          showMarkdown={showMarkdown}
+          setShowLivePreview={setShowLivePreview}
+          showNotepad={showNotepad}
           showTerminal={showTerminal}
           showWebcam={showWebcam}
-          showSandpack={showSandpack}
+          showLivePreview={showLivePreview}
         />
       </div>
       <RunButton monaco={monaco} editor={editor} setOutput={setOutput} />
@@ -108,12 +108,12 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   );
 });
 
-const MemoizedMarkdownEditor = memo(function MemoizedMarkdownEditor({
+const MemoizedNotepad = memo(function MemoizedNotepad({
   markdown,
 }: {
   markdown: string;
 }) {
-  return <MarkdownEditor markdown={markdown} />;
+  return <Notepad markdown={markdown} />;
 });
 
 const MemoizedTerminal = memo(function MemoizedTerminal({
@@ -134,12 +134,12 @@ const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
   return <WebcamStream users={users} />;
 });
 
-const MemoizedSandpack = memo(function MemoizedSandpack({
+const MemoizedLivePreview = memo(function MemoizedLivePreview({
   value,
 }: {
   value: string;
 }) {
-  return <Sandpack value={value} />;
+  return <LivePreview value={value} />;
 });
 
 const MemoizedStatusBar = memo(function MemoizedStatusBar({
@@ -171,10 +171,10 @@ export default function Room(props: {
   const router = useRouter();
   const socket = getSocket();
 
-  const [showMarkdown, setShowMarkdown] = useState(true);
+  const [showNotepad, setShowNotepad] = useState(true);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showWebcam, setShowWebcam] = useState(true);
-  const [showSandpack, setShowSandpack] = useState(true);
+  const [showLivePreview, setShowLivePreview] = useState(true);
   const [code, setCode] = useState<string | null>(null);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
@@ -277,14 +277,14 @@ export default function Room(props: {
             roomId={roomId || ''}
             setOutput={setOutput}
             users={users}
-            setShowMarkdown={setShowMarkdown}
+            setShowNotepad={setShowNotepad}
             setShowTerminal={setShowTerminal}
             setShowWebcam={setShowWebcam}
-            setShowSandpack={setShowSandpack}
-            showMarkdown={showMarkdown}
+            setShowLivePreview={setShowLivePreview}
+            showNotepad={showNotepad}
             showTerminal={showTerminal}
             showWebcam={showWebcam}
-            showSandpack={showSandpack}
+            showLivePreview={showLivePreview}
           />
         )}
       </div>
@@ -295,7 +295,7 @@ export default function Room(props: {
               'h-[calc(100%-24px)] animate-fade-in-left [&>div]:h-full',
               monaco && editor && 'border-t border-muted-foreground',
               (!monaco || !editor) && 'hidden',
-              !showMarkdown && 'hidden',
+              !showNotepad && 'hidden',
             )}
             role="region"
             aria-label="Notepad"
@@ -303,13 +303,13 @@ export default function Room(props: {
             minSize={10}
             defaultSize={20}
           >
-            <MemoizedMarkdownEditor markdown={mdContent} />
+            <MemoizedNotepad markdown={mdContent} />
           </ResizablePanel>
           <ResizableHandle
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
-              !showMarkdown && 'hidden',
+              !showNotepad && 'hidden',
             )}
           />
 
@@ -344,7 +344,7 @@ export default function Room(props: {
                     className={cn(
                       'bg-muted-foreground',
                       (!monaco || !editor) && 'hidden',
-                      !showSandpack && 'hidden',
+                      !showLivePreview && 'hidden',
                     )}
                   />
                   <ResizablePanel
@@ -354,10 +354,12 @@ export default function Room(props: {
                     className={cn(
                       'animate-fade-in-right',
                       (!monaco || !editor) && 'hidden',
-                      !showSandpack && 'hidden',
+                      !showLivePreview && 'hidden',
                     )}
                   >
-                    {editor && <MemoizedSandpack value={code || defaultCode} />}
+                    {editor && (
+                      <MemoizedLivePreview value={code || defaultCode} />
+                    )}
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </ResizablePanel>

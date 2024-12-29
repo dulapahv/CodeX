@@ -16,10 +16,10 @@ const DynamicMarkdownMain = dynamic(
   },
 );
 
-const MarkdownEditor = ({ markdown }: { markdown: string }) => (
+const Notepad = ({ markdown }: { markdown: string }) => (
   <Suspense fallback={null}>
     <DynamicMarkdownMain markdown={markdown} />
   </Suspense>
 );
 
-export { MarkdownEditor };
+export { Notepad };

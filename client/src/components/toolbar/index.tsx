@@ -44,27 +44,27 @@ import { getOS, openLocal, saveLocal } from './utils';
 interface ToolbarProps {
   monaco: Monaco | null;
   editor: monaco.editor.IStandaloneCodeEditor | null;
-  setShowMarkdown: Dispatch<SetStateAction<boolean>>;
+  setShowNotepad: Dispatch<SetStateAction<boolean>>;
   setShowTerminal: Dispatch<SetStateAction<boolean>>;
   setShowWebcam: Dispatch<SetStateAction<boolean>>;
-  setShowSandpack: Dispatch<SetStateAction<boolean>>;
-  showMarkdown: boolean;
+  setShowLivePreview: Dispatch<SetStateAction<boolean>>;
+  showNotepad: boolean;
   showTerminal: boolean;
   showWebcam: boolean;
-  showSandpack: boolean;
+  showLivePreview: boolean;
 }
 
 const Toolbar = ({
   monaco,
   editor,
-  setShowMarkdown,
+  setShowNotepad,
   setShowTerminal,
   setShowWebcam,
-  setShowSandpack,
-  showMarkdown,
+  setShowLivePreview,
+  showNotepad,
   showTerminal,
   showWebcam,
-  showSandpack,
+  showLivePreview,
 }: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -217,10 +217,10 @@ const Toolbar = ({
       editor.updateOptions({ minimap: { enabled: !miniMap } });
       setMiniMap(!miniMap);
     },
-    toggleNotepadPanel: () => setShowMarkdown((show) => !show),
+    toggleNotepadPanel: () => setShowNotepad((show) => !show),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
     toggleWebcamPanel: () => setShowWebcam((show) => !show),
-    toggleSandpackPanel: () => setShowSandpack((show) => !show),
+    toggleSandpackPanel: () => setShowLivePreview((show) => !show),
     manual: () => {
       window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
@@ -235,20 +235,20 @@ const Toolbar = ({
           actions={toolbarActions}
           miniMap={miniMap}
           wordWrap={wordWrap}
-          markdown={showMarkdown}
+          notepad={showNotepad}
           terminal={showTerminal}
           webcam={showWebcam}
-          sandpack={showSandpack}
+          livePreview={showLivePreview}
         />
       ) : (
         <MobileMenu
           actions={toolbarActions}
           miniMap={miniMap}
           wordWrap={wordWrap}
-          markdown={showMarkdown}
+          notepad={showNotepad}
           terminal={showTerminal}
           webcam={showWebcam}
-          sandpack={showSandpack}
+          livePreview={showLivePreview}
         />
       )}
       <OpenFromGithubDialog

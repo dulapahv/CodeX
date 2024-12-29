@@ -18,10 +18,10 @@ interface DesktopMenuProps {
   actions: ToolbarActions;
   miniMap: boolean;
   wordWrap: boolean;
-  markdown: boolean;
+  notepad: boolean;
   terminal: boolean;
   webcam: boolean;
-  sandpack: boolean;
+  livePreview: boolean;
 }
 
 const DesktopMenu = ({
@@ -29,10 +29,10 @@ const DesktopMenu = ({
   actions,
   miniMap,
   wordWrap,
-  markdown,
+  notepad,
   terminal,
   webcam,
-  sandpack,
+  livePreview,
 }: DesktopMenuProps) => {
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -168,7 +168,7 @@ const DesktopMenu = ({
           </MenubarCheckboxItem>
           <MenubarCheckboxItem
             onCheckedChange={actions.toggleNotepadPanel}
-            checked={markdown}
+            checked={notepad}
           >
             Notepad
           </MenubarCheckboxItem>
@@ -186,7 +186,7 @@ const DesktopMenu = ({
           </MenubarCheckboxItem>
           <MenubarCheckboxItem
             onCheckedChange={actions.toggleSandpackPanel}
-            checked={sandpack}
+            checked={livePreview}
           >
             Live Preview
           </MenubarCheckboxItem>

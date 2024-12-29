@@ -9,11 +9,11 @@ import { DISABLE_TAILWIND_CDN_WARN, SANDPACK_CDN } from '@/lib/constants';
 
 import { HelpPopover } from './components/help-popover';
 
-interface SandpackProps {
+interface LivePreviewProps {
   value: string;
 }
 
-const Sandpack = ({ value }: SandpackProps) => {
+const LivePreview = ({ value }: LivePreviewProps) => {
   const { resolvedTheme } = useTheme();
 
   return (
@@ -39,4 +39,4 @@ const Sandpack = ({ value }: SandpackProps) => {
   );
 };
 
-export { Sandpack };
+export { LivePreview };
