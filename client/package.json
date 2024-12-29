@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint:check": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint:fix": "eslint . --fix",
     "format:check": "prettier . --c",
     "format:fix": "prettier . --w",
     "test:e2e": "playwright test",
