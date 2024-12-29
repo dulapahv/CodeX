@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
 
@@ -23,6 +24,11 @@ import {
 
 import { EditorThemeSettings } from './components/editor-theme';
 
+interface GithubUser {
+  username: string;
+  avatarUrl: string;
+}
+
 interface SettingsSheetRef {
   openDialog: () => void;
   closeDialog: () => void;
@@ -35,7 +41,7 @@ interface SettingsSheetProps {
 const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
   ({ monaco }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [githubUser, setGithubUser] = useState<string | null>(null);
+    const [githubUser, setGithubUser] = useState<GithubUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
@@ -51,7 +57,14 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
         credentials: 'include',
       })
         .then((res) => (res.ok ? res.json() : null))
-        .then((data) => setGithubUser(data?.username ?? null))
+        .then((data) =>
+          data
+            ? setGithubUser({
+                username: data.username,
+                avatarUrl: data.avatarUrl,
+              })
+            : null,
+        )
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }, []);
@@ -64,7 +77,10 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           });
           if (response.ok) {
             const data = await response.json();
-            setGithubUser(data.username);
+            setGithubUser({
+              username: data.username,
+              avatarUrl: data.avatarUrl,
+            });
           }
           window.authWindow?.close();
         }
@@ -126,34 +142,56 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               </div>
             ) : githubUser ? (
               <div
-                className="flex items-center justify-between"
+                className="space-y-2"
                 role="status"
-                aria-label={`Connected to GitHub as ${githubUser}`}
+                aria-label={`Connected to GitHub as ${githubUser.username}`}
               >
-                <span className="text-sm text-muted-foreground">
-                  Connected as{' '}
-                  <span className="font-semibold">{githubUser}</span>
-                </span>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="flex items-center gap-2"
-                  aria-label="Disconnect from GitHub"
-                >
-                  <Unplug className="size-4" aria-hidden="true" />
-                  Disconnect
-                </Button>
+                <div className="text-sm text-muted-foreground">
+                  Connected to GitHub as:
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative size-8 overflow-hidden rounded-full">
+                      <Image
+                        src={githubUser.avatarUrl}
+                        alt={`${githubUser.username}'s GitHub profile`}
+                        fill
+                        sizes="32px"
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                    <span className="max-w-[150px] truncate font-semibold">
+                      {githubUser.username}
+                    </span>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="flex shrink-0 items-center gap-2"
+                    aria-label="Disconnect from GitHub"
+                  >
+                    <Unplug className="size-4" aria-hidden="true" />
+                    Disconnect
+                  </Button>
+                </div>
               </div>
             ) : (
               <Button
                 onClick={loginWithGithub}
                 variant="outline"
                 className="w-full"
-                size="sm"
                 aria-describedby="github-section"
               >
-                Login with GitHub
+                <Image
+                  src="/images/github.svg"
+                  alt="GitHub logo"
+                  className="mr-2"
+                  width={18}
+                  height={18}
+                />
+                Connect to GitHub
               </Button>
             )}
             <Separator />

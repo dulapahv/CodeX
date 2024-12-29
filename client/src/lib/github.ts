@@ -12,6 +12,7 @@ import {
 
 interface GithubUser {
   login: string;
+  avatar_url: string;
 }
 
 const ACCESS_TOKEN = 'access_token' as const;
@@ -53,7 +54,10 @@ export const verifyGithubAuth = async () => {
     if (!response.ok) return null;
 
     const userData: GithubUser = await response.json();
-    return userData.login;
+    return {
+      username: userData.login,
+      avatarUrl: userData.avatar_url,
+    };
   } catch {
     return null;
   }
@@ -63,9 +67,9 @@ export const verifyGithubAuth = async () => {
 export const githubAuthHandlers = {
   // Consolidated check/get endpoint
   async check() {
-    const username = await verifyGithubAuth();
-    return username
-      ? NextResponse.json({ username })
+    const userData = await verifyGithubAuth();
+    return userData
+      ? NextResponse.json(userData)
       : NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   },
 
