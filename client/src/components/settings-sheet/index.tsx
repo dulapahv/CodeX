@@ -10,7 +10,7 @@ import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { LoaderCircle, Unplug } from 'lucide-react';
 
-import { loginWithGithub } from '@/lib/utils';
+import { cn, loginWithGithub } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -21,6 +21,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { EditorThemeSettings } from './components/editor-theme';
 
@@ -43,6 +44,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [githubUser, setGithubUser] = useState<GithubUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -152,18 +154,32 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="relative size-8 overflow-hidden rounded-full">
+                      <Skeleton
+                        className="absolute size-full"
+                        aria-hidden={imageLoaded ? 'true' : 'false'}
+                        aria-label="Loading avatar"
+                      />
                       <Image
                         src={githubUser.avatarUrl}
                         alt={`${githubUser.username}'s GitHub profile`}
                         fill
                         sizes="32px"
-                        className="object-cover"
+                        className={cn(
+                          'object-cover transition-opacity',
+                          imageLoaded ? 'opacity-100' : 'opacity-0',
+                        )}
                         priority
+                        onLoad={() => setImageLoaded(true)}
+                        aria-hidden={!imageLoaded}
                       />
                     </div>
-                    <span className="max-w-[150px] truncate font-semibold">
-                      {githubUser.username}
-                    </span>
+                    {!imageLoaded ? (
+                      <Skeleton className="h-4 w-24" />
+                    ) : (
+                      <span className="max-w-[150px] truncate font-medium">
+                        {githubUser.username}
+                      </span>
+                    )}
                   </div>
                   <Button
                     variant="destructive"
@@ -195,9 +211,14 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               </Button>
             )}
             <Separator />
-            <Label className="text-base" id="editor-section">
-              Editor
-            </Label>
+            <div>
+              <Label className="text-base" id="editor-section">
+                Editor
+              </Label>
+              <div className="text-sm text-muted-foreground">
+                Customize the appearance of the editor and its features.
+              </div>
+            </div>
             <EditorThemeSettings
               monaco={monaco}
               aria-labelledby="editor-section"
