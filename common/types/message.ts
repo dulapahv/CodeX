@@ -32,3 +32,7 @@ export enum StreamServiceMsg {
   MIC_STATE = 'V',
   SPEAKER_STATE = 'W',
 }
+
+export enum PointerServiceMsg {
+  POINTER = 'X',
+}

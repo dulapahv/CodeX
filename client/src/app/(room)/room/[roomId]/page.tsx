@@ -25,6 +25,7 @@ import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
 import { MarkdownEditor } from '@/components/markdown-editor';
 import { MonacoEditor } from '@/components/monaco';
+import { RemotePointers } from '@/components/remote-pointers';
 import { RunButton } from '@/components/run-button';
 import { Sandpack } from '@/components/sandpack';
 import { SettingsButton } from '@/components/settings-button';
@@ -267,6 +268,7 @@ export default function Room(props: {
       className="flex h-full min-w-[500px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
+      <RemotePointers />
       <div className="h-9" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
           <MemoizedToolbar

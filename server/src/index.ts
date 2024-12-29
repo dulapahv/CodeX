@@ -4,14 +4,17 @@ import { App } from 'uWebSockets.js';
 
 import {
   CodeServiceMsg,
+  PointerServiceMsg,
   RoomServiceMsg,
   ScrollServiceMsg,
   StreamServiceMsg,
 } from '../../common/types/message';
 import type { Cursor, EditOp } from '../../common/types/operation';
+import type { Pointer } from '../../common/types/pointer';
 import type { Scroll } from '../../common/types/scroll';
 import type { ExecutionResult } from '../../common/types/terminal';
 import * as codeService from './service/code-service';
+import * as pointerService from './service/pointer-service';
 import * as roomService from './service/room-service';
 import * as scrollService from './service/scroll-service';
 import * as userService from './service/user-service';
@@ -133,6 +136,9 @@ io.on('connection', (socket) => {
   );
   socket.on(StreamServiceMsg.SPEAKER_STATE, (speakersOn: boolean) =>
     webRTCService.handleSpeakerState(socket, speakersOn),
+  );
+  socket.on(PointerServiceMsg.POINTER, (pointer: Pointer) =>
+    pointerService.updatePointer(socket, pointer),
   );
   socket.on('disconnecting', () => roomService.leave(socket, io));
 });
