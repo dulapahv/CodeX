@@ -55,8 +55,9 @@ export const createCursorStyle = (
     content: "${name.replace(/"/g, '\\"')}";
     background-color: ${bgColor};
     color: ${color};
+    font-family: var(--font-geist-sans);
     position: absolute;
-    font-weight: bold;
+    font-weight: 500;
     ${isFirstLine ? 'top: 19px;' : 'top: -19px;'}
     height: 19px;
     font-size: 12px;
