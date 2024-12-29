@@ -1,7 +1,6 @@
 /**
  * Creates CSS styles for a user's cursor in the collaborative editor.
  * Generates cursor highlight and nametag styles with fade-out animation.
- * Optimized with GPU acceleration and performance hints.
  *
  * @param userID - Unique identifier for the user's cursor
  * @param bgColor - Background color for cursor and nametag
@@ -40,9 +39,6 @@ export const createCursorStyle = (
   .cursor-${userID} {
     background-color: ${bgColor} !important;
     width: 2px !important;
-    will-change: transform, opacity;
-    transform: translateZ(0);
-    backface-visibility: hidden;
   }
   .cursor-${userID}::before {
     content: "";
@@ -52,9 +48,7 @@ export const createCursorStyle = (
     width: 6px;
     height: 6px;
     background-color: ${bgColor};
-    transform: translate3d(0, -100%, 0);
-    will-change: transform;
-    backface-visibility: hidden;
+    transform: translateY(-100%);
     z-index: 100;
   }
   .cursor-${userID}::after {
@@ -69,9 +63,6 @@ export const createCursorStyle = (
     padding: 0 4px;
     ${isFirstLine ? 'border-radius: 0px 3px 3px 3px;' : 'border-radius: 3px 3px 3px 0px;'}
     white-space: nowrap;
-    transform: translateZ(0);
-    will-change: transform, opacity;
-    backface-visibility: hidden;
     z-index: 100;
     ${
       !hasSelection
@@ -85,7 +76,4 @@ export const createCursorStyle = (
     background-color: ${bgColor};
     opacity: 0.4;
     min-width: 4px;
-    will-change: transform, opacity;
-    transform: translateZ(0);
-    backface-visibility: hidden;
   }`;
