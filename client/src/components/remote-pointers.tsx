@@ -126,7 +126,7 @@ const RemotePointers = () => {
 
               {/* Name tag */}
               <div
-                className="absolute left-4 top-4 flex h-5 max-w-[120px] items-center rounded px-1.5 shadow-sm"
+                className="absolute left-4 top-4 flex h-5 max-w-[120px] items-center rounded-[3px] px-1.5 shadow-sm"
                 style={{
                   backgroundColor,
                 }}
