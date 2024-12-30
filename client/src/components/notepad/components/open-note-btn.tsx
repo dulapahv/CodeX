@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';
-import { FileUp } from 'lucide-react';
+import { FileInput } from 'lucide-react';
 
 import { RoomServiceMsg } from '@common/types/message';
 
@@ -10,12 +10,12 @@ interface MarkdownEditorProps {
   markdownEditorRef: RefObject<MDXEditorMethods | null>;
 }
 
-const SaveMdBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
+const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
   const socket = getSocket();
 
   return (
     <ButtonWithTooltip
-      title="Open Markdown"
+      title="Open Note"
       onClick={() => {
         const input = document.createElement('input');
         input.type = 'file';
@@ -35,9 +35,9 @@ const SaveMdBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
       }}
       className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
     >
-      <FileUp className="size-5" />
+      <FileInput className="size-5" />
     </ButtonWithTooltip>
   );
 };
 
-export { SaveMdBtn };
+export { OpenNoteBtn };

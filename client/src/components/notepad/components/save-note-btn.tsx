@@ -6,9 +6,9 @@ interface MarkdownEditorProps {
   markdownEditorRef: RefObject<MDXEditorMethods | null>;
 }
 
-const OpenMdBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
+const SaveNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
   <ButtonWithTooltip
-    title="Save Markdown"
+    title="Save Note"
     onClick={() => {
       const markdown = markdownEditorRef.current?.getMarkdown() ?? '';
       const blob = new Blob([markdown], {
@@ -21,10 +21,10 @@ const OpenMdBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
       a.click();
       URL.revokeObjectURL(url);
     }}
-    className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
+    className="!ml-0 !flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
   >
     <Save className="size-5" />
   </ButtonWithTooltip>
 );
 
-export { OpenMdBtn };
+export { SaveNoteBtn };

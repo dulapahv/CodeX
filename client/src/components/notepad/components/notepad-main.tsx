@@ -41,8 +41,8 @@ import { RoomServiceMsg } from '@common/types/message';
 import { getSocket } from '@/lib/socket';
 import { cn } from '@/lib/utils';
 
-import { OpenMdBtn } from './open-md-btn';
-import { SaveMdBtn } from './save-md-btn';
+import { OpenNoteBtn } from './open-note-btn';
+import { SaveNoteBtn } from './save-note-btn';
 
 import '@mdxeditor/editor/style.css';
 
@@ -150,8 +150,8 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         toolbarPlugin({
           toolbarContents: () => (
             <DiffSourceToggleWrapper>
-              <SaveMdBtn markdownEditorRef={markdownEditorRef} />
-              <OpenMdBtn markdownEditorRef={markdownEditorRef} />
+              <OpenNoteBtn markdownEditorRef={markdownEditorRef} />
+              <SaveNoteBtn markdownEditorRef={markdownEditorRef} />
               <Separator />
               <UndoRedo />
               <Separator />
