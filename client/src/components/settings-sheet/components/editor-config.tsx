@@ -22,13 +22,13 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import type { EditorOption } from './types';
+import type { EditorOption } from '../types';
 import {
   exportSettings,
   formatTitle,
   getOptionsForKey,
   importSettings,
-} from './utils';
+} from '../utils';
 
 interface EditorConfigProps {
   monaco: Monaco;

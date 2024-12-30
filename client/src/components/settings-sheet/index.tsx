@@ -12,7 +12,6 @@ import { LoaderCircle, Unplug } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { cn, loginWithGithub } from '@/lib/utils';
-import { EditorConfig } from '@/components/editor-config';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -25,6 +24,7 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { EditorConfig } from './components/editor-config';
 import { EditorThemeSettings } from './components/editor-theme';
 
 interface GithubUser {

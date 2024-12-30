@@ -21,10 +21,10 @@ import type { User } from '@common/types/user';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
+import { CodeEditor } from '@/components/code-editor';
 import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
 import { LivePreview } from '@/components/live-preview';
-import { MonacoEditor } from '@/components/monaco';
 import { Notepad } from '@/components/notepad';
 import { RemotePointers } from '@/components/remote-pointers';
 import { RunButton } from '@/components/run-button';
@@ -332,7 +332,7 @@ export default function Room(props: {
                   )}
                 >
                   <ResizablePanel defaultSize={60} minSize={10}>
-                    <MonacoEditor
+                    <CodeEditor
                       monacoRef={handleMonacoSetup}
                       editorRef={handleEditorSetup}
                       cursorPosition={setCursorPosition}

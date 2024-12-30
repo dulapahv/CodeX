@@ -27,7 +27,7 @@ import * as cursorService from './service/cursor-service';
 import * as editorService from './service/editor-service';
 import * as scrollService from './service/scroll-service';
 
-interface MonacoEditorProps {
+interface CodeEditorProps {
   monacoRef: (monaco: Monaco) => void;
   editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
@@ -35,13 +35,13 @@ interface MonacoEditorProps {
   setCode: (code: string) => void;
 }
 
-const MonacoEditor = memo(function MonacoEditor({
+const CodeEditor = memo(function CodeEditor({
   monacoRef,
   editorRef,
   cursorPosition,
   defaultCode,
   setCode,
-}: MonacoEditorProps) {
+}: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
 
   const socket = getSocket();
@@ -177,4 +177,4 @@ const MonacoEditor = memo(function MonacoEditor({
   );
 });
 
-export { MonacoEditor };
+export { CodeEditor };
