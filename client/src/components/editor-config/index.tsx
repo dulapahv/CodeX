@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Monaco } from '@monaco-editor/react';
-import { ArrowDownToLine, ArrowUpFromLine, Search } from 'lucide-react';
+import { FileInput, Save, Search } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
@@ -341,7 +341,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               onClick={handleImportClick}
               aria-label="Import settings"
             >
-              <ArrowDownToLine className="size-4" />
+              <FileInput className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Import settings</TooltipContent>
@@ -354,7 +354,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               onClick={() => exportSettings(settings)}
               aria-label="Export settings"
             >
-              <ArrowUpFromLine className="size-4" />
+              <Save className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent className="mr-1">Export settings</TooltipContent>

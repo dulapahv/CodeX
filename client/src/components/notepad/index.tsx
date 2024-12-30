@@ -5,9 +5,9 @@ import dynamic from 'next/dynamic';
 
 import { EditorSkeleton } from './components/editor-skeleton';
 
-const DynamicMarkdownMain = dynamic(
+const DynamicNotepadMain = dynamic(
   () =>
-    import('./components/markdown-editor-main').then(
+    import('./components/notepad-main').then(
       (mod) => mod.MarkdownEditorMain,
     ),
   {
@@ -18,7 +18,7 @@ const DynamicMarkdownMain = dynamic(
 
 const Notepad = ({ markdown }: { markdown: string }) => (
   <Suspense fallback={null}>
-    <DynamicMarkdownMain markdown={markdown} />
+    <DynamicNotepadMain markdown={markdown} />
   </Suspense>
 );
 

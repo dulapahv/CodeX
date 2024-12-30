@@ -45,11 +45,8 @@ export const exportSettings = (settings: Record<string, any>) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-    toast.success('Your editor settings have been exported successfully.');
   } catch (error) {
     console.error('Failed to export settings:', error);
-    toast.error('Failed to export settings. Please try again.');
   }
 };
 
@@ -75,7 +72,7 @@ export const importSettings = (
       setSettings(imported);
       localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(imported));
 
-      toast.success('Your editor settings have been imported successfully.');
+      toast.success('Successfully imported settings');
     } catch (error) {
       console.error('Failed to import settings:', error);
       toast.error('Failed to import settings. Please check the file format.');
