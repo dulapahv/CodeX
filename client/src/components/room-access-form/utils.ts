@@ -78,7 +78,7 @@ export const onRoomIdChange = (
 
   // Update form value
   setValue('roomId', formattedValue, {
-    shouldValidate: true,
+    shouldValidate: formattedValue.length === 9,
   });
 };
 
