@@ -11,26 +11,6 @@ export const formatTitle = (key: string): string => {
     .replace(/^./, (str) => str.toUpperCase());
 };
 
-// Get options for select types
-export const getOptionsForKey = (key: string): string[] | undefined => {
-  const commonOptions: Record<string, string[]> = {
-    acceptSuggestionOnEnter: ['off', 'on', 'smart'],
-    wordWrap: ['off', 'on', 'wordWrapColumn', 'bounded'],
-    cursorStyle: [
-      'line',
-      'block',
-      'underline',
-      'line-thin',
-      'block-outline',
-      'underline-thin',
-    ],
-    cursorBlinking: ['blink', 'smooth', 'phase', 'expand', 'solid'],
-    lineNumbers: ['off', 'on', 'relative', 'interval'],
-  };
-
-  return commonOptions[key] || ['on', 'off'];
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const exportSettings = (settings: Record<string, any>) => {
   try {

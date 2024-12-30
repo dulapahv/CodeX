@@ -22,13 +22,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { SELECT_OPTIONS } from '../constants';
 import type { EditorOption } from '../types';
-import {
-  exportSettings,
-  formatTitle,
-  getOptionsForKey,
-  importSettings,
-} from '../utils';
+import { exportSettings, formatTitle, importSettings } from '../utils';
 
 interface EditorConfigProps {
   monaco: Monaco;
@@ -131,7 +127,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         if (typeof value === 'object' || value === null) return;
 
         const type = typeof value;
-        if (!['boolean', 'string', 'number'].includes(type)) return;
+        // if (!['boolean', 'string', 'number'].includes(type)) return;
 
         options[key] = {
           title: formatTitle(key),
@@ -144,9 +140,14 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
                     typeof value === 'string' &&
                     ['on', 'off'].includes(value)
                   ? 'select'
-                  : 'text',
+                  : SELECT_OPTIONS[key] // Use select for predefined options
+                    ? 'select'
+                    : 'text',
           currentValue: value,
-          options: type === 'string' ? getOptionsForKey(key) : undefined,
+          options:
+            type !== 'boolean' && type !== 'number'
+              ? SELECT_OPTIONS[key] || ['on', 'off']
+              : undefined,
         };
       });
 
