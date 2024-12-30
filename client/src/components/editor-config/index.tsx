@@ -370,7 +370,19 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
       </div>
 
       <div className="space-y-1 divide-y">
-        {filteredSettings.map(renderSetting)}
+        {filteredSettings.length > 0 ? (
+          filteredSettings.map(renderSetting)
+        ) : (
+          <div
+            className="flex items-center justify-center py-8 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            <p className="text-sm text-muted-foreground">
+              {search ? `No settings found.` : 'No settings available.'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
