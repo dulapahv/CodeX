@@ -49,7 +49,7 @@ export const handleOnMount = (
 
   editor.updateOptions({
     cursorSmoothCaretAnimation: 'on',
-    fontFamily: "'Geist Mono', Consolas, 'Courier New', monospace",
+    fontFamily: "GeistMono, Consolas, 'Courier New', monospace",
   });
 
   const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
