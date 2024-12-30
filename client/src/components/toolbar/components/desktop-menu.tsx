@@ -16,8 +16,6 @@ import type { ToolbarActions } from '../types';
 interface DesktopMenuProps {
   modKey: string;
   actions: ToolbarActions;
-  miniMap: boolean;
-  wordWrap: boolean;
   notepad: boolean;
   terminal: boolean;
   webcam: boolean;
@@ -27,8 +25,6 @@ interface DesktopMenuProps {
 const DesktopMenu = ({
   modKey,
   actions,
-  miniMap,
-  wordWrap,
   notepad,
   terminal,
   webcam,
@@ -153,19 +149,6 @@ const DesktopMenu = ({
             Command Palette <MenubarShortcut>F1</MenubarShortcut>
           </MenubarItem>
           <MenubarSeparator />
-          <MenubarCheckboxItem
-            onCheckedChange={actions.wordWrap}
-            checked={wordWrap}
-          >
-            Word Wrap
-          </MenubarCheckboxItem>
-          <MenubarSeparator />
-          <MenubarCheckboxItem
-            onCheckedChange={actions.minimap}
-            checked={miniMap}
-          >
-            Editor Minimap
-          </MenubarCheckboxItem>
           <MenubarCheckboxItem
             onCheckedChange={actions.toggleNotepadPanel}
             checked={notepad}

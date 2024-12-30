@@ -18,8 +18,6 @@ import type { ToolbarActions } from '../types';
 
 interface MobileMenuProps {
   actions: ToolbarActions;
-  miniMap: boolean;
-  wordWrap: boolean;
   notepad: boolean;
   terminal: boolean;
   webcam: boolean;
@@ -28,8 +26,6 @@ interface MobileMenuProps {
 
 const MobileMenu = ({
   actions,
-  miniMap,
-  wordWrap,
   notepad,
   terminal,
   webcam,
@@ -138,19 +134,6 @@ const MobileMenu = ({
                 Command Palette
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarCheckboxItem
-                onCheckedChange={actions.wordWrap}
-                checked={wordWrap}
-              >
-                Word Wrap
-              </MenubarCheckboxItem>
-              <MenubarSeparator />
-              <MenubarCheckboxItem
-                onCheckedChange={actions.minimap}
-                checked={miniMap}
-              >
-                Editor Minimap
-              </MenubarCheckboxItem>
               <MenubarCheckboxItem
                 onCheckedChange={actions.toggleNotepadPanel}
                 checked={notepad}

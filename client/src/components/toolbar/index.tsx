@@ -5,13 +5,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev).
  */
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react';
+import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
@@ -68,9 +62,6 @@ const Toolbar = ({
 }: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
-  const [miniMap, setMiniMap] = useState(false);
-  const [wordWrap, setWordWrap] = useState(false);
-
   const openFromGithubDialogRef = useRef<OpenFromGithubDialogRef>(null);
   const openPromptDialogRef1 = useRef<OpenPromptDialogRef>(null);
   const openPromptDialogRef2 = useRef<OpenPromptDialogRef>(null);
@@ -119,15 +110,6 @@ const Toolbar = ({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [monaco, editor]);
-
-  useEffect(() => {
-    if (editor && monaco) {
-      setMiniMap(editor.getOption(monaco.editor.EditorOption.minimap).enabled);
-      setWordWrap(
-        editor.getOption(monaco.editor.EditorOption.wordWrap) === 'on',
-      );
-    }
-  }, [editor, monaco]);
 
   if (!monaco || !editor) return null;
 
@@ -209,14 +191,6 @@ const Toolbar = ({
         editor.trigger('keyboard', 'editor.action.quickCommand', null);
       }, 1);
     },
-    wordWrap: () => {
-      editor.updateOptions({ wordWrap: wordWrap ? 'off' : 'on' });
-      setWordWrap(!wordWrap);
-    },
-    minimap: () => {
-      editor.updateOptions({ minimap: { enabled: !miniMap } });
-      setMiniMap(!miniMap);
-    },
     toggleNotepadPanel: () => setShowNotepad((show) => !show),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
     toggleWebcamPanel: () => setShowWebcam((show) => !show),
@@ -233,8 +207,6 @@ const Toolbar = ({
         <DesktopMenu
           modKey={modKey}
           actions={toolbarActions}
-          miniMap={miniMap}
-          wordWrap={wordWrap}
           notepad={showNotepad}
           terminal={showTerminal}
           webcam={showWebcam}
@@ -243,8 +215,6 @@ const Toolbar = ({
       ) : (
         <MobileMenu
           actions={toolbarActions}
-          miniMap={miniMap}
-          wordWrap={wordWrap}
           notepad={showNotepad}
           terminal={showTerminal}
           webcam={showWebcam}

@@ -43,8 +43,6 @@ export interface ToolbarActions {
   addCursorBelow: () => void;
   /** Open command palette */
   commandPalette: () => void;
-  /** Toggle minimap visibility */
-  minimap: () => void;
   /** Toggle notepad panel */
   toggleNotepadPanel: () => void;
   /** Toggle terminal panel */
@@ -53,8 +51,6 @@ export interface ToolbarActions {
   toggleWebcamPanel: () => void;
   /** Toggle Sandpack panel */
   toggleSandpackPanel: () => void;
-  /** Toggle word wrap */
-  wordWrap: () => void;
   /** Manual */
   manual: () => void;
   /** About */
