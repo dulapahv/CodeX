@@ -322,7 +322,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search
-            className="absolute left-2 top-3 size-4 text-muted-foreground"
+            className="absolute left-2.5 top-3 size-4 text-muted-foreground"
             aria-hidden="true"
           />
           <Input
