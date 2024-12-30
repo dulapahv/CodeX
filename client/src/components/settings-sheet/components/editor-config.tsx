@@ -316,6 +316,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             aria-hidden="true"
           />
           <Input
+            type="search"
             placeholder="Search settings..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

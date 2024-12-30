@@ -140,7 +140,7 @@ const ArgsInputPopover = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-2 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  className="absolute right-1 top-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
                   onClick={clearStdin}
                   aria-label="Clear program input"
                 >
