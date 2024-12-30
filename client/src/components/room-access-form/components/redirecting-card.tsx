@@ -24,12 +24,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const RedirectingCard = () => (
   <div
-    className="flex size-full animate-fade-in items-center justify-center backdrop-blur-sm"
+    className="animate-fade-in backdrop-blur-sm w-fit"
     role="status"
     aria-live="polite"
   >
     <Alert
-      className="max-w-md bg-background/50"
+      className="w-[28rem] bg-background/50"
       aria-labelledby="redirect-title"
       aria-describedby="redirect-description"
     >

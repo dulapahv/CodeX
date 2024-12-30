@@ -95,7 +95,7 @@ const RoomAccessForm = () => {
 
   if (createSuccessful || joinSuccessful) {
     return (
-      <div className="my-32">
+      <div className="my-32 flex items-center justify-center">
         <RedirectingCard />
       </div>
     );
