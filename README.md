@@ -43,6 +43,7 @@ For detailed usage instructions and feature documentation, please see **[manual.
   - [Getting Started](#getting-started)
   - [Development](#development)
   - [Deployment](#deployment)
+  - [Testing](#testing)
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
@@ -131,6 +132,8 @@ pnpm build
 cd server
 pnpm build
 ```
+
+## Testing
 
 ## Tech Stack
 
