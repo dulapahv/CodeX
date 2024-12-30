@@ -72,7 +72,7 @@ export const importSettings = (
       setSettings(imported);
       localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(imported));
 
-      toast.success('Successfully imported settings');
+      toast.success('Settings imported successfully!');
     } catch (error) {
       console.error('Failed to import settings:', error);
       toast.error('Failed to import settings. Please check the file format.');
