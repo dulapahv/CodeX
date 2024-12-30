@@ -1,23 +1,3 @@
-/**
- * Service for handling Monaco editor lifecycle and configuration.
- * Manages editor setup, mounting, and event handling.
- *
- * @example
- * ```ts
- * // Initialize editor
- * handleBeforeMount(monaco);
- * handleOnMount(editor, monaco, disposablesRef, setCursorPosition);
- * ```
- *
- * @remarks
- * Uses the following services:
- * - [`getSocket`](src/lib/socket.ts) for editor synchronization
- * - Monaco editor API for editor configuration
- * - Theme definitions from monaco-themes package
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
- */
-
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
@@ -26,9 +6,12 @@ import themeList from 'monaco-themes/themes/themelist.json';
 import { CodeServiceMsg, ScrollServiceMsg } from '@common/types/message';
 import type { Cursor, EditOp } from '@common/types/operation';
 
+import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
 import { storage } from '@/lib/services/storage';
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';
+
+import { mapParsedToEditorOptions } from '../utils';
 
 /**
  * Handle the Monaco editor before mounting.
@@ -66,7 +49,19 @@ export const handleOnMount = (
 
   editor.updateOptions({
     cursorSmoothCaretAnimation: 'on',
+    fontFamily: "'Geist Mono', Consolas, 'Courier New', monospace",
   });
+
+  const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
+
+  if (savedSettings) {
+    try {
+      const parsed = JSON.parse(savedSettings) as Record<string, unknown>;
+      editor.updateOptions(mapParsedToEditorOptions(parsed));
+    } catch (error) {
+      console.error('Failed to load saved settings:', error);
+    }
+  }
 
   editor.getModel()?.setEOL(monaco.editor.EndOfLineSequence.LF);
 

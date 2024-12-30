@@ -1,32 +1,4 @@
-/**
- * Creates CSS styles for a user's cursor in the collaborative editor.
- * Generates cursor highlight and nametag styles with fade-out animation.
- *
- * @param userID - Unique identifier for the user's cursor
- * @param bgColor - Background color for cursor and nametag
- * @param color - Text color for the nametag
- * @param name - Display name to show in the nametag
- * @param isFirstLine - Whether cursor is on first line to adjust
- *                      nametag position
- * @param hasSelection - Whether user has text selected to control
- *                      fade animation
- *
- * @returns CSS string for cursor styles
- *
- * @example
- * ```ts
- * const cursorStyle = createCursorStyle(
- *   "user123",
- *   "#ff0000",
- *   "#ffffff",
- *   "John",
- *   false,
- *   true
- * );
- * ```
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
- */
+import type * as monaco from 'monaco-editor';
 
 export const createCursorStyle = (
   userID: string,
@@ -78,3 +50,19 @@ export const createCursorStyle = (
     opacity: 0.4;
     min-width: 4px;
   }`;
+
+/**
+ * Map parsed settings to editor options.
+ * @param parsed Parsed settings
+ * @returns Editor options
+ */
+export const mapParsedToEditorOptions = (
+  parsed: Record<string, unknown>,
+): monaco.editor.IEditorOptions & monaco.editor.IGlobalEditorOptions =>
+  Object.entries(parsed).reduce((acc, [key, value]) => {
+    if (key.includes('.enabled')) {
+      const newKey = key.replace('.enabled', '');
+      return { ...acc, [newKey]: { enabled: value } };
+    }
+    return { ...acc, [key]: value };
+  }, {});
