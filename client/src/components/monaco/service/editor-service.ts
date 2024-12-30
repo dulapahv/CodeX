@@ -11,8 +11,6 @@ import { storage } from '@/lib/services/storage';
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';
 
-import { mapParsedToEditorOptions } from '../utils';
-
 /**
  * Handle the Monaco editor before mounting.
  * @param monaco Monaco instance.
@@ -57,7 +55,7 @@ export const handleOnMount = (
   if (savedSettings) {
     try {
       const parsed = JSON.parse(savedSettings) as Record<string, unknown>;
-      editor.updateOptions(mapParsedToEditorOptions(parsed));
+      editor.updateOptions(parsed);
     } catch (error) {
       console.error('Failed to load saved settings:', error);
     }

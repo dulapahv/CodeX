@@ -38,12 +38,28 @@ interface EditorConfigProps {
 
 export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const [search, setSearch] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [settings, setSettings] = useState<Record<string, any>>(() => {
-    // Initialize with empty object to avoid undefined values
+  const [settings, setSettings] = useState<
+    monaco.editor.IEditorOptions & monaco.editor.IGlobalEditorOptions
+  >(() => {
     const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
     try {
-      return savedSettings ? JSON.parse(savedSettings) : {};
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        // Convert any .enabled keys to nested objects
+        const converted = Object.entries(parsed).reduce((acc, [key, value]) => {
+          if (key.endsWith('.enabled')) {
+            const mainKey = key.replace('.enabled', '');
+            // @ts-expect-error - Monaco editor internal API
+            acc[mainKey] = { enabled: value };
+          } else {
+            // @ts-expect-error - Monaco editor internal API
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
+        return converted;
+      }
+      return {};
     } catch (error) {
       console.error('Failed to load saved settings:', error);
       return {};
@@ -58,13 +74,30 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   useEffect(() => {
     const loadSettings = () => {
       const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
-      let initialSettings: Record<string, unknown> = {};
+      let initialSettings: monaco.editor.IEditorOptions &
+        monaco.editor.IGlobalEditorOptions = {};
 
       if (savedSettings) {
         try {
           const parsed = JSON.parse(savedSettings);
-          initialSettings = parsed;
-          editor.updateOptions(parsed);
+          // Convert any .enabled keys to nested objects before applying
+          const converted = Object.entries(parsed).reduce(
+            (acc, [key, value]) => {
+              if (key.endsWith('.enabled')) {
+                const mainKey = key.replace('.enabled', '');
+                // @ts-expect-error - Monaco editor internal API
+                acc[mainKey] = { enabled: value };
+              } else {
+                // @ts-expect-error - Monaco editor internal API
+                acc[key] = value;
+              }
+              return acc;
+            },
+            {},
+          );
+
+          initialSettings = converted;
+          editor.updateOptions(converted);
         } catch (error) {
           console.error('Failed to load saved settings:', error);
         }
@@ -83,12 +116,14 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
 
         const value = values[index];
         if (typeof value === 'object' && value !== null && 'enabled' in value) {
-          newSettings[`${key}.enabled`] = value.enabled;
+          // @ts-expect-error - Monaco editor internal API
+          newSettings[key] = { enabled: value.enabled };
         } else if (
           typeof value !== 'object' &&
           value !== null &&
           value !== undefined
         ) {
+          // @ts-expect-error - Monaco editor internal API
           newSettings[key] = value;
         }
       });
@@ -156,7 +191,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
 
   const updateSetting = useCallback(
     (key: string, value: unknown) => {
-      // Handle enabled properties of objects (like minimap.enabled)
+      // Handle nested enabled properties
       if (key.endsWith('.enabled')) {
         const mainOption = key.replace('.enabled', '');
         // @ts-expect-error - Monaco editor internal API
@@ -177,10 +212,10 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             [mainOption]: updatedOption,
           });
 
-          // Update settings after the editor update
+          // Update settings with nested structure
           const newSettings = {
             ...settings,
-            [key]: updatedOption.enabled, // Use the actual state from the updated option
+            [mainOption]: { enabled: value },
           };
           setSettings(newSettings);
 
@@ -231,7 +266,12 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const renderSetting = useCallback(
     ([key, option]: [string, EditorOption]) => {
       const id = `setting-${key}`;
-      const value = settings[key] ?? '';
+      // Handle nested enabled values
+      const value = key.endsWith('.enabled')
+        ? // @ts-expect-error - Monaco editor internal API
+          settings[key.replace('.enabled', '')]?.enabled
+        : // @ts-expect-error - Monaco editor internal API
+          settings[key];
 
       switch (option.type) {
         case 'boolean':
@@ -245,7 +285,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               </Label>
               <Switch
                 id={id}
-                checked={!!value} // Ensure boolean value
+                checked={!!value}
                 onCheckedChange={(checked) => updateSetting(key, checked)}
                 aria-label={option.title}
               />

@@ -1,5 +1,13 @@
-import type * as monaco from 'monaco-editor';
-
+/**
+ * Create a style for a cursor
+ * @param userID
+ * @param bgColor
+ * @param color
+ * @param name
+ * @param isFirstLine
+ * @param hasSelection
+ * @returns
+ */
 export const createCursorStyle = (
   userID: string,
   bgColor: string,
@@ -50,19 +58,3 @@ export const createCursorStyle = (
     opacity: 0.4;
     min-width: 4px;
   }`;
-
-/**
- * Map parsed settings to editor options.
- * @param parsed Parsed settings
- * @returns Editor options
- */
-export const mapParsedToEditorOptions = (
-  parsed: Record<string, unknown>,
-): monaco.editor.IEditorOptions & monaco.editor.IGlobalEditorOptions =>
-  Object.entries(parsed).reduce((acc, [key, value]) => {
-    if (key.includes('.enabled')) {
-      const newKey = key.replace('.enabled', '');
-      return { ...acc, [newKey]: { enabled: value } };
-    }
-    return { ...acc, [key]: value };
-  }, {});
