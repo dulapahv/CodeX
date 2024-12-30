@@ -1,16 +1,9 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ChangeEvent,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import { ArrowDownToLine, ArrowUpFromLine, Search } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
-import { toast } from 'sonner';
 
+import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,61 +22,39 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import type { EditorOption } from './types';
+import {
+  exportSettings,
+  formatTitle,
+  getOptionsForKey,
+  importSettings,
+} from './utils';
+
 interface EditorConfigProps {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
   className?: string;
 }
 
-interface EditorOption {
-  title: string;
-  type: 'boolean' | 'string' | 'number' | 'select' | 'text';
-  options?: string[];
-  currentValue: unknown;
-}
-
-const EDITOR_SETTINGS_KEY = 'editor-settings';
-
-// Helper to convert camelCase to Title Case
-function formatTitle(key: string): string {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase());
-}
-
-// Helper to get options for select types
-const getOptionsForKey = (key: string): string[] | undefined => {
-  const commonOptions: Record<string, string[]> = {
-    acceptSuggestionOnEnter: ['off', 'on', 'smart'],
-    wordWrap: ['off', 'on', 'wordWrapColumn', 'bounded'],
-    cursorStyle: [
-      'line',
-      'block',
-      'underline',
-      'line-thin',
-      'block-outline',
-      'underline-thin',
-    ],
-    cursorBlinking: ['blink', 'smooth', 'phase', 'expand', 'solid'],
-    lineNumbers: ['off', 'on', 'relative', 'interval'],
-  };
-
-  return commonOptions[key] || ['on', 'off'];
-};
-
 export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const [search, setSearch] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [settings, setSettings] = useState<Record<string, any>>({});
+  const [settings, setSettings] = useState<Record<string, any>>(() => {
+    // Initialize with empty object to avoid undefined values
+    const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
+    try {
+      return savedSettings ? JSON.parse(savedSettings) : {};
+    } catch (error) {
+      console.error('Failed to load saved settings:', error);
+      return {};
+    }
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize settings from editor options
-  // Add at the top with other interfaces
   interface EditorOptionsInternal extends monaco.editor.IEditorOptions {
     _values: unknown[];
   }
 
-  // Then in your useEffect
   useEffect(() => {
     const loadSettings = () => {
       const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
@@ -106,22 +77,23 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         (key) => isNaN(Number(key)),
       );
 
+      const newSettings = { ...initialSettings };
       optionNames.forEach((key, index) => {
         if (key in initialSettings) return;
 
         const value = values[index];
         if (typeof value === 'object' && value !== null && 'enabled' in value) {
-          initialSettings[`${key}.enabled`] = value.enabled;
+          newSettings[`${key}.enabled`] = value.enabled;
         } else if (
           typeof value !== 'object' &&
           value !== null &&
           value !== undefined
         ) {
-          initialSettings[key] = value;
+          newSettings[key] = value;
         }
       });
 
-      setSettings(initialSettings);
+      setSettings(newSettings);
     };
 
     loadSettings();
@@ -184,13 +156,6 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
 
   const updateSetting = useCallback(
     (key: string, value: unknown) => {
-      const newSettings = {
-        ...settings,
-        [key]: value,
-      };
-
-      setSettings(newSettings);
-
       // Handle enabled properties of objects (like minimap.enabled)
       if (key.endsWith('.enabled')) {
         const mainOption = key.replace('.enabled', '');
@@ -204,81 +169,59 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
           ];
 
         if (typeof currentValue === 'object' && currentValue !== null) {
+          const updatedOption = {
+            ...currentValue,
+            enabled: value,
+          };
           editor.updateOptions({
-            [mainOption]: {
-              ...currentValue,
-              enabled: value,
-            },
+            [mainOption]: updatedOption,
           });
+
+          // Update settings after the editor update
+          const newSettings = {
+            ...settings,
+            [key]: updatedOption.enabled, // Use the actual state from the updated option
+          };
+          setSettings(newSettings);
+
+          try {
+            localStorage.setItem(
+              EDITOR_SETTINGS_KEY,
+              JSON.stringify(newSettings),
+            );
+          } catch (error) {
+            console.error('Failed to save settings:', error);
+          }
         }
       } else {
         editor.updateOptions({ [key]: value });
-      }
 
-      try {
-        localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(newSettings));
-      } catch (error) {
-        console.error('Failed to save settings:', error);
+        // Get the actual updated value from the editor
+        // @ts-expect-error - Monaco editor internal API
+        const updatedValues = (editor.getOptions() as EditorOptionsInternal)
+          ._values;
+        const optionIndex = Object.keys(monaco.editor.EditorOption)
+          .filter((k) => isNaN(Number(k)))
+          .indexOf(key);
+        const actualValue = updatedValues[optionIndex];
+
+        const newSettings = {
+          ...settings,
+          [key]: actualValue,
+        };
+        setSettings(newSettings);
+
+        try {
+          localStorage.setItem(
+            EDITOR_SETTINGS_KEY,
+            JSON.stringify(newSettings),
+          );
+        } catch (error) {
+          console.error('Failed to save settings:', error);
+        }
       }
     },
     [editor, settings, monaco.editor.EditorOption],
-  );
-
-  const exportSettings = useCallback(() => {
-    try {
-      const blob = new Blob([JSON.stringify(settings, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'kasca-editor-settings.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast.success('Your editor settings have been exported successfully.');
-    } catch (error) {
-      console.error('Failed to export settings:', error);
-      toast.error('Failed to export settings. Please try again.');
-    }
-  }, [settings]);
-
-  const importSettings = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const content = e.target?.result as string;
-          const imported = JSON.parse(content);
-
-          if (typeof imported !== 'object' || imported === null) {
-            throw new Error('Invalid settings format');
-          }
-
-          editor.updateOptions(imported);
-          setSettings(imported);
-          localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(imported));
-
-          toast.success(
-            'Your editor settings have been imported successfully.',
-          );
-        } catch (error) {
-          console.error('Failed to import settings:', error);
-          toast.error(
-            'Failed to import settings. Please check the file format.',
-          );
-        }
-      };
-
-      reader.readAsText(file);
-      event.target.value = '';
-    },
-    [editor],
   );
 
   const handleImportClick = useCallback(() => {
@@ -288,7 +231,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const renderSetting = useCallback(
     ([key, option]: [string, EditorOption]) => {
       const id = `setting-${key}`;
-      const value = settings[key];
+      const value = settings[key] ?? '';
 
       switch (option.type) {
         case 'boolean':
@@ -302,7 +245,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               </Label>
               <Switch
                 id={id}
-                checked={value}
+                checked={!!value} // Ensure boolean value
                 onCheckedChange={(checked) => updateSetting(key, checked)}
                 aria-label={option.title}
               />
@@ -316,7 +259,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
                 {option.title}
               </Label>
               <Select
-                value={String(value)}
+                value={String(value || '')} // Ensure string value with fallback
                 onValueChange={(value) => updateSetting(key, value)}
               >
                 <SelectTrigger id={id} className="w-full">
@@ -342,7 +285,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               <Input
                 id={id}
                 type="number"
-                value={value}
+                value={value ?? ''} // Provide fallback for undefined
                 onChange={(e) => updateSetting(key, Number(e.target.value))}
                 className="max-w-[calc(100%-50%)]"
                 aria-label={option.title}
@@ -359,7 +302,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               <Input
                 id={id}
                 type="text"
-                value={String(value)}
+                value={String(value ?? '')} // Convert to string and provide fallback
                 onChange={(e) => updateSetting(key, e.target.value)}
                 aria-label={option.title}
               />
@@ -408,7 +351,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             <Button
               variant="outline"
               size="icon"
-              onClick={exportSettings}
+              onClick={() => exportSettings(settings)}
               aria-label="Export settings"
             >
               <ArrowUpFromLine className="size-4" />
@@ -420,7 +363,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
           ref={fileInputRef}
           type="file"
           accept=".json"
-          onChange={importSettings}
+          onChange={(e) => importSettings(editor, setSettings, e)}
           className="hidden"
           aria-label="Import settings file"
         />

@@ -35,6 +35,8 @@ export const CONTACT_URL = 'https://dulapahv.dev/contact';
 export const REPO_URL = 'https://github.com/dulapahv/kasca';
 export const GITHUB_URL = 'https://github.com/dulapahv';
 
+export const EDITOR_SETTINGS_KEY = 'editor-settings';
+
 export const DISABLE_TAILWIND_CDN_WARN = `<script>(()=>{const w=console.warn;console.warn=(...a)=>{typeof a[0]!=="string"||!a[0].includes("cdn.tailwindcss.com")?w.apply(console,a):void 0}})();</script>`;
 
 export const SANDPACK_CDN = `
