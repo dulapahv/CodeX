@@ -65,7 +65,7 @@ const HelpPopover = () => (
                 </li>
                 <li>
                   <a
-                    href="https://github.com/dulapahv/kasca/manual#code-preview-example"
+                    href="https://github.com/dulapahv/kasca/manual#live-preview-example"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
