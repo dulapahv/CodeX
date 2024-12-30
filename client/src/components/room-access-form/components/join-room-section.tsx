@@ -2,33 +2,6 @@
  * JoinRoomSection component that renders a form for joining an existing room.
  * Provides input fields for room ID and validation handling.
  *
- * @example
- * ```tsx
- * <JoinRoomSection
- *   register={register}
- *   setValue={setValue}
- *   handleSubmit={handleSubmit}
- *   onSubmit={handleJoinRoom}
- *   onError={handleError}
- *   errors={errors}
- *   isSubmitting={isSubmitting}
- *   isCreating={isCreating}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.register - React Hook Form register function for form fields
- * @param props.setValue - React Hook Form setValue function for updating
- *                         form values
- * @param props.handleSubmit - React Hook Form submit handler
- * @param props.onSubmit - Function called when form is submitted successfully
- * @param props.onError - Function called when form submission fails
- * @param props.errors - Form validation errors from React Hook Form
- * @param props.isSubmitting - Whether form is currently submitting
- * @param props.isCreating - Whether a new room is being created
- *
- * @returns A form section with room ID input and join button
- *
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
