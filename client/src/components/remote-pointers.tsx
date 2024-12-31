@@ -144,7 +144,7 @@ const RemotePointers = () => {
           >
             <div className="relative">
               <MousePointer2
-                className="absolute -left-[2px] -top-[2px] size-5 shadow-sm"
+                className="absolute -left-[2px] -top-[2px] size-5 drop-shadow"
                 style={{
                   color: backgroundColor,
                   fill: 'currentColor',
@@ -152,7 +152,7 @@ const RemotePointers = () => {
               />
 
               <div
-                className="absolute left-4 top-4 flex h-5 max-w-[120px] items-center rounded-[3px] px-1.5 shadow-sm"
+                className="absolute left-4 top-4 flex h-5 max-w-[120px] items-center rounded-[3px] px-1.5 shadow"
                 style={{
                   backgroundColor,
                 }}
