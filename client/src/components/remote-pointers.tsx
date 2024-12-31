@@ -20,11 +20,27 @@ const THROTTLE_MS = 16; // Approximately 60fps for smoother updates
 
 const RemotePointers = () => {
   const socket = getSocket();
-
   const [pointers, setPointers] = useState<Map<string, RemotePointer>>(
     new Map(),
   );
   const [lastEmit, setLastEmit] = useState<number>(0);
+  const [viewport, setViewport] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
+
+  // Update viewport dimensions on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setViewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Handle sending pointer updates
   const handlePointerMove = useCallback(
@@ -32,7 +48,12 @@ const RemotePointers = () => {
       const now = Date.now();
       if (now - lastEmit < THROTTLE_MS) return;
 
-      const pointer: Pointer = [event.clientX, event.clientY];
+      // Calculate relative positions as percentages
+      const relativeX = (event.clientX / window.innerWidth) * 100;
+      const relativeY = (event.clientY / window.innerHeight) * 100;
+
+      const pointer: Pointer = [relativeX, relativeY];
+
       socket.emit(PointerServiceMsg.POINTER, pointer);
       setLastEmit(now);
     },
@@ -40,12 +61,12 @@ const RemotePointers = () => {
   );
 
   useEffect(() => {
-    const handlePointerUpdate = (userId: string, newPosition: Pointer) => {
+    const handlePointerUpdate = (userId: string, pointer: Pointer) => {
       setPointers((prev) => {
         const updated = new Map(prev);
         updated.set(userId, {
           id: userId,
-          position: newPosition,
+          position: pointer,
           lastUpdate: Date.now(),
           isVisible: true,
         });
@@ -100,31 +121,32 @@ const RemotePointers = () => {
 
         const { backgroundColor, color } = userMap.getColors(pointer.id);
 
+        // Calculate scaled position based on viewport differences
+        const scaledX = (pointer.position[0] / 100) * viewport.width;
+        const scaledY = (pointer.position[1] / 100) * viewport.height;
+
         return (
           <div
             key={pointer.id}
             className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%] transform-gpu transition-all duration-100 ease-out will-change-[left,top,opacity]"
             style={{
-              left: `${pointer.position[0]}px`,
-              top: `${pointer.position[1]}px`,
+              left: `${scaledX}px`,
+              top: `${scaledY}px`,
               opacity: pointer.isVisible ? 1 : 0,
               backfaceVisibility: 'hidden',
               transition: `opacity ${FADE_DURATION}ms ease-out, left 100ms ease-out, top 100ms ease-out`,
             }}
             aria-hidden="true"
           >
-            {/* Cursor */}
             <div className="relative">
               <MousePointer2
-                size={20}
-                className="absolute -left-[2px] -top-[2px] shadow-sm"
+                className="absolute -left-[2px] -top-[2px] size-5 shadow-sm"
                 style={{
                   color: backgroundColor,
                   fill: 'currentColor',
                 }}
               />
 
-              {/* Name tag */}
               <div
                 className="absolute left-4 top-4 flex h-5 max-w-[120px] items-center rounded-[3px] px-1.5 shadow-sm"
                 style={{
