@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://kasca.dulapahv.dev/">
-    <img src="client/public/images/kasca.png?raw=true" width="600" alt="kasca cover image"/>
+    <img src="client/public/images/cover.png?raw=true" width="600" alt="kasca cover image"/>
   </a>
 </div>
 
