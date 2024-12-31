@@ -48,9 +48,13 @@ const RemotePointers = () => {
       const now = Date.now();
       if (now - lastEmit < THROTTLE_MS) return;
 
-      // Calculate relative positions as percentages
-      const relativeX = (event.clientX / window.innerWidth) * 100;
-      const relativeY = (event.clientY / window.innerHeight) * 100;
+      // Calculate relative positions as percentages and round to 2 decimal places
+      const relativeX = Number(
+        ((event.clientX / window.innerWidth) * 100).toFixed(2),
+      );
+      const relativeY = Number(
+        ((event.clientY / window.innerHeight) * 100).toFixed(2),
+      );
 
       const pointer: Pointer = [relativeX, relativeY];
 
