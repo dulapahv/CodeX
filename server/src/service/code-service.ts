@@ -1,7 +1,8 @@
 import type { Server, Socket } from 'socket.io';
 
-import { CodeServiceMsg } from '../../../common/types/message';
-import type { EditOp } from '../../../common/types/operation';
+import { CodeServiceMsg } from '@common/types/message';
+import type { EditOp } from '@common/types/operation';
+
 import { getUserRoom } from './room-service';
 import { getCustomId } from './user-service';
 

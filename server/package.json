@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "start": "nodemon src/index.ts",
+    "dev": "nodemon -r tsconfig-paths/register src/index.ts",
+    "start": "nodemon -r tsconfig-paths/register src/index.ts",
     "build": "rimraf dist && tsc",
     "test:local": "jest --server=local",
     "test:remote": "jest --server=remote",
@@ -27,7 +27,6 @@
     "rimraf": "^6.0.1",
     "socket.io-client": "^4.8.1",
     "ts-jest": "^29.2.5",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },
   "optionalDependencies": {

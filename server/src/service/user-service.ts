@@ -1,7 +1,8 @@
 import type { Socket } from 'socket.io';
 
-import { CodeServiceMsg } from '../../../common/types/message';
-import type { Cursor } from '../../../common/types/operation';
+import { CodeServiceMsg } from '@common/types/message';
+import type { Cursor } from '@common/types/operation';
+
 import { getUserRoom } from './room-service';
 
 // Use a single Map for user data to reduce memory overhead

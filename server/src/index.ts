@@ -8,11 +8,12 @@ import {
   RoomServiceMsg,
   ScrollServiceMsg,
   StreamServiceMsg,
-} from '../../common/types/message';
-import type { Cursor, EditOp } from '../../common/types/operation';
-import type { Pointer } from '../../common/types/pointer';
-import type { Scroll } from '../../common/types/scroll';
-import type { ExecutionResult } from '../../common/types/terminal';
+} from '@common/types/message';
+import type { Cursor, EditOp } from '@common/types/operation';
+import type { Pointer } from '@common/types/pointer';
+import type { Scroll } from '@common/types/scroll';
+import type { ExecutionResult } from '@common/types/terminal';
+
 import * as codeService from './service/code-service';
 import * as pointerService from './service/pointer-service';
 import * as roomService from './service/room-service';
@@ -22,7 +23,7 @@ import * as webRTCService from './service/webrtc-service';
 
 const PORT = 3001;
 
-// Base allowed origins that are always allowed
+// Allow requests from these origins
 const baseOrigins = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
@@ -89,12 +90,12 @@ io.on('connection', (socket) => {
     roomService.join(socket, io, roomID, name),
   );
   socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
-  socket.on(RoomServiceMsg.SYNC_USERS, async () => {
-    roomService.getUsersInRoom(socket, io);
-  });
-  socket.on(CodeServiceMsg.SYNC_CODE, async () => {
-    codeService.syncCode(socket, io);
-  });
+  socket.on(RoomServiceMsg.SYNC_USERS, async () =>
+    roomService.getUsersInRoom(socket, io),
+  );
+  socket.on(CodeServiceMsg.SYNC_CODE, async () =>
+    codeService.syncCode(socket, io),
+  );
   socket.on(CodeServiceMsg.UPDATE_CODE, async (op: EditOp) =>
     codeService.updateCode(socket, op),
   );
@@ -116,9 +117,9 @@ io.on('connection', (socket) => {
   socket.on(RoomServiceMsg.UPDATE_MD, async (note: string) =>
     roomService.updateNote(socket, note),
   );
-  socket.on(CodeServiceMsg.EXEC, async (isExecuting: boolean) => {
-    roomService.updateExecuting(socket, isExecuting);
-  });
+  socket.on(CodeServiceMsg.EXEC, async (isExecuting: boolean) =>
+    roomService.updateExecuting(socket, isExecuting),
+  );
   socket.on(CodeServiceMsg.UPDATE_TERM, async (data: ExecutionResult) =>
     roomService.updateTerminal(socket, data),
   );

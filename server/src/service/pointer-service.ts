@@ -1,7 +1,8 @@
 import type { Socket } from 'socket.io';
 
-import { PointerServiceMsg } from '../../../common/types/message';
-import type { Pointer } from '../../../common/types/pointer';
+import { PointerServiceMsg } from '@common/types/message';
+import type { Pointer } from '@common/types/pointer';
+
 import { getUserRoom } from '../service/room-service';
 import { getCustomId } from '../service/user-service';
 

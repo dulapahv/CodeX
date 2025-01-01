@@ -1,8 +1,8 @@
 import { performance } from 'perf_hooks';
 import { io as Client } from 'socket.io-client';
 
-import { CodeServiceMsg, RoomServiceMsg } from '../../common/types/message';
-import type { EditOp } from '../../common/types/operation';
+import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
+import type { EditOp } from '@common/types/operation';
 
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3001';
 

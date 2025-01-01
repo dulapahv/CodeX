@@ -1,7 +1,8 @@
 import type { Server, Socket } from 'socket.io';
 
-import { CodeServiceMsg, RoomServiceMsg } from '../../../common/types/message';
-import type { ExecutionResult } from '../../../common/types/terminal';
+import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
+import type { ExecutionResult } from '@common/types/terminal';
+
 import { generateRoomID } from '../utils/generate-room-id';
 import { normalizeRoomId } from '../utils/normalize-room-id';
 import * as codeService from './code-service';
