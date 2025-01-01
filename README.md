@@ -181,12 +181,12 @@ pnpm test:watch    # Run tests in watch mode
   - [Node.js](https://nodejs.org)
   - [TypeScript](https://www.typescriptlang.org)
   - [Socket.IO](https://socket.io) (binded to [µWebSockets.js](https://github.com/uNetworking/uWebSockets.js) server)
-- **External Services:**
-  - [Piston](https://github.com/engineer-man/piston) (code execution)
-  - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
 - **Testing:**
   - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
   - [Jest](https://jestjs.io) (unit testing for backend)
+- **External Services:**
+  - [Piston](https://github.com/engineer-man/piston) (code execution)
+  - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
 
 ## Coding Style
 
