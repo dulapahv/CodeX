@@ -44,8 +44,8 @@ For detailed usage instructions and feature documentation, please see **[manual.
   - [Development](#development)
   - [Deployment](#deployment)
   - [Testing](#testing)
-    - [Frontend Testing (Playwright)](#frontend-testing-playwright)
-    - [Backend Testing (Jest)](#backend-testing-jest)
+    - [Frontend Testing](#frontend-testing)
+    - [Backend Testing](#backend-testing)
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
@@ -86,11 +86,11 @@ The project is organized into three main directories:
     ```bash
     # Install client dependencies
     cd client
-    pnpm install
+    pnpm i
 
     # Install server dependencies
     cd ../server
-    pnpm install
+    pnpm i
     ```
 
 ## Development
@@ -137,42 +137,44 @@ pnpm build
 
 ## Testing
 
-### Frontend Testing (Playwright)
+To run tests, you need to install the dependencies in the client and server directories:
+
+```bash
+# Install client dependencies
+cd client
+pnpm i
+
+# Install server dependencies
+cd server
+pnpm i
+```
+
+### Frontend Testing
 
 End-to-end tests are implemented using Playwright, which runs tests in multiple browsers simultaneously. To run frontend tests:
 
 ```bash
-cd client
-
-# Run all tests
-pnpm test:e2e
-
-# Run tests with UI mode
-pnpm test:e2e:ui
-
-# Debug tests
-pnpm test:e2e:debug
-
-# View test report
-pnpm test:e2e:report
+# Frontend (in client directory)
+pnpm test:e2e          # Run all tests
+pnpm test:e2e:ui       # Run tests with UI mode
+pnpm test:e2e:debug    # Debug tests
+pnpm test:e2e:report   # View test report
 ```
 
-### Backend Testing (Jest)
+> Note: Playwright will automatically run the server when running tests.
+
+### Backend Testing
 
 Server-side tests are implemented using Jest. To run backend tests:
 
 ```bash
-cd server
-
-# Test against local server
-pnpm test:local
-
-# Test against remote server
-pnpm test:remote
-
-# Run tests in watch mode
-pnpm test:watch
+# Backend (in server directory)
+pnpm test:local    # Test against local server
+pnpm test:remote   # Test against remote server
+pnpm test:watch    # Run tests in watch mode
 ```
+
+> Note: The backend tests require the server to be running. Ensure the server is running before running the tests.
 
 ## Tech Stack
 
