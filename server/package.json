@@ -6,8 +6,9 @@
     "dev": "nodemon src/index.ts",
     "start": "nodemon src/index.ts",
     "build": "rimraf dist && tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test:local": "jest --server=local",
+    "test:remote": "jest --server=remote",
+    "test:watch": "jest --server=local --watch",
     "format:check": "prettier . --c",
     "format:fix": "prettier . --w"
   },

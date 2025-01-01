@@ -4,11 +4,7 @@ import { io as Client } from 'socket.io-client';
 import { CodeServiceMsg, RoomServiceMsg } from '../../common/types/message';
 import type { EditOp } from '../../common/types/operation';
 
-/**
- * Local: http://localhost:3001
- * Server: https://kasca-server.dulapahv.dev
- */
-const SERVER_URL = 'http://localhost:3001';
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3001';
 
 describe('Socket.IO Performance', () => {
   let senderSocket: ReturnType<typeof Client>;
