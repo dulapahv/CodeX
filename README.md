@@ -44,6 +44,8 @@ For detailed usage instructions and feature documentation, please see **[manual.
   - [Development](#development)
   - [Deployment](#deployment)
   - [Testing](#testing)
+    - [Frontend Testing (Playwright)](#frontend-testing-playwright)
+    - [Backend Testing (Jest)](#backend-testing-jest)
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
@@ -135,6 +137,43 @@ pnpm build
 
 ## Testing
 
+### Frontend Testing (Playwright)
+
+End-to-end tests are implemented using Playwright, which runs tests in multiple browsers simultaneously. To run frontend tests:
+
+```bash
+cd client
+
+# Run all tests
+pnpm test:e2e
+
+# Run tests with UI mode
+pnpm test:e2e:ui
+
+# Debug tests
+pnpm test:e2e:debug
+
+# View test report
+pnpm test:e2e:report
+```
+
+### Backend Testing (Jest)
+
+Server-side tests are implemented using Jest. To run backend tests:
+
+```bash
+cd server
+
+# Test against local server
+pnpm test:local
+
+# Test against remote server
+pnpm test:remote
+
+# Run tests in watch mode
+pnpm test:watch
+```
+
 ## Tech Stack
 
 - **Frontend:**
@@ -145,7 +184,7 @@ pnpm build
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
   - [Socket.IO Client](https://socket.io)
   - [Sandpack](https://sandpack.codesandbox.io/) (live preview)
-  - [MDXEditor](https://mdxeditor.dev/) (rich text editor)
+  - [MDXEditor](https://mdxeditor.dev/) (notepad)
   - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
   - [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev/)
 - **Backend:**
@@ -155,6 +194,9 @@ pnpm build
 - **External Services:**
   - [Piston](https://github.com/engineer-man/piston) (code execution)
   - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
+- **Testing:**
+  - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
+  - [Jest](https://jestjs.io) (unit testing for backend)
 
 ## Coding Style
 
