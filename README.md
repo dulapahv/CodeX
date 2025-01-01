@@ -22,7 +22,7 @@
 
 > This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
-For detailed usage instructions and feature documentation, please see **[manual.md](manual.md)**.
+For detailed usage instructions and feature documentation, please see the **[User Manual](manual.md)**.
 
 ## Features
 
@@ -226,7 +226,7 @@ For detailed information about using Kasca, including:
 - Keyboard shortcuts
 - Troubleshooting
 
-Please refer to our **[User Manual](manual.md)**.
+Please refer to the **[User Manual](manual.md)**.
 
 ## License
 
