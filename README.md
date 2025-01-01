@@ -137,18 +137,6 @@ pnpm build
 
 ## Testing
 
-To run tests, you need to install the dependencies in the client and server directories:
-
-```bash
-# Install client dependencies
-cd client
-pnpm i
-
-# Install server dependencies
-cd server
-pnpm i
-```
-
 ### Frontend Testing
 
 End-to-end tests are implemented using Playwright, which runs tests in multiple browsers simultaneously. To run frontend tests:
