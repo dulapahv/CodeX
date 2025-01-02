@@ -59,7 +59,7 @@ describe('Socket.IO Performance', () => {
         RoomServiceMsg.CREATE,
         (receivedRoomId: string, receivedCustomId: string) => {
           console.log('✅ Room created successfully');
-          console.log('🏷️  Room ID:', receivedRoomId);
+          console.log('🏷️ Room ID:', receivedRoomId);
           console.log('👤 Sender ID:', receivedCustomId);
           roomId = receivedRoomId;
           senderId = receivedCustomId;
@@ -184,8 +184,8 @@ describe('Socket.IO Performance', () => {
 
     console.log('\n📊 Latency Test Results:');
     console.log(`📈 Average: ${avg.toFixed(2)}ms`);
-    console.log(`⬇️  Min: ${min.toFixed(2)}ms`);
-    console.log(`⬆️  Max: ${max.toFixed(2)}ms`);
+    console.log(`⬇️ Min: ${min.toFixed(2)}ms`);
+    console.log(`⬆️ Max: ${max.toFixed(2)}ms`);
 
     expect(avg).toBeLessThan(500);
   }, 10000);
