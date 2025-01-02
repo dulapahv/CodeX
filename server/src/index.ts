@@ -64,7 +64,7 @@ app.listen(PORT, (token) => {
   console.log(`kasca-server listening on port: ${PORT}`);
 });
 
-app.get('/', (res, req) => {
+app.get('/*', (res, req) => {
   const origin = req.getHeader('origin');
   const headers = getCorsHeaders(origin);
 
@@ -74,19 +74,8 @@ app.get('/', (res, req) => {
   res.writeHeader('Content-Type', 'text/plain');
 
   res.end(
-    'Hello from kasca-server! Go to https://kasca.dulapahv.dev to use the app :D',
+    'Hello from kasca-server! Go to https://kasca.dulapahv.dev/ to start coding.',
   );
-});
-app.get('/ping', (res, req) => {
-  const origin = req.getHeader('origin');
-  const headers = getCorsHeaders(origin);
-
-  Object.entries(headers).forEach(([key, value]) => {
-    res.writeHeader(key, value);
-  });
-  res.writeHeader('Content-Type', 'text/plain');
-
-  res.end('pong');
 });
 
 io.on('connection', (socket) => {
