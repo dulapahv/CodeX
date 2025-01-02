@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 
 import type { BetterStackResponse } from '@/components/status/types';
 
+export const runtime = 'edge';
+
 export async function GET() {
   try {
     const response = await fetch(
