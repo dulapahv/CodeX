@@ -14,7 +14,7 @@ export async function createRoom(page: Page, name: string) {
   await expect(page.getByLabel('Redirecting')).toBeVisible();
 
   // Wait for room to be created and URL to change /room/:id
-  await page.waitForLoadState('networkidle');
+  await page.waitForURL(/\/room\/.*/);
 
   // Verify room joining
   const hasJoined = await hasJoinedRoom(page, name);
