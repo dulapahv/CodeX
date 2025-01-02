@@ -21,43 +21,35 @@ import * as scrollService from '@/service/scroll-service';
 import * as userService from '@/service/user-service';
 import * as webRTCService from '@/service/webrtc-service';
 
+import {
+  ALLOWED_ORIGINS,
+  getCorsHeaders,
+  isVercelDeployment,
+} from './cors-config';
+
 const PORT = 3001;
-
-// Allow requests from these origins
-const baseOrigins = [
-  'http://localhost:3000',
-  'https://kasca.dulapahv.dev',
-  'https://dev-kasca.dulapahv.dev',
-];
-
-const isVercelDeployment = (origin: string): boolean => {
-  // Following Vercel's Git deployment URL pattern:
-  // <project-name>-<unique-hash>-<scope-slug>.vercel.app
-  // We'll match for our project name "kasca-client"
-  const vercelPattern =
-    /^https:\/\/kasca-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
-  return vercelPattern.test(origin);
-};
 
 const app = App();
 
 const io = new Server({
   cors: {
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) {
+      if (process.env.NODE_ENV === 'development') {
         callback(null, true);
         return;
       }
 
-      // Check if origin is in baseOrigins or matches Vercel deployment pattern
-      if (baseOrigins.includes(origin) || isVercelDeployment(origin)) {
+      if (
+        !origin ||
+        ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number]) ||
+        isVercelDeployment(origin)
+      ) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error('Origin not allowed'));
       }
     },
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST'], // Socket.IO needs both
   },
 });
 io.attachApp(app);
@@ -72,14 +64,29 @@ app.listen(PORT, (token) => {
   console.log(`kasca-server listening on port: ${PORT}`);
 });
 
-app.get('/', (res) => {
-  res.writeHeader('Content-Type', 'application/json');
+app.get('/', (res, req) => {
+  const origin = req.getHeader('origin');
+  const headers = getCorsHeaders(origin);
+
+  Object.entries(headers).forEach(([key, value]) => {
+    res.writeHeader(key, value);
+  });
+  res.writeHeader('Content-Type', 'text/plain');
+
   res.end(
-    JSON.stringify({
-      message:
-        'Hello from kasca-server! Go to https://kasca.dulapahv.dev to use the app :D',
-    }),
+    'Hello from kasca-server! Go to https://kasca.dulapahv.dev to use the app :D',
   );
+});
+app.get('/ping', (res, req) => {
+  const origin = req.getHeader('origin');
+  const headers = getCorsHeaders(origin);
+
+  Object.entries(headers).forEach(([key, value]) => {
+    res.writeHeader(key, value);
+  });
+  res.writeHeader('Content-Type', 'text/plain');
+
+  res.end('pong');
 });
 
 io.on('connection', (socket) => {
