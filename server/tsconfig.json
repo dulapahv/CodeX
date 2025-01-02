@@ -14,5 +14,5 @@
       "@common/*": ["../common/*"]
     }
   },
-  "include": ["./src/**/*", "./tests/**/*"]
+  "include": ["./src/**/*", "./tests/**/*"],
 }

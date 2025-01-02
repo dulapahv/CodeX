@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon -r tsconfig-paths/register src/index.ts",
     "start": "nodemon -r tsconfig-paths/register src/index.ts",
-    "build": "rimraf dist && tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "build": "rimraf dist && tsc && tsc-alias",
     "test:local": "jest --server=local",
     "test:remote": "jest --server=remote",
     "test:watch": "jest --server=local --watch",
@@ -27,7 +27,8 @@
     "rimraf": "^6.0.1",
     "socket.io-client": "^4.8.1",
     "ts-jest": "^29.2.5",
-    "tscpaths": "^0.0.9",
+    "tsc-alias": "^1.8.10",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
   },
   "optionalDependencies": {
