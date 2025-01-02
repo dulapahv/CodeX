@@ -32,10 +32,10 @@ export async function joinRoom(page: Page, roomUrl: string, name: string) {
   await page.goto(roomUrl);
 
   // Wait for the room to be joined and URL to change /?room=:id
-  await page.waitForLoadState('networkidle');
+  await page.waitForURL(/\/\?room=.*/);
 
   // Fill name and join room
-  await page.getByRole('textbox', { name: 'Name' }).fill(name);
+  await page.getByPlaceholder('Enter your name').fill(name);
   await page.getByRole('button', { name: 'Join Room', exact: true }).click();
 
   // Verify room joining
