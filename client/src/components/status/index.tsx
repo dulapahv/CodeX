@@ -1,7 +1,14 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+
 import { BASE_SERVER_URL, STATUS_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 import type { BetterStackResponse, ServiceStatus } from './types';
+
+const REFRESH_INTERVAL = 15000; // 15 seconds
 
 const getServerStatus = (
   monitors: BetterStackResponse['data'],
@@ -14,7 +21,7 @@ const getServerStatus = (
   if (!serverMonitor) {
     return {
       color: 'bg-muted-foreground',
-      label: 'Unknown',
+      label: 'Unknown Server Status',
       description: 'Unable to fetch server status',
     };
   }
@@ -60,63 +67,93 @@ const getServerStatus = (
   }
 };
 
-const Status = async () => {
-  let systemStatus: ServiceStatus = {
+const Status = () => {
+  const [systemStatus, setSystemStatus] = useState<ServiceStatus>({
     color: 'bg-muted-foreground',
-    label: 'Unknown',
+    label: 'Unknown Server Status',
     description: 'Unable to fetch server status',
-  };
+  });
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  try {
-    const response = await fetch(
-      'https://uptime.betterstack.com/api/v2/monitors',
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.BETTERSTACK_API_KEY}`,
-        },
-        next: { revalidate: 30 },
-      },
-    );
+  const fetchStatus = useCallback(async () => {
+    try {
+      const response = await fetch('/api/status', {
+        cache: 'no-store',
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch status');
+      if (!response.ok) {
+        throw new Error('Failed to fetch status');
+      }
+
+      const { data } = (await response.json()) as BetterStackResponse;
+      setSystemStatus(getServerStatus(data));
+    } catch (error) {
+      console.error('Error fetching server status:', error);
+      setSystemStatus({
+        color: 'bg-muted-foreground',
+        label: 'Error Fetching Server Status',
+        description: 'Failed to fetch server status',
+      });
+    } finally {
+      setIsInitialLoad(false);
+      setIsRefreshing(false);
     }
+  }, []); // No dependencies needed now
 
-    const { data } = (await response.json()) as BetterStackResponse;
-    systemStatus = getServerStatus(data);
-  } catch (error) {
-    console.error('Error fetching server status:', error);
-  }
+  useEffect(() => {
+    fetchStatus();
+
+    const intervalId = setInterval(() => {
+      setIsRefreshing(true);
+      fetchStatus();
+    }, REFRESH_INTERVAL);
+
+    return () => clearInterval(intervalId);
+  }, [fetchStatus]);
 
   return (
     <a
-      className="flex items-center gap-3 text-sm text-foreground/70 underline-offset-2 transition-all hover:text-foreground/50 hover:underline"
+      className={cn(
+        'flex items-center gap-x-2 text-sm text-foreground/70 underline-offset-2 transition-all hover:text-foreground/50 hover:underline',
+        isInitialLoad && 'cursor-wait',
+      )}
       href={STATUS_URL}
       target="_blank"
       rel="noreferrer"
       aria-label={`Server Status: ${systemStatus.description}`}
     >
-      <span
-        className="relative flex size-2"
-        role="status"
-        aria-label={systemStatus.label}
-      >
-        <span
-          className={cn(
-            'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
-            systemStatus.color,
-          )}
-          aria-hidden="true"
-        />
-        <span
-          className={cn(
-            'relative inline-flex h-2 w-2 rounded-full',
-            systemStatus.color,
-          )}
-          aria-hidden="true"
-        />
-      </span>
-      <span aria-hidden="true">{systemStatus.label}</span>
+      {isInitialLoad ? (
+        <>
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          <span>Checking Server Status...</span>
+        </>
+      ) : (
+        <>
+          <span
+            className="relative flex size-2"
+            role="status"
+            aria-label={systemStatus.label}
+          >
+            <span
+              className={cn(
+                'absolute inline-flex size-full animate-ping rounded-full opacity-75',
+                systemStatus.color,
+                isRefreshing && 'animate-pulse',
+              )}
+              aria-hidden="true"
+            />
+            <span
+              className={cn(
+                'relative inline-flex size-2 rounded-full',
+                systemStatus.color,
+              )}
+              aria-hidden="true"
+            />
+          </span>
+          <span aria-hidden="true">{systemStatus.label}</span>
+        </>
+      )}
     </a>
   );
 };
