@@ -5,12 +5,12 @@ export const IS_DEV_ENV =
 
 export const BASE_CLIENT_URL = IS_DEV_ENV
   ? 'http://localhost:3000'
-  : 'https://kasca.dulapahv.dev';
+  : 'https://kasca.dulapahv.dev/';
 export const BASE_SERVER_URL = IS_DEV_ENV
   ? 'http://localhost:3001'
-  : 'https://kasca-server.dulapahv.dev';
+  : 'https://kasca-server.dulapahv.dev/';
 
-export const STATUS_URL = 'https://kasca-status.dulapahv.dev';
+export const STATUS_URL = 'https://kasca-status.dulapahv.dev/';
 
 export const GITHUB_API_URL = 'https://api.github.com';
 export const GITHUB_OAUTH_URL = 'https://github.com/login/oauth';
