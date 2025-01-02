@@ -64,7 +64,7 @@ app.listen(PORT, (token) => {
   console.log(`kasca-server listening on port: ${PORT}`);
 });
 
-app.get('/*', (res, req) => {
+app.get('/', (res, req) => {
   const origin = req.getHeader('origin');
   const headers = getCorsHeaders(origin);
 
