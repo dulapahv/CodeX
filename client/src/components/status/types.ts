@@ -58,11 +58,21 @@ export type BetterStackResponse = {
         data: unknown;
       };
     };
-  }[];
-  pagination: {
-    first: string;
-    last: string;
-    prev: unknown;
-    next: unknown;
+  };
+};
+
+export type ResponseTimeData = {
+  data: {
+    id: string;
+    type: string;
+    attributes: {
+      regions: Array<{
+        region: string;
+        response_times: Array<{
+          at: string;
+          response_time: number;
+        }>;
+      }>;
+    };
   };
 };

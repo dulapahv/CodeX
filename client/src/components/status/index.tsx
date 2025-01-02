@@ -10,15 +10,15 @@ import type { BetterStackResponse, ServiceStatus } from './types';
 
 const REFRESH_INTERVAL = 15000; // 15 seconds
 
-const getServerStatus = (
-  monitors: BetterStackResponse['data'],
-): ServiceStatus => {
-  // Find the server monitor
-  const serverMonitor = monitors.find(
-    (monitor) => monitor.attributes.url === BASE_SERVER_URL,
-  );
+interface ServerStatus extends ServiceStatus {
+  responseTime?: number;
+}
 
-  if (!serverMonitor) {
+const getServerStatus = (
+  monitor: BetterStackResponse['data'],
+  responseTime?: number,
+): ServerStatus => {
+  if (!monitor) {
     return {
       color: 'bg-muted-foreground',
       label: 'Unknown Server Status',
@@ -27,13 +27,14 @@ const getServerStatus = (
   }
 
   // Check server status
-  switch (serverMonitor.attributes.status) {
+  switch (monitor.attributes.status) {
     case 'maintenance':
     case 'paused':
       return {
         color: 'bg-blue-600',
         label: 'Server Maintenance',
         description: 'Server under maintenance',
+        responseTime,
       };
 
     case 'down':
@@ -41,6 +42,7 @@ const getServerStatus = (
         color: 'bg-red-600',
         label: 'Server Offline',
         description: 'Server is offline',
+        responseTime,
       };
 
     case 'validating':
@@ -49,6 +51,7 @@ const getServerStatus = (
         color: 'bg-yellow-600',
         label: 'Server Connecting',
         description: 'Server is connecting',
+        responseTime,
       };
 
     case 'up':
@@ -56,6 +59,7 @@ const getServerStatus = (
         color: 'bg-green-600',
         label: 'Server Online',
         description: 'Server is online',
+        responseTime,
       };
 
     default:
@@ -63,12 +67,32 @@ const getServerStatus = (
         color: 'bg-yellow-600',
         label: 'Server Issues',
         description: 'Server experiencing issues',
+        responseTime,
       };
   }
 };
 
+const pingServer = async (): Promise<number> => {
+  const startTime = performance.now();
+
+  try {
+    const response = await fetch(`${BASE_SERVER_URL}`, {
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error('Ping failed');
+    }
+
+    const endTime = performance.now();
+    return Math.round(endTime - startTime);
+  } catch {
+    throw new Error('Server unreachable');
+  }
+};
+
 const Status = () => {
-  const [systemStatus, setSystemStatus] = useState<ServiceStatus>({
+  const [systemStatus, setSystemStatus] = useState<ServerStatus>({
     color: 'bg-muted-foreground',
     label: 'Unknown Server Status',
     description: 'Unable to fetch server status',
@@ -78,6 +102,10 @@ const Status = () => {
 
   const fetchStatus = useCallback(async () => {
     try {
+      // First try to ping the server
+      const responseTime = await pingServer();
+
+      // Only fetch BetterStack status if ping succeeds
       const response = await fetch('/api/status', {
         cache: 'no-store',
       });
@@ -87,19 +115,28 @@ const Status = () => {
       }
 
       const { data } = (await response.json()) as BetterStackResponse;
-      setSystemStatus(getServerStatus(data));
+      setSystemStatus(getServerStatus(data, responseTime));
     } catch (error) {
       console.error('Error fetching server status:', error);
-      setSystemStatus({
-        color: 'bg-muted-foreground',
-        label: 'Error Fetching Server Status',
-        description: 'Failed to fetch server status',
-      });
+      // If it's a ping error, show offline status
+      if (error instanceof Error && error.message === 'Server unreachable') {
+        setSystemStatus({
+          color: 'bg-red-600',
+          label: 'Server Offline',
+          description: 'Server is unreachable',
+        });
+      } else {
+        setSystemStatus({
+          color: 'bg-muted-foreground',
+          label: 'Error Fetching Server Status',
+          description: 'Failed to fetch server status',
+        });
+      }
     } finally {
       setIsInitialLoad(false);
       setIsRefreshing(false);
     }
-  }, []); // No dependencies needed now
+  }, []);
 
   useEffect(() => {
     fetchStatus();
@@ -121,7 +158,11 @@ const Status = () => {
       href={STATUS_URL}
       target="_blank"
       rel="noreferrer"
-      aria-label={`Server Status: ${systemStatus.description}`}
+      aria-label={`Server Status: ${systemStatus.description}${
+        systemStatus.responseTime
+          ? ` with ${systemStatus.responseTime}ms response time`
+          : ''
+      }`}
     >
       {isInitialLoad ? (
         <>
@@ -151,7 +192,11 @@ const Status = () => {
               aria-hidden="true"
             />
           </span>
-          <span aria-hidden="true">{systemStatus.label}</span>
+          <span aria-hidden="true">
+            {systemStatus.label}
+            {systemStatus.responseTime !== undefined &&
+              ` (${systemStatus.responseTime}ms)`}
+          </span>
         </>
       )}
     </a>

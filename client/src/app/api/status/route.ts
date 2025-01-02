@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { KASCA_SERVER_MONITOR_ID } from '@/lib/constants';
 import type { BetterStackResponse } from '@/components/status/types';
 
 export const runtime = 'edge';
@@ -7,7 +8,7 @@ export const runtime = 'edge';
 export async function GET() {
   try {
     const response = await fetch(
-      'https://uptime.betterstack.com/api/v2/monitors',
+      `https://uptime.betterstack.com/api/v2/monitors/${KASCA_SERVER_MONITOR_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.BETTERSTACK_API_KEY}`,
