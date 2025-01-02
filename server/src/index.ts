@@ -14,12 +14,12 @@ import type { Pointer } from '@common/types/pointer';
 import type { Scroll } from '@common/types/scroll';
 import type { ExecutionResult } from '@common/types/terminal';
 
-import * as codeService from './service/code-service';
-import * as pointerService from './service/pointer-service';
-import * as roomService from './service/room-service';
-import * as scrollService from './service/scroll-service';
-import * as userService from './service/user-service';
-import * as webRTCService from './service/webrtc-service';
+import * as codeService from '@/service/code-service';
+import * as pointerService from '@/service/pointer-service';
+import * as roomService from '@/service/room-service';
+import * as scrollService from '@/service/scroll-service';
+import * as userService from '@/service/user-service';
+import * as webRTCService from '@/service/webrtc-service';
 
 const PORT = 3001;
 
