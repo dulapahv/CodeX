@@ -94,6 +94,8 @@ jobs:
           pnpm lint:check
           echo "🔨 Building client..."
           NODE_ENV=production pnpm build
+          touch .env
+          echo NEXT_PUBLIC_API_URL=${{ secrets.BETTERSTACK_API_KEY }} > .env
 
       - name: 🎭 Install Playwright browsers
         working-directory: ./client
