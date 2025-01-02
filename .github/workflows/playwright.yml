@@ -87,6 +87,8 @@ jobs:
 
       - name: 🏗️ Install and build client
         working-directory: ./client
+        env:
+          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
         run: |
           echo "📦 Installing client dependencies..."
           NODE_ENV=development pnpm install
@@ -95,7 +97,7 @@ jobs:
           echo "🔨 Building client..."
           NODE_ENV=production pnpm build
           touch .env
-          echo NEXT_PUBLIC_API_URL=${{ secrets.BETTERSTACK_API_KEY }} > .env
+          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
 
       - name: 🎭 Install Playwright browsers
         working-directory: ./client
