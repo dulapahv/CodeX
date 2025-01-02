@@ -87,8 +87,6 @@ jobs:
 
       - name: 🏗️ Install and build client
         working-directory: ./client
-        env:
-          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
         run: |
           echo "📦 Installing client dependencies..."
           NODE_ENV=development pnpm install
