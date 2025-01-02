@@ -4,6 +4,7 @@ import { AboutButton } from '@/components/about-button';
 import { AnimatedGridBackground } from '@/components/animated-grid-bg';
 import { RoomAccessForm } from '@/components/room-access-form';
 import { ShowcaseGrid } from '@/components/showcase-grid';
+import { Status } from '@/components/status';
 
 const Page = () => (
   <>
@@ -60,7 +61,8 @@ const Page = () => (
         <ShowcaseGrid />
       </div>
 
-      <div className="dark">
+      <div className="dark fixed bottom-2.5 right-3 flex items-center gap-x-3">
+        <Status />
         <AboutButton />
       </div>
     </main>
