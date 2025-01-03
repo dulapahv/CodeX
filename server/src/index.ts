@@ -79,6 +79,7 @@ app.get('/', (res, req) => {
 });
 
 io.on('connection', (socket) => {
+  socket.on('ping', () => socket.emit('pong'));
   socket.on(RoomServiceMsg.CREATE, async (name: string) =>
     roomService.create(socket, name),
   );
