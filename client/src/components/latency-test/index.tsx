@@ -155,6 +155,7 @@ const LatencyTest = () => {
               <Input
                 id="iterations"
                 type="number"
+                pattern="[0-9]*"
                 min={MIN_ITERATIONS}
                 max={MAX_ITERATIONS}
                 value={iterations}
