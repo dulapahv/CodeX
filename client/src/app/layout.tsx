@@ -65,6 +65,7 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_US',
+    url: BASE_CLIENT_URL,
   },
   twitter: {
     card: 'summary_large_image',
