@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 
 import { BASE_SERVER_URL } from '@/lib/constants';
@@ -56,6 +57,8 @@ const MIN_ITERATIONS = 1;
 const MAX_ITERATIONS = 50;
 
 const LatencyTest = () => {
+  const router = useRouter();
+
   const [results, setResults] = useState<TestResult[]>([]);
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,6 +164,14 @@ const LatencyTest = () => {
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
+      <Button
+        variant="link"
+        className="mt-4 px-6 text-white"
+        onClick={() => router.back()}
+      >
+        <ArrowLeft className="mr-2 size-4" />
+        Go back
+      </Button>
       <CardHeader>
         <CardTitle>Server Latency Test</CardTitle>
       </CardHeader>

@@ -21,16 +21,18 @@ const AboutButton = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="size-5 rounded-full hover:bg-accent/50"
+            className="size-5 hover:bg-transparent hover:text-muted-foreground"
             aria-label="About"
             type="button"
             aria-haspopup="dialog"
             onClick={() => aboutDialogRef.current?.openDialog()}
           >
-            <Info className="size-5 text-white" />
+            <Info className="size-5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top">About</TooltipContent>
+        <TooltipContent side="top" className="mr-1">
+          About
+        </TooltipContent>
       </Tooltip>
       <AboutDialog ref={aboutDialogRef} className="dark" />
     </>
