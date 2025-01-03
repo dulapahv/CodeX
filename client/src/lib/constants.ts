@@ -25,13 +25,16 @@ export const GITHUB_CLIENT_SECRET = IS_DEV_ENV
 export const NAME_MAX_LENGTH = 64;
 
 export const SITE_NAME = 'Kasca - Code Collaboration Platform';
-export const SHORT_SITE_NAME = 'Kasca';
 export const SITE_DESCRIPTION =
   'Your collaborative coding space, reimagined. Code together now on Kasca, no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
-export const SITE_IMAGE_URL = `${BASE_CLIENT_URL}/cover.png`;
-export const THEME_COLOR = '#101723';
+export const LATENCY_TEST_TITLE = 'Server Latency Test';
+export const LATENCY_TEST_DESCRIPTION =
+  'Test your latency to the Kasca server.';
+export const GITHUB_OAUTH_TITLE = 'GitHub OAuth Callback';
+export const GITHUB_OAUTH_DESCRIPTION =
+  'This page is used to handle the GitHub OAuth callback.';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
 export const CONTACT_URL = 'https://dulapahv.dev/contact';
