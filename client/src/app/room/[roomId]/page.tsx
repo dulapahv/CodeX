@@ -21,6 +21,7 @@ import type { User } from '@common/types/user';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { CodeEditor } from '@/components/code-editor';
 import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
@@ -170,6 +171,7 @@ export default function Room(props: {
   const { roomId } = use(props.searchParams);
   const router = useRouter();
   const socket = getSocket();
+  useThemeColor();
 
   const [showNotepad, setShowNotepad] = useState(true);
   const [showTerminal, setShowTerminal] = useState(true);
