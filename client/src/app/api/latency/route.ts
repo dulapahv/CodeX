@@ -36,6 +36,7 @@ async function measureSocketLatency(transport: Transport): Promise<number> {
   return new Promise((resolve, reject) => {
     const socket = io(BASE_SERVER_URL, {
       transports: [transport],
+      withCredentials: true,
       forceNew: true,
     });
 
@@ -78,7 +79,9 @@ export async function GET() {
 
   try {
     const httpStart = performance.now();
-    const httpResponse = await fetch(BASE_SERVER_URL);
+    const httpResponse = await fetch(BASE_SERVER_URL, {
+      credentials: 'include',
+    });
 
     if (!httpResponse.ok) {
       throw new Error('HTTP request failed');
