@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Socket } from 'socket.io-client';
 
 import { BASE_SERVER_URL } from '@/lib/constants';
 import { getSocket } from '@/lib/socket';
@@ -60,6 +61,22 @@ const LatencyTest = () => {
   const [error, setError] = useState<string | null>(null);
   const [testCount, setTestCount] = useState(0);
   const [iterations, setIterations] = useState(DEFAULT_ITERATIONS);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnecting, setIsConnecting] = useState(true);
+
+  // Initialize socket connection on component mount
+  useEffect(() => {
+    const newSocket = getSocket();
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      setIsConnecting(false);
+    });
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
 
   const handleIterationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -69,6 +86,10 @@ const LatencyTest = () => {
   };
 
   const singleTest = async (): Promise<{ http: number; socket: number }> => {
+    if (!socket) {
+      throw new Error('Socket not initialized');
+    }
+
     const httpStart = performance.now();
     const response = await fetch(BASE_SERVER_URL);
 
@@ -78,19 +99,16 @@ const LatencyTest = () => {
 
     const httpLatency = Math.round(performance.now() - httpStart);
 
-    const socket = getSocket();
-    const socketStart = performance.now();
-
-    socket.emit('ping');
-
     const socketLatency = await new Promise<number>((resolve, reject) => {
+      const start = performance.now();
       const timeout = setTimeout(() => {
         reject(new Error('Socket ping timeout'));
       }, 5000);
 
+      socket.emit('ping');
       socket.once('pong', () => {
         clearTimeout(timeout);
-        resolve(Math.round(performance.now() - socketStart));
+        resolve(Math.round(performance.now() - start));
       });
     });
 
@@ -98,6 +116,11 @@ const LatencyTest = () => {
   };
 
   const measureLatency = async () => {
+    if (!socket?.connected) {
+      setError('Socket not connected');
+      return;
+    }
+
     setIsTesting(true);
     setError(null);
     setResults([]);
@@ -159,10 +182,15 @@ const LatencyTest = () => {
             </div>
             <Button
               onClick={measureLatency}
-              disabled={isTesting}
+              disabled={isTesting || isConnecting}
               className="flex-1"
             >
-              {isTesting ? (
+              {isConnecting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting...
+                </>
+              ) : isTesting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Testing ({testCount}/{iterations})
