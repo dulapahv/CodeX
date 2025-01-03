@@ -8,10 +8,11 @@ import {
 } from 'react';
 import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
-import { LoaderCircle, Unplug } from 'lucide-react';
+import { Unplug } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { cn, loginWithGithub } from '@/lib/utils';
+import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -141,10 +142,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 role="status"
                 aria-label="Loading GitHub connection status"
               >
-                <LoaderCircle
-                  className="size-4 animate-spin"
-                  aria-hidden="true"
-                />
+                <Spinner />
               </div>
             ) : githubUser ? (
               <div

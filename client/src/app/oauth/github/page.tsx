@@ -20,8 +20,8 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { LoaderCircle } from 'lucide-react';
 
+import { Spinner } from '@/components/spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Page() {
@@ -44,12 +44,14 @@ export default function Page() {
 
   return (
     <main className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
-      <Alert className="max-w-md bg-background/50 backdrop-blur">
-        <LoaderCircle className="size-5 animate-spin" />
-        <AlertTitle>Processing authentication...</AlertTitle>
-        <AlertDescription>
-          This window will close automatically in a few seconds.
-        </AlertDescription>
+      <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
+        <Spinner className="size-6" />
+        <div>
+          <AlertTitle>Processing authentication...</AlertTitle>
+          <AlertDescription>
+            This window will close automatically in a few seconds.
+          </AlertDescription>
+        </div>
       </Alert>
     </main>
   );

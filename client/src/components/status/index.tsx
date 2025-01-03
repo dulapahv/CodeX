@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 
 import { STATUS_URL } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/spinner';
 
 import type { BetterStackResponse, ServiceStatus } from './types';
 
@@ -120,7 +120,7 @@ const Status = () => {
     >
       {isInitialLoad ? (
         <>
-          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          <Spinner />
           <span>Checking Server Status...</span>
         </>
       ) : (

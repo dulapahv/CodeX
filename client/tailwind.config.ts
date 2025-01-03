@@ -71,6 +71,7 @@ const config: Config = {
           'fade-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
         'fade-in-left': 'fade-in-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
         'fade-in-right': 'fade-in-right 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
+        'spinner-fade': 'spinner-fade 1s infinite linear',
       },
       keyframes: {
         'scale-up-center': {
@@ -127,6 +128,26 @@ const config: Config = {
           to: {
             transform: 'translateX(0)',
             opacity: '1',
+          },
+        },
+        'spinner-fade': {
+          '0%': {
+            opacity: '0',
+          },
+          '20%': {
+            opacity: '1',
+          },
+          '40%': {
+            opacity: '0.6',
+          },
+          '60%': {
+            opacity: '0.4',
+          },
+          '80%': {
+            opacity: '0.2',
+          },
+          '100%': {
+            opacity: '0.1',
           },
         },
       },

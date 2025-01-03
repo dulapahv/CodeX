@@ -29,13 +29,14 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CirclePlus, LoaderCircle } from 'lucide-react';
+import { CirclePlus } from 'lucide-react';
 import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
 } from 'react-hook-form';
 
+import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -106,10 +107,7 @@ export const CreateRoomSection = ({
           aria-busy={isSubmitting}
         >
           {isSubmitting ? (
-            <LoaderCircle
-              className="mr-2 size-4 animate-spin sm:size-5"
-              aria-hidden="true"
-            />
+            <Spinner className="mr-2 size-4 sm:size-5" />
           ) : (
             <CirclePlus className="mr-2 size-4 sm:size-5" aria-hidden="true" />
           )}

@@ -8,7 +8,7 @@ import {
 } from 'react';
 import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
-import { LoaderCircle, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 
@@ -19,6 +19,7 @@ import {
   itemType,
   type ExtendedTreeDataItem,
 } from '@/components/repo-browser/types/tree';
+import { Spinner } from '@/components/spinner';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -176,7 +177,7 @@ const OpenFromGithubDialog = forwardRef<
       role="status"
     >
       {isLoading ? (
-        <LoaderCircle className="size-6 animate-spin" aria-label="Loading..." />
+        <Spinner size="lg" />
       ) : !githubUser ? (
         <>
           <p
@@ -279,10 +280,7 @@ const OpenFromGithubDialog = forwardRef<
                 >
                   {isFetchingContent ? (
                     <>
-                      <LoaderCircle
-                        className="mr-2 size-4 animate-spin"
-                        aria-hidden="true"
-                      />
+                      <Spinner className="mr-2" />
                       Opening...
                     </>
                   ) : (
@@ -351,10 +349,7 @@ const OpenFromGithubDialog = forwardRef<
                   >
                     {isFetchingContent ? (
                       <>
-                        <LoaderCircle
-                          className="mr-2 size-4 animate-spin"
-                          aria-hidden="true"
-                        />
+                        <Spinner className="mr-2" />
                         Opening...
                       </>
                     ) : (

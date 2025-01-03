@@ -11,7 +11,6 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Monaco } from '@monaco-editor/react';
-import { LoaderCircle } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@common/types/message';
@@ -31,6 +30,7 @@ import { RemotePointers } from '@/components/remote-pointers';
 import { RunButton } from '@/components/run-button';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
+import { Spinner } from '@/components/spinner';
 import {
   StatusBar,
   type StatusBarCursorPosition,
@@ -417,12 +417,14 @@ export default function Room(props: {
           role="status"
           aria-live="polite"
         >
-          <Alert className="max-w-md bg-background/50 backdrop-blur">
-            <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
-            <AlertTitle>Loading session</AlertTitle>
-            <AlertDescription>
-              Loading your coding session. Please wait...
-            </AlertDescription>
+          <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
+            <Spinner className="size-6" />
+            <div>
+              <AlertTitle>Loading session</AlertTitle>
+              <AlertDescription>
+                Loading your coding session. Please wait...
+              </AlertDescription>
+            </div>
           </Alert>
         </div>
       )}

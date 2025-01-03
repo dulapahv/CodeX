@@ -10,7 +10,6 @@
  * @remarks
  * Uses the following components:
  * - [`Alert`](src/components/ui/alert.tsx) for the container
- * - [`LoaderCircle`](lucide-react) for the loading animation
  * - Tailwind CSS for styling and animations
  *
  * @returns A centered alert component with loading spinner and setup message
@@ -19,18 +18,20 @@
  */
 
 import { memo } from 'react';
-import { LoaderCircle } from 'lucide-react';
 
+import { Spinner } from '@/components/spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const LoadingCard = memo(() => (
   <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2 backdrop-blur-sm">
-    <Alert className="max-w-md bg-background/50">
-      <LoaderCircle className="size-5 animate-spin" />
-      <AlertTitle>Setting up editor</AlertTitle>
-      <AlertDescription>
-        Setting up the editor for you. Please wait...
-      </AlertDescription>
+    <Alert className="flex max-w-md gap-x-2 bg-background/50">
+      <Spinner className="size-6" />
+      <div>
+        <AlertTitle>Setting up editor</AlertTitle>
+        <AlertDescription>
+          Setting up the editor for you. Please wait...
+        </AlertDescription>
+      </div>
     </Alert>
   </div>
 ));

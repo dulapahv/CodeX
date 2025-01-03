@@ -21,7 +21,6 @@
  * Uses the following components:
  * - [`ScrollArea`](src/components/ui/scroll-area.tsx) for scrolling
  * - [`Accordion`](src/components/ui/accordion.tsx) for expanding/collapsing
- * - [`LoaderCircle`](lucide-react) for loading states
  */
 
 'use client';
@@ -35,17 +34,12 @@ import {
   useState,
 } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import {
-  ChevronRight,
-  FileCode,
-  Folder,
-  LoaderCircle,
-  type LucideIcon,
-} from 'lucide-react';
+import { ChevronRight, FileCode, Folder, type LucideIcon } from 'lucide-react';
 import useResizeObserver from 'use-resize-observer';
 
 import { cn } from '@/lib/utils';
 import { itemType } from '@/components/repo-browser/types/tree';
+import { Spinner } from '@/components/spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Base interface for tree items
@@ -66,13 +60,7 @@ interface TreeProps extends HTMLAttributes<HTMLDivElement> {
 
 const Tree = forwardRef<HTMLDivElement, TreeProps>(
   (
-    {
-      data,
-      initialSelectedItemId,
-      onSelectChange,
-      className,
-      ...props
-    },
+    { data, initialSelectedItemId, onSelectChange, className, ...props },
     ref,
   ) => {
     const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
@@ -188,7 +176,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                         )}
                         <span className="truncate text-sm">{item.name}</span>
                         {item.isLoading && (
-                          <LoaderCircle className="ml-2 size-4 animate-spin" />
+                          <Spinner size="sm" className="ml-2" />
                         )}
                       </AccordionTrigger>
                       <AccordionContent className="ml-4 pl-2">
