@@ -11,7 +11,7 @@
  */
 
 import type { ReactNode } from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import { INVITED_DESCRIPTION } from '@/lib/constants';
 
@@ -21,6 +21,13 @@ import { INVITED_DESCRIPTION } from '@/lib/constants';
  */
 export const metadata: Metadata = {
   description: INVITED_DESCRIPTION,
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#eef1f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#101723' },
+  ],
 };
 
 interface RootLayoutProps {
