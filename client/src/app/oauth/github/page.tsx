@@ -19,17 +19,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { Metadata } from 'next';
 import { useSearchParams } from 'next/navigation';
 import { LoaderCircle } from 'lucide-react';
 
-import { GITHUB_OAUTH_DESCRIPTION, GITHUB_OAUTH_TITLE } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-export const metadata: Metadata = {
-  title: GITHUB_OAUTH_TITLE,
-  description: GITHUB_OAUTH_DESCRIPTION,
-};
 
 export default function Page() {
   const searchParams = useSearchParams();
