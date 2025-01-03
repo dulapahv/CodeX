@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 
 import { BASE_SERVER_URL } from '@/lib/constants';
 import { getSocket } from '@/lib/socket';
+import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,37 +21,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface TestResult {
-  id: number;
-  http: number;
-  socket: number;
-  timestamp: string;
-}
-
-interface Stats {
-  min: number;
-  max: number;
-  avg: number;
-  median: number;
-  stdDev: number;
-}
-
-const calculateStats = (values: number[]): Stats => {
-  const sorted = [...values].sort((a, b) => a - b);
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-
-  const squareDiffs = values.map((value) => Math.pow(value - avg, 2));
-  const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / values.length;
-  const stdDev = Math.round(Math.sqrt(avgSquareDiff));
-
-  return {
-    min: sorted[0],
-    max: sorted[sorted.length - 1],
-    avg: Math.round(avg),
-    median: sorted[Math.floor(sorted.length / 2)],
-    stdDev,
-  };
-};
+import type { TestResult } from './types';
+import { calculateStats } from './utils';
 
 const DEFAULT_ITERATIONS = 10;
 const MIN_ITERATIONS = 1;
@@ -81,7 +53,7 @@ const LatencyTest = () => {
     };
   }, []);
 
-  const handleIterationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIterationChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (!isNaN(value)) {
       setIterations(Math.min(Math.max(value, MIN_ITERATIONS), MAX_ITERATIONS));
@@ -198,12 +170,12 @@ const LatencyTest = () => {
             >
               {isConnecting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Spinner className="mr-2" />
                   Connecting...
                 </>
               ) : isTesting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Spinner className="mr-2" />
                   Testing ({testCount}/{iterations})
                 </>
               ) : (
