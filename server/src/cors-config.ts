@@ -2,6 +2,7 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
   'https://dev-kasca.dulapahv.dev',
+  'https://kasca.onrender.com/',
 ] as const;
 
 const isVercelDeployment = (origin: string): boolean => {
