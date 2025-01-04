@@ -44,7 +44,7 @@ export interface SpinnerProps
 
 const Spinner = ({ className, variant, size = 'default' }: SpinnerProps) => {
   const opacities = [
-    0.1, 1, 0.6, 0.4, 0.4, 0.3, 0.3, 0.2, 0.2, 0.15, 0.15, 0.1,
+    1, 0.6, 0.4, 0.4, 0.3, 0.3, 0.2, 0.2, 0.15, 0.15, 0.1, 0.1,
   ];
 
   const blades = Array.from({ length: 12 }).map((_, index) => {
@@ -55,7 +55,7 @@ const Spinner = ({ className, variant, size = 'default' }: SpinnerProps) => {
     return (
       <div
         key={index}
-        className="animate-spinner-fade absolute left-[46.5%] top-[4.4%] h-[24%] w-[7%] origin-[center_190%] rounded-full will-change-transform"
+        className="animate-spinner absolute left-[46.5%] top-[4.4%] h-[24%] w-[7%] origin-[center_190%] rounded-full will-change-transform"
         style={{
           transform: `rotate(${rotationDegrees}deg)`,
           animationDelay: `${delaySeconds}s`,
