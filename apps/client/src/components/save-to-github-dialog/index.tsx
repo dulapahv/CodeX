@@ -34,10 +34,7 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { RepoBrowser } from '@/components/repo-browser';
-import {
-  itemType,
-  type ExtendedTreeDataItem,
-} from '@/components/repo-browser/types/tree';
+import type { ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 import { Spinner } from '@/components/spinner';
 
 import { useCommitForm } from './hooks/useCommitForm';
@@ -126,8 +123,7 @@ const SaveToGithubDialog = forwardRef<
   }));
 
   useEffect(() => {
-    const fileName =
-      selectedItem?.type === itemType.FILE ? selectedItem.name : '';
+    const fileName = selectedItem?.type === 'FILE' ? selectedItem.name : '';
     if (fileName) {
       setValue('fileName', fileName);
       clearErrors('fileName');
@@ -295,7 +291,7 @@ const SaveToGithubDialog = forwardRef<
                   disabled={
                     isSubmitting ||
                     !selectedItem ||
-                    selectedItem.type === itemType.REPO
+                    selectedItem.type === 'REPO'
                   }
                   aria-busy={isSubmitting}
                 >
@@ -377,7 +373,7 @@ const SaveToGithubDialog = forwardRef<
                     disabled={
                       isSubmitting ||
                       !selectedItem ||
-                      selectedItem.type === itemType.REPO
+                      selectedItem.type === 'REPO'
                     }
                     aria-busy={isSubmitting}
                   >

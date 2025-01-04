@@ -40,7 +40,6 @@ import useResizeObserver from 'use-resize-observer';
 
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { itemType } from '@/components/repo-browser/types/tree';
 import { Spinner } from '@/components/spinner';
 
 // Base interface for tree items
@@ -144,9 +143,9 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
             data.map((item) => (
               <li key={item.id}>
                 {item.children ||
-                item.type === itemType.REPO ||
-                item.type === itemType.BRANCH ||
-                item.type === itemType.DIR ? (
+                item.type === 'REPO' ||
+                item.type === 'BRANCH' ||
+                item.type === 'DIR' ? (
                   <AccordionPrimitive.Root
                     type="multiple"
                     defaultValue={expandedIds}

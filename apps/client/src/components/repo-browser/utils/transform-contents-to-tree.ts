@@ -1,7 +1,7 @@
 import { FileCode, Folder } from 'lucide-react';
 
 import type { GithubContent } from '../types/github';
-import { itemType, type ExtendedTreeDataItem } from '../types/tree';
+import type { ExtendedTreeDataItem } from '../types/tree';
 
 export const transformContentsToTreeData = (
   repoID: string,
@@ -10,13 +10,13 @@ export const transformContentsToTreeData = (
 ): ExtendedTreeDataItem[] => {
   if (!contents) return [];
   return contents
-    .filter((item) => item.type === itemType.DIR || item.type === itemType.FILE)
+    .filter((item) => item.type === 'DIR' || item.type === 'FILE')
     .map((item) => ({
       id: `${repoID}${branchID}${item.path}`,
       name: item.name,
       path: item.path,
-      children: item.type === itemType.DIR ? undefined : undefined,
-      icon: item.type === itemType.DIR ? Folder : FileCode,
+      children: item.type === 'DIR' ? undefined : undefined,
+      icon: item.type === 'DIR' ? Folder : FileCode,
       type: item.type,
     }));
 };

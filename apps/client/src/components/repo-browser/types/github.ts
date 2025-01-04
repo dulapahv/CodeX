@@ -1,5 +1,3 @@
-import { itemType } from './tree';
-
 export type GithubRepo = {
   id: number;
   name: string;
@@ -13,7 +11,7 @@ export type GithubBranch = {
 export type GithubContent = {
   name: string;
   path: string;
-  type: itemType.DIR | itemType.FILE;
+  type: 'DIR' | 'FILE';
 };
 
 export type CommitResponse = {

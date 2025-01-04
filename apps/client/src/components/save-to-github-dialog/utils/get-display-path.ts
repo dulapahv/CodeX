@@ -1,7 +1,4 @@
-import {
-  itemType,
-  type ExtendedTreeDataItem,
-} from '@/components/repo-browser/types/tree';
+import type { ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 
 export const getDisplayPath = (
   repo: string,
@@ -22,7 +19,7 @@ export const getDisplayPath = (
 
   // Add directory path from selected item if it exists
   if (selectedItem) {
-    if (selectedItem.type === itemType.DIR) {
+    if (selectedItem.type === 'DIR') {
       path += `${selectedItem.path}/`;
     } else {
       const dirPath = selectedItem.path?.split('/').slice(0, -1).join('/');

@@ -35,7 +35,6 @@ import {
 } from '@/components/ui/drawer';
 import { RepoBrowser } from '@/components/repo-browser';
 import {
-  itemType,
   type ExtendedTreeDataItem,
 } from '@/components/repo-browser/types/tree';
 import { Spinner } from '@/components/spinner';
@@ -114,7 +113,7 @@ const OpenFromGithubDialog = forwardRef<
 
   useEffect(() => {
     const fileName =
-      selectedItem?.type === itemType.FILE ? selectedItem.name : '';
+      selectedItem?.type === 'FILE' ? selectedItem.name : '';
     if (fileName) {
       setFileName(fileName);
     }
@@ -275,7 +274,7 @@ const OpenFromGithubDialog = forwardRef<
                   onClick={handleOpenFile}
                   disabled={
                     !selectedItem?.type ||
-                    selectedItem.type !== itemType.FILE ||
+                    selectedItem.type !== 'FILE' ||
                     isFetchingContent
                   }
                 >
@@ -343,7 +342,7 @@ const OpenFromGithubDialog = forwardRef<
                     onClick={handleOpenFile}
                     disabled={
                       !selectedItem?.type ||
-                      selectedItem.type !== itemType.FILE ||
+                      selectedItem.type !== 'FILE' ||
                       isFetchingContent
                     }
                     aria-busy={isFetchingContent}
