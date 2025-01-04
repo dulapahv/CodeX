@@ -19,7 +19,12 @@
     "prettier-plugin-classnames": "^0.7.5",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "rimraf": "^6.0.1",
-    "turbo": "^2.3.3"
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.9",
+    "utf-8-validate": "^6.0.5"
   },
   "packageManager": "pnpm@9.15.2"
 }

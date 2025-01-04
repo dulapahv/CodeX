@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    optionalDependencies:
+      bufferutil:
+        specifier: ^4.0.9
+        version: 4.0.9
+      utf-8-validate:
+        specifier: ^6.0.5
+        version: 6.0.5
     devDependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.4.0
@@ -26,6 +33,9 @@ importers:
       turbo:
         specifier: ^2.3.3
         version: 2.3.3
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
 
   apps/client:
     dependencies:
@@ -158,13 +168,6 @@ importers:
       zod:
         specifier: ^3.24.1
         version: 3.24.1
-    optionalDependencies:
-      bufferutil:
-        specifier: ^4.0.9
-        version: 4.0.9
-      utf-8-validate:
-        specifier: ^6.0.5
-        version: 6.0.5
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -208,9 +211,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.17.11)(typescript@5.7.2)))
-      typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
       use-resize-observer:
         specifier: ^9.1.0
         version: 9.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -226,13 +226,6 @@ importers:
       uWebSockets.js:
         specifier: github:uNetworking/uWebSockets.js#v20.51.0
         version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6609a88ffa9a16ac5158046761356ce03250a0df
-    optionalDependencies:
-      bufferutil:
-        specifier: ^4.0.9
-        version: 4.0.9
-      utf-8-validate:
-        specifier: ^6.0.5
-        version: 6.0.5
     devDependencies:
       '@types/jest':
         specifier: ^29.5.14
@@ -246,9 +239,6 @@ importers:
       nodemon:
         specifier: ^3.1.9
         version: 3.1.9
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -264,15 +254,8 @@ importers:
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
-      typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
 
-  packages/types:
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
+  packages/types: {}
 
 packages:
 
