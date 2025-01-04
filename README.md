@@ -83,15 +83,9 @@ kasca
    cd kasca
    ```
 
-2. Install dependencies in both client and server directories:
+2. Install dependencies
 
    ```bash
-   # Install client dependencies
-   cd client
-   pnpm i
-
-   # Install server dependencies
-   cd ../server
    pnpm i
    ```
 
