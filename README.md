@@ -63,13 +63,15 @@ Before you begin, ensure you have the following installed:
 
 ## Project Structure
 
-The project is organized into three main directories:
+The project is organized as a monorepo using [Turborepo](https://turbo.build/repo/docs), containing applications for both the frontend and backend, as well as shared TypeScript types and enums.
 
 ```txt
-.
-├── client/          # Frontend Next.js application
-├── server/          # Backend Socket.IO server
-└── common/          # Shared types and enums
+kasca
+├── apps         # Frontend and backend applications
+│   ├── client   # Frontend Next.js application
+│   └── server   # Backend Socket.IO server
+└── packages     # Shared packages
+    └── types    # Shared TypeScript types and enums
 ```
 
 ## Getting Started
