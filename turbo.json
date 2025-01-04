@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"],
+      "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "GITHUB_CLIENT_SECRET_DEV",
         "GITHUB_CLIENT_SECRET_PROD",
