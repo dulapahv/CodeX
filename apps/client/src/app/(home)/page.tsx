@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Image from 'next/image';
 
 import { AboutButton } from '@/components/about-button';
@@ -68,7 +69,9 @@ const Page = () => (
               </p>
             </div>
           </div>
-          <RoomAccessForm />
+          <Suspense fallback={null}>
+            <RoomAccessForm />
+          </Suspense>
         </div>
       </div>
 
