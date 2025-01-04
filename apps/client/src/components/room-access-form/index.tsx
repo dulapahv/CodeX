@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
@@ -23,10 +23,12 @@ import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
 import { createRoom, isRoomIdValid, joinRoom } from './utils';
 
-const RoomAccessForm = () => {
+interface RoomAccessFormProps {
+  roomId: string;
+}
+
+const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const room = searchParams.get('room') || '';
 
   const {
     register: registerCreate,
@@ -47,7 +49,7 @@ const RoomAccessForm = () => {
       isSubmitting: isJoining,
       isSubmitSuccessful: joinSuccessful,
     },
-  } = useJoinRoomForm(room);
+  } = useJoinRoomForm(roomId);
 
   const handleJoinRoom = (data: JoinRoomForm) => {
     const { name, roomId } = data;
@@ -110,8 +112,8 @@ const RoomAccessForm = () => {
     >
       <CardContent className="px-4 py-4 sm:px-6 sm:py-6">
         <div className="grid w-full items-center gap-4 sm:gap-6" role="group">
-          {room ? (
-            isRoomIdValid(room) ? (
+          {roomId ? (
+            isRoomIdValid(roomId) ? (
               <>
                 <div
                   className="space-y-2 text-center"
@@ -122,7 +124,7 @@ const RoomAccessForm = () => {
                     You&apos;ve been invited to a coding session!
                   </p>
                   <p className="text-base sm:text-lg">
-                    Room: <span className="font-mono font-bold">{room}</span>
+                    Room: <span className="font-mono font-bold">{roomId}</span>
                   </p>
                   <p className="text-lg sm:text-xl">
                     Enter your name to join the room
