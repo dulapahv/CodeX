@@ -76,22 +76,22 @@ The project is organized into three main directories:
 
 1. Clone the repository
 
-    ```bash
-    git clone https://github.com/dulapahv/kasca.git
-    cd kasca
-    ```
+   ```bash
+   git clone https://github.com/dulapahv/kasca.git
+   cd kasca
+   ```
 
 2. Install dependencies in both client and server directories:
 
-    ```bash
-    # Install client dependencies
-    cd client
-    pnpm i
+   ```bash
+   # Install client dependencies
+   cd client
+   pnpm i
 
-    # Install server dependencies
-    cd ../server
-    pnpm i
-    ```
+   # Install server dependencies
+   cd ../server
+   pnpm i
+   ```
 
 ## Development
 
@@ -99,15 +99,15 @@ To run the development environment, you need to start both the client and server
 
 1. Start the server (in the server directory):
 
-    ```bash
-    pnpm dev
-    ```
+   ```bash
+   pnpm dev
+   ```
 
 2. In a new terminal, start the client (in the client directory):
 
-    ```bash
-    pnpm dev
-    ```
+   ```bash
+   pnpm dev
+   ```
 
 The application will be available at:
 

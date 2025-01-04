@@ -27,9 +27,15 @@ jobs:
         with:
           node-version: lts/*
           cache: 'pnpm'
-          cache-dependency-path: |
-            client/pnpm-lock.yaml
-            server/pnpm-lock.yaml
+
+      # Turbo cache
+      - name: 💾 Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
       # Next.js Cache
       - name: 💾 Cache Next.js bundle
@@ -37,35 +43,11 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            ${{ github.workspace }}/client/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('client/pnpm-lock.yaml') }}-${{ hashFiles('client/src/**/*.{js,jsx,ts,tsx}') }}
+            ${{ github.workspace }}/apps/client/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('client/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
-
-      # Server caching
-      - name: 💾 Cache server build
-        id: cache-server
-        uses: actions/cache@v4
-        with:
-          path: |
-            server/dist
-            server/node_modules
-          key: ${{ runner.os }}-server-${{ hashFiles('server/pnpm-lock.yaml', 'server/tsconfig.json') }}
-          restore-keys: |
-            ${{ runner.os }}-server-
-
-      # Client dependencies cache
-      - name: 💾 Cache client dependencies
-        id: cache-client
-        uses: actions/cache@v4
-        with:
-          path: |
-            client/node_modules
-            client/.eslintcache
-          key: ${{ runner.os }}-client-deps-${{ hashFiles('client/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-client-deps-
 
       # Playwright browsers cache
       - name: 💾 Cache Playwright browsers
@@ -73,40 +55,24 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('client/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: 🏗️ Install and build server
-        working-directory: ./server
-        run: |
-          echo "📦 Installing server dependencies..."
-          NODE_ENV=development pnpm install
-          echo "🔨 Building server..."
-          pnpm build
+      - name: 🏗️ Install dependencies
+        run: pnpm install
 
-      - name: 🏗️ Install and build client
-        working-directory: ./client
-        run: |
-          echo "📦 Installing client dependencies..."
-          NODE_ENV=development pnpm install
-          echo "🔨 Running type check and linting..."
-          pnpm lint:check
-          echo "🔨 Building client..."
-          NODE_ENV=production pnpm build
-          touch .env
-          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
+      - name: 🔨 Build packages
+        run: pnpm build
 
       - name: 🎭 Install Playwright browsers
-        working-directory: ./client
-        run: pnpm exec playwright install --with-deps
+        run: pnpm --filter client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        working-directory: ./client
         env:
-          # These variables are needed for tests
           PLAYWRIGHT_HTML_REPORT: playwright-report
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
+          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
         run: pnpm test:e2e
 
       - name: 📊 Upload test results
@@ -115,8 +81,8 @@ jobs:
         with:
           name: playwright-report
           path: |
-            client/playwright-report/
-            client/test-results.xml
+            apps/client/playwright-report/
+            apps/client/test-results.xml
           retention-days: 30
 
       - name: 📸 Upload test screenshots
@@ -124,5 +90,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-screenshots
-          path: client/test-results/
+          path: apps/client/test-results/
           retention-days: 30

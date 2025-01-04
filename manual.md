@@ -136,7 +136,7 @@ There are three ways to join an existing room:
 
 1. On the homepage, find the `Join a Room` section.
 2. Input the room ID provided by the room creator in the `Room ID` field.
-    > When inputting the room ID, no need to include the hyphen `-` as it will be added automatically.
+   > When inputting the room ID, no need to include the hyphen `-` as it will be added automatically.
 3. Enter your display name in the `Name` field.
 4. Click `Join Room →`.
 
@@ -167,12 +167,14 @@ Once you enter a room, you'll see several key interface elements:
 #### Main Work Area (Split into Panels)
 
 1. **Left Panel - Notepad**
+
    - Rich text formatting toolbar (Bold, Italic, Underline, etc.)
    - Block type selector for different content types
    - Collaborative note-taking area
    - Table and media insertion tools
 
 2. **Center Panel - Code Editor**
+
    - Main coding area with syntax highlighting
    - Line numbers
    - Real-time collaboration
@@ -381,7 +383,7 @@ This issue can be caused by:
 
 To resolve this issue:
 
-1. Check the list of [supported execution languages]([#supported-execution-languages](https://github.com/engineer-man/piston?tab=readme-ov-file#supported-languages))
+1. Check the list of [supported execution languages](<[#supported-execution-languages](https://github.com/engineer-man/piston?tab=readme-ov-file#supported-languages)>)
 2. Wait for the [execution server](https://github.com/engineer-man/piston) to come back online
 
 ### Error Parsing Markdown
@@ -448,12 +450,12 @@ Kasca uses [Vercel Analytics](https://vercel.com/docs/analytics) and [Cloudflare
 - Country of origin
 - Browser type
 - Operating system
-- Page views*
+- Page views\*
 - Referrers
 
 No personal data is collected or stored.
 
-*Page views is collected from users who visit the homepage only so other pages (e.g. session page with room ID) are not tracked.
+\*Page views is collected from users who visit the homepage only so other pages (e.g. session page with room ID) are not tracked.
 
 Kasca uses [Sentry](https://sentry.io) for error tracking to help identify and fix issues quickly. No personal data is collected or stored. The [Sentry's Session Replay](https://docs.sentry.io/product/explore/session-replay/) feature is enabled for faster debugging, and **all user inputs are masked** to prevent data exposure. Learn more about [how Session Replay captures data while protecting user privacy](https://docs.sentry.io/security-legal-pii/scrubbing/protecting-user-privacy/).
 
