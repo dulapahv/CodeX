@@ -96,3 +96,11 @@ const formatRoomId = (value: string) => {
 
   return truncated;
 };
+
+/**
+ * Checks if the room ID is valid (XXXX-XXXX where X is alphanumeric)
+ * @param value
+ * @returns
+ */
+export const isRoomIdValid = (value: string) =>
+  /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(value);

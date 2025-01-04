@@ -26,6 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 import type { JoinRoomForm } from '../types';
+import { isRoomIdValid } from '../utils';
 import { joinRoomSchema } from '../validator';
 
 export const useJoinRoomForm = (roomId: string) => {
@@ -33,7 +34,7 @@ export const useJoinRoomForm = (roomId: string) => {
     resolver: zodResolver(joinRoomSchema),
     defaultValues: {
       name: '',
-      roomId: roomId,
+      roomId: isRoomIdValid(roomId) ? roomId : '',
     },
   });
 };

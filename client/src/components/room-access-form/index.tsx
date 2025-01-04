@@ -20,7 +20,7 @@ import { RedirectingCard } from './components/redirecting-card';
 import { useCreateRoomForm } from './hooks/useCreateRoomForm';
 import { useJoinRoomForm } from './hooks/useJoinRoomForm';
 import type { CreateRoomForm, JoinRoomForm } from './types';
-import { createRoom, joinRoom } from './utils';
+import { createRoom, isRoomIdValid, joinRoom } from './utils';
 
 const RoomAccessForm = () => {
   const router = useRouter();
@@ -110,36 +110,58 @@ const RoomAccessForm = () => {
       <CardContent className="px-4 py-4 sm:px-6 sm:py-6">
         <div className="grid w-full items-center gap-4 sm:gap-6" role="group">
           {room ? (
-            <>
+            isRoomIdValid(room) ? (
+              <>
+                <div
+                  className="space-y-2 text-center"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <p className="text-lg sm:text-xl">
+                    You&apos;ve been invited to a coding session!
+                  </p>
+                  <p className="text-base sm:text-lg">
+                    Room: <span className="font-mono font-bold">{room}</span>
+                  </p>
+                  <p className="text-lg sm:text-xl">
+                    Enter your name to join the room
+                  </p>
+                </div>
+                <InvitedSection
+                  register={registerJoin}
+                  handleSubmit={handleSubmitJoin}
+                  onSubmit={handleJoinRoom}
+                  onError={handleFormError}
+                  errors={joinErrors}
+                  isSubmitting={isJoining}
+                  isCreating={isCreating}
+                />
+                <BackButton
+                  onClick={() => router.push('/')}
+                  disabled={isJoining}
+                />
+              </>
+            ) : (
               <div
-                className="space-y-2 text-center"
+                className="flex flex-col space-y-4 text-center"
                 role="status"
                 aria-live="polite"
               >
-                <p className="text-lg sm:text-xl">
-                  You&apos;ve been invited to a coding session!
+                <p className="text-lg font-medium sm:text-xl">
+                  Invalid room ID
                 </p>
-                <p className="text-base sm:text-lg">
-                  Room: <span className="font-mono font-bold">{room}</span>
+                <p>
+                  Please check the invite link and try again.
+                  <br />
+                  Room ID should look like this:{' '}
+                  <span className="font-mono font-bold">XXXX-XXXX</span>
                 </p>
-                <p className="text-lg sm:text-xl">
-                  Enter your name to join the room
-                </p>
+                <BackButton
+                  onClick={() => router.push('/')}
+                  disabled={isJoining}
+                />
               </div>
-              <InvitedSection
-                register={registerJoin}
-                handleSubmit={handleSubmitJoin}
-                onSubmit={handleJoinRoom}
-                onError={handleFormError}
-                errors={joinErrors}
-                isSubmitting={isJoining}
-                isCreating={isCreating}
-              />
-              <BackButton
-                onClick={() => router.push('/')}
-                disabled={isJoining}
-              />
-            </>
+            )
           ) : (
             <>
               <section aria-label="Create new room">
