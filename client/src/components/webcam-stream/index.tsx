@@ -315,7 +315,10 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               remoteMicStates={remoteMicStates}
               remoteSpeakerStates={remoteSpeakerStates}
             />
-            <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+            <div
+              className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50
+                px-2 py-1 text-sm text-white"
+            >
               {userMap.get(storage.getUserId() ?? '')} (you)
             </div>
           </div>
@@ -350,7 +353,10 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                   remoteMicStates={remoteMicStates}
                   remoteSpeakerStates={remoteSpeakerStates}
                 />
-                <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+                <div
+                  className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50
+                    px-2 py-1 text-sm text-white"
+                >
                   {user.username}
                 </div>
               </div>

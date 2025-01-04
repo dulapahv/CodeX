@@ -21,7 +21,10 @@ const HelpPopover = () => (
         <TooltipTrigger asChild>
           <Button
             size="icon"
-            className="size-7 rounded-full border-[color:var(--sp-colors-surface3)] bg-[color:var(--sp-colors-surface2)] p-0 text-[color:var(--sp-colors-clickable)] hover:bg-[color:var(--sp-colors-surface3)] hover:text-[color:var(--sp-colors-hover)]"
+            className="size-7 rounded-full border-[color:var(--sp-colors-surface3)]
+              bg-[color:var(--sp-colors-surface2)] p-0 text-[color:var(--sp-colors-clickable)]
+              hover:bg-[color:var(--sp-colors-surface3)]
+              hover:text-[color:var(--sp-colors-hover)]"
           >
             <CircleHelp className="size-4" />
             <span className="sr-only">Help with live preview</span>
@@ -68,7 +71,8 @@ const HelpPopover = () => (
                     href="https://github.com/dulapahv/kasca/manual#live-preview-example"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
+                    className="inline-flex items-center gap-1 text-foreground underline underline-offset-2
+                      !transition-all hover:text-muted-foreground"
                   >
                     See live preview examples
                     <span className="sr-only">(opens in new tab)</span>
@@ -107,7 +111,8 @@ const HelpPopover = () => (
               href="https://sandpack.codesandbox.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
+              className="font-medium text-foreground underline underline-offset-2 !transition-all
+                hover:text-muted-foreground"
             >
               Sandpack
             </a>

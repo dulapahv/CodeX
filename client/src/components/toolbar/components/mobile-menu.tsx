@@ -56,7 +56,10 @@ const MobileMenu = ({
         </MenubarTrigger>
         <MenubarContent className="ml-1">
           <MenubarSub>
-            <MenubarSubTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+            <MenubarSubTrigger
+              className="px-2 py-1 font-normal transition-colors hover:bg-accent
+                hover:text-accent-foreground"
+            >
               File
             </MenubarSubTrigger>
             <MenubarSubContent>

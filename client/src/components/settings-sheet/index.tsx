@@ -224,7 +224,8 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                   href="https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
+                  className="font-medium text-foreground underline underline-offset-2 !transition-all
+                    hover:text-muted-foreground"
                 >
                   Monaco Editor documentation
                 </a>

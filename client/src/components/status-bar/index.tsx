@@ -96,7 +96,8 @@ const StatusBar = memo(function StatusBar({
   return (
     <section
       className={cn(
-        'fixed inset-x-0 bottom-0 h-6 animate-fade-in bg-[color:var(--toolbar-bg-primary)] py-1',
+        `fixed inset-x-0 bottom-0 h-6 animate-fade-in
+        bg-[color:var(--toolbar-bg-primary)] py-1`,
         className,
       )}
       role="status"

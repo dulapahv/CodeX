@@ -156,9 +156,12 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          'px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
+                          `px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem]
+                            before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0
+                            before:transition-opacity hover:before:opacity-50`,
                           selectedItemId === item.id &&
-                            'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
+                            `text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50
+                              before:bg-accent before:opacity-50`,
                         )}
                         onClick={() => handleSelectChange(item)}
                       >
@@ -232,10 +235,14 @@ const Leaf = forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1 before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50',
+      `flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1
+      before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)]
+      before:rounded before:bg-secondary before:opacity-0 before:transition-opacity
+      hover:before:opacity-50`,
       className,
       isSelected &&
-        'text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50',
+        `text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50
+        before:bg-accent before:opacity-50`,
     )}
     {...props}
   >
@@ -264,13 +271,17 @@ const AccordionTrigger = forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        'flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90',
+        `flex w-full flex-1 items-center py-2 transition-all
+        last:[&[data-state=open]>svg]:rotate-90`,
         className,
       )}
       {...props}
     >
       {children}
-      <ChevronRight className="ml-auto size-4 shrink-0 text-accent-foreground/50 transition-transform duration-200" />
+      <ChevronRight
+        className="ml-auto size-4 shrink-0 text-accent-foreground/50 transition-transform
+          duration-200"
+      />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -283,7 +294,9 @@ const AccordionContent = forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down left-3 overflow-hidden border-l border-foreground/10 text-sm transition-all',
+      `data-[state=closed]:animate-accordion-up
+      data-[state=open]:animate-accordion-down left-3 overflow-hidden border-l
+      border-foreground/10 text-sm transition-all`,
       className,
     )}
     {...props}

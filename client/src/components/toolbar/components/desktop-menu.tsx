@@ -49,7 +49,8 @@ const DesktopMenu = ({
       <MenubarMenu>
         <MenubarTrigger
           ref={menuTriggerRef}
-          className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground"
+          className="px-2 py-1 font-normal transition-colors hover:bg-accent
+            hover:text-accent-foreground"
         >
           File
         </MenubarTrigger>
@@ -78,7 +79,10 @@ const DesktopMenu = ({
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+        <MenubarTrigger
+          className="px-2 py-1 font-normal transition-colors hover:bg-accent
+            hover:text-accent-foreground"
+        >
           Edit
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>
@@ -108,7 +112,10 @@ const DesktopMenu = ({
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+        <MenubarTrigger
+          className="px-2 py-1 font-normal transition-colors hover:bg-accent
+            hover:text-accent-foreground"
+        >
           Selection
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>
@@ -141,7 +148,10 @@ const DesktopMenu = ({
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+        <MenubarTrigger
+          className="px-2 py-1 font-normal transition-colors hover:bg-accent
+            hover:text-accent-foreground"
+        >
           View
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>
@@ -176,7 +186,10 @@ const DesktopMenu = ({
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+        <MenubarTrigger
+          className="px-2 py-1 font-normal transition-colors hover:bg-accent
+            hover:text-accent-foreground"
+        >
           Help
         </MenubarTrigger>
         <MenubarContent className="ml-1" loop>

@@ -132,7 +132,9 @@ const RemotePointers = () => {
         return (
           <div
             key={pointer.id}
-            className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%] transform-gpu transition-all duration-100 ease-out will-change-[left,top,opacity]"
+            className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%]
+              transform-gpu transition-all duration-100 ease-out
+              will-change-[left,top,opacity]"
             style={{
               left: `${scaledX}px`,
               top: `${scaledY}px`,
@@ -152,7 +154,8 @@ const RemotePointers = () => {
               />
 
               <div
-                className="absolute left-4 top-4 flex h-[19px] max-w-[120px] items-center rounded-[3px] px-1 shadow"
+                className="absolute left-4 top-4 flex h-[19px] max-w-[120px] items-center rounded-[3px]
+                  px-1 shadow"
                 style={{
                   backgroundColor,
                 }}

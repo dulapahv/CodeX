@@ -7,9 +7,7 @@ import { EditorSkeleton } from './components/editor-skeleton';
 
 const DynamicNotepadMain = dynamic(
   () =>
-    import('./components/notepad-main').then(
-      (mod) => mod.MarkdownEditorMain,
-    ),
+    import('./components/notepad-main').then((mod) => mod.MarkdownEditorMain),
   {
     ssr: false,
     loading: () => <EditorSkeleton />,

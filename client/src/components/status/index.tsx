@@ -110,7 +110,8 @@ const Status = () => {
   return (
     <a
       className={cn(
-        'flex items-center gap-x-2 text-sm text-foreground/70 underline-offset-2 transition-all hover:text-foreground/50 hover:underline',
+        `flex items-center gap-x-2 text-sm text-foreground/70 underline-offset-2
+        transition-all hover:text-foreground/50 hover:underline`,
         isInitialLoad && 'cursor-wait',
       )}
       href={STATUS_URL}

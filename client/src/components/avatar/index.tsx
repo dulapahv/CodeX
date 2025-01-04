@@ -75,7 +75,8 @@ const Avatar = ({
   const AvatarContent = (
     <div
       className={cn(
-        'flex cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50 font-medium text-[#fff] dark:border-black/50',
+        `flex cursor-default items-center justify-center rounded-full border-[1.5px]
+        border-white/50 font-medium text-[#fff] dark:border-black/50`,
         animate && 'animate-scale-up-center',
         sizeClasses[size],
         className,

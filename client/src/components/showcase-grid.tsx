@@ -67,7 +67,10 @@ const showcaseImages: ShowcaseImage[] = [
 ];
 
 const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
-  <div className="group relative min-h-[300px] w-full overflow-hidden rounded-lg border-none bg-black/20 backdrop-blur-sm">
+  <div
+    className="group relative min-h-[300px] w-full overflow-hidden rounded-lg border-none
+      bg-black/20 backdrop-blur-sm"
+  >
     <div className="relative aspect-video w-full">
       <Image
         src={image.src}

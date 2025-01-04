@@ -74,6 +74,7 @@
     "monaco-themes": "^0.4.4",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
+    "prettier-plugin-classnames": "^0.7.5",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",

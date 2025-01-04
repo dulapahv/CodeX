@@ -79,7 +79,17 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
       trim={false}
       placeholder="All participants can edit this note..."
       className={cn(
-        'flex w-full flex-col !bg-[color:var(--panel-background)] !font-sans [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none',
+        `flex w-full flex-col !bg-[color:var(--panel-background)] !font-sans
+        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full
+        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full
+        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full
+        [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full
+        [&>*:nth-child(2)]:overflow-auto
+        [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
+        [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
+        [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)]
+        first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap
+        first:[&>div]:!rounded-none`,
         resolvedTheme === 'dark' && '!dark-editor !dark-theme',
       )}
       contentEditableClassName={cn(

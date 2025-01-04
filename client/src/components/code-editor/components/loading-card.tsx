@@ -23,7 +23,10 @@ import { Spinner } from '@/components/spinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const LoadingCard = memo(() => (
-  <div className="fixed left-0 top-0 flex size-full items-center justify-center p-2 backdrop-blur-sm">
+  <div
+    className="fixed left-0 top-0 flex size-full items-center justify-center p-2
+      backdrop-blur-sm"
+  >
     <Alert className="flex max-w-md gap-x-2 bg-background/50">
       <Spinner className="size-6" />
       <div>

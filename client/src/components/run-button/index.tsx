@@ -69,7 +69,9 @@ const RunButton = ({
                   )
           }
           className={cn(
-            'h-7 rounded-r-none bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50',
+            `h-7 rounded-r-none bg-[color:var(--toolbar-accent)] px-2 py-0
+            text-[color:var(--panel-text-accent)] transition-opacity
+            hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50`,
             isRunning && 'bg-red-600 hover:bg-red-700',
             className,
           )}

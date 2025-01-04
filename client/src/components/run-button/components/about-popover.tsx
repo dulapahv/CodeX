@@ -21,7 +21,8 @@ const AboutPopover = () => (
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent [&>svg]:transition-opacity hover:[&>svg]:opacity-70"
+            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent
+              [&>svg]:transition-opacity hover:[&>svg]:opacity-70"
           >
             <Info className="size-4 text-[color:var(--panel-text)]" />
             <span className="sr-only">About code execution</span>
@@ -50,7 +51,8 @@ const AboutPopover = () => (
                 href="https://github.com/engineer-man/piston#Supported-Languages"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-foreground underline underline-offset-4 !transition-all hover:text-muted-foreground"
+                className="font-medium text-foreground underline underline-offset-4 !transition-all
+                  hover:text-muted-foreground"
               >
                 Piston documentation
               </a>
@@ -69,7 +71,8 @@ const AboutPopover = () => (
               href="https://github.com/engineer-man/piston"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground underline underline-offset-2 !transition-all hover:text-muted-foreground"
+              className="font-medium text-foreground underline underline-offset-2 !transition-all
+                hover:text-muted-foreground"
             >
               Piston
             </a>
