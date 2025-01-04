@@ -42,30 +42,23 @@ export interface SpinnerProps
   size?: VariantProps<typeof spinnerVariants>['size'] | number;
 }
 
+// Pre-calculated values for all 12 blades
+const SPINNER_BLADES = [
+  { rotation: 'rotate(0deg)', delay: '0.000s', opacity: 1 },
+  { rotation: 'rotate(30deg)', delay: '0.083s', opacity: 0.7 },
+  { rotation: 'rotate(60deg)', delay: '0.166s', opacity: 0.3 },
+  { rotation: 'rotate(90deg)', delay: '0.249s', opacity: 0.2 },
+  { rotation: 'rotate(120deg)', delay: '0.332s', opacity: 0.1 },
+  { rotation: 'rotate(150deg)', delay: '0.415s', opacity: 0.1 },
+  { rotation: 'rotate(180deg)', delay: '0.498s', opacity: 0.1 },
+  { rotation: 'rotate(210deg)', delay: '0.581s', opacity: 0.1 },
+  { rotation: 'rotate(240deg)', delay: '0.664s', opacity: 0.1 },
+  { rotation: 'rotate(270deg)', delay: '0.747s', opacity: 0.1 },
+  { rotation: 'rotate(300deg)', delay: '0.830s', opacity: 0.1 },
+  { rotation: 'rotate(330deg)', delay: '0.913s', opacity: 0.1 },
+];
+
 const Spinner = ({ className, variant, size = 'default' }: SpinnerProps) => {
-  const opacities = [
-    1, 0.6, 0.4, 0.4, 0.3, 0.3, 0.2, 0.2, 0.15, 0.15, 0.1, 0.1,
-  ];
-
-  const blades = Array.from({ length: 12 }).map((_, index) => {
-    const rotationDegrees = index * 30;
-    const delaySeconds = (index * 0.083).toFixed(3);
-    const initialOpacity = opacities[index];
-
-    return (
-      <div
-        key={index}
-        className="animate-spinner absolute left-[46.5%] top-[4.4%] h-[24%] w-[7%] origin-[center_190%] rounded-full will-change-transform"
-        style={{
-          transform: `rotate(${rotationDegrees}deg)`,
-          animationDelay: `${delaySeconds}s`,
-          opacity: initialOpacity,
-        }}
-        aria-hidden="true"
-      />
-    );
-  });
-
   return (
     <div
       role="status"
@@ -85,7 +78,18 @@ const Spinner = ({ className, variant, size = 'default' }: SpinnerProps) => {
           : undefined
       }
     >
-      {blades}
+      {SPINNER_BLADES.map((blade, index) => (
+        <div
+          key={index}
+          className="animate-spinner absolute left-[46.5%] top-[4.4%] h-[24%] w-[7%] origin-[center_190%] rounded-full will-change-transform"
+          style={{
+            transform: blade.rotation,
+            animationDelay: blade.delay,
+            opacity: blade.opacity,
+          }}
+          aria-hidden="true"
+        />
+      ))}
       <span className="sr-only">Loading...</span>
     </div>
   );
