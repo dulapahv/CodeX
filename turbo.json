@@ -5,7 +5,13 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "dist/**"],
-      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local"],
+      "env": [
+        "GITHUB_CLIENT_SECRET_DEV",
+        "GITHUB_CLIENT_SECRET_PROD",
+        "SENTRY_AUTH_TOKEN",
+        "BETTERSTACK_API_KEY",
+        "NEXT_PUBLIC_*"
+      ],
       "cache": true
     },
     "lint:check": {

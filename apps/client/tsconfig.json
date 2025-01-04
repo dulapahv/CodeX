@@ -21,7 +21,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/tests/*": ["./tests/*"],
-      "@kasca/*": ["../types/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
