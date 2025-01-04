@@ -240,7 +240,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           onOpenChange={setIsOpen}
           aria-label="Share room dialog"
         >
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
               <DialogDescription>
