@@ -38,19 +38,35 @@ For detailed usage instructions and feature documentation, please see the **[Use
 - [Kasca - Code Collaboration Platform](#kasca---code-collaboration-platform)
   - [Features](#features)
   - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
   - [Project Structure](#project-structure)
+  - [Prerequisites](#prerequisites)
   - [Getting Started](#getting-started)
   - [Development](#development)
-  - [Deployment](#deployment)
+  - [Scripts](#scripts)
   - [Testing](#testing)
     - [Frontend Testing](#frontend-testing)
     - [Backend Testing](#backend-testing)
+  - [Deployment](#deployment)
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
   - [User Manual](#user-manual)
   - [License](#license)
+
+## Project Structure
+
+The project is organized as a monorepo using [Turborepo](https://turbo.build/repo/docs):
+
+```txt
+kasca
+├── apps/              # Application packages
+│   ├── client/        # Frontend Next.js application
+│   └── server/        # Backend Socket.IO server
+├── packages/          # Shared packages
+│   └── types/         # Shared TypeScript types and enums
+├── package.json       # Root package.json
+└── pnpm-workspace.yaml
+```
 
 ## Prerequisites
 
@@ -61,19 +77,6 @@ Before you begin, ensure you have the following installed:
 
 > While this project uses pnpm for development, you can use [npm](https://www.npmjs.com/) instead. Simply replace `pnpm` with `npm` in all commands. However, we recommend using pnpm for its better performance and disk space efficiency.
 
-## Project Structure
-
-The project is organized as a monorepo using [Turborepo](https://turbo.build/repo/docs), containing applications for both the frontend and backend, as well as shared TypeScript types and enums.
-
-```txt
-kasca
-├── apps         # Frontend and backend applications
-│   ├── client   # Frontend Next.js application
-│   └── server   # Backend Socket.IO server
-└── packages     # Shared packages
-    └── types    # Shared TypeScript types and enums
-```
-
 ## Getting Started
 
 1. Clone the repository
@@ -83,7 +86,7 @@ kasca
    cd kasca
    ```
 
-2. Install dependencies
+2. Install dependencies (this will install all workspace dependencies)
 
    ```bash
    pnpm i
@@ -91,24 +94,101 @@ kasca
 
 ## Development
 
-To run the development environment, you need to start both the client and server:
+To run the development environment:
 
-1. Start the server (in the server directory):
+Start all applications in development mode:
 
-   ```bash
-   pnpm dev
-   ```
+```bash
+pnpm dev
+```
 
-2. In a new terminal, start the client (in the client directory):
+Or start individual applications:
 
-   ```bash
-   pnpm dev
-   ```
+```bash
+# Start only the client
+pnpm --filter kasca-client dev
+
+# Start only the server
+pnpm --filter kasca-server dev
+```
 
 The application will be available at:
 
 - Frontend: <http://localhost:3000>
 - Backend: <http://localhost:3001>
+
+## Scripts
+
+Root level scripts available:
+
+```bash
+# Development
+pnpm dev              # Start all applications in development mode
+pnpm build            # Build all packages
+pnpm clean            # Clean all builds and node_modules
+
+# Testing
+pnpm test:client          # Run frontend E2E tests (Playwright)
+pnpm test:client:ui       # Run frontend tests with UI mode
+pnpm test:client:debug    # Debug frontend tests
+pnpm test:client:report   # View frontend test report
+pnpm test:server          # Run backend tests against local server
+pnpm test:server:remote   # Run backend tests against remote server
+pnpm test:server:watch    # Run backend tests in watch mode
+
+# Linting and Formatting
+pnpm lint:check       # Run ESLint checks (frontend only)
+pnpm lint:fix         # Fix ESLint issues (frontend only)
+pnpm format:check     # Check formatting
+pnpm format:fix       # Fix formatting issues
+```
+
+You can also run scripts for specific workspaces:
+
+```bash
+# Frontend specific
+pnpm --filter kasca-client dev
+pnpm --filter kasca-client build
+pnpm --filter kasca-client test:client
+
+# Backend specific
+pnpm --filter kasca-server dev
+pnpm --filter kasca-server build
+pnpm --filter kasca-server test:server
+```
+
+## Testing
+
+All test commands can be run from both the root directory and their respective workspaces. Ensure the server is running before executing test commands.
+
+### Frontend Testing
+
+End-to-end tests using Playwright:
+
+```bash
+# In root directory or client workspace
+pnpm test:client         # Run all frontend E2E tests
+pnpm test:client:ui      # Run frontend tests with UI mode
+pnpm test:client:debug   # Debug frontend tests
+pnpm test:client:report  # View frontend test report
+
+# Run in client workspace only
+pnpm --filter kasca-client test:client
+```
+
+### Backend Testing
+
+Server-side tests using Jest:
+
+```bash
+# In root directory or server workspace
+pnpm test:server           # Run backend tests against local server
+pnpm test:server:remote    # Run backend tests against remote server
+pnpm test:server:watch     # Run backend tests in watch mode (local server)
+
+# Run in server workspace only
+pnpm --filter kasca-server test:server
+```
 
 ## Deployment
 
@@ -123,39 +203,10 @@ For manual builds:
 
 ```bash
 # Build frontend
-cd client
-pnpm build
+pnpm --filter kasca-client build
 
 # Build backend
-cd server
-pnpm build
-```
-
-## Testing
-
-You can run tests for both the frontend and backend. Ensure the server is running before running the tests.
-
-### Frontend Testing
-
-End-to-end tests are implemented using Playwright, which runs tests in multiple browsers simultaneously. To run frontend tests:
-
-```bash
-# Frontend (in client directory)
-pnpm test:e2e          # Run all tests
-pnpm test:e2e:ui       # Run tests with UI mode
-pnpm test:e2e:debug    # Debug tests
-pnpm test:e2e:report   # View test report
-```
-
-### Backend Testing
-
-Server-side tests are implemented using Jest. To run backend tests:
-
-```bash
-# Backend (in server directory)
-pnpm test:local    # Test against local server
-pnpm test:remote   # Test against remote server
-pnpm test:watch    # Run tests in watch mode
+pnpm --filter kasca-server build
 ```
 
 ## Tech Stack
@@ -188,22 +239,17 @@ We use several tools to maintain code quality:
 
 - [ESLint](https://eslint.org/) for static code analysis (frontend only)
 - [Prettier](https://prettier.io/) for code formatting
-- [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) for Tailwind CSS class sorting
 - [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) for import statement organization
-- [prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames) for wrapping long Tailwind CSS class names
+- [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) for Tailwind CSS class sorting (frontend only)
+- [prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames) for wrapping long Tailwind CSS class names (frontend only)
 
 Check and fix code style:
 
 ```bash
-# Frontend (in client directory)
-pnpm lint:check     # Check TypeScript code with ESLint
-pnpm lint:fix       # Fix ESLint issues
-pnpm format:check   # Check formatting with Prettier
-pnpm format:fix     # Fix formatting issues
-
-# Backend (in server directory)
-pnpm format:check   # Check formatting with Prettier
-pnpm format:fix     # Fix formatting issues
+pnpm lint:check    # Check ESLint issues
+pnpm lint:fix      # Fix ESLint issues
+pnpm format:check  # Check formatting issues
+pnpm format:fix    # Fix formatting issues
 ```
 
 ## Contributing
