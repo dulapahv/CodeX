@@ -64,17 +64,17 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build packages
-        run: |
-          pnpm build
-          touch .env
-          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
+        run: pnpm build
 
       - name: 🎭 Install Playwright browsers
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: pnpm --filter kasca-client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        run: pnpm --filter kasca-client exec playwright test
+        run: |
+          touch .env
+          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
+          pnpm --filter kasca-client exec playwright test
 
       - name: 📊 Upload test results
         if: always()
