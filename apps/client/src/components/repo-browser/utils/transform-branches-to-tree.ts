@@ -1,7 +1,7 @@
 import { GitBranch } from 'lucide-react';
 
 import type { GithubBranch } from '../types/github';
-import type { ExtendedTreeDataItem } from '../types/tree';
+import { itemType, type ExtendedTreeDataItem } from '../types/tree';
 
 export const transformBranchesToTreeData = (
   repoID: string,
@@ -13,6 +13,6 @@ export const transformBranchesToTreeData = (
     name: branch.name,
     children: undefined,
     icon: GitBranch,
-    type: 'BRANCH',
+    type: itemType.BRANCH,
   }));
 };

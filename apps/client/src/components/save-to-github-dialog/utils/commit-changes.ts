@@ -1,5 +1,8 @@
 import { CommitResponse } from '@/components/repo-browser/types/github';
-import type { ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
+import {
+  itemType,
+  type ExtendedTreeDataItem,
+} from '@/components/repo-browser/types/tree';
 
 import { CommitForm } from '../types';
 
@@ -15,7 +18,7 @@ export const commitChanges = async (
       throw new Error('Please select a branch, directory, or file to save to.');
     }
 
-    if (selectedItem.type === 'REPO') {
+    if (selectedItem.type === itemType.REPO) {
       throw new Error('Please select a branch, directory, or file to save to.');
     }
 
@@ -23,7 +26,7 @@ export const commitChanges = async (
       repo: repo,
       branch: branch,
       path:
-        selectedItem.type === 'DIR'
+        selectedItem.type === itemType.DIR
           ? selectedItem.path
           : selectedItem.path?.split('/').slice(0, -1).join('/'),
       filename: data.fileName,

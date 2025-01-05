@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { TreeDataItem } from '@/components/tree';
 
-import type { ExtendedTreeDataItem } from '../types/tree';
+import { itemType, type ExtendedTreeDataItem } from '../types/tree';
 import { fetchBranches } from './fetch-branches';
 import { fetchContents } from './fetch-contents';
 
@@ -55,7 +55,7 @@ export const handleSelectItem = async (
   setSelectedItem(extendedItem);
 
   // Reset branch and path when selecting a new repository
-  if (extendedItem.type === 'REPO') {
+  if (extendedItem.type === itemType.REPO) {
     setRepo(extendedItem.full_name || '');
     setBranch('');
 
@@ -64,7 +64,7 @@ export const handleSelectItem = async (
     }
   }
   // Update branch when selecting a branch
-  else if (extendedItem.type === 'BRANCH') {
+  else if (extendedItem.type === itemType.BRANCH) {
     setBranch(extendedItem.name);
 
     if (!item.children) {
@@ -85,10 +85,11 @@ export const handleSelectItem = async (
   }
   // Update path when selecting a directory or file
   else if (
-    (extendedItem.type === 'DIR' || extendedItem.type === 'FILE') &&
+    (extendedItem.type === itemType.DIR ||
+      extendedItem.type === itemType.FILE) &&
     extendedItem.path
   ) {
-    if (extendedItem.type === 'DIR' && !item.children) {
+    if (extendedItem.type === itemType.DIR && !item.children) {
       const { parentRepo, parentBranch } = findParents(treeData, item.id);
 
       if (parentRepo && parentBranch && extendedItem.path) {
