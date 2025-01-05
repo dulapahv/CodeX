@@ -70,6 +70,7 @@
     - [Code is not Syncing Between Users](#code-is-not-syncing-between-users)
     - [This Language may not be Supported or the Server is Down](#this-language-may-not-be-supported-or-the-server-is-down)
     - [Error Parsing Markdown](#error-parsing-markdown)
+    - [Please Check the Information and Try Again](#please-check-the-information-and-try-again)
     - [Parsing of the Following Markdown Structure Failed](#parsing-of-the-following-markdown-structure-failed)
   - [Performance Tips](#performance-tips)
   - [Security Considerations](#security-considerations)
@@ -398,6 +399,8 @@ To resolve this issue:
 1. Switch to `source` mode in the Notepad
 2. Correct the markdown syntax or commands
 3. Switch back to `rich text` mode to view the changes
+
+### Please Check the Information and Try Again
 
 ### Parsing of the Following Markdown Structure Failed
 
