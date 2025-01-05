@@ -32,15 +32,19 @@
       "cache": false,
       "persistent": true
     },
-    "test:e2e": {
+    "test:client": {
       "dependsOn": ["build"],
       "cache": true,
       "outputs": ["playwright-report/**", "test-results/**"]
     },
-    "test:local": {
+    "test:client:ui": {
+      "dependsOn": ["build"],
       "cache": false
     },
-    "test:remote": {
+    "test:server": {
+      "cache": false
+    },
+    "test:server:remote": {
       "cache": false
     },
     "clean": {

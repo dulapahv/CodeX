@@ -8,9 +8,10 @@
     "lint:fix": "turbo lint:fix",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "test:e2e": "turbo test:e2e",
-    "test:local": "turbo test:local",
-    "test:remote": "turbo test:remote",
+    "test:client": "turbo test:client",
+    "test:client:ui": "turbo test:client:ui",
+    "test:server": "turbo test:server",
+    "test:server:remote": "turbo test:server:remote",
     "clean": "turbo clean && rimraf node_modules"
   },
   "devDependencies": {
