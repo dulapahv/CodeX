@@ -71,15 +71,23 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
       label,
       value,
       copyKey,
+      testId,
     }: {
       label: string;
       value: string;
       copyKey: keyof CopyStatus;
+      testId: string;
     }) => (
       <div className="grid w-full items-center gap-1.5">
-        <Label className="text-sm">{label}</Label>
+        <Label htmlFor={testId} className="text-sm">
+          {label}
+        </Label>
         <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
-          <code className="flex-1 break-all text-md sm:text-lg font-medium md:text-2xl">
+          <code
+            id={testId}
+            className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
+            data-testid={`${testId}-text`}
+          >
             {value}
           </code>
           <Button
@@ -87,6 +95,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             size="icon"
             variant="ghost"
             className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+            data-testid={`${testId}-copy-button`}
             aria-label={
               copyStatus[copyKey] ? `${label} copied` : `Copy ${label}`
             }
@@ -107,7 +116,10 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
     const content = (
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
         {/* QR Code Section */}
-        <div className="flex shrink-0 justify-center md:sticky md:top-0">
+        <div
+          className="flex shrink-0 justify-center md:sticky md:top-0"
+          data-testid="qr-code"
+        >
           <QRCodeCanvas
             ref={qrCodeRef}
             value={`${window.location.origin}/room/${roomId}`}
@@ -126,12 +138,18 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
 
         {/* Share Sections */}
         <div className="flex flex-1 flex-col space-y-4">
-          <ShareSection label="Room ID" value={roomId} copyKey="roomIdCopied" />
+          <ShareSection
+            label="Room ID"
+            value={roomId}
+            copyKey="roomIdCopied"
+            testId="room-id"
+          />
           {typeof window !== 'undefined' && (
             <ShareSection
               label="Invite Link"
               value={`${window.location.origin}/room/${roomId}`}
               copyKey="roomLinkCopied"
+              testId="invite-link"
             />
           )}
         </div>

@@ -23,30 +23,19 @@ test.describe('Room Sharing', () => {
     const roomUrl = page.url();
     if (!roomUrl) throw new Error('Room URL not found');
     const roomId = roomUrl.split('/').pop();
+    if (!roomId) throw new Error('Room ID not found in URL');
 
     // Wait for input fields to be populated
-    const roomIdInput = page.getByRole('textbox', {
-      name: 'Room ID for sharing',
-    });
-    const roomLinkInput = page.getByRole('textbox', {
-      name: 'Shareable room link',
-    });
-
-    // Use locator.evaluate() to get input values
-    const actualRoomId = await roomIdInput.evaluate(
-      (el: HTMLInputElement) => el.value,
-    );
-    const actualRoomUrl = await roomLinkInput.evaluate(
-      (el: HTMLInputElement) => el.value,
-    );
+    const actualRoomId = page.getByTestId('room-id-text');
+    const actualRoomUrl = page.getByTestId('invite-link-text');
 
     // Assert the values
-    expect(actualRoomId).toBe(roomId);
-    expect(actualRoomUrl).toBe(roomUrl);
+    await expect(actualRoomId).toHaveText(roomId);
+    await expect(actualRoomUrl).toHaveText(roomUrl);
 
     // Test copy functionality
-    const copyRoomIdButton = page.getByRole('button', { name: 'Copy room ID' });
-    const copyLinkButton = page.getByRole('button', { name: 'Copy room link' });
+    const copyRoomIdButton = page.getByTestId('room-id-copy-button');
+    const copyLinkButton = page.getByTestId('invite-link-copy-button');
 
     await copyRoomIdButton.click();
     await copyLinkButton.click();
