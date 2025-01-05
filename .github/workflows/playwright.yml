@@ -45,11 +45,11 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            apps/client/.next/cache
-            node_modules/.cache
+            ${{ github.workspace }}/apps/client/.next/cache
           key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            nextjs-${{ runner.os }}-
 
       # Playwright browsers cache
       - name: 💾 Cache Playwright browsers
@@ -58,6 +58,8 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: 🏗️ Install dependencies
         run: pnpm install
@@ -70,9 +72,6 @@ jobs:
         run: pnpm --filter kasca-client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        env:
-          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
-          NODE_ENV: test
         run: |
           touch .env
           echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
