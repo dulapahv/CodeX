@@ -138,7 +138,7 @@ pnpm test:client:debug    # Debug frontend tests
 pnpm test:client:report   # View frontend test report
 pnpm test:server          # Run backend tests against local server
 pnpm test:server:remote   # Run backend tests against remote server
-pnpm test:server:watch    # Run backend tests in watch mode
+pnpm test:server:watch    # Run backend tests in watch mode (local server)
 
 # Linting and Formatting
 pnpm lint:check       # Run ESLint checks (frontend only)
