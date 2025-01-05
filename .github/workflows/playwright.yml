@@ -14,8 +14,8 @@ jobs:
       CI: true
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      TURBO_CACHE: remote:rw
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
+      TURBO_CACHE: remote:rw
 
     steps:
       - name: 📥 Checkout code
@@ -35,9 +35,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
-            turbo-${{ runner.os }}-
+            ${{ runner.os }}-turbo-
 
       # Next.js cache
       - name: 💾 Cache Next.js bundle
@@ -46,10 +46,10 @@ jobs:
           path: |
             ~/.pnpm-store
             ${{ github.workspace }}/apps/client/.next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
-            nextjs-${{ runner.os }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
 
       # Playwright browsers cache
       - name: 💾 Cache Playwright browsers
@@ -57,9 +57,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            playwright-${{ runner.os }}-
+            ${{ runner.os }}-playwright-
 
       - name: 🏗️ Install dependencies
         run: pnpm install
