@@ -61,16 +61,15 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build packages
-        run: pnpm build
+        run: |
+          pnpm build
+          touch .env
+          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
 
       - name: 🎭 Install Playwright browsers
         run: pnpm --filter client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        env:
-          PLAYWRIGHT_HTML_REPORT: playwright-report
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
-          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
         run: pnpm test:e2e
 
       - name: 📊 Upload test results
