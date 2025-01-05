@@ -73,9 +73,13 @@ kasca
 Before you begin, ensure you have the following installed:
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
-- A package manager ([pnpm](https://pnpm.io/) recommended)
+- [pnpm](https://pnpm.io) (v6 or higher)
 
-> While this project uses pnpm for development, you can use [npm](https://www.npmjs.com/) instead. Simply replace `pnpm` with `npm` in all commands. However, we recommend using pnpm for its better performance and disk space efficiency.
+If you don't have `pnpm` installed, you can install it globally:
+
+```bash
+npm install -g pnpm
+```
 
 ## Getting Started
 
