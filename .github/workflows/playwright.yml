@@ -34,10 +34,7 @@ jobs:
       - name: 💾 Cache Turbo
         uses: actions/cache@v4
         with:
-          path: |
-            .turbo
-            node_modules/.cache/turbo
-            apps/*/node_modules/.cache/turbo
+          path: .turbo
           key: turbo-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
             turbo-${{ runner.os }}-
