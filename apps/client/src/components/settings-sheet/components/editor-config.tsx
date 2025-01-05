@@ -336,7 +336,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               <FileInput className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Import settings</TooltipContent>
+          <TooltipContent>Import Settings</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -349,7 +349,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               <Save className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="mr-1">Export settings</TooltipContent>
+          <TooltipContent className="mr-1">Export Settings</TooltipContent>
         </Tooltip>
         <input
           ref={fileInputRef}
