@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/room/*', '/oauth/*'], // Block all URLs that start with /room/ and /oauth/
+        disallow: ['/room/*', '/oauth/*', '/test/*', '/api/*'],
       },
     ],
     host: BASE_CLIENT_URL,
