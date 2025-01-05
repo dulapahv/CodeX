@@ -25,6 +25,20 @@ export interface ToolbarActions {
   find: () => void;
   /** Open find and replace dialog */
   replace: () => void;
+  /** Toggle line comment */
+  toggleLineComment: () => void;
+  /** Toggle block comment */
+  toggleBlockComment: () => void;
+  /** Transform to uppercase */
+  uppercase: () => void;
+  /** Transform to lowercase */
+  lowercase: () => void;
+  /** Transform to title case */
+  titleCase: () => void;
+  /** Sort lines ascending */
+  sortLinesAscending: () => void;
+  /** Sort lines descending */
+  sortLinesDescending: () => void;
   /** Select all content */
   selectAll: () => void;
   /** Copy current line up */
@@ -41,8 +55,26 @@ export interface ToolbarActions {
   addCursorAbove: () => void;
   /** Add cursor below current position */
   addCursorBelow: () => void;
+  /** Expand selection to brackets */
+  selectToBracket: () => void;
+  /** Select all occurrences of current selection */
+  selectHighlights: () => void;
+  /** Expand smart selection */
+  expandSelection: () => void;
+  /** Shrink smart selection */
+  shrinkSelection: () => void;
   /** Open command palette */
   commandPalette: () => void;
+  /** Font zoom in */
+  zoomIn: () => void;
+  /** Font zoom out */
+  zoomOut: () => void;
+  /** Fold all */
+  foldAll: () => void;
+  /** Toggle fold */
+  toggleFold: () => void;
+  /** Unfold all */
+  unfoldAll: () => void;
   /** Toggle notepad panel */
   toggleNotepadPanel: () => void;
   /** Toggle terminal panel */

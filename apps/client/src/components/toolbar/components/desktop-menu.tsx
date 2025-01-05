@@ -109,6 +109,28 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.replace}>
             Replace <MenubarShortcut>{modKey}+H</MenubarShortcut>
           </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.toggleLineComment}>
+            Toggle Line Comment <MenubarShortcut>{modKey}+/</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem
+            onSelect={actions.toggleBlockComment}
+            className="gap-x-4"
+          >
+            Toggle Block Comment
+            <MenubarShortcut>{modKey}+Shift+/</MenubarShortcut>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.uppercase}>UPPERCASE</MenubarItem>
+          <MenubarItem onSelect={actions.lowercase}>lowercase</MenubarItem>
+          <MenubarItem onSelect={actions.titleCase}>Title Case</MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.sortLinesAscending}>
+            Sort Lines Ascending
+          </MenubarItem>
+          <MenubarItem onSelect={actions.sortLinesDescending}>
+            Sort Lines Descending
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
@@ -121,6 +143,12 @@ const DesktopMenu = ({
         <MenubarContent className="ml-1" loop>
           <MenubarItem onSelect={actions.selectAll}>
             Select All <MenubarShortcut>{modKey}+A</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem onSelect={actions.selectToBracket}>
+            Select to Bracket
+          </MenubarItem>
+          <MenubarItem onSelect={actions.selectHighlights}>
+            Select Highlights
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem onSelect={actions.copyLineUp}>
@@ -145,6 +173,13 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.addCursorBelow}>
             Add Cursor Below <MenubarShortcut>{modKey}+Alt+↓</MenubarShortcut>
           </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.expandSelection}>
+            Expand Selection
+          </MenubarItem>
+          <MenubarItem onSelect={actions.shrinkSelection}>
+            Shrink Selection
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
@@ -158,6 +193,17 @@ const DesktopMenu = ({
           <MenubarItem onSelect={actions.commandPalette}>
             Command Palette <MenubarShortcut>F1</MenubarShortcut>
           </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.zoomIn}>
+            Zoom In <MenubarShortcut>Ctrl+=</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem onSelect={actions.zoomOut}>
+            Zoom Out <MenubarShortcut>Ctrl+-</MenubarShortcut>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onSelect={actions.foldAll}>Fold All</MenubarItem>
+          <MenubarItem onSelect={actions.unfoldAll}>Unfold All</MenubarItem>
+          <MenubarItem onSelect={actions.toggleFold}>Toggle Fold</MenubarItem>
           <MenubarSeparator />
           <MenubarCheckboxItem
             onCheckedChange={actions.toggleNotepadPanel}

@@ -96,6 +96,24 @@ const MobileMenu = ({
               <MenubarSeparator />
               <MenubarItem onSelect={actions.find}>Find</MenubarItem>
               <MenubarItem onSelect={actions.replace}>Replace</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.toggleLineComment}>
+                Toggle Line Comment
+              </MenubarItem>
+              <MenubarItem onSelect={actions.toggleBlockComment}>
+                Toggle Block Comment
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.uppercase}>UPPERCASE</MenubarItem>
+              <MenubarItem onSelect={actions.lowercase}>lowercase</MenubarItem>
+              <MenubarItem onSelect={actions.titleCase}>Title Case</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.sortLinesAscending}>
+                Sort Lines Ascending
+              </MenubarItem>
+              <MenubarItem onSelect={actions.sortLinesDescending}>
+                Sort Lines Descending
+              </MenubarItem>
             </MenubarSubContent>
           </MenubarSub>
           <MenubarSub>
@@ -104,6 +122,12 @@ const MobileMenu = ({
             </MenubarSubTrigger>
             <MenubarSubContent>
               <MenubarItem onSelect={actions.selectAll}>Select All</MenubarItem>
+              <MenubarItem onSelect={actions.selectToBracket}>
+                Select to Bracket
+              </MenubarItem>
+              <MenubarItem onSelect={actions.selectHighlights}>
+                Select Highlights
+              </MenubarItem>
               <MenubarSeparator />
               <MenubarItem onSelect={actions.copyLineUp}>
                 Copy Line Up
@@ -127,6 +151,13 @@ const MobileMenu = ({
               <MenubarItem onSelect={actions.addCursorBelow}>
                 Add Cursor Below
               </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.expandSelection}>
+                Expand Selection
+              </MenubarItem>
+              <MenubarItem onSelect={actions.shrinkSelection}>
+                Shrink Selection
+              </MenubarItem>
             </MenubarSubContent>
           </MenubarSub>
           <MenubarSub>
@@ -136,6 +167,15 @@ const MobileMenu = ({
             <MenubarSubContent>
               <MenubarItem onSelect={actions.commandPalette}>
                 Command Palette
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.zoomIn}>Zoom In</MenubarItem>
+              <MenubarItem onSelect={actions.zoomOut}>Zoom Out</MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem onSelect={actions.foldAll}>Fold All</MenubarItem>
+              <MenubarItem onSelect={actions.unfoldAll}>Unfold All</MenubarItem>
+              <MenubarItem onSelect={actions.toggleFold}>
+                Toggle Fold
               </MenubarItem>
               <MenubarSeparator />
               <MenubarCheckboxItem

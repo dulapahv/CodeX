@@ -153,6 +153,34 @@ const Toolbar = ({
       editor.focus();
       editor.trigger('keyboard', 'editor.action.startFindReplaceAction', null);
     },
+    toggleLineComment: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.commentLine', null);
+    },
+    toggleBlockComment: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.blockComment', null);
+    },
+    uppercase: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.transformToUppercase', null);
+    },
+    lowercase: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.transformToLowercase', null);
+    },
+    titleCase: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.transformToTitlecase', null);
+    },
+    sortLinesAscending: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.sortLinesAscending', null);
+    },
+    sortLinesDescending: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.sortLinesDescending', null);
+    },
     selectAll: () => {
       editor.focus();
       editor.trigger('keyboard', 'editor.action.selectAll', null);
@@ -185,12 +213,48 @@ const Toolbar = ({
       editor.focus();
       editor.trigger('keyboard', 'editor.action.insertCursorBelow', null);
     },
+    selectToBracket: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.smartSelect.expand', null);
+    },
+    selectHighlights: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.selectHighlights', null);
+    },
+    expandSelection: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.smartSelect.expand', null);
+    },
+    shrinkSelection: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.smartSelect.shrink', null);
+    },
     commandPalette: () => {
       // Timeout to prevent command palette triggering before editor is focussed
       editor.focus();
       setTimeout(() => {
         editor.trigger('keyboard', 'editor.action.quickCommand', null);
       }, 1);
+    },
+    zoomIn: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.fontZoomIn', null);
+    },
+    zoomOut: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.action.fontZoomOut', null);
+    },
+    foldAll: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.foldAll', null);
+    },
+    unfoldAll: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.unfoldAll', null);
+    },
+    toggleFold: () => {
+      editor.focus();
+      editor.trigger('keyboard', 'editor.fold', null);
     },
     toggleNotepadPanel: () => setShowNotepad((show) => !show),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
