@@ -18,6 +18,9 @@ importers:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.4.0
         version: 4.4.0(prettier@3.4.2)
+      '@types/simple-peer':
+        specifier: ^9.11.8
+        version: 9.11.8
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -187,9 +190,6 @@ importers:
       '@types/react-dom':
         specifier: 19.0.2
         version: 19.0.2(@types/react@19.0.2)
-      '@types/simple-peer':
-        specifier: ^9.11.8
-        version: 9.11.8
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -233,9 +233,6 @@ importers:
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
-      '@types/simple-peer':
-        specifier: ^9.11.8
-        version: 9.11.8
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.17.11)(ts-node@10.9.2(@types/node@20.17.11)(typescript@5.7.2))
