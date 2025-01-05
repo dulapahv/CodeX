@@ -34,7 +34,6 @@
     - [Language Support](#language-support)
     - [Syntax Highlighting](#syntax-highlighting)
     - [Editor Settings and Customisation](#editor-settings-and-customisation)
-    - [Keyboard Shortcuts](#keyboard-shortcuts)
   - [Code Execution](#code-execution)
     - [Supported Languages](#supported-languages)
     - [Using the Shared Terminal](#using-the-shared-terminal)
@@ -73,9 +72,9 @@
     - [Please Check the Information and Try Again](#please-check-the-information-and-try-again)
     - [Failed to Import Settings. Please Check the File Format](#failed-to-import-settings-please-check-the-file-format)
     - [Parsing of the Following Markdown Structure Failed](#parsing-of-the-following-markdown-structure-failed)
-    - [Error Setting Audio Output](#error-setting-audio-output)
     - [Please grant \[media-device\] permissions to see available devices](#please-grant-media-device-permissions-to-see-available-devices)
     - [Error toggling \[media-device\]](#error-toggling-media-device)
+    - [Error Setting Audio Output](#error-setting-audio-output)
     - [No active media stream](#no-active-media-stream)
     - [No audio track found](#no-audio-track-found)
     - [Performance Tips](#performance-tips)
@@ -88,11 +87,9 @@
     - [User Privacy](#user-privacy)
     - [GitHub Access Permissions](#github-access-permissions)
   - [Appendix](#appendix)
-    - [Supported Programming Languages](#supported-programming-languages)
-      - [Supported Editor Languages](#supported-editor-languages)
-      - [Supported Execution Languages](#supported-execution-languages)
-    - [Keyboard Shortcuts Reference](#keyboard-shortcuts-reference)
-    - [External Service Dependencies](#external-service-dependencies)
+    - [Supported Editor Languages](#supported-editor-languages)
+    - [Supported Execution Languages](#supported-execution-languages)
+    - [Keyboard Shortcuts](#keyboard-shortcuts)
 
 ## Getting Started
 
@@ -278,8 +275,6 @@ Follow Mode allows users to track another participant's actions in real-time:
 
 ### Editor Settings and Customisation
 
-### Keyboard Shortcuts
-
 ## Code Execution
 
 ### Supported Languages
@@ -348,114 +343,161 @@ The Live Preview is not updating or displaying this error (where `x` is a random
 The webpage at https://xxxxxx-preview.sandpack-static-server.codesandbox.io/ might be temporarily down or it may have moved permanently to a new web address.
 ```
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Idling for an extended period
 - Network connectivity problems
 
-To resolve this issue:
+**To resolve this issue:**
 
-1. Re-toggle the Live Preview panel by going to `View > Live Preview` in the top menu bar
+- Re-toggle the Live Preview panel by going to `View > Live Preview` in the top menu bar
 
 ### Follow Mode not working
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Following a user who is already following you
 - Following a user who is already following another user
 - Network connectivity problems
 
-To resolve this issue:
+**To resolve this issue:**
 
-1. Stop following the user
-2. Ask the user to stop following you
-3. Re-enable Follow Mode
+- Stop following the user
+- Ask the user to stop following you
+- Re-enable Follow Mode
 
 ### Code is not Syncing Between Users
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Network connectivity problems
 
 This issue cannot be caused by idling for an extended period as Socket.IO maintains a persistent connection by pinging the server periodically.
 
-To resolve this issue:
+**To resolve this issue:**
 
 1. Save your work, either by saving to local or GitHub
 2. Leave the room and create a new room
 
 ### This Language may not be Supported or the Server is Down
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - The selected language is not supported for execution
 - The execution server is down
 
-To resolve this issue:
+**To resolve this issue:**
 
-1. Check the list of [supported execution languages](<[#supported-execution-languages](https://github.com/engineer-man/piston?tab=readme-ov-file#supported-languages)>)
-2. Wait for the [execution server](https://github.com/engineer-man/piston) to come back online
+- Check the list of [supported execution languages](<[#supported-execution-languages](https://github.com/engineer-man/piston?tab=readme-ov-file#supported-languages)>)
+- Wait for the [execution server](https://github.com/engineer-man/piston) to come back online
 
 ### Error Parsing Markdown
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Incorrect markdown syntax
 - Incorrect markdown commands
 
-To resolve this issue:
+**To resolve this issue:**
 
 1. Switch to `source` mode in the Notepad
 2. Correct the markdown syntax or commands
-3. Switch back to `rich text` mode to view the changes
+3. Switch back to `rich text` mode to see if the error disappears
 
 ### Please Check the Information and Try Again
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Not filling in the required fields
 - Fields containing incorrect information
   - Name must not be empty and must not exceed 64 characters
   - Room ID must be in `XXXX-XXXX` format where `X` is an alphanumeric character
 
-To resolve this issue:
+**To resolve this issue:**
 
-1. Check the information entered in the fields
-2. Correct any errors
+- Check the information entered in the fields
+- Correct any errors
 
 ### Failed to Import Settings. Please Check the File Format
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Trying to import settings from an unsupported file format
 - Settings file is not a valid JSON file or is corrupted
 
-To resolve this issue:
+**To resolve this issue:**
 
-1. Check the file format and ensure it is a valid JSON file
+- Check the file format and ensure it is a valid JSON file
 
 ### Parsing of the Following Markdown Structure Failed
 
-This issue can be caused by:
+**This issue can be caused by:**
 
 - Incorrect markdown syntax
 - Incorrect markdown commands
 
-To resolve this issue:
+**To resolve this issue:**
 
 1. Switch to `source` mode in the Notepad
 2. Correct the markdown syntax or commands
-3. Switch back to `rich text` mode to view the changes
-
-### Error Setting Audio Output
+3. Switch back to `rich text` mode to see if the error disappears
 
 ### Please grant [media-device] permissions to see available devices
 
+**This issue can be caused by:**
+
+- Browser permissions are not granted
+
+**To resolve this issue:**
+
+- Grant the browser permissions to access media devices (camera, microphone, audio)
+
 ### Error toggling [media-device]
+
+**This issue can be caused by:**
+
+- Media device is invalid
+- Browser permissions are not granted
+
+**To resolve this issue:**
+
+- Grant the browser permissions to access media devices (camera, microphone, audio)
+- Leave the room and refresh the page then rejoin the room
+- Reopen the browser and recreate the room
+
+### Error Setting Audio Output
+
+**This issue can be caused by:**
+
+- Audio device is invalid
+
+**To resolve this issue:**
+
+- Leave the room and refresh the page then rejoin the room
+- Reopen the browser and recreate the room
+- Change to other audio devices
 
 ### No active media stream
 
+**This issue can be caused by:**
+
+- Disconnected from the server
+
+**To resolve this issue:**
+
+- Leave the room and refresh the page then rejoin the room
+- Reopen the browser and recreate the room
+
 ### No audio track found
+
+**This issue can be caused by:**
+
+- Disconnected from the server
+
+**To resolve this issue:**
+
+- Leave the room and refresh the page then rejoin the room
+- Reopen the browser and recreate the room
 
 ### Performance Tips
 
@@ -526,12 +568,133 @@ Learn more about [GitHub's Scopes for OAuth apps](https://docs.github.com/en/app
 
 ## Appendix
 
-### Supported Programming Languages
+### Supported Editor Languages
 
-#### Supported Editor Languages
+| Language | File Extensions |
+|----------|----------------|
+| Plain Text | txt |
+| abap | abap |
+| Apex | cls |
+| Azure CLI | azcli |
+| Batch | bat, cmd |
+| Bicep | bicep |
+| Cameligo | mligo |
+| clojure | clj, cljs, cljc, edn |
+| CoffeeScript | coffee |
+| C | c, h |
+| C++ | cpp, cc, cxx, hpp, hh, hxx |
+| C# | cs, csx, cake |
+| CSP | - |
+| CSS | css |
+| Cypher | cypher, cyp |
+| Dart | dart |
+| Dockerfile | dockerfile |
+| ECL | ecl |
+| Elixir | ex, exs |
+| Flow9 | flow |
+| F# | fs, fsi, ml, mli, fsx, fsscript |
+| FreeMarker2 | ftl, ftlh, ftlx |
+| FreeMarker2 | Angle/Dollar |
+| FreeMarker2 | Bracket/Dollar |
+| FreeMarker2 | Angle/Bracket |
+| FreeMarker2 | Bracket/Bracket |
+| FreeMarker2 | Auto/Dollar |
+| FreeMarker2 | Auto/Bracket |
+| Go | go |
+| GraphQL | graphql, gql |
+| Handlebars | handlebars, hbs |
+| Terraform | tf, tfvars, hcl |
+| HTML | html, htm, shtml, xhtml, mdoc, jsp, asp, aspx, jshtm |
+| Ini | ini, properties, gitconfig |
+| Java | java, jav |
+| JavaScript | js, es6, jsx, mjs, cjs |
+| julia | jl |
+| Kotlin | kt, kts |
+| Less | less |
+| Lexon | lex |
+| Lua | lua |
+| Liquid | liquid, htmlliquid |
+| Modula-3 | m3, i3, mg, ig |
+| Markdown | md, markdown, mdown, mkdn, mkd, mdwn, mdtxt, mdtext |
+| MDX | mdx |
+| MIPS | s |
+| DAX | dax, msdax |
+| MySQL | - |
+| Objective-C | m |
+| Pascal | pas, p, pp |
+| Pascaligo | ligo |
+| Perl | pl, pm |
+| PostgreSQL | - |
+| PHP | php, php4, php5, phtml, ctp |
+| Unknown | pla |
+| ATS | dats, sats, hats |
+| PQ | pq, pqm |
+| PowerShell | ps1, psm1, psd1 |
+| protobuf | proto |
+| Pug | jade, pug |
+| Python | py, rpy, pyw, cpy, gyp, gypi |
+| Q# | qs |
+| R | r, rhistory, rmd, rprofile, rt |
+| Razor | cshtml |
+| redis | redis |
+| Redshift | - |
+| reStructuredText | rst |
+| Ruby | rb, rbx, rjs, gemspec, pp |
+| Rust | rs, rlib |
+| Small Basic | sb |
+| Scala | scala, sc, sbt |
+| scheme | scm, ss, sch, rkt |
+| Sass | scss |
+| Shell | sh, bash |
+| sol | sol |
+| aes | aes |
+| sparql | rq |
+| SQL | sql |
+| StructuredText | st, iecst, iecplc, lc3lib, TcPOU, TcDUT, TcGVL, TcIO |
+| Swift | swift |
+| SV | sv, svh |
+| V | v, vh |
+| tcl | tcl |
+| Twig | twig |
+| TypeScript | ts, tsx, cts, mts |
+| Visual Basic | vb |
+| WebGPU Shading Language | wgsl |
+| XML | xml, xsd, dtd, ascx, csproj, config, props, targets, wxi, wxl, wxs, xaml, svg, svgz, opf, xslt, xsl |
+| YAML | yaml, yml |
+| JSON | json, bowerrc, jshintrc, jscsrc, eslintrc, babelrc, har |
 
-#### Supported Execution Languages
+### Supported Execution Languages
 
-### Keyboard Shortcuts Reference
+Referenced from the [Piston documentation](https://github.com/engineer-man/piston#Supported-Languages).
 
-### External Service Dependencies
+`awk`,`bash`,`befunge93`,`brachylog`,`brainfuck`,`bqn`,`c`,`c++`,`cjam`,`clojure`,`cobol`,`coffeescript`,`cow`,`crystal`,`csharp`,`csharp.net`,`d`,`dart`,`dash`,`dragon`,`elixir`,`emacs`,`emojicode`,`erlang`,`file`,`forte`,`forth`,`fortran`,`freebasic`,`fsharp.net`,`fsi`,`go`,`golfscript`,`groovy`,`haskell`,`husk`,`iverilog`,`japt`,`java`,`javascript`,`jelly`,`julia`,`kotlin`,`lisp`,`llvm_ir`,`lolcode`,`lua`,`matl`,`nasm`,`nasm64`,`nim`,`ocaml`,`octave`,`osabie`,`paradoc`,`pascal`,`perl`,`php`,`ponylang`,`powershell`,`prolog`,`pure`,`pyth`,`python`,`python2`,`racket`,`raku`,`retina`,`rockstar`,`rscript`,`ruby`,`rust`,`samarium`,`scala`,`smalltalk`,`sqlite3`,`swift`,`typescript`,`basic`,`basic.net`,`vlang`,`vyxal`,`yeethon`,`zig`,
+
+### Keyboard Shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Command Palette | `F1` |
+| Open from Local | `Ctrl + O` |
+| Open from GitHub | `Ctrl + Shift + O` |
+| Save to Local | `Ctrl + S` |
+| Save to GitHub | `Ctrl + Shift + S` |
+| Settings | `Ctrl + ,` |
+| Leave Room | `Ctrl + Q` |
+| Undo | `Ctrl + Z` |
+| Redo | `Ctrl + Y` |
+| Cut | `Ctrl + X` |
+| Copy | `Ctrl + C` |
+| Paste | `Ctrl + V` |
+| Find | `Ctrl + F` |
+| Replace | `Ctrl + H` |
+| Toggle Line Comment | `Ctrl + /` |
+| Toggle Block Comment | `Ctrl + Shift + /` |
+| Select All | `Ctrl + A` |
+| Copy Line Up | `Shift + Alt + ↑` |
+| Copy Line Down | `Shift + Alt + ↓` |
+| Move Line Up | `Alt + ↑` |
+| Move Line Down | `Alt + ↓` |
+| Add Cursor Above | `Ctrl + Alt + ↑` |
+| Add Cursor Below | `Ctrl + Alt + ↓` |
+| Zoom In | `Ctrl + =` |
+| Zoom Out | `Ctrl + -` |
