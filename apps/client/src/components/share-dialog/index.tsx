@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 
-import { Check, Copy, Image as LuImage } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -29,12 +29,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import type { CopyStatus } from './types';
-import { copy, copyQRCode } from './utils';
+import { copy } from './utils';
 
 interface ShareDialogProps {
   roomId: string;
@@ -48,9 +46,7 @@ interface ShareDialogRef {
 const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const isDesktop = useMediaQuery('(min-width: 768px)');
-
     const [isOpen, setIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('links');
     const [copyStatus, setCopyStatus] = useState<CopyStatus>({
       roomIdCopied: false,
       roomLinkCopied: false,
@@ -62,7 +58,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
 
-    // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
       openDialog,
       closeDialog,
@@ -72,165 +67,74 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
       copy(text, key, setCopyStatus);
     }
 
-    function handleCopyQRCode() {
-      copyQRCode(qrCodeRef, setCopyStatus);
-    }
+    const ShareSection = ({
+      label,
+      value,
+      copyKey,
+    }: {
+      label: string;
+      value: string;
+      copyKey: keyof CopyStatus;
+    }) => (
+      <div className="grid w-full items-center gap-1.5">
+        <Label className="text-sm">{label}</Label>
+        <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+          <code className="flex-1 break-all text-md sm:text-lg font-medium md:text-2xl">
+            {value}
+          </code>
+          <Button
+            onClick={() => handleCopy(value, copyKey)}
+            size="icon"
+            variant="ghost"
+            className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+            aria-label={
+              copyStatus[copyKey] ? `${label} copied` : `Copy ${label}`
+            }
+          >
+            {copyStatus[copyKey] ? (
+              <Check
+                className="size-4 animate-scale-up-center"
+                aria-hidden="true"
+              />
+            ) : (
+              <Copy className="size-4 animate-fade-in" aria-hidden="true" />
+            )}
+          </Button>
+        </div>
+      </div>
+    );
 
     const content = (
-      <div className="flex h-full flex-col">
-        <Tabs
-          defaultValue="links"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-          aria-label="Share options"
-        >
-          <TabsList
-            className="grid w-full grid-cols-2"
-            aria-label="Share methods"
-          >
-            <TabsTrigger value="links">Links</TabsTrigger>
-            <TabsTrigger value="qr">QR Code</TabsTrigger>
-          </TabsList>
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+        {/* QR Code Section */}
+        <div className="flex shrink-0 justify-center md:sticky md:top-0">
+          <QRCodeCanvas
+            ref={qrCodeRef}
+            value={`${window.location.origin}/room/${roomId}`}
+            title={`QR code to join room ${roomId}`}
+            size={Math.min(256, window.innerWidth - 96)}
+            marginSize={2}
+            className="rounded-lg"
+            imageSettings={{
+              src: '/images/kasca-logo.svg',
+              height: 48,
+              width: 48,
+              excavate: true,
+            }}
+          />
+        </div>
 
-          <TabsContent
-            value="links"
-            className="mt-4 space-y-4"
-            role="tabpanel"
-            aria-label="Share via links"
-          >
-            {/* Room ID Section */}
-            <div className="space-y-1.5">
-              <Label htmlFor="room-id" className="text-sm font-medium">
-                Room ID
-              </Label>
-              <div className="flex gap-x-2">
-                <Input
-                  id="room-id"
-                  value={roomId}
-                  readOnly
-                  className="font-mono text-sm"
-                  aria-label="Room ID for sharing"
-                />
-                <Button
-                  onClick={() => handleCopy(roomId, 'roomIdCopied')}
-                  size="icon"
-                  variant="secondary"
-                  className="shrink-0"
-                  aria-label={
-                    copyStatus.roomIdCopied ? 'Room ID copied' : 'Copy Room ID'
-                  }
-                >
-                  {copyStatus.roomIdCopied ? (
-                    <Check
-                      className="size-4 animate-scale-up-center"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Copy
-                      className="size-4 animate-fade-in"
-                      aria-hidden="true"
-                    />
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            {/* Room Link Section */}
-            <div className="space-y-1.5">
-              <Label htmlFor="room-link" className="text-sm font-medium">
-                Room Link
-              </Label>
-              <div className="flex gap-x-2">
-                {typeof window !== 'undefined' && (
-                  <Input
-                    id="room-link"
-                    value={`${window.location.origin}/room/${roomId}`}
-                    readOnly
-                    className="font-mono text-sm"
-                    aria-label="Shareable room link"
-                  />
-                )}
-                <Button
-                  onClick={() =>
-                    handleCopy(
-                      `${window.location.origin}/room/${roomId}`,
-                      'roomLinkCopied',
-                    )
-                  }
-                  size="icon"
-                  variant="secondary"
-                  className="shrink-0"
-                  aria-label={
-                    copyStatus.roomLinkCopied
-                      ? 'Room link copied'
-                      : 'Copy room link'
-                  }
-                >
-                  {copyStatus.roomLinkCopied ? (
-                    <Check
-                      className="size-4 animate-scale-up-center"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Copy
-                      className="size-4 animate-fade-in"
-                      aria-hidden="true"
-                    />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent
-            value="qr"
-            className="mt-4"
-            role="tabpanel"
-            aria-label="Share via QR code"
-          >
-            <div className="flex flex-col items-center space-y-4">
-              <QRCodeCanvas
-                ref={qrCodeRef}
-                value={`${window.location.origin}/room/${roomId}`}
-                title={`QR code to join room ${roomId}`}
-                size={Math.min(256, window.innerWidth - 96)}
-                marginSize={2}
-                className="rounded-lg"
-                imageSettings={{
-                  src: '/images/kasca-logo.svg',
-                  height: 48,
-                  width: 48,
-                  excavate: true,
-                }}
-              />
-              <Button
-                onClick={handleCopyQRCode}
-                size="sm"
-                variant="secondary"
-                className="w-full sm:w-auto"
-                aria-label={
-                  copyStatus.qrCodeCopied
-                    ? 'QR code copied as image'
-                    : 'Copy QR code as image'
-                }
-              >
-                {copyStatus.qrCodeCopied ? (
-                  <Check
-                    className="mr-2 size-4 animate-scale-up-center"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <LuImage
-                    className="mr-2 size-4 animate-fade-in"
-                    aria-hidden="true"
-                  />
-                )}
-                <span>Copy QR Code</span>
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* Share Sections */}
+        <div className="flex flex-1 flex-col space-y-4">
+          <ShareSection label="Room ID" value={roomId} copyKey="roomIdCopied" />
+          {typeof window !== 'undefined' && (
+            <ShareSection
+              label="Invite Link"
+              value={`${window.location.origin}/room/${roomId}`}
+              copyKey="roomLinkCopied"
+            />
+          )}
+        </div>
       </div>
     );
 
@@ -241,7 +145,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           onOpenChange={setIsOpen}
           aria-label="Share room dialog"
         >
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
               <DialogDescription>
@@ -250,7 +154,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
               </DialogDescription>
             </DialogHeader>
             {content}
-            <DialogFooter className="mt-4">
+            <DialogFooter className="mt-6">
               <DialogClose asChild>
                 <Button variant="secondary" aria-label="Close share dialog">
                   Close
