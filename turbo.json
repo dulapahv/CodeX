@@ -22,6 +22,11 @@
       "outputs": ["dist/**"],
       "cache": true
     },
+    "build": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "outputs": []
+    },
     "lint:check": {
       "cache": true
     },
