@@ -139,7 +139,7 @@ const LatencyTest = () => {
     <Card className="mx-auto w-full max-w-3xl">
       <Button
         variant="link"
-        className="mt-4 px-6 text-white"
+        className="mt-4 px-6 text-foreground"
         onClick={() => router.back()}
       >
         <ArrowLeft className="mr-2 size-4" />
