@@ -10,8 +10,11 @@
     "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "test:client": "turbo test:client",
     "test:client:ui": "turbo test:client:ui",
+    "test:client:debug": "turbo test:client:debug",
+    "test:client:report": "turbo test:client:report",
     "test:server": "turbo test:server",
     "test:server:remote": "turbo test:server:remote",
+    "test:server:watch": "turbo test:watch",
     "clean": "turbo clean && rimraf node_modules"
   },
   "devDependencies": {
