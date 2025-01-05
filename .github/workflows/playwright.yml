@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_REMOTE_ONLY: true
 
     steps:
       - name: 📥 Checkout code
@@ -30,22 +33,24 @@ jobs:
       - name: 💾 Cache Turbo
         uses: actions/cache@v4
         with:
-          path: .turbo
+          path: |
+            .turbo
+            node_modules/.cache/turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
 
-      # Next.js Cache
+      # Next.js cache
       - name: 💾 Cache Next.js bundle
         uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
             ${{ github.workspace }}/apps/client/.next/cache
+            node_modules/.cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-            ${{ runner.os }}-nextjs-
 
       # Playwright browsers cache
       - name: 💾 Cache Playwright browsers
@@ -54,8 +59,6 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
 
       - name: 🏗️ Install dependencies
         run: pnpm install
@@ -67,10 +70,11 @@ jobs:
           echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
 
       - name: 🎭 Install Playwright browsers
-        run: pnpm --filter client exec playwright install --with-deps
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: pnpm --filter kasca-client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        run: pnpm test:e2e
+        run: pnpm --filter kasca-client exec playwright test
 
       - name: 📊 Upload test results
         if: always()
