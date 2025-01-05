@@ -85,7 +85,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Download logs</p>
+              <p>Download output</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -104,7 +104,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Clear terminal</p>
+              <p>Clear output</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
