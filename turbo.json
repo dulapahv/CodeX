@@ -2,11 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env"],
   "tasks": {
-    "@kasca/types#build": {
-      "outputs": ["dist/**/*.d.ts", "dist/**/*.js"],
-      "cache": true
-    },
-    "kasca-client#build": {
+    "client#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
@@ -17,9 +13,13 @@
       ],
       "cache": true
     },
-    "kasca-server#build": {
+    "server#build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
+      "cache": true
+    },
+    "@kasca/types#build": {
+      "outputs": ["dist/**/*.d.ts", "dist/**/*.js"],
       "cache": true
     },
     "build": {

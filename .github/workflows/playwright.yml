@@ -71,10 +71,10 @@ jobs:
 
       - name: 🎭 Install Playwright browsers
         if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: pnpm --filter kasca-client exec playwright install --with-deps
+        run: pnpm --filter client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        run: pnpm --filter kasca-client exec playwright test
+        run: pnpm --filter client exec playwright test
 
       - name: 📊 Upload test results
         if: always()

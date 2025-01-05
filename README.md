@@ -110,10 +110,10 @@ Or start individual applications:
 
 ```bash
 # Start only the client
-pnpm --filter kasca-client dev
+pnpm --filter client dev
 
 # Start only the server
-pnpm --filter kasca-server dev
+pnpm --filter server dev
 ```
 
 The application will be available at:
@@ -151,14 +151,14 @@ You can also run scripts for specific workspaces:
 
 ```bash
 # Frontend specific
-pnpm --filter kasca-client dev
-pnpm --filter kasca-client build
-pnpm --filter kasca-client test:client
+pnpm --filter client dev
+pnpm --filter client build
+pnpm --filter client test:client
 
 # Backend specific
-pnpm --filter kasca-server dev
-pnpm --filter kasca-server build
-pnpm --filter kasca-server test:server
+pnpm --filter server dev
+pnpm --filter server build
+pnpm --filter server test:server
 ```
 
 ## Testing
@@ -177,7 +177,7 @@ pnpm test:client:debug   # Debug frontend tests
 pnpm test:client:report  # View frontend test report
 
 # Run in client workspace only
-pnpm --filter kasca-client test:client
+pnpm --filter client test:client
 ```
 
 ### Backend Testing
@@ -191,7 +191,7 @@ pnpm test:server:remote    # Run backend tests against remote server
 pnpm test:server:watch     # Run backend tests in watch mode (local server)
 
 # Run in server workspace only
-pnpm --filter kasca-server test:server
+pnpm --filter server test:server
 ```
 
 ## Deployment
@@ -207,10 +207,10 @@ For manual builds:
 
 ```bash
 # Build frontend
-pnpm --filter kasca-client build
+pnpm --filter client build
 
 # Build backend
-pnpm --filter kasca-server build
+pnpm --filter server build
 ```
 
 ## Tech Stack

@@ -71,8 +71,17 @@
     - [This Language may not be Supported or the Server is Down](#this-language-may-not-be-supported-or-the-server-is-down)
     - [Error Parsing Markdown](#error-parsing-markdown)
     - [Please Check the Information and Try Again](#please-check-the-information-and-try-again)
+    - [Failed to Import Settings. Please Check the File Format](#failed-to-import-settings-please-check-the-file-format)
     - [Parsing of the Following Markdown Structure Failed](#parsing-of-the-following-markdown-structure-failed)
-  - [Performance Tips](#performance-tips)
+    - [Error Setting Audio Output](#error-setting-audio-output)
+    - [Please grant \[media-device\] permissions to see available devices](#please-grant-media-device-permissions-to-see-available-devices)
+    - [Error toggling \[media-device\]](#error-toggling-media-device)
+    - [No active media stream](#no-active-media-stream)
+    - [No audio track found](#no-audio-track-found)
+    - [Performance Tips](#performance-tips)
+    - [Error enumerating devices](#error-enumerating-devices)
+    - [Error accessing media devices](#error-accessing-media-devices)
+    - [Error creating peer connection](#error-creating-peer-connection)
   - [Security Considerations](#security-considerations)
   - [Privacy and Security](#privacy-and-security)
     - [Data Handling](#data-handling)
@@ -402,6 +411,29 @@ To resolve this issue:
 
 ### Please Check the Information and Try Again
 
+This issue can be caused by:
+
+- Not filling in the required fields
+- Fields containing incorrect information
+  - Name must not be empty and must not exceed 64 characters
+  - Room ID must be in `XXXX-XXXX` format where `X` is an alphanumeric character
+
+To resolve this issue:
+
+1. Check the information entered in the fields
+2. Correct any errors
+
+### Failed to Import Settings. Please Check the File Format
+
+This issue can be caused by:
+
+- Trying to import settings from an unsupported file format
+- Settings file is not a valid JSON file or is corrupted
+
+To resolve this issue:
+
+1. Check the file format and ensure it is a valid JSON file
+
 ### Parsing of the Following Markdown Structure Failed
 
 This issue can be caused by:
@@ -415,7 +447,23 @@ To resolve this issue:
 2. Correct the markdown syntax or commands
 3. Switch back to `rich text` mode to view the changes
 
-## Performance Tips
+### Error Setting Audio Output
+
+### Please grant [media-device] permissions to see available devices
+
+### Error toggling [media-device]
+
+### No active media stream
+
+### No audio track found
+
+### Performance Tips
+
+### Error enumerating devices
+
+### Error accessing media devices
+
+### Error creating peer connection
 
 Live Preview is a heavy feature that may impact performance on low-end devices as it requires constant updates. To improve performance:
 
