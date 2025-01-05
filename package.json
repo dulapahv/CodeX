@@ -2,8 +2,10 @@
   "name": "kasca",
   "private": true,
   "scripts": {
-    "build": "turbo build",
     "dev": "turbo dev",
+    "build": "turbo build",
+    "build:server": "turbo build --filter=server...",
+    "build:client": "turbo build --filter=client...",
     "lint:check": "turbo lint:check",
     "lint:fix": "turbo lint:fix",
     "format:check": "prettier --check **/*.{js,jsx,ts,tsx,json,md}",

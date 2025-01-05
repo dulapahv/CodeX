@@ -129,6 +129,8 @@ Root level scripts available:
 # Development
 pnpm dev              # Start all applications in development mode
 pnpm build            # Build all packages
+pnpm build:client     # Build frontend
+pnpm build:server     # Build backend
 pnpm clean            # Clean all builds and node_modules
 
 # Testing
@@ -147,7 +149,7 @@ pnpm format:check     # Check formatting
 pnpm format:fix       # Fix formatting issues
 ```
 
-You can also run scripts for specific workspaces:
+You can also run scripts in the specific workspaces:
 
 ```bash
 # Frontend specific
@@ -207,10 +209,10 @@ For manual builds:
 
 ```bash
 # Build frontend
-pnpm --filter client build
+pnpm build:client
 
 # Build backend
-pnpm --filter server build
+pnpm build:server
 ```
 
 ## Tech Stack
