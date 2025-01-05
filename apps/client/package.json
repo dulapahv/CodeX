@@ -16,9 +16,9 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "@kasca/types": "workspace:*",
     "@codesandbox/sandpack-react": "^2.19.10",
     "@hookform/resolvers": "^3.9.1",
+    "@kasca/types": "workspace:*",
     "@mdxeditor/editor": "^3.20.0",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-accordion": "^1.2.2",
@@ -68,6 +68,7 @@
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "@types/simple-peer": "^9.11.8",
+    "dotenv": "^16.4.7",
     "eslint": "^9.17.0",
     "eslint-config-next": "^15.1.3",
     "eslint-config-prettier": "^9.1.0",

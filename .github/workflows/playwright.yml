@@ -14,7 +14,8 @@ jobs:
       CI: true
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      TURBO_REMOTE_ONLY: true
+      TURBO_CACHE: remote:rw
+      BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
 
     steps:
       - name: 📥 Checkout code
@@ -36,9 +37,10 @@ jobs:
           path: |
             .turbo
             node_modules/.cache/turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
+            apps/*/node_modules/.cache/turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-turbo-
+            turbo-${{ runner.os }}-
 
       # Next.js cache
       - name: 💾 Cache Next.js bundle
@@ -46,11 +48,11 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            ${{ github.workspace }}/apps/client/.next/cache
+            apps/client/.next/cache
             node_modules/.cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       # Playwright browsers cache
       - name: 💾 Cache Playwright browsers
@@ -58,7 +60,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: 🏗️ Install dependencies
         run: pnpm install
@@ -71,6 +73,9 @@ jobs:
         run: pnpm --filter kasca-client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
+        env:
+          BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
+          NODE_ENV: test
         run: |
           touch .env
           echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
