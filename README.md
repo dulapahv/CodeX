@@ -42,11 +42,12 @@ For detailed usage instructions and feature documentation, please see the **[Use
   - [Prerequisites](#prerequisites)
   - [Getting Started](#getting-started)
   - [Development](#development)
-  - [Scripts](#scripts)
-  - [Testing](#testing)
-    - [Frontend Testing](#frontend-testing)
-    - [Backend Testing](#backend-testing)
+  - [Test](#test)
+    - [Frontend Test](#frontend-test)
+    - [Backend Test](#backend-test)
+  - [Build](#build)
   - [Deployment](#deployment)
+  - [Scripts](#scripts)
   - [Tech Stack](#tech-stack)
   - [Coding Style](#coding-style)
   - [Contributing](#contributing)
@@ -98,15 +99,13 @@ npm install -g pnpm
 
 ## Development
 
-To run the development environment:
-
-Start all applications in development mode:
+To start the development server for both the frontend and backend applications:
 
 ```bash
 pnpm dev
 ```
 
-Or start individual applications:
+You can also start them individually:
 
 ```bash
 # Start only the client
@@ -121,9 +120,71 @@ The application will be available at:
 - Frontend: <http://localhost:3000>
 - Backend: <http://localhost:3001>
 
+## Test
+
+All test commands can be run from both the root directory and their respective workspaces. Ensure the server is running before executing test commands.
+
+### Frontend Test
+
+End-to-end tests using Playwright:
+
+```bash
+# In root directory or client workspace
+pnpm test:client         # Run all frontend E2E tests
+pnpm test:client:ui      # Run frontend tests with UI mode
+pnpm test:client:debug   # Debug frontend tests
+pnpm test:client:report  # View frontend test report
+
+# Run in client workspace only
+pnpm --filter client test:client
+```
+
+### Backend Test
+
+Server-side tests using Jest:
+
+```bash
+# In root directory or server workspace
+pnpm test:server           # Run backend tests against local server
+pnpm test:server:remote    # Run backend tests against remote server
+pnpm test:server:watch     # Run backend tests in watch mode (local server)
+
+# Run in server workspace only
+pnpm --filter server test:server
+```
+
+## Build
+
+This project is configured to build both the frontend and backend applications together with caching from Turborepo. To build the entire project:
+
+```bash
+pnpm build
+```
+
+However, you can also build them individually:
+
+```bash
+# Build frontend
+pnpm build:client
+
+# Build backend
+pnpm build:server
+```
+
+The build artifacts of the frontend will be available in the `apps/client/.next` directory, and the backend will be available in the `apps/server/dist` directory.
+
+## Deployment
+
+The project is configured for automatic deployment:
+
+- Frontend (client): Automatically deploys to [Vercel](https://vercel.com)
+- Backend (server): Automatically deploys to [Render](https://render.com)
+
+Simply push to the main branch, and both platforms will automatically build and deploy the changes.
+
 ## Scripts
 
-Root level scripts available:
+These are the available scripts in the project:
 
 ```bash
 # Development
@@ -161,58 +222,6 @@ pnpm --filter client test:client
 pnpm --filter server dev
 pnpm --filter server build
 pnpm --filter server test:server
-```
-
-## Testing
-
-All test commands can be run from both the root directory and their respective workspaces. Ensure the server is running before executing test commands.
-
-### Frontend Testing
-
-End-to-end tests using Playwright:
-
-```bash
-# In root directory or client workspace
-pnpm test:client         # Run all frontend E2E tests
-pnpm test:client:ui      # Run frontend tests with UI mode
-pnpm test:client:debug   # Debug frontend tests
-pnpm test:client:report  # View frontend test report
-
-# Run in client workspace only
-pnpm --filter client test:client
-```
-
-### Backend Testing
-
-Server-side tests using Jest:
-
-```bash
-# In root directory or server workspace
-pnpm test:server           # Run backend tests against local server
-pnpm test:server:remote    # Run backend tests against remote server
-pnpm test:server:watch     # Run backend tests in watch mode (local server)
-
-# Run in server workspace only
-pnpm --filter server test:server
-```
-
-## Deployment
-
-The project is configured for automatic deployment:
-
-- Frontend (client): Automatically deploys to [Vercel](https://vercel.com)
-- Backend (server): Automatically deploys to [Render](https://render.com)
-
-Simply push to the main branch, and both platforms will automatically build and deploy the changes.
-
-For manual builds:
-
-```bash
-# Build frontend
-pnpm build:client
-
-# Build backend
-pnpm build:server
 ```
 
 ## Tech Stack
