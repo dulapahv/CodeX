@@ -224,8 +224,8 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           <DrawerHeader className="text-left">
             <DrawerTitle>Share Room</DrawerTitle>
             <DrawerDescription>
-              Anyone with this Room ID or link can join and edit code in this
-              room.
+              Anyone with this Room ID or Invite Link can collaborate in this
+              room. Only share with people you trust.
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">{content}</div>
