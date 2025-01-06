@@ -46,6 +46,7 @@ import { OpenNoteBtn } from './open-note-btn';
 import { SaveNoteBtn } from './save-note-btn';
 
 import '@mdxeditor/editor/style.css';
+import '@radix-ui/colors/mauve-dark.css';
 
 interface MarkdownEditorProps {
   markdown: string;

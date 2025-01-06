@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('@radix-ui/colors/mauve-dark.css');
-
 *::selection {
   @apply bg-[#fb568a] text-red-100;
 }
