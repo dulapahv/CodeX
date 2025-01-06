@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState, type ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import { ArrowLeft } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 
-import { BASE_SERVER_URL } from '@/lib/constants';
+import { BASE_CLIENT_URL, BASE_SERVER_URL } from '@/lib/constants';
 import { getSocket } from '@/lib/socket';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,8 +30,6 @@ const MIN_ITERATIONS = 1;
 const MAX_ITERATIONS = 50;
 
 const LatencyTest = () => {
-  const router = useRouter();
-
   const [results, setResults] = useState<TestResult[]>([]);
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,13 +135,11 @@ const LatencyTest = () => {
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
-      <Button
-        variant="link"
-        className="mt-4 px-6 text-foreground"
-        onClick={() => router.back()}
-      >
-        <ArrowLeft className="mr-2 size-4" />
-        Go back
+      <Button variant="link" className="mt-4 px-6 text-foreground" asChild>
+        <Link href={BASE_CLIENT_URL}>
+          <ArrowLeft className="mr-2 size-4" />
+          Go back
+        </Link>
       </Button>
       <CardHeader>
         <CardTitle>Server Latency Test</CardTitle>
