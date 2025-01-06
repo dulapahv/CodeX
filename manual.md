@@ -20,7 +20,7 @@
   - [Code Editor](#code-editor)
     - [Cursor](#cursor)
     - [Text Selection](#text-selection)
-    - [Code Editor Customization](#code-editor-customization)
+    - [Code Editor Settings](#code-editor-settings)
   - [Follow Mode](#follow-mode)
     - [Enabling Follow Mode](#enabling-follow-mode)
     - [Limitations](#limitations)
@@ -212,7 +212,8 @@ The Monaco Editor forms the core of Kasca's collaborative coding environment, en
 - Syntax highlighting for over 90 programming languages (For a list of supported editor languages, refer to the [Supported Editor Languages](#supported-editor-languages) section)
 - Intellisense for code completion
 - Error detection and linting
-- You can customize the editor settings by clicking on the `Settings` button in the upper right corner of the top bar
+- You can configure, import and export editor settings to customize your coding environment. Learn more in the [Code Editor Settings](#code-editor-settings) section
+- The editor supports multiple shortcuts for common actions. Refer to the [Keyboard Shortcuts](#keyboard-shortcuts) section for a list of supported shortcuts
 
 ### Cursor
 
@@ -229,9 +230,9 @@ Each participant's cursor is displayed with a unique color. The color is generat
 - Multiple concurrent selections from different users are supported
 - Selection information (character count) is displayed in the lower right corner of the status bar
 
-### Code Editor Customization
+### Code Editor Settings
 
-You can customize the code editor to suit your preferences by going to `Settings` in the upper right corner of the top bar.
+You can configure the code editor as well as its theme to suit your preferences by going to `Settings` in the upper right corner of the top bar.
 
 - To import settings, click on the `Import Settings` button and upload a JSON file
 - To export settings, click on the `Export Settings` button to download a JSON file
@@ -266,7 +267,7 @@ You can pass arguments to your code by:
 1. Click on the arrow down icon next to the `Run Code` button
 2. Enter your arguments or input in the text area
 
-Arguments and Input should be separated by a newline. For example:
+Arguments and Input must be separated by a newline. For example:
 
 ```txt
 input1
