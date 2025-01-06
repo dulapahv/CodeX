@@ -279,6 +279,25 @@ Empty lines are ignored. You can also use `'` and `"` in your arguments and inpu
 
 ## Shared Terminal
 
+The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room.
+
+At the upper right corner of the terminal panel, you can:
+
+- Download the terminal output as a text
+  - File name will be `kasca-terminal-<date>--<time>.txt`, for example `kasca-terminal-06-01-2025--17-37-28.txt`
+  - Terminal output will not contain Kasca welcome message
+  - Example output file:
+
+    ```txt
+    [18:35:33.060]
+    🚀 Executing code...
+
+    [18:35:33.760] - python v3.10.0 (700ms)
+    Hello World
+    ```
+
+- Clear the terminal output
+
 ### Download Output
 
 ### Clear Output
