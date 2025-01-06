@@ -666,7 +666,7 @@ The Notepad panel allows you to take notes in a rich text format. It supports ma
 
 ### Notepad Features
 
-For a list of supported notepad features and markdown syntax, refer to the [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax) section.
+For a list of supported notepad features, markdown syntax, and shortcuts, refer to the [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax) section.
 
 ### Markdown Support
 
@@ -1149,7 +1149,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 ### Notepad Features and Markdown Syntax
 
-| Feature | Description | Command / Markdown Code |
+| Feature | Description | Shortcut / Markdown Code |
 |---------|-------------|---------------|
 | Open Note | Open a text file in the Notepad. Supports `txt`,`md`,`mdx`,`xbl`,`xsl`,`vtt`,`text`,`xslt`,`ehtml`,`sh`,`html`,`ics`,`mjs`,`js`,`shtml`,`xml`,`csv`,`css`,`shtm`,`htm` | |
 | Save Note | Save the current note to as a markdown (`md`) file | |
@@ -1167,7 +1167,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Check list | Create a checklist | `* [ ] List item` |
 | Select block type | Select block type for selected text. Supports paragraphs (`p`), headings (`h1` to `h6`), and blockquote (`blockquote`) | `# Heading 1`, `## Heading 2`, `### Heading 3`, `#### Heading 4`, `##### Heading 5`, `###### Heading 6`, `> Blockquote` |
 | Create link | Create a hyperlink | `[Hyperlink Text](url "Title")` |
-| Insert image | Insert an image. Supports only image URLs | `![Alt Text](image-url "title")` |
+| Insert image | Insert an image. Supports only image URLs | `![Alt Text](image-url "title")` or `<img height="..." width="..." alt="..." src="...">` |
 | Insert table | Insert a table | |
 | Insert thematic break | Insert a thematic break | `***` |
 | Insert code block | Insert a code block. Supports `c`,`cpp`,`cs`,`css`,`go`,`html`,`java`,`js`,`json`,`jsx`,`md`,`php`,`py`,`rs`,`sh`,`ts`,`tsx`,`yaml` | \`\`\`py [code]\`\`\` |
