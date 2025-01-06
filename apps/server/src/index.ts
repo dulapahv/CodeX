@@ -51,6 +51,7 @@ const io = new Server({
     },
     methods: ['GET', 'POST'], // Socket.IO needs both
   },
+  transports: ['websocket'],
 });
 io.attachApp(app);
 io.engine.on('connection', (rawSocket) => {
