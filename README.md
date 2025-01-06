@@ -244,6 +244,11 @@ pnpm --filter server test:server
 - **Testing:**
   - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
   - [Jest](https://jestjs.io) (unit testing for backend)
+- **Build & DevOps:**
+  - [Turborepo](https://turbo.build/repo/docs) (monorepo build system)
+  - [GitHub Actions](https://github.com/features/actions) (CI/CD)
+  - [Vercel](https://vercel.com) (frontend deployment)
+  - [Render](https://render.com) (backend deployment)
 - **External Services:**
   - [Piston](https://github.com/engineer-man/piston) (code execution)
   - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
