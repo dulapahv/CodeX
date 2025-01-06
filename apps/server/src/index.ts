@@ -50,7 +50,9 @@ const io = new Server({
       }
     },
     methods: ['GET', 'POST'], // Socket.IO needs both
+    credentials: true,
   },
+  transports: ['websocket', 'polling'],
 });
 io.attachApp(app);
 io.engine.on('connection', (rawSocket) => {
