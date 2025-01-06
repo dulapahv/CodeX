@@ -53,6 +53,7 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
     "react-resizable-panels": "^2.1.7",
+    "require-in-the-middle": "^7.4.0",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.1",

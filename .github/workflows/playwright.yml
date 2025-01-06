@@ -67,7 +67,8 @@ jobs:
         run: |
           pnpm build
           touch .env
-          echo BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }} > .env
+          echo "BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }}" >> .env
+          echo "SENTRY_SUPPRESS_TURBOPACK_WARNING=1" >> .env
 
       - name: 🎭 Install Playwright browsers
         if: steps.cache-playwright.outputs.cache-hit != 'true'
