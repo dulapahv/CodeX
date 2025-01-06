@@ -73,10 +73,13 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
           variant="ghost"
           className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
           data-testid="room-id-copy-button"
-          aria-label={copied ? "Room ID copied" : "Copy Room ID"}
+          aria-label={copied ? 'Room ID copied' : 'Copy Room ID'}
         >
           {copied ? (
-            <Check className="size-4 animate-scale-up-center" aria-hidden="true" />
+            <Check
+              className="size-4 animate-scale-up-center"
+              aria-hidden="true"
+            />
           ) : (
             <Copy className="size-4 animate-fade-in" aria-hidden="true" />
           )}
@@ -120,10 +123,13 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
           variant="ghost"
           className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
           data-testid="invite-link-copy-button"
-          aria-label={copied ? "Invite link copied" : "Copy invite link"}
+          aria-label={copied ? 'Invite link copied' : 'Copy invite link'}
         >
           {copied ? (
-            <Check className="size-4 animate-scale-up-center" aria-hidden="true" />
+            <Check
+              className="size-4 animate-scale-up-center"
+              aria-hidden="true"
+            />
           ) : (
             <Copy className="size-4 animate-fade-in" aria-hidden="true" />
           )}
@@ -191,8 +197,8 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
               <DialogDescription>
-                Anyone with this Room ID or link can join and edit code in this
-                room.
+                Anyone with this Room ID or Invite Link can collaborate in this
+                room. Only share with people you trust.
               </DialogDescription>
             </DialogHeader>
             {content}
