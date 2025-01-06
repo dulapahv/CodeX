@@ -12,7 +12,6 @@
     "test:server:remote": "jest --server=remote",
     "test:watch": "jest --server=local --watch"
   },
-  "packageManager": "pnpm@9.15.2",
   "dependencies": {
     "@kasca/types": "workspace:*",
     "socket.io": "^4.8.1",
