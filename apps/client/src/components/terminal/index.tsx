@@ -14,7 +14,7 @@ import {
 
 import { Output } from './components/output';
 import { WelcomeMsg } from './components/welcome-msg';
-import { formatTimestamp } from './utils';
+import { handleDownloadLogs } from './utils';
 
 interface TerminalProps {
   results: ExecutionResult[];
@@ -33,41 +33,6 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
     return () => clearTimeout(timer);
   }, [results]);
 
-  const handleDownloadLogs = () => {
-    const logs = results
-      .map((result) => {
-        const timestamp = formatTimestamp(
-          new Date(result.timestamp ?? Date.now()),
-        );
-        const stdout = result.run.stdout
-          ? `Output: ${result.run.stdout}\n`
-          : '';
-        const stderr = result.run.stderr ? `Error: ${result.run.stderr}\n` : '';
-        const exitCode =
-          result.run.code !== 0 ? `Exit Code: ${result.run.code}\n` : '';
-
-        return `[${timestamp}]\n${stdout}${stderr}${exitCode}`;
-      })
-      .join('\n---\n\n');
-
-    const blob = new Blob([logs], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    const now = new Date();
-    const datePart = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
-    const timePart = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
-    a.download = `kasca-terminal-${datePart}--${timePart}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleClearTerminal = () => {
-    setResults([]);
-  };
-
   return (
     <div className="relative h-full bg-[color:var(--panel-background)]">
       <div className="absolute right-1 top-2 z-10 flex items-center gap-1 rounded-md px-1">
@@ -77,7 +42,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleDownloadLogs}
+                onClick={() => handleDownloadLogs(results)}
                 className="size-6"
                 aria-label="Download terminal logs"
               >
@@ -96,7 +61,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleClearTerminal}
+                onClick={() => setResults([])}
                 className="size-6"
                 aria-label="Clear terminal"
               >
