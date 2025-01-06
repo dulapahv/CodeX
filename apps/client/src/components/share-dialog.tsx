@@ -31,9 +31,6 @@ import {
 } from '@/components/ui/drawer';
 import { Label } from '@/components/ui/label';
 
-import type { CopyStatus } from './types';
-import { copy } from './utils';
-
 interface ShareDialogProps {
   roomId: string;
 }
@@ -43,16 +40,103 @@ interface ShareDialogRef {
   closeDialog: () => void;
 }
 
+// Separate component for Room ID copy section
+const RoomIdSection = ({ roomId }: { roomId: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 500);
+    } catch (error) {
+      console.error('Failed to copy room ID:', error);
+    }
+  };
+
+  return (
+    <div className="grid w-full items-center gap-1.5">
+      <Label htmlFor="room-id" className="text-sm">
+        Room ID
+      </Label>
+      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+        <code
+          id="room-id"
+          className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
+          data-testid="room-id-text"
+        >
+          {roomId}
+        </code>
+        <Button
+          onClick={handleCopy}
+          size="icon"
+          variant="ghost"
+          className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+          data-testid="room-id-copy-button"
+          aria-label={copied ? "Room ID copied" : "Copy Room ID"}
+        >
+          {copied ? (
+            <Check className="size-4 animate-scale-up-center" aria-hidden="true" />
+          ) : (
+            <Copy className="size-4 animate-fade-in" aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Separate component for Invite Link copy section
+const InviteLinkSection = ({ roomId }: { roomId: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      const inviteLink = `${window.location.origin}/room/${roomId}`;
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy invite link:', error);
+    }
+  };
+
+  return (
+    <div className="grid w-full items-center gap-1.5">
+      <Label htmlFor="invite-link" className="text-sm">
+        Invite Link
+      </Label>
+      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+        <code
+          id="invite-link"
+          className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
+          data-testid="invite-link-text"
+        >
+          {`${window.location.origin}/room/${roomId}`}
+        </code>
+        <Button
+          onClick={handleCopy}
+          size="icon"
+          variant="ghost"
+          className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+          data-testid="invite-link-copy-button"
+          aria-label={copied ? "Invite link copied" : "Copy invite link"}
+        >
+          {copied ? (
+            <Check className="size-4 animate-scale-up-center" aria-hidden="true" />
+          ) : (
+            <Copy className="size-4 animate-fade-in" aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const [isOpen, setIsOpen] = useState(false);
-    const [copyStatus, setCopyStatus] = useState<CopyStatus>({
-      roomIdCopied: false,
-      roomLinkCopied: false,
-      qrCodeCopied: false,
-    });
-
     const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
@@ -62,56 +146,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
       openDialog,
       closeDialog,
     }));
-
-    function handleCopy(text: string, key: keyof CopyStatus) {
-      copy(text, key, setCopyStatus);
-    }
-
-    const ShareSection = ({
-      label,
-      value,
-      copyKey,
-      testId,
-    }: {
-      label: string;
-      value: string;
-      copyKey: keyof CopyStatus;
-      testId: string;
-    }) => (
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor={testId} className="text-sm">
-          {label}
-        </Label>
-        <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
-          <code
-            id={testId}
-            className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
-            data-testid={`${testId}-text`}
-          >
-            {value}
-          </code>
-          <Button
-            onClick={() => handleCopy(value, copyKey)}
-            size="icon"
-            variant="ghost"
-            className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
-            data-testid={`${testId}-copy-button`}
-            aria-label={
-              copyStatus[copyKey] ? `${label} copied` : `Copy ${label}`
-            }
-          >
-            {copyStatus[copyKey] ? (
-              <Check
-                className="size-4 animate-scale-up-center"
-                aria-hidden="true"
-              />
-            ) : (
-              <Copy className="size-4 animate-fade-in" aria-hidden="true" />
-            )}
-          </Button>
-        </div>
-      </div>
-    );
 
     const content = (
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
@@ -138,19 +172,9 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
 
         {/* Share Sections */}
         <div className="flex flex-1 flex-col space-y-4">
-          <ShareSection
-            label="Room ID"
-            value={roomId}
-            copyKey="roomIdCopied"
-            testId="room-id"
-          />
+          <RoomIdSection roomId={roomId} />
           {typeof window !== 'undefined' && (
-            <ShareSection
-              label="Invite Link"
-              value={`${window.location.origin}/room/${roomId}`}
-              copyKey="roomLinkCopied"
-              testId="invite-link"
-            />
+            <InviteLinkSection roomId={roomId} />
           )}
         </div>
       </div>
