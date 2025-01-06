@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Home, MoveLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
 
 import { BASE_CLIENT_URL } from '@/lib/constants';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -19,15 +19,7 @@ export default function NotFound() {
           Sorry, we couldn&apos;t find the page you&apos;re looking for. Please
           check the URL or navigate back to the homepage.
         </AlertDescription>
-        <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
-          <Button
-            variant="outline"
-            onClick={() => window.history.back()}
-            className="gap-2"
-          >
-            <MoveLeft className="size-4" />
-            Go Back
-          </Button>
+        <div className="flex mt-6 justify-end">
           <Button variant="default" asChild className="gap-2">
             <Link href={BASE_CLIENT_URL}>
               <Home className="size-4" />
