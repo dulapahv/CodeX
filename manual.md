@@ -75,7 +75,7 @@
     - [Supported Execution Languages](#supported-execution-languages)
     - [Keyboard Shortcuts in Menu Bar](#keyboard-shortcuts-in-menu-bar)
     - [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview)
-    - [Notepad Features](#notepad-features-1)
+    - [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax)
 
 ## Getting Started
 
@@ -518,7 +518,7 @@ The Notepad panel allows you to take notes in a rich text format. It supports ma
 
 ### Notepad Features
 
-For a list of supported markdown syntax, refer to the [Markdown Support](#markdown-support) section.
+For a list of supported notepad features and markdown syntax, refer to the [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax) section.
 
 ### Markdown Support
 
@@ -983,7 +983,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Day.js | v1.11.10 |
 | Sortable.js | v1.15.0 |
 
-### Notepad Features
+### Notepad Features and Markdown Syntax
 
 | Feature | Description | Command / Markdown Code |
 |---------|-------------|---------------|
