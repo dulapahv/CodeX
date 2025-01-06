@@ -33,16 +33,18 @@
     - [Authentication](#authentication)
     - [Opening Files from GitHub](#opening-files-from-github)
     - [Saving Files to GitHub](#saving-files-to-github)
-  - [Live UI Preview](#live-ui-preview)
-    - [Supported Libraries](#supported-libraries)
-    - [Preview Panel Usage](#preview-panel-usage)
-    - [Real-time Updates](#real-time-updates)
-    - [Tailwind CSS Integration](#tailwind-css-integration)
+  - [Live Preview](#live-preview)
+    - [Limitations of Live Preview](#limitations-of-live-preview)
+    - [Live Preview Example](#live-preview-example)
+      - [Example 1: HTML with Tailwind CSS](#example-1-html-with-tailwind-css)
+      - [Example 2: HTML with Alpine.js, GSAP, and Chart.js](#example-2-html-with-alpinejs-gsap-and-chartjs)
   - [Notepad](#notepad)
     - [Notepad Features](#notepad-features)
     - [Markdown Support](#markdown-support)
-    - [Real-time Synchronization](#real-time-synchronization)
+    - [Limitations of Notepad](#limitations-of-notepad)
     - [Saving and Opening Notes](#saving-and-opening-notes)
+      - [Saving Notes](#saving-notes)
+      - [Opening Notes](#opening-notes)
   - [Video \& Voice Communication](#video--voice-communication)
   - [Troubleshooting](#troubleshooting)
     - [Live Preview not Updating or Displaying Error](#live-preview-not-updating-or-displaying-error)
@@ -71,7 +73,9 @@
   - [Appendix](#appendix)
     - [Supported Editor Languages](#supported-editor-languages)
     - [Supported Execution Languages](#supported-execution-languages)
-    - [Keyboard Shortcuts](#keyboard-shortcuts)
+    - [Keyboard Shortcuts in Menu Bar](#keyboard-shortcuts-in-menu-bar)
+    - [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview)
+    - [Notepad Features](#notepad-features-1)
 
 ## Getting Started
 
@@ -158,7 +162,7 @@ The interface is divided into several sections, each section contains multiple p
    - Real-time collaboration
    - Multi-cursor support
 
-3. **Right Right Panel - Live UI Preview**
+3. **Right Right Panel - Live Preview**
    - Live preview of code output
    - UI rendering for web development
    - Real-time updates
@@ -213,7 +217,7 @@ The Monaco Editor forms the core of Kasca's collaborative coding environment, en
 - Intellisense for code completion
 - Error detection and linting
 - You can configure, import and export editor settings to customize your coding environment. Learn more in the [Code Editor Settings](#code-editor-settings) section
-- The editor supports multiple shortcuts for common actions. Refer to the [Keyboard Shortcuts](#keyboard-shortcuts) section for a list of supported shortcuts
+- The editor supports multiple shortcuts for common actions. Refer to the [Keyboard Shortcuts in Menu Bar](#keyboard-shortcuts-in-menu-bar) section for a list of supported shortcuts
 
 ### Cursor
 
@@ -281,12 +285,14 @@ Empty lines are ignored. You can also use `'` and `"` in your arguments and inpu
 
 The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room.
 
-At the upper right corner of the terminal panel, you can:
+At the upper right corner of the terminal panel, you can [Download Output](#download-output) or [Clear Output](#clear-output).
 
-- Download the terminal output as a text
-  - File name will be `kasca-terminal-<date>--<time>.txt`, for example `kasca-terminal-06-01-2025--17-37-28.txt`
-  - Terminal output will not contain Kasca welcome message
-  - Example output file:
+### Download Output
+
+File name will be `kasca-terminal-<date>--<time>.txt`, for example `kasca-terminal-06-01-2025--17-37-28.txt`
+
+- Terminal output will not contain Kasca welcome message
+- Example output file:
 
     ```txt
     [18:35:33.060]
@@ -296,41 +302,262 @@ At the upper right corner of the terminal panel, you can:
     Hello World
     ```
 
-- Clear the terminal output
-
-### Download Output
-
 ### Clear Output
+
+- Clear the terminal output
 
 ## GitHub Integration
 
+Kasca allows you to connect your GitHub account to open and save files directly from your repositories.
+
 ### Authentication
+
+Kasca requires `repo` access scope to read and write to your repositories. For more information, refer to the [GitHub Access Permissions](#github-access-permissions) section.
+
+To connect your GitHub account:
+
+1. Click on the `Settings` button in the top bar
+2. Click on the `Connect to GitHub` button
+3. Follow the prompts to authenticate your GitHub account
+4. Once connected, you can open and save files from your GitHub repositories
 
 ### Opening Files from GitHub
 
+1. Click on the `File` menu in the top bar
+2. Click on `Open from GitHub`
+3. Select the repository, branch, and file you want to open
+4. The file will be loaded into the editor
+
+Kasca will automatically detect the language of the file and switch the editor's language mode accordingly. Other users' editors will also automatically switch to the same language mode.
+
 ### Saving Files to GitHub
 
-## Live UI Preview
+1. Click on the `File` menu in the top bar
+2. Click on `Save to GitHub`
+3. Enter the file name and commit message
+4. Click `Save`
 
-### Supported Libraries
+Upon saving, an alert will appear at the bottom right corner of the screen indicating the success or failure of the save operation. From there, you can click on the link to view the commit on GitHub.
 
-### Preview Panel Usage
+## Live Preview
 
-### Real-time Updates
+The Live Preview panel allows you to see real-time updates of your code output. It is particularly useful for web development to see how your code renders in a browser.
 
-### Tailwind CSS Integration
+- Tailwind CSS utility classes are available
+- Add custom styles with `<style>` tags
+- Add custom scripts with `<script>` tags
+- Add external libraries in `<head>` tags
+
+For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview) section.
+
+### Limitations of Live Preview
+
+- Only HTML code is supported
+
+### Live Preview Example
+
+#### Example 1: HTML with Tailwind CSS
+
+```html
+<style>
+  .test {
+    background-color: blue;
+  }
+</style>
+
+<p class="test text-5xl text-white font-bold">
+  Hello World
+</p>
+```
+
+![live-preview_example_1](/docs/images/live-preview_example_1.png)
+
+#### Example 2: HTML with Alpine.js, GSAP, and Chart.js
+
+```html
+<div class="bg-black p-4 h-full">
+  <div class="mx-auto max-w-4xl space-y-4">
+    <!-- Alpine.js example -->
+    <div
+      x-data="{ count: 0 }"
+      class="rounded-lg bg-neutral-900 p-6 shadow-lg"
+    >
+      <div class="mb-4 flex items-center gap-2">
+        <i data-lucide="plus-circle" class="size-5 text-blue-500"></i>
+        <h2 class="text-xl font-semibold text-neutral-50">
+          Interactive Counter
+        </h2>
+      </div>
+      <button
+        @click="count++"
+        class="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+        data-tippy-content="Click me to increment!"
+      >
+        Count: <span x-text="count" class="font-bold"></span>
+      </button>
+    </div>
+
+    <!-- GSAP example -->
+    <div id="gsap-box" class="rounded-lg bg-neutral-900 p-6 shadow-lg">
+      <div class="mb-4 flex items-center gap-2">
+        <i data-lucide="move-3d" class="size-5 text-blue-500"></i>
+        <h2 class="text-xl font-semibold text-neutral-50">GSAP Animation</h2>
+      </div>
+      <div id="animated-box" class="size-16 rounded bg-blue-500"></div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="rounded-lg bg-neutral-900 p-6 shadow-lg">
+      <div class="mb-4 flex items-center gap-2">
+        <i data-lucide="line-chart" class="size-5 text-blue-500"></i>
+        <h2 class="text-xl font-semibold text-neutral-50">Monthly Sales</h2>
+      </div>
+      <div class="relative">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize libraries
+    lucide.createIcons();
+    tippy('[data-tippy-content]');
+
+    // GSAP animation
+    gsap.to('#animated-box', {
+      rotation: 360,
+      x: 100,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+    });
+
+    // Chart.js setup
+    const data = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        {
+          label: 'Sales',
+          data: [4000, 3000, 2000, 2780, 1890, 2390],
+          borderColor: '#3b82f6', // blue-500
+          backgroundColor: '#3b82f680',
+          tension: 0.4,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+        },
+        {
+          label: 'Profit',
+          data: [2400, 1398, 9800, 3908, 4800, 3800],
+          borderColor: '#10b981', // emerald-500
+          backgroundColor: '#10b98180',
+          tension: 0.4,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+        },
+      ],
+    };
+
+    // Chart configuration
+    const config = {
+      type: 'line',
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#404040',
+            },
+            ticks: {
+              color: '#e5e5e5',
+            },
+          },
+          x: {
+            grid: {
+              color: '#404040',
+            },
+            ticks: {
+              color: '#e5e5e5',
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#e5e5e5',
+            },
+          },
+          tooltip: {
+            backgroundColor: '#262626',
+            titleColor: '#e5e5e5',
+            bodyColor: '#e5e5e5',
+            borderColor: '#525252',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+          },
+        },
+      },
+    };
+
+    // Create chart
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, config);
+  </script>
+</div>
+```
+
+<img src="/docs/images/live-preview_example_2.png?raw=true" width="300" alt="live-preview_example_2"/>
 
 ## Notepad
 
+The Notepad panel allows you to take notes in a rich text format. It supports markdown syntax for text formatting and organization.
+
 ### Notepad Features
+
+For a list of supported markdown syntax, refer to the [Markdown Support](#markdown-support) section.
 
 ### Markdown Support
 
-### Real-time Synchronization
+You can switch between `rich text` and `source` modes in the Notepad to view and edit markdown syntax.
+
+In case of an error parsing markdown, refer to the [Error parsing markdown](#error-parsing-markdown) section.
+
+### Limitations of Notepad
+
+Notepad, unlike the code editor, is not optimized for real-time updates and may be slow on low-end devices when handling large amounts of text.
 
 ### Saving and Opening Notes
 
+You can save notes to your local device or open existing notes in the Notepad.
+
+#### Saving Notes
+
+1. Click on the `Save note` button in the Notepad
+2. Enter the note name and click `Save`
+
+Notes are saved in markdown format with the `.md` extension.
+
+#### Opening Notes
+
+1. Click on the `Open note` button in the Notepad
+2. Select the note you want to open
+
+For a list of supported file formats, refer to the [Notepad Features](#notepad-features) section.
+
 ## Video & Voice Communication
+
+Kasca supports video and voice communication between participants in a room. You can toggle your camera, microphone, and audio settings in the Video & Voice Communication panel.
+
+Upon joining the room, Kasca will prompt you to grant permissions to access your media devices (camera, microphone, audio).
+
+- To turn on camera, microphone, or audio, simply click on the respective buttons in the Video & Voice Communication panel.
+- To change devices, click on the dropdown menu next to the respective button and select the desired device.
+
+For troubleshooting video and audio issues, refer to the [Troubleshooting](#troubleshooting) section.
 
 ## Troubleshooting
 
@@ -566,7 +793,7 @@ Kasca does not store any user data on the server except for:
 - Code
 - Notes
 
-All data is stored temporarily during a session and is cleared once the session ends. The session ends and the room is automatically deleted when all users leave the room.
+All of which are stored temporarily during a session and is cleared once the session ends. The session ends and all data in the room is deleted immediately when all users leave the room.
 
 ### User Privacy
 
@@ -582,7 +809,7 @@ Kasca uses [Vercel Analytics](https://vercel.com/docs/analytics) and [Cloudflare
 
 No personal data is collected or stored.
 
-\*Page views is collected from users who visit the homepage only so other pages (e.g. session page with room ID) are not tracked.
+\*Page views is collected from users who visit the homepage only so other pages (e.g. session page with room ID) are neither tracked nor exposed.
 
 Kasca uses [Sentry](https://sentry.io) for error tracking to help identify and fix issues quickly. No personal data is collected or stored. The [Sentry's Session Replay](https://docs.sentry.io/product/explore/session-replay/) feature is enabled for faster debugging, and **all user inputs are masked** to prevent data exposure. Learn more about [how Session Replay captures data while protecting user privacy](https://docs.sentry.io/security-legal-pii/scrubbing/protecting-user-privacy/).
 
@@ -590,7 +817,7 @@ Kasca uses [Sentry](https://sentry.io) for error tracking to help identify and f
 
 Kasca uses GitHub OAuth to authenticate users and access repositories. When you connect your GitHub account, Kasca requests only one permission scope:
 
-- `repo` - Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks. **Note**: In addition to repository related resources, the `repo` scope also grants access to manage organization-owned resources including projects, invitations, team memberships and webhooks. This scope also grants the ability to manage projects owned by users.
+- `repo` - Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks. **Note**: In addition to repository related resources, the `repo` scope also grants access to manage organization-owned resources including projects, invitations, team memberships and webhooks. This scope also grants the ability to manage projects owned by users. (from [GitHub's Scopes for OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps))
 
 Kasca does not store your GitHub access token. The token is stored securely in your browser's Cookies and is used only for making API requests to GitHub on your behalf.
 
@@ -703,7 +930,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 `awk`,`bash`,`befunge93`,`brachylog`,`brainfuck`,`bqn`,`c`,`c++`,`cjam`,`clojure`,`cobol`,`coffeescript`,`cow`,`crystal`,`csharp`,`csharp.net`,`d`,`dart`,`dash`,`dragon`,`elixir`,`emacs`,`emojicode`,`erlang`,`file`,`forte`,`forth`,`fortran`,`freebasic`,`fsharp.net`,`fsi`,`go`,`golfscript`,`groovy`,`haskell`,`husk`,`iverilog`,`japt`,`java`,`javascript`,`jelly`,`julia`,`kotlin`,`lisp`,`llvm_ir`,`lolcode`,`lua`,`matl`,`nasm`,`nasm64`,`nim`,`ocaml`,`octave`,`osabie`,`paradoc`,`pascal`,`perl`,`php`,`ponylang`,`powershell`,`prolog`,`pure`,`pyth`,`python`,`python2`,`racket`,`raku`,`retina`,`rockstar`,`rscript`,`ruby`,`rust`,`samarium`,`scala`,`smalltalk`,`sqlite3`,`swift`,`typescript`,`basic`,`basic.net`,`vlang`,`vyxal`,`yeethon`,`zig`,
 
-### Keyboard Shortcuts
+### Keyboard Shortcuts in Menu Bar
 
 | Action | Shortcut |
 |--------|----------|
@@ -732,3 +959,55 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Add Cursor Below | `Ctrl + Alt + ↓` |
 | Zoom In | `Ctrl + =` |
 | Zoom Out | `Ctrl + -` |
+
+### Pre-Installed Libraries for Live Preview
+
+| Library | Version |
+|---------|---------|
+| Tailwind CSS | v3.x |
+| Animate.css | v4.1.1 |
+| AOS | v2.3.1 |
+| Swiper | v11.x |
+| HTMX | v2.0.4 |
+| Lucide Icons | latest |
+| Alpine.js | v3.x |
+| GSAP | v3.12.5 |
+| Popper | v2.x |
+| Tippy.js | v6.x |
+| React | v18.x |
+| React DOM | v18.x |
+| PropTypes | latest |
+| Recharts | latest |
+| Chart.js | latest |
+| Lodash | v4.17.21 |
+| Day.js | v1.11.10 |
+| Sortable.js | v1.15.0 |
+
+### Notepad Features
+
+| Feature | Description | Command / Markdown Code |
+|---------|-------------|---------------|
+| Open Note | Open a text file in the Notepad. Supports `txt`,`md`,`mdx`,`xbl`,`xsl`,`vtt`,`text`,`xslt`,`ehtml`,`sh`,`html`,`ics`,`mjs`,`js`,`shtml`,`xml`,`csv`,`css`,`shtm`,`htm` | |
+| Save Note | Save the current note to as a markdown (`md`) file | |
+| Undo | Undo the last action | `ctrl + z` |
+| Redo | Redo the last undone action | `ctrl + y` or `ctrl + shift + z` |
+| Bold | Make selected text bold | `ctrl + b` or `**text**` |
+| Italic | Make selected text italic | `ctrl + i` or `*text*` |
+| Underline | Underline selected text | `ctrl + u` or `<u>text</u>` |
+| Inline code format | Format selected text as inline code | \`text\` |
+| Strikethrough | Strike through selected text | `~~text~~` |
+| Superscript | Format selected text as superscript | `<sup>text</sup>` |
+| Subscript | Format selected text as subscript | `<sub>text</sub>` |
+| Bulletted list | Create a bulletted list | `* List item` |
+| Numbered list | Create a numbered list | `1. List item` |
+| Check list | Create a checklist | `* [ ] List item` |
+| Select block type | Select block type for selected text. Supports paragraphs (`p`), headings (`h1` to `h6`), and blockquote (`blockquote`) | `# Heading 1`, `## Heading 2`, `### Heading 3`, `#### Heading 4`, `##### Heading 5`, `###### Heading 6`, `> Blockquote` |
+| Create link | Create a hyperlink | `[Hyperlink Text](url "Title")` |
+| Insert image | Insert an image. Supports only image URLs | `![Alt Text](image-url "title")` |
+| Insert table | Insert a table | |
+| Insert thematic break | Insert a thematic break | `***` |
+| Insert code block | Insert a code block. Supports `c`,`cpp`,`cs`,`css`,`go`,`html`,`java`,`js`,`json`,`jsx`,`md`,`php`,`py`,`rs`,`sh`,`ts`,`tsx`,`yaml` | \`\`\`py [code]\`\`\` |
+| Insert admonition | Insert an admonition. Supports `note`,`tip`,`danger`,`info`,`caution` | `:::note [text] :::` |
+| Rich text mode| Switch to rich text mode | |
+| Diff mode | Switch to diff mode | |
+| Source mode | Switch to source mode (markdown) | |
