@@ -16,7 +16,7 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
 
   return (
     <ButtonWithTooltip
-      title="Open Note"
+      title="Open note"
       onClick={() => {
         const input = document.createElement('input');
         input.type = 'file';
