@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      SENTRY_SUPPRESS_TURBOPACK_WARNING: 1
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
-      SENTRY_SUPPRESS_TURBOPACK_WARNING: ${{ vars.SENTRY_SUPPRESS_TURBOPACK_WARNING }}
 
     steps:
       - name: 📥 Checkout code
@@ -65,11 +65,7 @@ jobs:
         run: pnpm install
 
       - name: 🔨 Build packages
-        run: |
-          pnpm build
-          touch .env
-          echo "BETTERSTACK_API_KEY=${{ secrets.BETTERSTACK_API_KEY }}" >> .env
-          echo "SENTRY_SUPPRESS_TURBOPACK_WARNING=${{ vars.SENTRY_SUPPRESS_TURBOPACK_WARNING }}" >> .env
+        run: pnpm build
 
       - name: 🎭 Install Playwright browsers
         if: steps.cache-playwright.outputs.cache-hit != 'true'
