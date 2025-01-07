@@ -8,9 +8,9 @@
     "build": "rimraf dist && tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && echo Server built successfully!",
     "format:check": "prettier . --c",
     "format:fix": "prettier . --w",
-    "test:server": "start-server-and-test 'pnpm dev' tcp:3001 'jest --server=local'",
-    "test:server:remote": "start-server-and-test 'pnpm dev' tcp:3001 'jest --server=remote'",
-    "test:watch": "start-server-and-test 'pnpm dev' tcp:3001 'jest --server=local --watch'"
+    "test:server": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local'",
+    "test:server:remote": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=remote'",
+    "test:watch": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local --watch'"
   },
   "dependencies": {
     "@kasca/types": "workspace:*",
