@@ -10,6 +10,9 @@
 
 <div align="center">
   <a href="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml"><img src="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml/badge.svg"></a>
+  <a href="https://github.com/dulapahv/Kasca/actions/workflows/jest.yml"><img src="https://github.com/dulapahv/Kasca/actions/workflows/jest.yml/badge.svg"></a>
+</div>
+<div align="center">
   <a href="https://github.com/dulapahv/Kasca/issues"><img src="https://img.shields.io/github/issues/dulapahv/Kasca.svg?style=flat" /></a>
   <a href="https://codeclimate.com/github/dulapahv/Kasca/maintainability"><img src="https://api.codeclimate.com/v1/badges/3984a19491b5e90cfa08/maintainability" /></a>
 </div>
