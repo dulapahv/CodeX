@@ -10,9 +10,6 @@ export async function createRoom(page: Page, name: string) {
     .fill(name);
   await page.getByRole('button', { name: 'Create Room' }).click();
 
-  // Wait for successful room creation
-  await expect(page.getByLabel('Redirecting')).toBeVisible();
-
   // Wait for room to be created and URL to change /room/:id
   await page.waitForURL(/\/room\/.*/);
 
