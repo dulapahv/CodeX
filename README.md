@@ -213,13 +213,13 @@ pnpm format:check     # Check formatting
 pnpm format:fix       # Fix formatting issues
 ```
 
-You can also run scripts in the specific workspaces:
+You can also run scripts in the specific workspaces (note: this will not use Turborepo caching):
 
 ```bash
 # Frontend specific
 pnpm --filter client dev
 pnpm --filter client build
-pnpm --filter client test:client
+pnpm --filter client test:e2e
 
 # Backend specific
 pnpm --filter server dev
