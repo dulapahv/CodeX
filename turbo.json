@@ -11,11 +11,6 @@
     "server#build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
-      "env": [
-        "GITHUB_CLIENT_SECRET_DEV",
-        "GITHUB_CLIENT_SECRET_PROD",
-        "BETTERSTACK_API_KEY"
-      ],
       "cache": true
     },
     "@kasca/types#build": {
@@ -31,18 +26,20 @@
       "cache": false,
       "persistent": true
     },
-    "test:e2e": {
+    "client#test:e2e": {
       "cache": true,
-      "outputs": ["playwright-report/**", "test-results/**"]
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "env": ["BETTERSTACK_API_KEY"]
     },
-    "test:e2e:ui": {
-      "cache": false
+    "client#test:e2e:ui": {
+      "cache": false,
+      "env": ["BETTERSTACK_API_KEY"]
     },
-    "test:server": {
+    "server#test:server": {
       "cache": true,
       "outputs": ["test-results/**"]
     },
-    "test:server:remote": {
+    "server#test:server:remote": {
       "cache": true,
       "outputs": ["test-results/**"]
     },
