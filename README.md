@@ -260,7 +260,8 @@ pnpm --filter server test:socket
   - [Render](https://render.com) (backend deployment)
 - **Monitoring & Analytics:**
   - [Sentry](https://sentry.io) (error tracking)
-  - [Vercel Analytics](https://vercel.com/docs/analytics) (user analytics)
+  - [Vercel Analytics](https://vercel.com/docs/analytics) (web analytics)
+  - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) (web analytics)
 - **External Services:**
   - [Piston](https://github.com/engineer-man/piston) (code execution)
   - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
