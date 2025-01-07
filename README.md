@@ -247,11 +247,20 @@ pnpm --filter server test:socket
 - **Testing:**
   - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
   - [Jest](https://jestjs.io) (unit testing for backend)
+  - [CodeQL](https://codeql.github.com/) (security analysis)
+- **Code Quality:**
+  - [ESLint](https://eslint.org) (static code analysis)
+  - [Prettier](https://prettier.io) (code formatting)
+  - [Husky](https://typicode.github.io/husky/) (git hooks)
+  - [commitlint](https://commitlint.js.org/) (commit message linting)
 - **Build & DevOps:**
   - [Turborepo](https://turbo.build/repo/docs) (monorepo build system)
   - [GitHub Actions](https://github.com/features/actions) (CI/CD)
   - [Vercel](https://vercel.com) (frontend deployment)
   - [Render](https://render.com) (backend deployment)
+- **Monitoring & Analytics:**
+  - [Sentry](https://sentry.io) (error tracking)
+  - [Vercel Analytics](https://vercel.com/docs/analytics) (user analytics)
 - **External Services:**
   - [Piston](https://github.com/engineer-man/piston) (code execution)
   - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
@@ -265,6 +274,9 @@ We use several tools to maintain code quality:
 - [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) for import statement organization
 - [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) for Tailwind CSS class sorting (frontend only)
 - [prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames) for wrapping long Tailwind CSS class names (frontend only)
+- [Husky](https://typicode.github.io/husky/) for Git hooks
+- [lint-staged](https://github.com/okonet/lint-staged) for running checks on staged files
+- [commitlint](https://commitlint.js.org/) for commit message linting
 
 Check and fix code style:
 
@@ -277,20 +289,47 @@ pnpm format:fix    # Fix formatting issues
 
 ## Contributing
 
-1. Create a new branch for your feature
-2. Commit changes following [Angular Commit Message Conventions](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
-3. Submit a Pull Request with a description of your changes
+Contributions are welcome! To contribute to this project, follow these steps:
+
+1. Create a new branch for your feature:
+
+   ```bash
+   git checkout -b feat/your-feature-name
+    ```
+
+2. Commit your changes following **[Conventional Commits](https://conventionalcommits.org/)**:
+
+    ```bash
+    git commit -m "<type>(<optional-scope>): <description>"
+    ```
+
+    - `<type>`: Must be one of:
+
+      - `feat`: New features (e.g., "feat: add user authentication")
+      - `fix`: Bug fixes (e.g., "fix: resolve memory leak")
+      - `docs`: Documentation changes (e.g., "docs: update API guide")
+      - `style`: Code style changes (e.g., "style: fix indentation")
+      - `refactor`: Code refactoring (e.g., "refactor: simplify auth logic")
+      - `perf`: Performance improvements (e.g., "perf: optimize database queries")
+      - `test`: Adding/updating tests (e.g., "test: add unit tests for auth")
+      - `chore`: Routine tasks/maintenance (e.g., "chore: update dependencies")
+      - `ci`: CI/CD changes (e.g., "ci: add GitHub Actions workflow")
+      - `revert`: Revert previous changes (e.g., "revert: remove broken feature")
+
+    <br />
+
+    > For complete commit message guidelines, see **[Conventional Commits](https://conventionalcommits.org/)**.
+
+3. Push your changes and submit a Pull Request with a description of your changes:
+
+    ```bash
+    git push origin feat/your-feature-name
+    ```
 
 ## User Manual
 
-For detailed information about using Kasca, including:
-
-- Feature guides
-- Keyboard shortcuts
-- Troubleshooting
-
-Please refer to the **[User Manual](manual.md)**.
+For detailed usage instructions and feature documentation, please refer to the **[User Manual](manual.md)**.
 
 ## License
 
-MIT License - see the [LICENSE](LICENSE) file for details
+MIT License - see the [LICENSE](LICENSE) file for details.
