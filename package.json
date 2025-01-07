@@ -14,8 +14,8 @@
     "test:client:ui": "turbo test:e2e:ui",
     "test:client:debug": "turbo test:e2e:debug",
     "test:client:report": "turbo test:e2e:report",
-    "test:server": "turbo test:server",
-    "test:server:remote": "turbo test:server:remote",
+    "test:server": "turbo test:socket",
+    "test:server:remote": "turbo test:socket:remote",
     "test:server:watch": "turbo test:watch",
     "clean": "turbo clean && rimraf node_modules"
   },

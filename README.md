@@ -224,7 +224,7 @@ pnpm --filter client test:e2e
 # Backend specific
 pnpm --filter server dev
 pnpm --filter server build
-pnpm --filter server test:server
+pnpm --filter server test:socket
 ```
 
 ## Tech Stack

@@ -35,11 +35,11 @@
       "cache": false,
       "env": ["BETTERSTACK_API_KEY"]
     },
-    "server#test:server": {
+    "server#test:socket": {
       "cache": true,
       "outputs": ["test-results/**"]
     },
-    "server#test:server:remote": {
+    "server#test:socket:remote": {
       "cache": true,
       "outputs": ["test-results/**"]
     },
