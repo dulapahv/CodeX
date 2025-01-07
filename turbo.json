@@ -5,17 +5,17 @@
     "client#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "env": [
-        "GITHUB_CLIENT_SECRET_DEV",
-        "GITHUB_CLIENT_SECRET_PROD",
-        "SENTRY_AUTH_TOKEN",
-        "BETTERSTACK_API_KEY"
-      ],
+      "env": ["SENTRY_AUTH_TOKEN"],
       "cache": true
     },
     "server#build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
+      "env": [
+        "GITHUB_CLIENT_SECRET_DEV",
+        "GITHUB_CLIENT_SECRET_PROD",
+        "BETTERSTACK_API_KEY"
+      ],
       "cache": true
     },
     "@kasca/types#build": {
