@@ -22,10 +22,10 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,jsx,ts,tsx,json}": [
-      "pnpm format:fix"
+      "pnpm format:check"
     ],
     "apps/client/**/*.{js,mjs,jsx,ts,tsx}": [
-      "pnpm lint:fix"
+      "pnpm lint:check"
     ]
   },
   "devDependencies": {
