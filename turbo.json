@@ -47,13 +47,13 @@
       "cache": true
     },
     "lint:fix": {
-      "cache": false
+      "cache": true
     },
     "format:check": {
       "cache": true
     },
     "format:fix": {
-      "cache": false
+      "cache": true
     },
     "clean": {
       "cache": false
