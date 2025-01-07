@@ -122,11 +122,11 @@ The application will be available at:
 
 ## Test
 
-All test commands can be run from both the root directory and their respective workspaces. Ensure the server is running before executing test commands.
+All test commands can be run from both the root directory and their respective workspaces.
 
 ### Frontend Test
 
-End-to-end tests using Playwright:
+Both the frontend server and the backend server will start automatically. To run the frontend tests:
 
 ```bash
 # In root directory or client workspace
@@ -141,7 +141,7 @@ pnpm --filter client test:client
 
 ### Backend Test
 
-Server-side tests using Jest:
+The backend server will start automatically. To run the backend tests:
 
 ```bash
 # In root directory or server workspace
