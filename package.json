@@ -17,7 +17,7 @@
     "test:server": "turbo test:socket",
     "test:server:remote": "turbo test:socket:remote",
     "test:server:watch": "turbo test:watch",
-    "clean": "turbo clean && rimraf node_modules",
+    "clean": "node scripts/clean.js",
     "prepare": "husky"
   },
   "lint-staged": {

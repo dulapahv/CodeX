@@ -54,9 +54,6 @@
     },
     "format:fix": {
       "cache": true
-    },
-    "clean": {
-      "cache": false
     }
   }
 }
