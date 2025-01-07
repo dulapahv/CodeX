@@ -22,11 +22,13 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
-      "pnpm lint:check",
-      "pnpm format:check"
+      "pnpm format:fix"
     ],
     "**/*.json": [
-      "pnpm format:check"
+      "pnpm format:fix"
+    ],
+    "apps/client/**/*.{js,jsx,ts,tsx}": [
+      "eslint --config apps/client/eslint.config.mjs"
     ]
   },
   "devDependencies": {
