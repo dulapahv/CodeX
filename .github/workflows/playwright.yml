@@ -72,7 +72,7 @@ jobs:
         run: pnpm --filter client exec playwright install --with-deps
 
       - name: 🧪 Run Playwright tests
-        run: pnpm --filter client exec playwright test
+        run: pnpm test:client
 
       - name: 📊 Upload test results
         if: always()

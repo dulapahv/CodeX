@@ -10,10 +10,10 @@
     "lint:fix": "eslint . --fix",
     "format:check": "prettier . --c",
     "format:fix": "prettier . --w",
-    "test:client": "playwright test",
-    "test:client:ui": "playwright test --ui",
-    "test:client:debug": "playwright test --debug",
-    "test:client:report": "playwright show-report"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.19.10",

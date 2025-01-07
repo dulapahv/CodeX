@@ -27,6 +27,25 @@
       "cache": true,
       "outputs": []
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:e2e": {
+      "cache": true,
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "test:e2e:ui": {
+      "cache": false
+    },
+    "test:server": {
+      "cache": true,
+      "outputs": ["test-results/**"]
+    },
+    "test:server:remote": {
+      "cache": true,
+      "outputs": ["test-results/**"]
+    },
     "lint:check": {
       "cache": true
     },
@@ -37,25 +56,6 @@
       "cache": true
     },
     "format:fix": {
-      "cache": false
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "test:client": {
-      "dependsOn": ["build"],
-      "cache": true,
-      "outputs": ["playwright-report/**", "test-results/**"]
-    },
-    "test:client:ui": {
-      "dependsOn": ["build"],
-      "cache": false
-    },
-    "test:server": {
-      "cache": false
-    },
-    "test:server:remote": {
       "cache": false
     },
     "clean": {
