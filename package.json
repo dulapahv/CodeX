@@ -2,6 +2,7 @@
   "name": "kasca",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "dev": "turbo dev",
     "build": "turbo build",
     "build:client": "turbo build --filter=client...",
@@ -19,9 +20,22 @@
     "test:server:watch": "turbo test:watch",
     "clean": "turbo clean && rimraf node_modules"
   },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "pnpm lint:check",
+      "pnpm format:check"
+    ],
+    "**/*.json": [
+      "pnpm format:check"
+    ]
+  },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@types/simple-peer": "^9.11.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",
     "prettier-plugin-classnames": "^0.7.5",
     "prettier-plugin-tailwindcss": "^0.6.9",
