@@ -2,7 +2,6 @@
   "name": "kasca",
   "private": true,
   "scripts": {
-    "prepare": "husky",
     "dev": "turbo dev",
     "build": "turbo build",
     "build:client": "turbo build --filter=client...",
@@ -18,7 +17,8 @@
     "test:server": "turbo test:socket",
     "test:server:remote": "turbo test:socket:remote",
     "test:server:watch": "turbo test:watch",
-    "clean": "turbo clean && rimraf node_modules"
+    "clean": "turbo clean && rimraf node_modules",
+    "prepare": "husky"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json}": [
