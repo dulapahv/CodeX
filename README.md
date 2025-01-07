@@ -97,8 +97,10 @@ npm install -g pnpm
 2. Install dependencies (this will install all workspace dependencies)
 
    ```bash
-   pnpm i
+   pnpm install
    ```
+
+   > Note: Git hooks will be automatically installed via Husky when running `pnpm install`
 
 ## Development
 

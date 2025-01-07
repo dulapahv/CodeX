@@ -25,7 +25,7 @@
       "pnpm format:fix"
     ],
     "apps/client/**/*.{js,jsx,ts,tsx}": [
-      "eslint --config apps/client/eslint.config.mjs"
+      "pnpm lint:fix"
     ]
   },
   "devDependencies": {
