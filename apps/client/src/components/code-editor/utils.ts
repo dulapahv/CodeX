@@ -32,7 +32,7 @@ export const createCursorStyle = (
     z-index: 100;
   }
   .cursor-${userID}::after {
-    content: "${name.replace(/"/g, '\\"')}";
+    content: "${name.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}";
     background-color: ${bgColor};
     color: ${color};
     font-family: var(--font-geist-sans);
