@@ -21,10 +21,7 @@
     "clean": "turbo clean && rimraf node_modules"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "pnpm format:fix"
-    ],
-    "**/*.json": [
+    "**/*.{js,jsx,ts,tsx,json}": [
       "pnpm format:fix"
     ],
     "apps/client/**/*.{js,jsx,ts,tsx}": [
