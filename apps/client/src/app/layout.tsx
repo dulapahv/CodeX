@@ -36,6 +36,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: {
     default: SITE_NAME,
