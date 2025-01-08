@@ -25,7 +25,7 @@
       "pnpm format:check"
     ],
     "apps/client/**/*.{js,mjs,jsx,ts,tsx}": [
-      "pnpm lint:check"
+      "pnpm --filter=client lint:check"
     ]
   },
   "devDependencies": {
