@@ -5,7 +5,7 @@ import {
   Code2,
   GitPullRequestCreateArrow,
   LayoutTemplate,
-  Pencil,
+  NotebookPen,
   Terminal,
   Video,
 } from 'lucide-react';
@@ -20,7 +20,7 @@ interface ShowcaseImage {
 
 const showcaseImages: ShowcaseImage[] = [
   {
-    src: '/images/showcase/collab.png',
+    src: '/images/showcase/collaborate.png',
     alt: 'Real-time collaboration',
     title: 'Real-time Collaboration',
     description:
@@ -36,9 +36,9 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <Terminal className="size-4" />,
   },
   {
-    src: '/images/showcase/preview.png',
-    alt: 'Live UI preview',
-    title: 'Live UI Preview',
+    src: '/images/showcase/live-preview.png',
+    alt: 'Live preview',
+    title: 'Live Preview',
     description:
       'Preview UI changes instantly with loaded libraries like Tailwind CSS, and more',
     icon: <LayoutTemplate className="size-4" />,
@@ -51,12 +51,12 @@ const showcaseImages: ShowcaseImage[] = [
     icon: <GitPullRequestCreateArrow className="size-4" />,
   },
   {
-    src: '/images/showcase/notes.png',
-    alt: 'Shared notes',
-    title: 'Shared Notes',
+    src: '/images/showcase/notepad.png',
+    alt: 'Shared notepad',
+    title: 'Shared Notepad',
     description:
       'Take notes together in real-time with rich text and markdown support',
-    icon: <Pencil className="size-4" />,
+    icon: <NotebookPen className="size-4" />,
   },
   {
     src: '/images/showcase/video.png',
