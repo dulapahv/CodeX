@@ -19,9 +19,6 @@ export async function createRoom(page: Page, name: string) {
     throw new Error('Failed to verify room joining after creation');
   }
 
-  // Wait for the page to be fully loaded
-  await page.waitForLoadState('networkidle');
-
   return page.url();
 }
 
