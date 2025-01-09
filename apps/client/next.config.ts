@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
   experimental: {
     optimizePackageImports: [
+      'monaco-editor',
       '@monaco-editor/react',
       '@mdxeditor/editor',
       '@codesandbox/sandpack-react',
