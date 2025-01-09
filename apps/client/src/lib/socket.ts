@@ -21,7 +21,6 @@ export const getSocket = (): Socket => {
     socketInstance = io(BASE_SERVER_URL, {
       transports: ['websocket', 'polling'],
       autoConnect: false,
-      rememberUpgrade: true,
       timestampRequests: false,
     });
   }
