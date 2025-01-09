@@ -6,6 +6,12 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
   experimental: {
+    optimizePackageImports: [
+      '@monaco-editor/react',
+      '@mdxeditor/editor',
+      '@codesandbox/sandpack-react',
+    ],
+    ppr: true,
     turbo: {
       minify: true,
     },
