@@ -1,3 +1,20 @@
+export interface BaseMenuProps {
+  actions: ToolbarActions;
+  notepad: boolean;
+  terminal: boolean;
+  webcam: boolean;
+  livePreview: boolean;
+}
+
+// Desktop-specific props
+export interface DesktopMenuProps extends BaseMenuProps {
+  /** Modifier key for shortcuts (e.g., 'Ctrl', '⌘') */
+  modKey: string;
+}
+
+// Mobile-specific props (currently same as base)
+export type MobileMenuProps = BaseMenuProps;
+
 export interface ToolbarActions {
   /** Open from local device */
   openLocal: () => void;
