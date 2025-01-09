@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       '@codesandbox/sandpack-react',
-      '@monaco-editor/react',
       '@mdxeditor/editor',
+      '@monaco-editor/react',
       'monaco-editor',
     ],
     ppr: true,
