@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
       '@monaco-editor/react',
       'monaco-editor',
     ],
-    ppr: true,
     turbo: {
       minify: true,
     },
