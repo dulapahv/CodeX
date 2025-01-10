@@ -66,6 +66,8 @@ const config: Config = {
         'scale-up-center':
           'scale-up-center 0.4s cubic-bezier(0.175, 0.885, 0.320, 1.275) both',
         'fade-in': 'fade-in 0.4s cubic-bezier(0.190, 1.000, 0.220, 1.000) both',
+        'fade-out':
+          'fade-out 0.4s cubic-bezier(0.190, 1.000, 0.220, 1.000) both',
         'fade-in-top': 'fade-in-top 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
         'fade-in-bottom':
           'fade-in-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) both',
@@ -89,6 +91,10 @@ const config: Config = {
           to: {
             opacity: '1',
           },
+        },
+        'fade-out': {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
         'fade-in-top': {
           '0%': {

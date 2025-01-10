@@ -28,6 +28,7 @@
   --toolbar-accent: #2678ca;
   --panel-text-accent: #fff;
   --panel-background: #1e1e1e;
+  --status-bar-text: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -167,4 +168,182 @@
 
 .mdxeditor-diff-source-wrapper > div._markdownParseError_uazmk_1211 {
   @apply !h-fit;
+}
+
+._dialogOverlay_uazmk_871 {
+  @apply bg-[color:var(--panel-background)];
+}
+
+._primaryButton_uazmk_506 {
+  @apply !cursor-pointer !bg-[color:var(--toolbar-accent)] !text-[color:var(--panel-text-accent)];
+}
+
+._secondaryButton_uazmk_507 {
+  @apply !bg-secondary !text-foreground !cursor-pointer;
+}
+
+._imageWrapper_uazmk_922 ._editImageToolbar_uazmk_935 {
+  @apply bg-transparent;
+}
+
+._toolbarButton_uazmk_237 {
+  @apply !cursor-pointer;
+}
+
+._toolbarButton_uazmk_237:hover {
+  @apply !bg-foreground/10;
+}
+
+._toolbarToggleItem_uazmk_206 {
+  @apply !cursor-pointer;
+}
+
+._toolbarToggleItem_uazmk_206:hover {
+  @apply !bg-foreground/10;
+}
+
+._toolbarToggleItem_uazmk_206[data-state='on'] {
+  @apply !bg-[color:var(--panel-background)];
+}
+
+._editImageToolbar_uazmk_935 svg {
+  @apply size-4 text-white;
+}
+
+._editImageToolbar_uazmk_935 button {
+  @apply animate-fade-in rounded bg-black/60 p-1 transition-all hover:bg-black/50;
+}
+
+._imageWrapper_uazmk_922:hover ._editImageToolbar_uazmk_935 {
+  @apply !inline-flex bg-transparent;
+}
+
+._imageWrapper_uazmk_922:not(:hover) ._editImageToolbar_uazmk_935 button {
+  @apply animate-fade-out;
+}
+
+._codeMirrorWrapper_uazmk_391 {
+  @apply !my-1;
+}
+
+._selectTrigger_uazmk_307 {
+  @apply !rounded-md;
+}
+
+._toolbarButtonSelectTrigger_uazmk_306 {
+  @apply !rounded-md;
+}
+
+.mdxeditor-popup-container > div {
+  @apply !shadow-lg;
+}
+
+.mdxeditor-popup-container div {
+  @apply max-h-[55vh] overflow-y-auto rounded-md;
+}
+
+._codeMirrorWrapper_uazmk_391 {
+  @apply !p-0;
+}
+
+._codeMirrorToolbar_uazmk_408 {
+  @apply !bg-transparent;
+}
+
+._codeMirrorToolbar_uazmk_408 * {
+  @apply h-6 cursor-pointer;
+}
+
+._codeMirrorToolbar_uazmk_408 svg {
+  @apply text-foreground size-4;
+}
+
+._codeMirrorToolbar_uazmk_408 > button {
+  @apply rounded p-1;
+}
+
+._codeMirrorToolbar_uazmk_408 > button:hover {
+  @apply bg-foreground/10 transition-all;
+}
+
+._codeMirrorToolbar_uazmk_408
+  ._tooltipTrigger_uazmk_676
+  ._selectTrigger_uazmk_307 {
+  @apply bg-background text-foreground w-fit;
+}
+
+.cm-editor {
+  @apply bg-background !pt-6;
+}
+
+.cm-content {
+  @apply text-sm;
+}
+
+.cm-gutterElement {
+  @apply text-foreground;
+}
+
+.cm-activeLineGutter {
+  @apply !bg-secondary;
+}
+
+.mdxeditor-source-editor > .cm-editor {
+  @apply bg-white;
+}
+
+.mdxeditor-source-editor .cm-gutterElement {
+  @apply text-inherit;
+}
+
+.mdxeditor-source-editor .cm-activeLineGutter {
+  @apply !bg-black/10;
+}
+
+._tableColumnEditorTrigger_uazmk_743 {
+  @apply !cursor-pointer !p-0 align-middle;
+}
+
+._tableColumnEditorTrigger_uazmk_743:hover {
+  @apply !bg-foreground/10;
+}
+
+._tableToolsColumn_uazmk_821 {
+  @apply align-middle;
+}
+
+._tableToolsColumn_uazmk_821 > button > svg {
+  @apply !size-5;
+}
+
+._iconButton_uazmk_456 {
+  @apply !cursor-pointer;
+}
+
+._toolCell_uazmk_724 > button {
+  @apply !mx-0 !px-0;
+}
+
+._addColumnButton_uazmk_746 {
+  @apply !cursor-pointer;
+}
+
+._addRowButton_uazmk_745 {
+  @apply !cursor-pointer;
+}
+
+._actionButton_uazmk_694 {
+  @apply !cursor-pointer;
+}
+
+._tableColumnEditorPopoverContent_uazmk_601 {
+  @apply !overflow-hidden !p-0;
+}
+
+._linkDialogPopoverContent_uazmk_600 {
+  @apply !overflow-hidden !p-0;
+}
+
+._linkDialogPreviewAnchor_uazmk_653 {
+  @apply px-2;
 }
