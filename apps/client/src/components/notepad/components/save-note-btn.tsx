@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 
 import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';
-import { Save } from 'lucide-react';
+import { Download } from 'lucide-react';
 
 interface MarkdownEditorProps {
   markdownEditorRef: RefObject<MDXEditorMethods | null>;
@@ -24,7 +24,7 @@ const SaveNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
     }}
     className="!ml-0 !flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
   >
-    <Save className="size-5" />
+    <Download className="size-[18px]" />
   </ButtonWithTooltip>
 );
 

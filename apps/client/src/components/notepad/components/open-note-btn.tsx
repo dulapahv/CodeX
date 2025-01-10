@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 
 import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';
-import { FileInput } from 'lucide-react';
+import { Folder } from 'lucide-react';
 
 import { RoomServiceMsg } from '@kasca/types/message';
 
@@ -36,7 +36,7 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
       }}
       className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
     >
-      <FileInput className="size-5" />
+      <Folder className="size-[18px]" />
     </ButtonWithTooltip>
   );
 };

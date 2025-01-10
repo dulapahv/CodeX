@@ -25,7 +25,7 @@
  * Created by Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 
 import { Monaco } from '@monaco-editor/react';
 import { Languages } from 'lucide-react';
@@ -73,25 +73,6 @@ const StatusBar = memo(function StatusBar({
   cursorPosition,
   className,
 }: StatusBarProps) {
-  const [editorTheme, setEditorTheme] = useState<string | null>(() => {
-    return localStorage.getItem('editorTheme');
-  });
-
-  useEffect(() => {
-    const updateTheme = (theme?: string | null) => {
-      const newTheme = theme ?? localStorage.getItem('editorTheme');
-      setEditorTheme(newTheme);
-    };
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'editorTheme') {
-        updateTheme(e.newValue);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-  }, []);
-
   if (!monaco || !editor) return null;
 
   return (
@@ -105,10 +86,9 @@ const StatusBar = memo(function StatusBar({
       aria-label="Editor status bar"
     >
       <div
-        className={cn(
-          'flex items-center justify-end gap-x-2 px-2 text-xs',
-          editorTheme === 'light' && 'text-white',
-        )}
+        className={
+          'flex items-center justify-end gap-x-2 px-2 text-xs text-[color:var(--status-bar-text)]'
+        }
       >
         <div className="flex items-center">
           <MemoizedLanguageLabel />

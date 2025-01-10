@@ -64,18 +64,17 @@ const ArgsInputPopover = ({
               className={cn(
                 `relative size-7 rounded-l-none border-l
                 border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)]
-                text-[color:var(--panel-text-accent)] transition-opacity
+                text-[color:var(--panel-text-accent)] transition-opacity hover:text-[color:var(--panel-text-accent)]
                 hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50`,
                 disabled && 'bg-red-600',
               )}
               disabled={disabled}
               aria-label="Program arguments and input"
             >
-              <ChevronDown className="size-4 text-[color:var(--panel-text)]" />
+              <ChevronDown className="size-4" />
               {hasInput && (
                 <span
-                  className="absolute -right-0.5 -top-0.5 size-2 animate-scale-up-center 
-                    rounded-full bg-red-500"
+                  className="absolute -right-0.5 -top-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
                   aria-hidden="true"
                 />
               )}

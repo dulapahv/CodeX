@@ -78,6 +78,9 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
         const themeConfig = DEFAULT_THEMES[key];
         setTheme(key === 'vs-dark' ? 'dark' : 'light');
         setCSSVariables(themeConfig.variables);
+        setCSSVariables({
+          '--status-bar-text': '#fff',
+        });
       } else {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const themeData = require(`monaco-themes/themes/${value}.json`);
@@ -106,6 +109,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
             0,
             7,
           ),
+          '--status-bar-text': themeData.base === 'vs-dark' ? 'dark' : 'light',
         });
       }
 

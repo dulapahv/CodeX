@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Monaco } from '@monaco-editor/react';
-import { FileInput, Save, Search } from 'lucide-react';
+import { Download, Folder, Search } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
@@ -333,7 +333,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               onClick={handleImportClick}
               aria-label="Import settings"
             >
-              <FileInput className="size-4" />
+              <Folder className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Import Settings</TooltipContent>
@@ -346,7 +346,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               onClick={() => exportSettings(settings)}
               aria-label="Export settings"
             >
-              <Save className="size-4" />
+              <Download className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent className="mr-1">Export Settings</TooltipContent>
