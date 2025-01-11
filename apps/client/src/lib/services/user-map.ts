@@ -1,3 +1,13 @@
+/**
+ * User management class for handling user data and color assignments.
+ * Features:
+ * - Username mapping
+ * - Color generation and caching
+ * - Bulk operations support
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { User } from '@kasca/types/user';
 
 import { getBackgroundColor, getTextColor } from '@/lib/utils';
@@ -76,25 +86,6 @@ export class UserMap {
       id,
       username: data.username,
     }));
-  }
-
-  // Get raw map of id -> username
-  getRawMap(): Record<string, string> {
-    const rawMap: Record<string, string> = {};
-    this.users.forEach((data, id) => {
-      rawMap[id] = data.username;
-    });
-    return rawMap;
-  }
-
-  // Get total number of users
-  size(): number {
-    return this.users.size;
-  }
-
-  // Check if user exists
-  has(id: string): boolean {
-    return this.users.has(id);
   }
 }
 

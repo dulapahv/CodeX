@@ -1,26 +1,11 @@
 /**
- * UserList component that displays a horizontal scrollable list of user avatars.
- * Uses theme-aware styling for the scroll bar.
+ * User list component that displays active room participants.
+ * Features:
+ * - Avatar stack display
+ * - Scrollable interface
+ * - Accessible markup
  *
- * @component
- * @example
- * ```tsx
- * <UserList users={[
- *   { id: "123", name: "Dulapah Vibulsanti" },
- *   { id: "456", name: "Kantinan Saengprachathanarak" }
- * ]} />
- * ```
- *
- * @param props - Component props
- * @param props.users - Array of user objects to display
- *
- * @remarks
- * Uses the following components:
- * - [`Avatar`](src/components/avatar/index.tsx) for user avatars
- * - [`ScrollArea`](src/components/ui/scroll-area.tsx) for horizontal scrolling
- * - [`ScrollBar`](src/components/ui/scroll-area.tsx) for scroll indicator
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useTheme } from 'next-themes';

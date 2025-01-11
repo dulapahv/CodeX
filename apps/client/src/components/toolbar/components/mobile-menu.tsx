@@ -1,3 +1,13 @@
+/**
+ * Mobile menubar component that provides collapsible menu access.
+ * Features:
+ * - Collapsible menu navigation
+ * - Panel toggle actions
+ * - Editor command access
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useEffect, useRef } from 'react';
 
 import { Menu } from 'lucide-react';

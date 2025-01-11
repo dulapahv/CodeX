@@ -1,9 +1,11 @@
 /**
- * This library is responsible for creating a singleton socket instance.
- * To use this library, you need to import it and call the getSocket function.
- * For example: const socket = getSocket();
+ * Socket client configuration for real-time communication.
+ * Features:
+ * - Socket.IO connection setup
+ * - Server URL configuration
+ * - Connection management
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { io, type Socket } from 'socket.io-client';

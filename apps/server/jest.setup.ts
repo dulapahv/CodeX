@@ -1,4 +1,14 @@
-const LOCAL_SERVER = 'http://localhost:3001'; // Make sure you have the server running
+/**
+ * Jest test setup configuration.
+ * Features:
+ * - Global test setup
+ * - Environment configuration
+ * - Helper imports
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
+const LOCAL_SERVER = 'http://localhost:3001';
 const REMOTE_SERVER = 'https://kasca-server.dulapahv.dev';
 
 const serverArg = process.argv.find((arg) => arg.startsWith('--server='));

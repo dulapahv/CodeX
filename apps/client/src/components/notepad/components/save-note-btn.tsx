@@ -1,3 +1,13 @@
+/**
+ * Save note button component that handles markdown file download.
+ * Features:
+ * - Markdown content export
+ * - Timestamped filenames
+ * - Blob handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { RefObject } from 'react';
 
 import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';

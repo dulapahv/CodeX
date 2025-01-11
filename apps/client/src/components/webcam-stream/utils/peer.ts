@@ -1,3 +1,14 @@
+/**
+ * WebRTC peer connection utilities for video/audio streaming.
+ * Features:
+ * - Peer creation and cleanup
+ * - Stream handling
+ * - Signal processing
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 
 import Peer from 'simple-peer';

@@ -1,5 +1,8 @@
 /**
- * https://codemirror.net/5/mode/
+ * Map of supported code block languages for CodeMirror editor.
+ * Source: https://codemirror.net/5/mode/
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 export const codeBlockLanguages: Record<string, string> = {

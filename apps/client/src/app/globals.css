@@ -1,3 +1,14 @@
+/**
+ * Global CSS styles and variables.
+ * Includes:
+ * - Tailwind CSS directives
+ * - Selection styles
+ * - Scrollbar customization
+ * - Theme variables
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

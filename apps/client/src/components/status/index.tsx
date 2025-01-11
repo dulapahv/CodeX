@@ -1,3 +1,14 @@
+/**
+ * Server status component that displays uptime monitoring from BetterStack.
+ * Features:
+ * - Real-time status updates
+ * - Auto-refresh every 15s
+ * - Color-coded status indicators
+ * - Status descriptions
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';

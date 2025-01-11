@@ -1,34 +1,11 @@
 /**
- * Dialog component that confirms user's intention to leave a room.
- * Supports both desktop (Dialog) and mobile (Drawer) presentations.
+ * Confirmation dialog component for leaving room.
+ * Features:
+ * - Responsive dialog/drawer based on screen size
+ * - Room leaving confirmation
+ * - Leave action handling
  *
- * @example
- * ```tsx
- * const dialogRef = useRef<LeaveDialogRef>(null);
- *
- * <LeaveDialog
- *   ref={dialogRef}
- *   roomId="abc123"
- * />
- *
- * // Open dialog programmatically
- * dialogRef.current?.openDialog();
- * ```
- *
- * @param props - Component props
- * @param props.roomId - ID of the current room
- *
- * @remarks
- * Uses the following components:
- * - [`Dialog`](src/components/ui/dialog.tsx) for desktop view
- * - [`Drawer`](src/components/ui/drawer.tsx) for mobile view
- * - [`Button`](src/components/ui/button.tsx) for actions
- *
- * Uses hooks:
- * - [`useMediaQuery`](src/hooks/use-media-query.ts) for responsive layout
- * - [`useRoomActions`](src/hooks/use-room-actions.ts) for room operations
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';

@@ -1,3 +1,13 @@
+/**
+ * Cleanup script for removing build artifacts and node_modules.
+ * Features:
+ * - Directory cleanup
+ * - Interactive prompts
+ * - Process cleanup
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 const fs = require('fs/promises');
 const path = require('path');
 const { execSync } = require('child_process');

@@ -1,29 +1,11 @@
 /**
- * Settings button component that opens a settings sheet for configuring
- * editor options.
- * Provides access to editor preferences and configuration via a
- * slide-out panel.
+ * Settings button component that opens editor configuration panel.
+ * Features:
+ * - Sheet trigger button
+ * - Editor settings access
+ * - Accessible tooltip
  *
- * @example
- * ```tsx
- * <SettingsButton
- *   monaco={monaco}
- *   editor={editor}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.monaco - Monaco instance for editor configuration
- * @param props.editor - Monaco editor instance
- *
- * @remarks
- * Uses the following components:
- * - [`SettingsSheet`](src/components/settings-sheet/index.tsx) for
- *   settings panel
- * - [`Button`](src/components/ui/button.tsx) for trigger
- * - [`Tooltip`](src/components/ui/tooltip.tsx) for hover hints
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useRef } from 'react';

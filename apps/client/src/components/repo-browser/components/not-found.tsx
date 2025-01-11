@@ -1,3 +1,13 @@
+/**
+ * Not found component for repository browser search results.
+ * Features:
+ * - Search status display
+ * - Query highlight
+ * - Return to search button
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { RefObject } from 'react';
 
 import { FolderSearch } from 'lucide-react';

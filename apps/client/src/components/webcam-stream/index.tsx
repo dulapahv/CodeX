@@ -1,3 +1,14 @@
+/**
+ * Webcam streaming component that enables video/audio communication.
+ * Features:
+ * - Video/audio device controls
+ * - User interface for stream management
+ * - Device selection and toggling
+ * - Permission handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {

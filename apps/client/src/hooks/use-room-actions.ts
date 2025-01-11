@@ -1,3 +1,13 @@
+/**
+ * Custom hook for handling room-related actions.
+ * Features:
+ * - Room leaving handler
+ * - Navigation after leaving
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useRouter } from 'next/navigation';
 
 import { leaveRoom } from '@/lib/utils';

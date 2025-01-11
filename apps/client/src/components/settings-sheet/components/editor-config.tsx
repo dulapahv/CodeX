@@ -1,3 +1,14 @@
+/**
+ * Editor configuration component for Monaco editor settings.
+ * Features:
+ * - Settings search and filtering
+ * - Import/export settings
+ * - Real-time setting updates
+ * - Settings persistence
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Monaco } from '@monaco-editor/react';

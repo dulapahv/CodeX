@@ -1,8 +1,12 @@
 /**
- * This file contains the toolbar component for the code editor. It includes
- * the toolbar items and actions for the editor.
+ * Toolbar component that provides menu access and editor actions.
+ * Features:
+ * - Desktop/mobile responsive menus
+ * - File handling actions
+ * - Editor command access
+ * - Dialog/sheet management
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev).
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';

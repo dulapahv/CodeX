@@ -1,5 +1,11 @@
 /**
- * Editing code editor, executing code, and editing notepad collaboratively tests
+ * End-to-end tests for real-time collaborative features.
+ * Tests:
+ * - Code sync between users
+ * - Multi-user editing
+ * - Content verification
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { expect, test } from '@playwright/test';

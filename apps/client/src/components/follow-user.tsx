@@ -1,3 +1,14 @@
+/**
+ * Follow user component that enables cursor/scroll following functionality.
+ * Features:
+ * - User selection dropdown
+ * - Follow mode toggle
+ * - Active follower indicator
+ * - Mobile support
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useEffect, useState } from 'react';
 
 import { Check, Navigation, NavigationOff } from 'lucide-react';

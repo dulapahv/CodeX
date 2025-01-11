@@ -1,3 +1,14 @@
+/**
+ * API route handler for executing code submissions.
+ * Makes requests to Piston API for code execution with:
+ * - Input validation
+ * - Request cancellation support
+ * - Execution metadata
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';

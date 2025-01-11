@@ -1,3 +1,13 @@
+/**
+ * Test utility functions for setting up collaborative editing rooms.
+ * Features:
+ * - Room creation helper
+ * - Room joining helper
+ * - Join verification
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { expect, Page } from '@playwright/test';
 
 export async function createRoom(page: Page, name: string) {

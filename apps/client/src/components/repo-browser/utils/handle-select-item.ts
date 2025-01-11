@@ -1,3 +1,14 @@
+/**
+ * Handle item selection in the GitHub repository browser tree.
+ * Functions:
+ * - Parent repo/branch lookup
+ * - Content fetching
+ * - Branch fetching
+ * - Tree data recursion
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { TreeDataItem } from '@/components/tree';

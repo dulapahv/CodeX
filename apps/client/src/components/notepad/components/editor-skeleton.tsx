@@ -1,3 +1,13 @@
+/**
+ * Loading skeleton component for the code editor.
+ * Features:
+ * - Simulated toolbar interface
+ * - Animated content placeholders
+ * - Responsive layout matching editor
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 const EditorSkeleton = () => (

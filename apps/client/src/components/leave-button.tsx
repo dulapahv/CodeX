@@ -1,26 +1,11 @@
 /**
- * LeaveButton component that renders a button to leave the current room.
- * Shows a confirmation dialog before leaving.
+ * Navigation button component that handles room leaving confirmation.
+ * Features:
+ * - Dialog trigger
+ * - Accessible controls
+ * - Styling customization
  *
- * @example
- * ```tsx
- * <LeaveButton
- *   roomId="abc123"
- *   className="custom-class"
- * />
- * ```
- *
- * @param props - Component props
- * @param props.roomId - ID of the current room
- * @param props.className - Optional CSS class name for styling
- *
- * @remarks
- * Uses the following components:
- * - [`LeaveDialog`](src/components/leave-dialog/index.tsx) for confirmation
- * - [`Button`](src/components/ui/button.tsx) for the UI
- * - [`Tooltip`](src/components/ui/tooltip.tsx) for hover state
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { FocusEvent, useRef } from 'react';

@@ -1,8 +1,12 @@
 /**
- * JoinRoomSection component that renders a form for joining an existing room.
- * Provides input fields for room ID and validation handling.
+ * Room joining form section component that provides room joining functionality.
+ * Features:
+ * - Room ID validation
+ * - Name input validation
+ * - Submit handling
+ * - Loading states
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ArrowRight } from 'lucide-react';

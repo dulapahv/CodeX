@@ -1,3 +1,16 @@
+/**
+ * Option values for Monaco editor configuration settings.
+ * Provides type-safe enum values for editor configuration like:
+ * - Auto-closing behavior
+ * - Cursor animations
+ * - Line highlighting
+ * - Multi-cursor options
+ *
+ * From: https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 export const SELECT_OPTIONS: Record<string, string[]> = {
   acceptSuggestionOnEnter: ['on', 'off', 'smart'],
   autoClosingBrackets: [

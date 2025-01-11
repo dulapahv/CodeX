@@ -1,3 +1,13 @@
+/**
+ * Utility functions for GitHub repository path handling.
+ * Features:
+ * - Display path construction
+ * - Tree data item type checking
+ * - Path normalization
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   itemType,
   type ExtendedTreeDataItem,

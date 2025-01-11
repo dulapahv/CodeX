@@ -1,3 +1,13 @@
+/**
+ * Showcase grid component for displaying feature highlights.
+ * Features:
+ * - Image grid layout
+ * - Feature descriptions
+ * - Icon integration
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 

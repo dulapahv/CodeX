@@ -1,29 +1,12 @@
 /**
- * GitHub repository API route handler. Fetches repository branches
- * and contents.
- * Uses Edge Runtime for optimal performance.
+ * GitHub API route handler for fetching repository resources.
+ * Provides:
+ * - Branch listing
+ * - File/directory contents
+ * - Authentication validation
+ * - Error handling
  *
- * @example
- * ```ts
- * // Get repository branches
- * GET /api/github/repos/branches/owner/repo
- *
- * // Get repository contents
- * GET /api/github/repos/contents/owner/repo?path=src/
- * ```
- *
- * @param req - Next.js Edge API request object
- * @param params - Route parameters containing action and repository info
- * @param params.params - Array containing [action, owner, repo]
- * @param params.params[0] - Action type ("branches" | "contents")
- * @param params.params[1] - Repository owner
- * @param params.params[2] - Repository name
- *
- * @returns
- * - Success: JSON response with branches/contents data
- * - Error: JSON response with error message
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

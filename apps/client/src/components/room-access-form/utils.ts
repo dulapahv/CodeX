@@ -1,19 +1,12 @@
 /**
- * Utility functions for handling room join form functionality.
- * Contains form handlers and event handlers for the join room form.
+ * Utility functions for room management operations.
+ * Features:
+ * - Room creation handling
+ * - Room joining validation
+ * - Room ID formatting
+ * - Socket communications
  *
- * @example
- * ```tsx
- * const form = useJoinRoomForm("ABC123");
- * <input onChange={(e) => onRoomIdChange(e, form.setValue)} />
- * ```
- *
- * @see
- * - [`formatRoomId`](src/utils/format-room-id.ts) - Room ID formatting
- * - [`JoinRoomForm`](./types.ts) - Form interface
- * - [`joinRoomSchema`](./validator.ts) - Validation schema
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ChangeEvent } from 'react';

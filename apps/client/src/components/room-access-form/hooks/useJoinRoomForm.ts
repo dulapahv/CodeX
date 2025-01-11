@@ -1,25 +1,11 @@
 /**
- * Custom hook for managing the join room form state and validation.
- * Uses React Hook Form with Zod validation schema.
+ * Custom hook for handling room joining form state.
+ * Features:
+ * - Form validation with Zod
+ * - Room ID validation
+ * - Default values handling
  *
- * @param roomId - Room ID to pre-populate the form with
- *
- * @example
- * ```tsx
- * const { register, handleSubmit, formState: { errors } } = useJoinRoomForm("abc123");
- *
- * <form onSubmit={handleSubmit(onSubmit)}>
- *   <input {...register("name")} />
- *   <input {...register("roomId")} />
- * </form>
- * ```
- *
- * @returns A React Hook Form instance configured with:
- * - Zod validation schema for room joining
- * - Default values for name and roomId
- * - Type-safe form handling via [`JoinRoomForm`](../types.ts)
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { zodResolver } from '@hookform/resolvers/zod';

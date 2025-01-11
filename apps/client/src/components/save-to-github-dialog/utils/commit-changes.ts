@@ -1,3 +1,14 @@
+/**
+ * GitHub API utility function for committing file changes.
+ * Features:
+ * - Repository path validation
+ * - Directory/file path handling
+ * - Commit data formatting
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { CommitResponse } from '@/components/repo-browser/types/github';
 import {
   itemType,

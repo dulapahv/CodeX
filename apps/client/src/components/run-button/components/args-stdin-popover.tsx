@@ -1,3 +1,13 @@
+/**
+ * Arguments and stdin input popover for code execution.
+ * Features:
+ * - Program arguments input
+ * - Standard input handling
+ * - Input validation
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { useState } from 'react';
 
 import { ChevronDown, X } from 'lucide-react';

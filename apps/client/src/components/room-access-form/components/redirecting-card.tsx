@@ -1,20 +1,11 @@
 /**
- * RedirectingCard component that displays a loading state with animation
- * while redirecting users to a room.
+ * Loading card component shown while redirecting to room.
+ * Features:
+ * - Animated fade in
+ * - Spinner indicator
+ * - Accessible status message
  *
- * @example
- * ```tsx
- * <RedirectingCard />
- * ```
- *
- * @returns A centered alert component with loading spinner and redirect message
- *
- * @remarks
- * Uses the following components:
- * - [`Alert`](src/components/ui/alert.tsx) for the container
- * - Tailwind CSS for styling and animations
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

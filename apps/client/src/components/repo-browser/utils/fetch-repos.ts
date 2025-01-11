@@ -1,3 +1,14 @@
+/**
+ * GitHub API utility function for fetching user repositories.
+ * Features:
+ * - Repository search functionality
+ * - Loading state management
+ * - Error handling
+ * - Tree data transformation
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Dispatch, SetStateAction } from 'react';
 
 import { parseError } from '@/lib/utils';

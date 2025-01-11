@@ -1,3 +1,14 @@
+/**
+ * Live preview component that renders HTML with Sandpack.
+ * Features:
+ * - Real-time preview updates
+ * - Tailwind CSS support
+ * - Theme-aware rendering
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   SandpackLayout,
   SandpackPreview,

@@ -1,3 +1,13 @@
+/**
+ * Type definitions for toolbar menu props and actions.
+ * Includes:
+ * - Base menu props interface
+ * - Desktop/mobile specific props
+ * - Menu action definitions
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 export interface BaseMenuProps {
   actions: ToolbarActions;
   notepad: boolean;

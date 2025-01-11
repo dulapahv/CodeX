@@ -1,35 +1,12 @@
 /**
- * API route handler for GitHub commit operations.
- * Handles creating and updating files in GitHub repositories.
- * Uses Edge Runtime for optimal performance.
+ * GitHub API route handler for committing code changes.
+ * Provides:
+ * - GitHub commit creation endpoint
+ * - Authentication validation
+ * - Base64 content handling
+ * - File path management
  *
- * @example
- * ```ts
- * // Create/Update file in GitHub repo
- * POST /api/github/commit
- * {
- *   repo: "owner/repo",
- *   branch: "main",
- *   path: "src/",
- *   filename: "example.ts",
- *   commitMessage: "feat: add example file",
- *   content: "base64_encoded_content"
- * }
- * ```
- *
- * @interface CommitRequest
- * @property {string} repo - Repository in format 'owner/repo'
- * @property {string} branch - Target branch name
- * @property {string} path - File path in repository
- * @property {string} filename - Name of file to create/update
- * @property {string} commitMessage - Git commit message
- * @property {string} content - Base64 encoded file content
- *
- * @returns {Promise<Response>}
- * - Success: JSON response with commit details
- * - Error: JSON response with error message
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

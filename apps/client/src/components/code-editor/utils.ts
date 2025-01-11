@@ -1,12 +1,18 @@
 /**
- * Create a style for a cursor
- * @param userID
- * @param bgColor
- * @param color
- * @param name
- * @param isFirstLine
- * @param hasSelection
- * @returns
+ * Create a style for a cursor.
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
+/**
+ * Create a style for a cursor.
+ * @param userID - User identifier for the cursor
+ * @param bgColor - Background color for cursor and selection
+ * @param color - Text color for cursor label
+ * @param name - Display name shown in cursor label
+ * @param isFirstLine - Whether cursor is on first line (affects label position)
+ * @param hasSelection - Whether user has text selected (affects label visibility)
+ * @returns CSS style string for cursor, label and selection
  */
 export const createCursorStyle = (
   userID: string,

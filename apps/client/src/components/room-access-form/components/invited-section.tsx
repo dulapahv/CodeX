@@ -1,33 +1,12 @@
 /**
- * InvitedSection component that renders a form for users joining via\
- * invitation link.
- * Provides input fields for name entry when joining an existing room.
+ * Room joining form section component for invited users.
+ * Features:
+ * - Name input validation
+ * - Submit handling
+ * - Loading states
+ * - Error display
  *
- * @example
- * ```tsx
- * <InvitedSection
- *   register={register}
- *   handleSubmit={handleSubmit}
- *   onSubmit={handleJoinRoom}
- *   onError={handleError}
- *   errors={errors}
- *   isSubmitting={isSubmitting}
- *   isCreating={isCreating}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.register - React Hook Form register function
- * @param props.handleSubmit - React Hook Form submit handler
- * @param props.onSubmit - Function called when form is submitted successfully
- * @param props.onError - Function called when form submission fails
- * @param props.errors - Form validation errors from React Hook Form
- * @param props.isSubmitting - Whether form is currently submitting
- * @param props.isCreating - Whether a new room is being created
- *
- * @returns A form section for handling room invitations
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { ArrowRight } from 'lucide-react';

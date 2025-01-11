@@ -1,3 +1,12 @@
+# GitHub Actions workflow for running Jest backend tests.
+# Features:
+# - Automated testing on push/PR
+# - Environment setup
+# - Test execution
+# - Results reporting
+#
+# By Dulapah Vibulsanti (https://dulapahv.dev)
+
 name: 🧪 Jest Tests
 permissions:
   contents: read

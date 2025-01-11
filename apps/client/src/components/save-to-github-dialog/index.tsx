@@ -1,3 +1,14 @@
+/**
+ * GitHub save dialog component that handles file saving integration.
+ * Features:
+ * - Responsive dialog/drawer based on screen size
+ * - GitHub authentication flow
+ * - Repository browser integration
+ * - File commit handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   forwardRef,
   useCallback,

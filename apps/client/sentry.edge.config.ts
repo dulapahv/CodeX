@@ -1,7 +1,9 @@
-// This file configures the initialization of Sentry for edge features (middleware, edge routes, and so on).
-// The config you add here will be used whenever one of the edge features is loaded.
-// Note that this config is unrelated to the Vercel Edge Runtime and is also required when running locally.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+/**
+ * This file configures the initialization of Sentry for edge features (middleware, edge routes, and so on).
+ *
+ * Modified by Dulapah Vibulsanti (https://dulapahv.dev) from auto-generated
+ * code by Sentry CLI.
+ */
 
 import * as Sentry from '@sentry/nextjs';
 
@@ -13,13 +15,8 @@ const isCi = process.env.CI === 'true';
 if (!isCi) {
   Sentry.init({
     dsn: 'https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832',
-
-    enabled: !IS_DEV_ENV,
-
-    // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-    tracesSampleRate: 1,
-
-    // Setting this option to true will print useful information to the console while you're setting up Sentry.
-    debug: false,
+    enabled: !IS_DEV_ENV, // Disable Sentry in development
+    tracesSampleRate: 1, // Sample rate for performance monitoring
+    debug: false, // Print useful information to the console while setting up Sentry
   });
 }

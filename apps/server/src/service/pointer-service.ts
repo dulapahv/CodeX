@@ -1,3 +1,13 @@
+/**
+ * Socket service for handling pointer/cursor position updates.
+ * Features:
+ * - Real-time pointer sync
+ * - Room-based updates
+ * - User identity handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Socket } from 'socket.io';
 
 import { PointerServiceMsg } from '@kasca/types/message';

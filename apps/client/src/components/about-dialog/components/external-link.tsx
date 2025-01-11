@@ -1,3 +1,13 @@
+/**
+ * External link component that renders navigation buttons to portfolio, GitHub, etc.
+ * Features:
+ * - Link buttons with icons
+ * - External URL handling
+ * - Accessibility support
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import Image from 'next/image';
 
 import { Send } from 'lucide-react';

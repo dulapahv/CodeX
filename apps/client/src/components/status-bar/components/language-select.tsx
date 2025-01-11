@@ -1,26 +1,12 @@
 /**
- * Language selection component for the Monaco editor.
- * Provides a searchable dropdown to select programming languages.
+ * Language selector component for Monaco editor.
+ * Features:
+ * - Language switching
+ * - Search and filtering
+ * - Synchronized language state
+ * - Mobile support
  *
- * @example
- * ```tsx
- * <LanguageSelection
- *   monaco={monaco}
- *   editor={editor}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.monaco - Monaco instance
- * @param props.editor - Monaco editor instance
- *
- * @remarks
- * Uses the following components:
- * - [`Command`](src/components/ui/command.tsx) for search functionality
- * - [`Popover`](src/components/ui/popover.tsx) for dropdown menu
- * - [`Button`](src/components/ui/button.tsx) for trigger
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
@@ -157,7 +143,7 @@ const LanguageSelection = memo(
             aria-expanded={open}
             aria-label="Select programming language"
             className={cn(
-              'h-fit w-fit justify-between gap-x-1 rounded-sm p-0 pl-2 pr-1 text-xs',
+              'size-fit justify-between gap-x-1 rounded-sm p-0 pl-2 pr-1 text-xs',
               className,
             )}
           >

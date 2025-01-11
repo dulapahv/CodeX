@@ -1,3 +1,14 @@
+/**
+ * Media stream control functions for webcam interface.
+ * Features:
+ * - Stream initialization with device selection
+ * - Track cleanup and management
+ * - Peer connection setup
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 
 import { isMobile } from 'react-device-detect';

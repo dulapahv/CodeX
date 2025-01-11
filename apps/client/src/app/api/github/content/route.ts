@@ -1,21 +1,12 @@
 /**
- * API route handler for fetching file content from GitHub repositories.
- * Uses Edge Runtime for optimal performance.
+ * GitHub API route handler for fetching file content.
+ * Features:
+ * - Authentication verification
+ * - Parameter validation
+ * - Repository content retrieval
+ * - Error handling
  *
- * @example
- * ```ts
- * // Fetch file content from GitHub repo
- * GET /api/github/content?repo=owner/repo&branch=main&path=src/&filename=example.ts
- * ```
- *
- * @query {string} repo - Repository in format 'owner/repo'
- * @query {string} branch - Target branch name
- * @query {string} path - File path in repository
- * @query {string} filename - Name of file to fetch
- *
- * @returns {Promise<Response>}
- * - Success: JSON response with file content and metadata
- * - Error: JSON response with error message
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { cookies } from 'next/headers';

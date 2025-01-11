@@ -1,3 +1,13 @@
+/**
+ * User management service for handling user identity and state.
+ * Features:
+ * - User ID generation
+ * - Socket/user mapping
+ * - Data persistence
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Socket } from 'socket.io';
 
 import { CodeServiceMsg } from '@kasca/types/message';

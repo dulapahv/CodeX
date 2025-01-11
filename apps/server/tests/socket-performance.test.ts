@@ -1,3 +1,13 @@
+/**
+ * Socket.IO performance test suite.
+ * Tests:
+ * - Connection latency
+ * - Message transmission speed
+ * - Room operations timing
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { performance } from 'perf_hooks';
 
 import { io as Client } from 'socket.io-client';

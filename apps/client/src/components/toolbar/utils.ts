@@ -1,3 +1,13 @@
+/**
+ * Utility functions for toolbar menu actions and system detection.
+ * Features:
+ * - OS detection
+ * - Menu command handlers
+ * - Error handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { type Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
@@ -12,24 +22,12 @@ export const getOS = (): string => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userAgent = navigator.userAgent || (window as any).opera;
 
-  if (/windows phone/i.test(userAgent)) {
-    return 'Windows Phone';
-  }
-  if (/win/i.test(userAgent)) {
-    return 'Windows';
-  }
-  if (/mac/i.test(userAgent)) {
-    return 'MacOS';
-  }
-  if (/android/i.test(userAgent)) {
-    return 'Android';
-  }
-  if (/linux/i.test(userAgent)) {
-    return 'Linux';
-  }
-  if (/iphone|ipad|ipod/i.test(userAgent)) {
-    return 'iOS';
-  }
+  if (/windows phone/i.test(userAgent)) return 'Windows Phone';
+  if (/win/i.test(userAgent)) return 'Windows';
+  if (/mac/i.test(userAgent)) return 'MacOS';
+  if (/android/i.test(userAgent)) return 'Android';
+  if (/linux/i.test(userAgent)) return 'Linux';
+  if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
 
   return 'Unknown';
 };

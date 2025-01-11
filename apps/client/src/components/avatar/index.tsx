@@ -1,29 +1,12 @@
 /**
- * Avatar component that displays user initials in a colored circle.
- * Supports different sizes and optional tooltips.
+ * Avatar component that displays user initials with custom styling.
+ * Features:
+ * - Responsive sizing options
+ * - Tooltip/Popover for user names
+ * - Animated scaling
+ * - Device-specific interaction
  *
- * @example
- * ```tsx
- * <Avatar
- *   user={{ id: "123", name: "John Doe" }}
- *   size="md"
- *   showTooltip={true}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.user - User object with name and id
- * @param props.size - Size of avatar: 'sm' | 'md' | 'lg' (default: 'md')
- * @param props.className - Additional CSS classes
- * @param props.showTooltip - Whether to show name tooltip on hover
- *
- * @remarks
- * Uses [`userMap`](src/lib/services/user-map.ts) to get current user ID and
- * [`storage`](src/lib/services/storage.ts) for user preferences.
- * Tooltip content is rendered using [`TooltipProvider`]
- * (src/components/ui/tooltip.tsx).
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { isMobile } from 'react-device-detect';

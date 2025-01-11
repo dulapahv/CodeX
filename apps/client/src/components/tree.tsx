@@ -1,26 +1,14 @@
 /**
- * This component is a tree view that can be used to display a hierarchical list
- * of items. It supports expanding and collapsing items, selecting items, and
- * loading states.
+ * Tree view component for displaying hierarchical data.
+ * Features:
+ * - Item expansion/collapse
+ * - Item selection
+ * - Loading states
+ * - Scrollable interface
  *
- * @component
- * @example
- * ```tsx
- * <Tree
- *   data={items}
- *   onSelectChange={(item) => handleSelect(item)}
- *   className="h-full"
- * />
- * ```
- *
- * @remarks
  * Modified by Dulapah Vibulsanti (https://github.com/dulapahv) from a comment
  * on an issue in shadcn-ui/ui by WangLarry (https://github.com/WangLarry).
  * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
- *
- * Uses the following components:
- * - [`ScrollArea`](src/components/ui/scroll-area.tsx) for scrolling
- * - [`Accordion`](src/components/ui/accordion.tsx) for expanding/collapsing
  */
 
 'use client';

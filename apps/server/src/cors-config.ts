@@ -1,8 +1,17 @@
+/**
+ * CORS configuration for server request handling.
+ * Features:
+ * - Origin validation
+ * - Vercel deployment detection
+ * - Header generation
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://kasca.dulapahv.dev',
   'https://dev-kasca.dulapahv.dev',
-  'https://kasca.onrender.com',
 ] as const;
 
 const isVercelDeployment = (origin: string): boolean => {

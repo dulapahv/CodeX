@@ -1,3 +1,14 @@
+/**
+ * Remote pointer tracking component for visualizing other users' cursors.
+ * Features:
+ * - Real-time pointer position updates
+ * - Throttled movement tracking
+ * - Smooth fade animations
+ * - Viewport scaling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { MousePointer2 } from 'lucide-react';

@@ -1,3 +1,14 @@
+/**
+ * Code editor component that provides real-time collaborative editing.
+ * Features:
+ * - Monaco editor integration
+ * - Multi-cursor support
+ * - Real-time sync
+ * - Scroll synchronization
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   memo,
   useEffect,

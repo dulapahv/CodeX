@@ -1,3 +1,14 @@
+/**
+ * Repository browser component for GitHub integration.
+ * Features:
+ * - Repository search
+ * - Tree navigation
+ * - File selection
+ * - Loading states
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   memo,
   useCallback,

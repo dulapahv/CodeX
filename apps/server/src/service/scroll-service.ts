@@ -1,3 +1,13 @@
+/**
+ * Socket service for handling scroll position synchronization.
+ * Features:
+ * - Room-based scroll updates
+ * - User identification
+ * - Socket messaging
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Socket } from 'socket.io';
 
 import { ScrollServiceMsg } from '@kasca/types/message';

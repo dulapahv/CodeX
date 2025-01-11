@@ -1,3 +1,14 @@
+/**
+ * Socket service for managing room lifecycle and membership.
+ * Features:
+ * - Room creation/joining/leaving
+ * - User tracking
+ * - Room state management
+ * - User data sync
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Server, Socket } from 'socket.io';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@kasca/types/message';

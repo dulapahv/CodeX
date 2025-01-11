@@ -1,3 +1,14 @@
+/**
+ * Socket.IO message type enums for service communication.
+ * Features:
+ * - Room service messages
+ * - Code editing messages
+ * - Scroll sync messages
+ * - Video stream messages
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 export enum RoomServiceMsg {
   CREATE = 'A',
   JOIN = 'B',

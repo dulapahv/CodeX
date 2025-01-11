@@ -1,9 +1,11 @@
 /**
- * Theme provider component that wraps the application to handle
- * theme switching.
- * Uses next-themes under the hood to manage light/dark themes.
+ * Theme provider component that enables dark/light mode support.
+ * Features:
+ * - System theme detection
+ * - Theme persistence
+ * - Theme switching
  *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';

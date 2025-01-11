@@ -1,3 +1,13 @@
+/**
+ * Zod validation schemas for GitHub commit form.
+ * Features:
+ * - File name validation
+ * - Commit message validation
+ * - Type inference exports
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { z } from 'zod';
 
 export const commitSchema = z.object({

@@ -1,5 +1,11 @@
 /**
- * Room sharing and invitation tests
+ * End-to-end tests for room sharing functionality.
+ * Tests:
+ * - Share dialog display
+ * - Room ID verification
+ * - Invite link generation
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { expect, test } from '@playwright/test';

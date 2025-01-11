@@ -1,3 +1,13 @@
+/**
+ * Common utility functions used across the application.
+ * Features:
+ * - Room management
+ * - CSS class merging
+ * - Error parsing
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -22,12 +32,9 @@ export const cn = (...inputs: ClassValue[]) => {
 };
 
 export const parseError = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === 'string') {
-    return error;
-  }
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+
   return 'An unknown error occurred';
 };
 
@@ -49,8 +56,7 @@ export const loginWithGithub = () => {
 };
 
 /**
- * Enhanced color generation for real-time collaboration
- * Uses improved hashing and color space manipulation for more distinct colors
+ * Color generation and text contrast calculation functions.
  */
 const colorCache = new Map();
 
@@ -59,14 +65,14 @@ export const getBackgroundColor = (name: string): string => {
     return colorCache.get(name);
   }
 
-  // Improved hash function using more characters
+  // Simple hash function for consistent color generation
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     const char = name.charCodeAt(i);
     hash = ((hash << 5) - hash + char) >>> 0;
   }
 
-  // Use multiple golden ratios for better distribution across different dimensions
+  // Golden ratio constants for color generation
   const golden_ratio_conjugate = 0.618033988749895;
   const golden_ratio_squared = 0.381966011250105;
 

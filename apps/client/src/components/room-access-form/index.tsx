@@ -1,6 +1,12 @@
 /**
- * Join Form component that handles room creation and joining functionality.
- * Provides a form interface for creating new rooms or joining existing ones.
+ * Room access form that handles room creation and joining.
+ * Features:
+ * - Room creation form
+ * - Room joining form
+ * - Form validation
+ * - Redirection handling
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 'use client';

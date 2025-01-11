@@ -1,3 +1,14 @@
+/**
+ * Open from GitHub dialog component that handles file browsing and loading.
+ * Features:
+ * - GitHub repository browsing
+ * - File content loading
+ * - Authentication handling
+ * - Responsive dialog/drawer
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   forwardRef,
   useCallback,

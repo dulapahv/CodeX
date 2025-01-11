@@ -1,3 +1,14 @@
+/**
+ * Latency test component for measuring connection performance.
+ * Features:
+ * - HTTP/Socket latency tests
+ * - Multiple test iterations
+ * - Statistical analysis
+ * - Results visualization
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 'use client';
 
 import { useEffect, useState, type ChangeEvent } from 'react';

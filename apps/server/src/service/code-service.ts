@@ -1,3 +1,14 @@
+/**
+ * Code synchronization service for collaborative editing.
+ * Features:
+ * - Room data management
+ * - Code update handling
+ * - Language state sync
+ * - Real-time broadcast
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Server, Socket } from 'socket.io';
 
 import { CodeServiceMsg } from '@kasca/types/message';

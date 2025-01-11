@@ -1,3 +1,13 @@
+/**
+ * Utility functions for formatting terminal output.
+ * Features:
+ * - Execution time formatting
+ * - Timestamp formatting
+ * - Message type coloring
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   ExecutionResultType,
   type ExecutionResult,

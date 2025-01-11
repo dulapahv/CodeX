@@ -1,3 +1,14 @@
+/**
+ * Monaco editor service functions for editor lifecycle and configuration.
+ * Features:
+ * - Theme management
+ * - Editor initialization
+ * - Event handling
+ * - Socket integration
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 
 import type { Monaco } from '@monaco-editor/react';

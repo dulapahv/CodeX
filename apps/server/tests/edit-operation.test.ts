@@ -1,3 +1,13 @@
+/**
+ * End-to-end tests for collaborative editing operations.
+ * Tests:
+ * - Real-time code sync
+ * - Edit operation handling
+ * - Performance metrics
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { performance } from 'perf_hooks';
 
 import { io as Client } from 'socket.io-client';

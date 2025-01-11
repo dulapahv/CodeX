@@ -1,3 +1,14 @@
+/**
+ * About dialog component that provides information about the application.
+ * Features:
+ * - Responsive dialog/drawer based on screen size
+ * - Project description
+ * - Preview image with loading state
+ * - External links
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   forwardRef,
   useCallback,

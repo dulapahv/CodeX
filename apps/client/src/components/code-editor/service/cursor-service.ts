@@ -1,28 +1,11 @@
 /**
- * Service for handling cursor position updates and synchronization between users.
- * Manages remote user cursors, selections, and decorations in the Monaco editor.
+ * Monaco editor cursor management utilities.
+ * Features:
+ * - Multi-user cursor tracking
+ * - Viewport line visibility checks
+ * - Cursor style handling
  *
- * @example
- * ```ts
- * updateCursor(
- *   "user123",
- *   [1, 1, 1, 1, 1, 1],
- *   editorRef,
- *   monacoRef,
- *   decorationsRef,
- *   timeoutsRef
- * );
- * ```
- *
- * @remarks
- * Uses [`createCursorStyle`](../utils.ts) for cursor styling and
- * [`userMap`](src/lib/services/user-map.ts) for user data.
- *
- * @see
- * - [`Cursor`](@kasca/types/operation.ts) interface
- * - Monaco editor decoration APIs
- *
- * Created by Dulapah Vibulsanti (https://dulapahv[5]ev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { RefObject } from 'react';

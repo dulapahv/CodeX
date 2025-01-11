@@ -1,11 +1,13 @@
 /**
- * A loading spinner component that supports multiple variants and sizes.
- * @example
- * ```tsx
- * <Spinner variant="primary" size="lg" />
- * <Spinner size={32} />
- * ```
+ * Spinner loading indicator component with customizable variants.
+ * Features:
+ * - Size variants: sm, default, lg
+ * - Color variants: default, primary, secondary, destructive, muted
+ * - Smooth animation
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
+
 import * as React from 'react';
 
 import { cva, type VariantProps } from 'class-variance-authority';

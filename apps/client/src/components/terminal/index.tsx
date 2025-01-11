@@ -1,3 +1,14 @@
+/**
+ * Shared terminal component for displaying code execution results.
+ * Features:
+ * - Output history display
+ * - Auto-scroll behavior
+ * - Download/clear logs
+ * - Welcome message
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 
 import { Download, Trash2 } from 'lucide-react';

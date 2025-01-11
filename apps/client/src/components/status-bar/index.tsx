@@ -1,28 +1,11 @@
 /**
- * Status bar component that displays cursor position and language selection.
- * Shows line number, column number, and optional selection count.
+ * Status bar component that displays editor information.
+ * Features:
+ * - Current language display
+ * - Cursor position tracking
+ * - Selection feedback
  *
- * @example
- * ```tsx
- * <StatusBar
- *   monaco={monaco}
- *   editor={editor}
- *   cursorPosition={{ line: 1, column: 1, selected: 10 }}
- * />
- * ```
- *
- * @param props - Component props
- * @param props.monaco - Monaco instance
- * @param props.editor - Monaco editor instance
- * @param props.cursorPosition - Current cursor position details
- * @param props.cursorPosition.line - Current line number
- * @param props.cursorPosition.column - Current column number
- * @param props.cursorPosition.selected - Number of selected characters (optional)
- * @param props.className - Additional CSS class names
- *
- * @returns Status bar showing cursor position and language picker
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { memo } from 'react';

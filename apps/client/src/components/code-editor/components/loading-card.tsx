@@ -1,20 +1,11 @@
 /**
- * Loading card component that displays while the Monaco editor is initializing.
- * Shows a centered alert with spinner and loading message.
+ * Loading overlay component shown while editor initializes.
+ * Features:
+ * - Centered alert with spinner
+ * - Blurred backdrop
+ * - Description message
  *
- * @example
- * ```tsx
- * <LoadingCard />
- * ```
- *
- * @remarks
- * Uses the following components:
- * - [`Alert`](src/components/ui/alert.tsx) for the container
- * - Tailwind CSS for styling and animations
- *
- * @returns A centered alert component with loading spinner and setup message
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { memo } from 'react';

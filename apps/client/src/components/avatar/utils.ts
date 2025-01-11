@@ -1,19 +1,9 @@
 /**
- * Utility functions for handling user display and formatting
- * Contains helper functions for name formatting and display.
+ * Utility functions for handling user display names and initials:
+ * - Get initials from full name
+ * - Format display name with "you" suffix
  *
- * @example
- * ```ts
- * // Get initials from name
- * const initials = getInitials("John Doe"); // "JD"
- *
- * // Get display name
- * const displayName = getDisplayName(user, currentUserId); // "John Doe (you)"
- * ```
- *
- * @see [`User`](@kasca/types/user.ts) - User type definition
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { User } from '@kasca/types/user';

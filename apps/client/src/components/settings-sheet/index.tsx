@@ -1,3 +1,14 @@
+/**
+ * Settings dialog component for Monaco editor configuration.
+ * Features:
+ * - Theme selection
+ * - Editor preferences
+ * - GitHub connection
+ * - Settings import/export
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import {
   forwardRef,
   useCallback,

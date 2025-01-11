@@ -1,3 +1,14 @@
+/**
+ * ESLint configuration for the project.
+ * Features:
+ * - Next.js/TypeScript rules
+ * - Core web vitals checking
+ * - Prettier integration
+ * - Ignore patterns
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { FlatCompat } from '@eslint/eslintrc';
 
 const compat = new FlatCompat({

@@ -1,3 +1,13 @@
+/**
+ * About button component that opens the application info dialog.
+ * Features:
+ * - Info icon button
+ * - Dialog trigger
+ * - Accessibility support
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 'use client';
 
 import { useRef } from 'react';

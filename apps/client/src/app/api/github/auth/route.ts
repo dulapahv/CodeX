@@ -1,34 +1,11 @@
 /**
- * GitHub authentication route handler. Handles OAuth callbacks and
- * authentication checks.
- * Uses Edge Runtime for optimal performance.
+ * GitHub OAuth API route handler.
+ * Handles authentication flow with:
+ * - OAuth callback processing
+ * - Authentication status check
+ * - Session cleanup
  *
- * @remarks
- * This handler supports two modes:
- * 1. OAuth callback - Processes GitHub OAuth response with authorization code
- * 2. Regular auth check - Verifies current authentication status
- *
- * Uses [`githubAuthHandlers`](src/lib/github.ts) for authentication logic.
- *
- * @example
- * ```ts
- * // OAuth callback
- * GET /api/github/auth?code=abc123
- *
- * // Auth check
- * GET /api/github/auth
- *
- * // Logout
- * DELETE /api/github/auth
- * ```
- *
- * @param req - Next.js Edge API request object
- * @returns
- * - OAuth: Redirects to success/error page
- * - Check: JSON response with auth status
- * - Delete: Clears auth session
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { NextRequest } from 'next/server';

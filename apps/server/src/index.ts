@@ -1,3 +1,14 @@
+/**
+ * Socket.IO server entry point for Kasca.
+ * Features:
+ * - WebSocket server setup
+ * - Service initialization
+ * - Message handling
+ * - CORS configuration
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import type { SignalData } from 'simple-peer';
 import { Server } from 'socket.io';
 import { App } from 'uWebSockets.js';

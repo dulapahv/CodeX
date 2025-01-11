@@ -1,16 +1,11 @@
 /**
- * Service for handling code updates in the Monaco editor.
+ * Code update service functions for the Monaco Editor.
+ * Features:
+ * - Edit operation handling
+ * - Editor state management
+ * - Change synchronization
  *
- * @example
- * ```typescript
- * updateCode(
- *   editOperation,
- *   editorRef,
- *   skipUpdateRef
- * );
- * ```
- *
- * Created by Dulapah Vibulsanti (https://dulapahv.dev)
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { RefObject } from 'react';

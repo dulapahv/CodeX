@@ -1,3 +1,14 @@
+/**
+ * Home page component that displays the landing page with:
+ * - Room access form
+ * - Animated background
+ * - Feature showcase grid
+ * - About and latency test buttons
+ * - Server status indicator
+ *
+ * By Dulapah Vibulsanti (https://dulapahv.dev)
+ */
+
 import { Suspense } from 'react';
 import Image from 'next/image';
 
