@@ -175,11 +175,11 @@
 }
 
 ._primaryButton_uazmk_506 {
-  @apply !cursor-pointer !bg-[color:var(--toolbar-accent)] !text-[color:var(--panel-text-accent)];
+  @apply !cursor-pointer !border-0 !bg-[color:var(--toolbar-accent)] !text-[color:var(--panel-text-accent)] !transition-all hover:brightness-90;
 }
 
 ._secondaryButton_uazmk_507 {
-  @apply !bg-secondary !text-foreground !cursor-pointer;
+  @apply !bg-secondary !text-foreground !cursor-pointer !border-0 !transition-all hover:brightness-90;
 }
 
 ._imageWrapper_uazmk_922 ._editImageToolbar_uazmk_935 {
@@ -187,19 +187,11 @@
 }
 
 ._toolbarButton_uazmk_237 {
-  @apply !cursor-pointer;
-}
-
-._toolbarButton_uazmk_237:hover {
-  @apply !bg-foreground/10;
+  @apply hover:!bg-foreground/10 !cursor-pointer !transition-all;
 }
 
 ._toolbarToggleItem_uazmk_206 {
-  @apply !cursor-pointer;
-}
-
-._toolbarToggleItem_uazmk_206:hover {
-  @apply !bg-foreground/10;
+  @apply hover:!bg-foreground/10 !cursor-pointer !transition-all;
 }
 
 ._toolbarToggleItem_uazmk_206[data-state='on'] {
@@ -259,11 +251,7 @@
 }
 
 ._codeMirrorToolbar_uazmk_408 > button {
-  @apply rounded p-1;
-}
-
-._codeMirrorToolbar_uazmk_408 > button:hover {
-  @apply bg-foreground/10 transition-all;
+  @apply hover:bg-foreground/10 rounded p-1 hover:transition-all;
 }
 
 ._codeMirrorToolbar_uazmk_408
@@ -301,11 +289,7 @@
 }
 
 ._tableColumnEditorTrigger_uazmk_743 {
-  @apply !cursor-pointer !p-0 align-middle;
-}
-
-._tableColumnEditorTrigger_uazmk_743:hover {
-  @apply !bg-foreground/10;
+  @apply hover:!bg-foreground/10 !cursor-pointer !p-0 align-middle !transition-all;
 }
 
 ._tableToolsColumn_uazmk_821 {
@@ -344,6 +328,14 @@
   @apply !overflow-hidden !p-0;
 }
 
+._linkDialogPopoverContent_uazmk_600 > button {
+  @apply hover:!bg-foreground/10 !transition-all;
+}
+
 ._linkDialogPreviewAnchor_uazmk_653 {
   @apply px-2;
+}
+
+._tableColumnEditorToolbar_uazmk_789 button:not([data-state='on']) {
+  @apply hover:!bg-foreground/10 !transition-all;
 }
