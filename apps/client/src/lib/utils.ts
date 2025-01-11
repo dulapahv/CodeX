@@ -143,7 +143,7 @@ const getLuminance = (hexColor: string): number => {
 export const getTextColor = (backgroundColor: string): string => {
   const luminance = getLuminance(backgroundColor);
   // Use a more precise threshold for WCAG AA compliance
-  return luminance < 0.5 ? '#ffffff' : '#000000';
+  return luminance < 0.5 ? '#fff' : '#000';
 };
 
 /**
