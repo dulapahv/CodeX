@@ -77,20 +77,12 @@ const config: Config = {
       },
       keyframes: {
         'scale-up-center': {
-          '0%': {
-            transform: 'scale(.5)',
-          },
-          to: {
-            transform: 'scale(1)',
-          },
+          '0%': { transform: 'scale(.5)' },
+          to: { transform: 'scale(1)' },
         },
         'fade-in': {
-          '0%': {
-            opacity: '0',
-          },
-          to: {
-            opacity: '1',
-          },
+          '0%': { opacity: '0' },
+          to: { opacity: '1' },
         },
         'fade-out': {
           '0%': { opacity: '1' },
