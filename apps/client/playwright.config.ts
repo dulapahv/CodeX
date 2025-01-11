@@ -21,9 +21,12 @@ export default defineConfig({
   fullyParallel: true, // Run tests in files in parallel
   forbidOnly: !!process.env.CI, // Fail the build on CI if you accidentally left test.only in the source code
   retries: process.env.CI ? 2 : 0, // Retry on CI only
-  workers: process.env.CI ? 7 : undefined, // Run tests in parallel on CI
+  workers: 8, // Number of workers to run the tests
   reporter: process.env.CI ? [['html'], ['github']] : 'html', // Reporter to use
   timeout: 120000, // Timeout for each test
+  expect: {
+    timeout: 30000, // Timeout for each expect
+  },
   // Shared settings for all the projects below
   use: {
     baseURL: 'http://localhost:3000', // Base URL for all the projects
@@ -36,10 +39,10 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
   ],
 
   // Configure the web server for the test

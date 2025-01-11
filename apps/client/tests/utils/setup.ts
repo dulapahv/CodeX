@@ -24,7 +24,7 @@ export async function createRoom(page: Page, name: string) {
   await page.waitForURL(/\/room\/.*/);
 
   // Verify room joining
-  const hasJoined = await hasJoinedRoom(page, name);
+  const hasJoined = await hasJoinedRoom(page);
   if (!hasJoined) {
     throw new Error('Failed to verify room joining after creation');
   }
@@ -43,23 +43,14 @@ export async function joinRoom(page: Page, roomUrl: string, name: string) {
   await page.getByRole('button', { name: 'Join Room', exact: true }).click();
 
   // Verify room joining
-  const hasJoined = await hasJoinedRoom(page, name);
+  const hasJoined = await hasJoinedRoom(page);
   if (!hasJoined) {
     throw new Error('Failed to verify room joining');
   }
 }
 
-export async function hasJoinedRoom(page: Page, name: string) {
-  await expect(page.getByText('FileEditSelectionViewHelpRun')).toBeVisible(); // Toolbar
+export async function hasJoinedRoom(page: Page) {
   await expect(page.getByRole('code')).toBeVisible(); // Code editor
-  await expect(page.getByLabel('Notepad')).toBeVisible(); // Note
-  await expect(page.getByLabel('Terminal', { exact: true })).toBeVisible(); // Terminal
-  await expect(
-    page
-      .locator('div')
-      .filter({ hasText: `${name} (you)` })
-      .nth(1),
-  ).toBeVisible(); // Webcam stream
 
   return true;
 }

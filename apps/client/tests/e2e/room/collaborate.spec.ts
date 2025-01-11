@@ -102,7 +102,6 @@ test.describe('Collaborative Features', () => {
     const userBNotepad = userBPage.getByLabel('editable markdown');
 
     // User A types note
-    await userANotepad.click();
     await userANotepad.pressSequentially(
       '# Collaborative Notes\nThis is a shared note.',
     );
@@ -112,9 +111,9 @@ test.describe('Collaborative Features', () => {
     await expect(userBPage.getByText('This is a shared note.')).toBeVisible();
 
     // User B adds more text
-    await userBNotepad.click();
-    await userBPage.keyboard.press('End');
-    await userBPage.keyboard.press('Enter');
+    // Go to end of note
+    await userBNotepad.press('Control+a');
+    await userBNotepad.press('ArrowRight');
     await userBNotepad.pressSequentially('Adding more collaborative content!');
 
     // Verify complete note appears in both notepads
