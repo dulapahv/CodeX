@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   AdmonitionDirectiveDescriptor,
@@ -58,7 +58,10 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   const { resolvedTheme } = useTheme();
   const socket = getSocket();
 
+  const [key, setKey] = useState(0);
+
   const markdownEditorRef = useRef<MDXEditorMethods>(null);
+  const contentRef = useRef(markdown);
 
   const plugins = useMemo(
     () => [
@@ -120,9 +123,10 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   );
 
   useEffect(() => {
-    socket.on(RoomServiceMsg.UPDATE_MD, (value: string) =>
-      markdownEditorRef.current?.setMarkdown(value),
-    );
+    socket.on(RoomServiceMsg.UPDATE_MD, (value: string) => {
+      contentRef.current = value;
+      markdownEditorRef.current?.setMarkdown(value);
+    });
 
     return () => {
       socket.off(RoomServiceMsg.UPDATE_MD);
@@ -132,21 +136,22 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   useEffect(() => {
     const editor = markdownEditorRef.current;
     if (editor) {
-      setTimeout(() => {
-        const currentContent = editor.getMarkdown();
-        editor.setMarkdown(currentContent);
-      }, 0);
+      contentRef.current = editor.getMarkdown();
+      setKey((prev) => prev + 1);
     }
   }, [resolvedTheme]);
 
-  const onChange = (value: string) =>
+  const onChange = (value: string) => {
+    contentRef.current = value;
     socket.emit(RoomServiceMsg.UPDATE_MD, value);
+  };
 
   return (
     <MDXEditor
+      key={key}
       ref={markdownEditorRef}
       onChange={onChange}
-      markdown={markdown}
+      markdown={contentRef.current}
       autoFocus={false}
       trim={false}
       placeholder="All participants can edit this note..."
