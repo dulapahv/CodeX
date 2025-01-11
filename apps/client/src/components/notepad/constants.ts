@@ -118,6 +118,7 @@ export const codeBlockLanguages: Record<string, string> = {
   toml: 'TOML',
   tornado: 'Tornado',
   troff: 'Troff',
+  tsx: 'TSX',
   ttcn: 'TTCN',
   turtle: 'Turtle',
   twig: 'Twig',
