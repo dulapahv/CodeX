@@ -339,3 +339,7 @@
 ._tableColumnEditorToolbar_uazmk_789 button:not([data-state='on']) {
   @apply hover:!bg-foreground/10 !transition-all;
 }
+
+._linkDialogPreviewAnchor_uazmk_653 {
+  @apply !transition-all;
+}

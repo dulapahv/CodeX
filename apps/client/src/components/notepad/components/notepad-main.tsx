@@ -176,7 +176,7 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         prose-h6:text-base prose-h6:my-0
         prose-p:leading-7 prose-p:my-1
         prose-img:rounded prose-img:my-0
-        prose-blockquote:border-l-4 prose-blockquote:border-foreground/30 prose-blockquote:italic
+        prose-blockquote:border-foreground/30 prose-blockquote:my-0 prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground/50
         prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:!font-mono [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20 [&>span]:prose-code:px-1 [&>span]:prose-code:py-px
         prose-pre:bg-muted prose-pre:rounded-lg
         prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/80 prose-a:transition-opacity
