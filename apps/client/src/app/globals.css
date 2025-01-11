@@ -214,12 +214,12 @@
   @apply animate-fade-in rounded bg-black/60 p-1 transition-all hover:bg-black/50;
 }
 
-._imageWrapper_uazmk_922:hover ._editImageToolbar_uazmk_935 {
-  @apply !inline-flex bg-transparent;
+._imageWrapper_uazmk_922 ._editImageToolbar_uazmk_935 {
+  @apply hidden;
 }
 
-._imageWrapper_uazmk_922:not(:hover) ._editImageToolbar_uazmk_935 button {
-  @apply animate-fade-out;
+._imageWrapper_uazmk_922:hover ._editImageToolbar_uazmk_935 {
+  @apply !inline-flex bg-transparent;
 }
 
 ._codeMirrorWrapper_uazmk_391 {
