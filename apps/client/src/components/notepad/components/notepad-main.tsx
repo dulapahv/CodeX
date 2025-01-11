@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import {
   AdmonitionDirectiveDescriptor,
@@ -57,7 +57,6 @@ interface MarkdownEditorProps {
 const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   const { resolvedTheme } = useTheme();
   const socket = getSocket();
-  const [key, setKey] = useState(0);
 
   const markdownEditorRef = useRef<MDXEditorMethods>(null);
 
@@ -131,7 +130,13 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   }, [socket]);
 
   useEffect(() => {
-    setKey((prev) => prev + 1); // Force remount when theme changes
+    const editor = markdownEditorRef.current;
+    if (editor) {
+      setTimeout(() => {
+        const currentContent = editor.getMarkdown();
+        editor.setMarkdown(currentContent);
+      }, 0);
+    }
   }, [resolvedTheme]);
 
   const onChange = (value: string) =>
@@ -139,7 +144,6 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
 
   return (
     <MDXEditor
-      key={key}
       ref={markdownEditorRef}
       onChange={onChange}
       markdown={markdown}
