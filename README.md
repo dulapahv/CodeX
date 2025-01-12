@@ -230,7 +230,7 @@ pnpm dev              # Start all applications in development mode
 pnpm build            # Build all packages
 pnpm build:client     # Build frontend
 pnpm build:server     # Build backend
-pnpm clean            # Clean all builds and node_modules
+pnpm clean            # Clean all builds, caches, test results, and node_modules
 
 # Testing
 pnpm test:client          # Run frontend E2E tests (Playwright)
@@ -248,7 +248,9 @@ pnpm format:check     # Check formatting
 pnpm format:fix       # Fix formatting issues
 ```
 
-You can also run scripts in the specific workspaces (note: this will not use Turborepo caching):
+You can also run scripts in the specific workspaces
+
+> Note: This will not use Turborepo caching
 
 ```bash
 # Frontend specific
@@ -355,7 +357,7 @@ Contributions are welcome! To contribute to this project, follow these steps:
 
     <br />
 
-    > For complete commit message guidelines, see **[Conventional Commits](https://conventionalcommits.org/)**.
+    > For a complete commit message guidelines, see **[Conventional Commits](https://conventionalcommits.org/)**.
 
 3. Push your changes and submit a Pull Request with a description of your changes:
 
