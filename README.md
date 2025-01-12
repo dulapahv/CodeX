@@ -100,20 +100,37 @@ npm install -g pnpm
 
 ## Getting Started
 
-1. Clone the repository
+1. **Clone the repository**
 
    ```bash
    git clone https://github.com/dulapahv/kasca.git
    cd kasca
    ```
 
-2. Install dependencies (this will install all workspace dependencies)
+2. **Install dependencies**
+   This will install all dependencies for the frontend and backend applications:
 
    ```bash
    pnpm install
    ```
 
    > Note: Git hooks will be automatically installed via Husky when running `pnpm install`
+
+3. **Environment setup**
+
+    Create `apps/client/.env` using the template from `apps/client/.env.example`:
+
+    ```bash
+    BETTERSTACK_API_KEY=
+    SENTRY_AUTH_TOKEN=
+    GITHUB_CLIENT_SECRET_PROD=
+    GITHUB_CLIENT_SECRET_DEV=
+    SENTRY_SUPPRESS_TURBOPACK_WARNING="1"
+    TURBO_TEAM=
+    TURBO_TOKEN=
+    ```
+
+    > Note: This is a personal project and the required API keys and secrets are not publicly shared. For local development, you'll need to set up your own credentials for GitHub OAuth, Sentry, etc.
 
 ## Development
 
