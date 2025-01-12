@@ -6,7 +6,8 @@
  * - Multi-browser support
  * - Screenshot and trace capture
  *
- * By Dulapah Vibulsanti (https://dulapahv.dev)
+ * Modified by Dulapah Vibulsanti (https://dulapahv.dev) from auto-generated
+ * code by Playwright CLI.
  */
 
 import path from 'path';
