@@ -59,17 +59,30 @@ For detailed usage instructions and feature documentation, please see the **[Use
 
 ## Project Structure
 
-The project is organized as a monorepo using [Turborepo](https://turbo.build/repo/docs):
+The project is organized as a [monorepo](https://en.wikipedia.org/wiki/Monorepo) using [Turborepo](https://turbo.build/repo/docs):
 
 ```txt
 kasca
-├── apps/              # Application packages
-│   ├── client/        # Frontend Next.js application
-│   └── server/        # Backend Socket.IO server
-├── packages/          # Shared packages
-│   └── types/         # Shared TypeScript types and enums
-├── package.json       # Root package.json
-└── pnpm-workspace.yaml
+├── apps/                   # Application packages
+│   ├── client/             # Frontend Next.js application
+│   │   ├── public/         # Static assets
+│   │   ├── src/            # Source code
+│   │   │   ├── app/        # Next.js app router pages and API routes
+│   │   │   ├── components/ # React components
+│   │   │   ├── hooks/      # Custom React hooks
+│   │   │   └── lib/        # Utility functions and services
+│   │   └── tests/          # Frontend tests (Playwright)
+│   └── server/             # Backend Socket.IO server
+│       ├── src/            # Source code
+│       │   ├── service/    # Backend services
+│       │   └── utils/      # Utility functions
+│       └── tests/          # Backend tests (Jest)
+├── docs/                   # Documentation assets
+├── packages/               # Shared packages
+│   └── types/              # Shared TypeScript types and interfaces
+├── scripts/                # Build and maintenance scripts
+├── package.json            # Root package.json
+└── pnpm-workspace.yaml     # PNPM workspace configuration
 ```
 
 ## Prerequisites
