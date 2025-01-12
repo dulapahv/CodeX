@@ -100,6 +100,8 @@ npm install -g pnpm
 
 ## Getting Started
 
+After checking the [prerequisites](#prerequisites) above, follow these steps to set up the project:
+
 1. **Clone the repository**
 
    ```bash
@@ -108,6 +110,7 @@ npm install -g pnpm
    ```
 
 2. **Install dependencies**
+
    This will install all dependencies for the frontend and backend applications:
 
    ```bash
