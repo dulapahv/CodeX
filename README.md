@@ -62,7 +62,7 @@ For detailed usage instructions and feature documentation, please see the **[Use
 The project is organized as a [monorepo](https://en.wikipedia.org/wiki/Monorepo) using [Turborepo](https://turbo.build/repo/docs):
 
 ```txt
-kasca
+Kasca
 ├── apps/                   # Application packages
 │   ├── client/             # Frontend Next.js application
 │   │   ├── public/         # Static assets
@@ -105,8 +105,8 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/dulapahv/kasca.git
-   cd kasca
+   git clone https://github.com/dulapahv/Kasca.git
+   cd Kasca
    ```
 
 2. **Install dependencies**
