@@ -264,6 +264,7 @@ pnpm --filter server test:socket
   - [Sentry](https://sentry.io) (error tracking)
   - [Vercel Analytics](https://vercel.com/docs/analytics) (web analytics)
   - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) (web analytics)
+  - [Better Stack](https://betterstack.com/) (uptime monitoring and status page)
 - **External Services:**
   - [Piston](https://github.com/engineer-man/piston) (code execution)
   - [GitHub REST API](https://docs.github.com/en/rest) (repository management)
