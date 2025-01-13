@@ -2,6 +2,7 @@
 # Features:
 # - Automated testing on push/PR
 # - Environment setup
+# - Cache hit detection for builds
 # - Test execution
 # - Results reporting
 # - Deployment trigger
@@ -30,7 +31,6 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
-      VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
 
     steps:
       # Checkout code
@@ -50,6 +50,7 @@ jobs:
 
       # Turbo cache
       - name: 💾 Cache Turbo
+        id: turbo-cache
         uses: actions/cache@v4
         with:
           path: .turbo
@@ -59,6 +60,7 @@ jobs:
 
       # Next.js cache
       - name: 💾 Cache Next.js bundle
+        id: nextjs-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -79,12 +81,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
+      # Check for client changes using turbo
+      - name: 🔍 Check for client changes
+        id: check-changes
+        run: |
+          # Install only the minimal dependencies needed for turbo
+          pnpm install turbo --no-frozen-lockfile
+
+          # Run dry-run build to check for changes
+          if pnpm turbo build --filter=client --dry-run > /dev/null 2>&1; then
+            echo "No changes detected in client package"
+            echo "skip_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in client package"
+            echo "skip_build=false" >> $GITHUB_OUTPUT
+          fi
+
       # Install dependencies
       - name: 🏗️ Install dependencies
+        if: steps.check-changes.outputs.skip_build != 'true'
         run: pnpm install
 
       # Build packages
       - name: 🔨 Build packages
+        if: steps.check-changes.outputs.skip_build != 'true'
         run: pnpm build
 
       # Install Playwright browsers
