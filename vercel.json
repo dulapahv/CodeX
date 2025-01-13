@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "kasca-client",
+  "framework": "nextjs",
+  "buildCommand": "pnpm build:client",
+  "outputDirectory": "apps/client/.next",
+  "installCommand": "pnpm i",
+  "regions": ["fra1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": false
+    }
+  }
+}

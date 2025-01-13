@@ -4,6 +4,7 @@
 # - Environment setup
 # - Test execution
 # - Results reporting
+# - Deployment trigger
 #
 # By Dulapah Vibulsanti (https://dulapahv.dev)
 
@@ -29,14 +30,18 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
+      VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
 
     steps:
+      # Checkout code
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
+      # Install pnpm
       - name: 📦 Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
 
+      # Setup Node.js
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -74,19 +79,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
+      # Install dependencies
       - name: 🏗️ Install dependencies
         run: pnpm install
 
+      # Build packages
       - name: 🔨 Build packages
         run: pnpm build
 
+      # Install Playwright browsers
       - name: 🎭 Install Playwright browsers
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: pnpm --filter client exec playwright install --with-deps
 
+      # Run Playwright tests
       - name: 🧪 Run Playwright tests
         run: pnpm test:client
 
+      # Upload test results
       - name: 📊 Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -97,6 +107,7 @@ jobs:
             apps/client/test-results.xml
           retention-days: 30
 
+      # Upload test screenshots on failure
       - name: 📸 Upload test screenshots
         if: failure()
         uses: actions/upload-artifact@v4
@@ -104,3 +115,9 @@ jobs:
           name: playwright-screenshots
           path: apps/client/test-results/
           retention-days: 30
+
+      # Trigger Vercel deployment if tests pass
+      - name: 🚀 Trigger Vercel Deployment
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"

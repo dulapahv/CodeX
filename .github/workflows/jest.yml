@@ -4,6 +4,7 @@
 # - Environment setup
 # - Test execution
 # - Results reporting
+# - Deployment trigger
 #
 # By Dulapah Vibulsanti (https://dulapahv.dev)
 
@@ -26,14 +27,18 @@ jobs:
       CI: true
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
 
     steps:
+      # Checkout code
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
+      # Install pnpm
       - name: 📦 Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
 
+      # Setup Node.js
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -49,15 +54,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      # Install dependencies
       - name: 🏗️ Install dependencies
         run: pnpm install
 
+      # Build packages
       - name: 🔨 Build packages
         run: pnpm build:server
 
+      # Run Jest tests
       - name: 🧪 Run Jest tests
         run: pnpm test:server
 
+      # Upload test results
       - name: 📊 Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -65,3 +74,9 @@ jobs:
           name: jest-report
           path: apps/server/test-results/junit.xml
           retention-days: 30
+
+      # Trigger Render deployment if tests pass
+      - name: 🚀 Trigger Vercel Deployment
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"

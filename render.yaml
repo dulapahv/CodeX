@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+
+services:
+  - type: web
+    name: kasca-server
+    runtime: node
+    repo: https://github.com/dulapahv/Kasca
+    plan: free
+    envVars:
+      - key: BETTERSTACK_API_KEY
+        sync: false
+      - key: TURBO_TOKEN
+        sync: false
+      - key: TURBO_TEAM
+        sync: false
+    region: frankfurt
+    buildCommand:
+      'curl --request PATCH --url https://uptime.betterstack.com/api/v2/monitors/2887417
+      --header "Authorization: Bearer $BETTERSTACK_API_KEY" --header ''Content-Type:
+      application/json'' --data ''{ "paused": true }'' && pnpm i && pnpm build:server'
+    startCommand:
+      'curl --request PATCH --url https://uptime.betterstack.com/api/v2/monitors/2887417
+      --header "Authorization: Bearer $BETTERSTACK_API_KEY" --header ''Content-Type:
+      application/json'' --data ''{ "paused": false }'' && cd apps/server/dist/apps/server/src
+      && node index.js'
+    domains:
+      - kasca-server.dulapahv.dev
+    autoDeploy: false
+    buildFilter:
+      ignoredPaths:
+        - '**/*'
+version: '1'
