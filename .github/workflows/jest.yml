@@ -96,6 +96,6 @@ jobs:
 
       # Trigger Render deployment if tests pass
       - name: 🚀 Trigger Render Deployment
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && steps.check-changes.outputs.skip_build != 'true' && github.ref == 'refs/heads/main'
         run: |
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"

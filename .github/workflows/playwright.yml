@@ -138,6 +138,6 @@ jobs:
 
       # Trigger Vercel deployment if tests pass
       - name: 🚀 Trigger Vercel Deployment
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && steps.check-changes.outputs.skip_build != 'true' && github.ref == 'refs/heads/main'
         run: |
           curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
