@@ -60,7 +60,7 @@ jobs:
         id: check-changes
         run: |
           # Install only the minimal dependencies needed for turbo
-          pnpm install turbo --no-frozen-lockfile
+          pnpm add -g turbo
 
           # Run dry-run build to check for changes
           if pnpm turbo build --filter=server --dry-run > /dev/null 2>&1; then
