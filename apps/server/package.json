@@ -9,7 +9,7 @@
     "format:check": "prettier . --c",
     "format:fix": "prettier . --w",
     "test:socket": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local'",
-    "test:socket:remote": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=remote'",
+    "test:socket:remote": "jest --server=remote",
     "test:watch": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local --watch'"
   },
   "dependencies": {
