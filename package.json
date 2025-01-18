@@ -46,5 +46,5 @@
     "bufferutil": "^4.0.9",
     "utf-8-validate": "^6.0.5"
   },
-  "packageManager": "pnpm@9.15.3"
+  "packageManager": "pnpm@9.15.4"
 }
