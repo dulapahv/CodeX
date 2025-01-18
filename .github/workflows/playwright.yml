@@ -2,7 +2,6 @@
 # Features:
 # - Automated testing on push/PR
 # - Environment setup
-# - Cache hit detection for builds
 # - Test execution
 # - Results reporting
 # - Deployment trigger
@@ -81,30 +80,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      # Check for client changes using turbo
-      - name: 🔍 Check for client changes
-        id: check-changes
-        run: |
-          # Install only the minimal dependencies needed for turbo
-          pnpm add -g turbo
-
-          # Run dry-run build to check for changes
-          if pnpm turbo build --filter=client --dry-run > /dev/null 2>&1; then
-            echo "No changes detected in client package"
-            echo "skip_build=true" >> $GITHUB_OUTPUT
-          else
-            echo "Changes detected in client package"
-            echo "skip_build=false" >> $GITHUB_OUTPUT
-          fi
-
       # Install dependencies
       - name: 🏗️ Install dependencies
-        if: steps.check-changes.outputs.skip_build != 'true'
         run: pnpm install
 
       # Build packages
       - name: 🔨 Build packages
-        if: steps.check-changes.outputs.skip_build != 'true'
         run: pnpm build
 
       # Install Playwright browsers
@@ -138,6 +119,6 @@ jobs:
 
       # Trigger Vercel deployment if tests pass
       - name: 🚀 Trigger Vercel Deployment
-        if: success() && steps.check-changes.outputs.skip_build != 'true' && github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/main'
         run: |
           curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
