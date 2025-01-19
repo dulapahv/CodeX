@@ -27,7 +27,7 @@
       "persistent": true
     },
     "client#test:e2e": {
-      "cache": true,
+      "cache": false,
       "outputs": ["playwright-report/**", "test-results/**"],
       "env": ["BETTERSTACK_API_KEY"]
     },
