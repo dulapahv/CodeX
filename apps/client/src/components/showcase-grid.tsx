@@ -97,9 +97,9 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
         <span className="rounded-full bg-[#f6d84f]/10 p-2 text-[#f6d84f]">
           {image.icon}
         </span>
-        <h3 className="text-base font-semibold tracking-tight text-foreground">
+        <h1 className="text-base font-semibold tracking-tight text-foreground">
           {image.title}
-        </h3>
+        </h1>
       </div>
       <p className="text-sm text-foreground/60">{image.description}</p>
     </div>

@@ -57,9 +57,9 @@ export const JoinRoomSection = ({
         className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
       >
-        <h3 id="join-room-heading" className="text-lg font-medium sm:text-xl">
+        <h1 id="join-room-heading" className="text-lg font-medium sm:text-xl">
           Join a Room
-        </h3>
+        </h1>
         <div
           className="flex flex-col space-y-1.5"
           role="group"

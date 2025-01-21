@@ -20,6 +20,7 @@ interface MarkdownEditorProps {
 const SaveNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
   <ButtonWithTooltip
     title="Save note"
+    aria-label="Save note"
     onClick={() => {
       const markdown = markdownEditorRef.current?.getMarkdown() ?? '';
       const blob = new Blob([markdown], {
