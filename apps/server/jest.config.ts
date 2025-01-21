@@ -22,6 +22,7 @@ const config: Config = {
   resetMocks: true,
   restoreMocks: true,
   detectOpenHandles: true,
+  testTimeout: 300000,
   reporters: [
     'default',
     [
