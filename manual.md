@@ -1113,7 +1113,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Find | `Ctrl + F` |
 | Replace | `Ctrl + H` |
 | Toggle Line Comment | `Ctrl + /` |
-| Toggle Block Comment | `Ctrl + Shift + /` |
+| Toggle Block Comment | `Shift + Alt + A` |
 | Select All | `Ctrl + A` |
 | Copy Line Up | `Shift + Alt + ↑` |
 | Copy Line Down | `Shift + Alt + ↓` |
