@@ -23,7 +23,7 @@ import type { JoinRoomForm } from './types';
 export const createRoom = (name: string): Promise<string> => {
   return new Promise((resolve) => {
     const socket = getSocket();
-    name = name.trim();
+
     socket.emit(RoomServiceMsg.CREATE, name);
     socket.on(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
       roomId = formatRoomId(roomId);
@@ -41,7 +41,6 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
     const socket = getSocket();
 
     roomId = roomId.replace(/-/g, '');
-    name = name.trim();
 
     socket.emit(RoomServiceMsg.JOIN, roomId, name);
     socket.on(RoomServiceMsg.NOT_FOUND, () => {

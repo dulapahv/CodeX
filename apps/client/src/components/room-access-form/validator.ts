@@ -14,8 +14,16 @@ import { NAME_MAX_LENGTH } from '@/lib/constants';
 
 const nameSchema = z
   .string()
-  .min(1, 'Name is required')
-  .max(NAME_MAX_LENGTH, `Name must not exceed ${NAME_MAX_LENGTH} characters`);
+  .transform((value) => value.replace(/\s+/g, ''))
+  .pipe(
+    z
+      .string()
+      .min(1, { message: 'Name is required' })
+      .max(
+        NAME_MAX_LENGTH,
+        `Name must not exceed ${NAME_MAX_LENGTH} characters`,
+      ),
+  );
 
 export const joinRoomSchema = z.object({
   name: nameSchema,
