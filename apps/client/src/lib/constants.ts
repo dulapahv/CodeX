@@ -54,48 +54,46 @@ export const GITHUB_URL = 'https://github.com/dulapahv';
 
 export const EDITOR_SETTINGS_KEY = 'editor-settings';
 
-export const DISABLE_TAILWIND_CDN_WARN = `<script>(()=>{const w=console.warn;console.warn=(...a)=>{typeof a[0]!=="string"||!a[0].includes("cdn.tailwindcss.com")?w.apply(console,a):void 0}})();</script>`;
+export const DISABLE_TAILWIND_CDN_WARN = `<script>(()=>{const w=console.warn;console.warn=(...a)=>{typeof a[0]!=="string"||!a[0].includes("Tailwind CSS")?w.apply(console,a):void 0}})();</script>`;
 
-export const SANDPACK_CDN = `
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
-<script src="https://unpkg.com/htmx.org@2.0.4"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
-<script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-<script src="https://unpkg.com/dayjs@1.11.10/dayjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-`;
+export const SANDPACK_CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2/dist/aos.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2/dist/aos.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@popperjs/core@2" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/prop-types@15/prop-types.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/recharts@2/umd/Recharts.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4/lodash.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" crossorigin="anonymous"></script>`;
 
 export const PRE_INSTALLED_LIBS = [
-  { name: 'Tailwind CSS', version: '3.x' },
-  { name: 'Animate.css', version: '4.1.1' },
-  { name: 'AOS', version: '2.3.1' },
+  { name: 'Tailwind CSS', version: '4.x' },
+  { name: 'Animate.css', version: '4.x' },
+  { name: 'AOS', version: '2.x' },
   { name: 'Swiper', version: '11.x' },
-  { name: 'HTMX', version: '2.0.4' },
-  { name: 'Lucide Icons', version: 'latest' },
+  { name: 'HTMX', version: '2.x' },
+  { name: 'Lucide Icons', version: '0.x' },
   { name: 'Alpine.js', version: '3.x' },
-  { name: 'GSAP', version: '3.12.5' },
+  { name: 'GSAP', version: '3.x' },
   { name: 'Popper', version: '2.x' },
   { name: 'Tippy.js', version: '6.x' },
   { name: 'React', version: '18.x' },
   { name: 'React DOM', version: '18.x' },
-  { name: 'PropTypes', version: 'latest' },
-  { name: 'Recharts', version: 'latest' },
-  { name: 'Chart.js', version: 'latest' },
-  { name: 'Lodash', version: '4.17.21' },
-  { name: 'Day.js', version: '1.11.10' },
-  { name: 'Sortable.js', version: '1.15.0' },
+  { name: 'PropTypes', version: '15.x' },
+  { name: 'Recharts', version: '2.x' },
+  { name: 'Chart.js', version: '4.x' },
+  { name: 'Lodash', version: '4.x' },
+  { name: 'Day.js', version: '1.x' },
+  { name: 'Sortable.js', version: '1.x' },
 ];
