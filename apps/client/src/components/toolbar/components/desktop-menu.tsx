@@ -41,7 +41,7 @@ const DesktopMenu = ({
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
+      if (e.key === 'Alt' && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
         e.preventDefault();
         menubarRef.current?.focus();
       }
