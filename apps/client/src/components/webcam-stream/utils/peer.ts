@@ -43,17 +43,6 @@ export const createPeer = (
       stream: streamRef.current?.getTracks().length
         ? streamRef.current
         : undefined,
-      trickle: true,
-      config: {
-        iceServers: [
-          {
-            urls: 'stun:stun.l.google.com:19302',
-          },
-          {
-            urls: 'stun:stun1.l.google.com:19302',
-          },
-        ],
-      },
     });
 
     peer.on('signal', (signal) => {

@@ -33,6 +33,10 @@ import { getSocket } from '@/lib/socket';
 import { parseError } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/avatar';
+import {
+  switchAudioDevice,
+  switchVideoDevice,
+} from '@/components/webcam-stream/utils/media';
 
 import { DeviceControls } from './components/device-controls';
 import { VideoControls } from './components/video-controls';
@@ -88,55 +92,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   const peersRef = useRef<Record<string, Peer.Instance>>({});
   const pendingSignalsRef = useRef<Record<string, unknown[]>>({});
 
-  // Request permissions on mount
-  useEffect(() => {
-    const requestInitialPermissions = async () => {
-      if (hasRequestedPermissions) return;
-
-      try {
-        // Instead of getUserMedia, use enumerateDevices first
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasLabels = devices.some((device) => device.label !== '');
-
-        // Only request permissions if we don't have them yet
-        if (!hasLabels) {
-          // Request with minimal constraints to avoid unnecessary device activation
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' }, // minimal constraint
-            audio: true,
-          });
-          // Stop the temporary stream immediately
-          stream.getTracks().forEach((track) => track.stop());
-        }
-
-        // Update device lists after permissions
-        await enumerateDevices(
-          setVideoDevices,
-          setAudioInputDevices,
-          setAudioOutputDevices,
-          selectedVideoDevice,
-          setSelectedVideoDevice,
-          selectedAudioInput,
-          setSelectedAudioInput,
-          selectedAudioOutput,
-          setSelectedAudioOutput,
-        );
-
-        setHasRequestedPermissions(true);
-      } catch (error) {
-        console.warn('Initial permission request failed:', error);
-        // Don't show error toast here as it might be intrusive
-      }
-    };
-
-    requestInitialPermissions();
-  }, [
-    hasRequestedPermissions,
-    selectedAudioInput,
-    selectedAudioOutput,
-    selectedVideoDevice,
-  ]);
-
   const handleGetMedia = useCallback(async () => {
     return getMedia(
       selectedVideoDevice,
@@ -156,6 +111,135 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     selectedAudioOutput,
     cameraFacingMode,
     micOn,
+  ]);
+
+  // Handle video device selection
+  const handleVideoDeviceSelect = async (deviceId: string) => {
+    try {
+      const success = await switchVideoDevice(
+        deviceId,
+        streamRef,
+        videoRef,
+        peersRef,
+        setRemoteStreams,
+        pendingSignalsRef,
+        micOn,
+        selectedAudioInput,
+        selectedAudioOutput,
+        cameraFacingMode,
+      );
+
+      if (success) {
+        setSelectedVideoDevice(deviceId);
+      }
+    } catch (error) {
+      toast.error(`Failed to switch video device: ${parseError(error)}`);
+    }
+  };
+
+  // Handle audio input device selection
+  const handleAudioInputSelect = async (deviceId: string) => {
+    try {
+      const success = await switchAudioDevice(
+        deviceId,
+        streamRef,
+        videoRef,
+        peersRef,
+        setRemoteStreams,
+        pendingSignalsRef,
+        micOn,
+        selectedVideoDevice,
+        selectedAudioOutput,
+        cameraFacingMode,
+      );
+
+      if (success) {
+        setSelectedAudioInput(deviceId);
+      }
+    } catch (error) {
+      toast.error(`Failed to switch audio device: ${parseError(error)}`);
+    }
+  };
+
+  // Handle audio output device selection
+  const handleAudioOutputSelect = async (deviceId: string) => {
+    setSelectedAudioOutput(deviceId);
+    if (videoRef.current && 'setSinkId' in videoRef.current) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (videoRef.current as any).setSinkId(deviceId);
+      } catch (error) {
+        toast.error(`Error setting audio output: ${parseError(error)}`);
+      }
+    }
+  };
+
+  // Initialize device enumeration
+  useEffect(() => {
+    const handleDeviceChange = async () => {
+      await enumerateDevices(
+        setVideoDevices,
+        setAudioInputDevices,
+        setAudioOutputDevices,
+        selectedVideoDevice,
+        setSelectedVideoDevice,
+        selectedAudioInput,
+        setSelectedAudioInput,
+        selectedAudioOutput,
+        setSelectedAudioOutput,
+      );
+    };
+
+    initDevices(handleDeviceChange);
+    return () => {
+      navigator.mediaDevices.removeEventListener(
+        'devicechange',
+        handleDeviceChange,
+      );
+    };
+  }, [selectedVideoDevice, selectedAudioInput, selectedAudioOutput]);
+
+  // Request permissions on mount
+  useEffect(() => {
+    const requestInitialPermissions = async () => {
+      if (hasRequestedPermissions) return;
+
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasLabels = devices.some((device) => device.label !== '');
+
+        if (!hasLabels) {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' },
+            audio: true,
+          });
+          stream.getTracks().forEach((track) => track.stop());
+        }
+
+        await enumerateDevices(
+          setVideoDevices,
+          setAudioInputDevices,
+          setAudioOutputDevices,
+          selectedVideoDevice,
+          setSelectedVideoDevice,
+          selectedAudioInput,
+          setSelectedAudioInput,
+          selectedAudioOutput,
+          setSelectedAudioOutput,
+        );
+
+        setHasRequestedPermissions(true);
+      } catch (error) {
+        console.warn('Initial permission request failed:', error);
+      }
+    };
+
+    requestInitialPermissions();
+  }, [
+    hasRequestedPermissions,
+    selectedAudioInput,
+    selectedAudioOutput,
+    selectedVideoDevice,
   ]);
 
   // Initialize device enumeration
@@ -384,12 +468,9 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             label="camera"
             devices={videoDevices}
             selectedDevice={selectedVideoDevice}
-            onDeviceSelect={async (deviceId) => {
-              setSelectedVideoDevice(deviceId);
-              if (cameraOn) await handleGetMedia();
-            }}
-            onToggle={() =>
-              toggleCamera(
+            onDeviceSelect={handleVideoDeviceSelect}
+            onToggle={async () =>
+              await toggleCamera(
                 cameraOn,
                 setCameraOn,
                 setMicOn,
@@ -399,25 +480,20 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               )
             }
             isEnabled={cameraOn}
-            onDevicePermissionGranted={async () => {
-              await enumerateDevices(
+            onDevicePermissionGranted={async (kind) => {
+              await handleDevicePermissionGranted(
+                kind,
                 setVideoDevices,
                 setAudioInputDevices,
                 setAudioOutputDevices,
-                selectedVideoDevice,
-                setSelectedVideoDevice,
-                selectedAudioInput,
-                setSelectedAudioInput,
-                selectedAudioOutput,
-                setSelectedAudioOutput,
               );
             }}
           />
 
           {isMobile && cameraOn && (
             <Button
-              onClick={() =>
-                rotateCamera(
+              onClick={async () =>
+                await rotateCamera(
                   cameraOn,
                   cameraFacingMode,
                   setCameraFacingMode,
@@ -440,12 +516,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           label="microphone"
           devices={audioInputDevices}
           selectedDevice={selectedAudioInput}
-          onDeviceSelect={async (deviceId) => {
-            setSelectedAudioInput(deviceId);
-            if (streamRef.current) {
-              await handleGetMedia();
-            }
-          }}
+          onDeviceSelect={handleAudioInputSelect}
           onToggle={() => toggleMic(micOn, setMicOn, streamRef)}
           isEnabled={micOn}
           disableToggle={!cameraOn}
@@ -464,17 +535,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           label="speaker"
           devices={audioOutputDevices}
           selectedDevice={selectedAudioOutput}
-          onDeviceSelect={async (deviceId) => {
-            setSelectedAudioOutput(deviceId);
-            if (videoRef.current && 'setSinkId' in videoRef.current) {
-              try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                await (videoRef.current as any).setSinkId(deviceId);
-              } catch (error) {
-                toast.error(`Error setting audio output: ${parseError(error)}`);
-              }
-            }
-          }}
+          onDeviceSelect={handleAudioOutputSelect}
           onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn)}
           isEnabled={speakerOn}
           onDevicePermissionGranted={async (kind) => {

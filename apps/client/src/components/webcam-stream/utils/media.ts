@@ -35,9 +35,12 @@ export const getMedia = async (
   pendingSignalsRef: RefObject<Record<string, unknown[]>>,
 ) => {
   try {
-    // Stop any existing tracks
+    // Stop any existing tracks before requesting new ones
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
+      const tracks = streamRef.current.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+      });
     }
 
     // Build video constraints based on platform and selected device
@@ -68,117 +71,122 @@ export const getMedia = async (
       audio: audioConstraints,
     };
 
-    // Try to get the stream with exact constraints first
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      handleStreamSuccess(
-        stream,
-        streamRef,
-        videoRef,
-        selectedAudioOutput,
-        micOn,
-        peersRef,
-        setRemoteStreams,
-        pendingSignalsRef,
-      );
-      return true;
-    } catch (exactError) {
-      console.warn(
-        'Failed to get stream with exact constraints, trying fallback:',
-        exactError,
-      );
+    // Get new stream
+    const newStream = await navigator.mediaDevices.getUserMedia(constraints);
 
-      // Fallback to basic constraints with ideal values
-      const fallbackStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          aspectRatio: { ideal: 16 / 9 },
-        },
-        audio: true,
-      });
+    // Set audio track state based on mic status
+    newStream.getAudioTracks().forEach((track) => {
+      track.enabled = micOn;
+    });
 
-      handleStreamSuccess(
-        fallbackStream,
-        streamRef,
-        videoRef,
-        selectedAudioOutput,
-        micOn,
-        peersRef,
-        setRemoteStreams,
-        pendingSignalsRef,
-      );
-      return true;
+    // Update video element
+    if (videoRef.current) {
+      videoRef.current.srcObject = newStream;
+      // Set audio output if supported
+      if ('setSinkId' in videoRef.current && selectedAudioOutput) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (videoRef.current as any).setSinkId(selectedAudioOutput);
+        } catch (error) {
+          console.warn('Error setting audio output device:', error);
+        }
+      }
     }
+
+    // Update peer connections with new tracks
+    Object.entries(peersRef.current).forEach(([userID, peer]) => {
+      if (!peer.destroyed) {
+        try {
+          // Remove old tracks
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => {
+              peer.removeTrack(track, streamRef.current!);
+            });
+          }
+
+          // Add new tracks
+          newStream.getTracks().forEach((track) => {
+            peer.addTrack(track, newStream);
+          });
+        } catch (error) {
+          console.warn('Error updating peer tracks:', error);
+          // If updating tracks fails, recreate the peer
+          cleanupPeer(userID, peersRef, setRemoteStreams);
+          createPeer(
+            userID,
+            true,
+            { current: newStream },
+            peersRef,
+            setRemoteStreams,
+            pendingSignalsRef,
+          );
+        }
+      }
+    });
+
+    // Update stream reference
+    streamRef.current = newStream;
+    return true;
   } catch (error) {
     toast.error(`Error accessing media devices: ${parseError(error)}`);
     return false;
   }
 };
 
-// Helper function to handle successful stream acquisition
-const handleStreamSuccess = (
-  stream: MediaStream,
+// Helper function to switch video device
+export const switchVideoDevice = async (
+  deviceId: string,
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
-  selectedAudioOutput: string,
-  micOn: boolean,
   peersRef: RefObject<Record<string, Peer.Instance>>,
   setRemoteStreams: Dispatch<
     SetStateAction<Record<string, MediaStream | null>>
   >,
   pendingSignalsRef: RefObject<Record<string, unknown[]>>,
+  micOn: boolean,
+  selectedAudioInput: string,
+  selectedAudioOutput: string,
+  cameraFacingMode: 'user' | 'environment',
 ) => {
-  // Store the stream
-  streamRef.current = stream;
-  if (videoRef.current) {
-    videoRef.current.srcObject = stream;
-    // Set audio output if supported
-    if ('setSinkId' in videoRef.current && selectedAudioOutput) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (videoRef.current as any).setSinkId(selectedAudioOutput);
-      } catch (error) {
-        console.warn('Error setting audio output device:', error);
-      }
-    }
-  }
+  return getMedia(
+    deviceId,
+    selectedAudioInput,
+    selectedAudioOutput,
+    cameraFacingMode,
+    micOn,
+    streamRef,
+    videoRef,
+    peersRef,
+    setRemoteStreams,
+    pendingSignalsRef,
+  );
+};
 
-  // Set initial audio track state
-  stream.getAudioTracks().forEach((track) => {
-    track.enabled = micOn;
-  });
-
-  // Update existing peer connections
-  Object.entries(peersRef.current).forEach(([userID, peer]) => {
-    if (!peer.destroyed) {
-      try {
-        // Properly remove old tracks
-        const oldStream = peer.streams[0];
-        if (oldStream) {
-          oldStream.getTracks().forEach((track) => {
-            track.stop();
-            peer.removeTrack(track, oldStream);
-          });
-        }
-
-        // Add new tracks
-        stream.getTracks().forEach((track) => {
-          peer.addTrack(track, stream);
-        });
-      } catch (error) {
-        console.warn('Error updating peer tracks:', error);
-        // If updating tracks fails, recreate the peer
-        cleanupPeer(userID, peersRef, setRemoteStreams);
-        createPeer(
-          userID,
-          true,
-          streamRef,
-          peersRef,
-          setRemoteStreams,
-          pendingSignalsRef,
-        );
-      }
-    }
-  });
+// Helper function to switch audio input device
+export const switchAudioDevice = async (
+  deviceId: string,
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
+  micOn: boolean,
+  selectedVideoDevice: string,
+  selectedAudioOutput: string,
+  cameraFacingMode: 'user' | 'environment',
+) => {
+  return getMedia(
+    selectedVideoDevice,
+    deviceId,
+    selectedAudioOutput,
+    cameraFacingMode,
+    micOn,
+    streamRef,
+    videoRef,
+    peersRef,
+    setRemoteStreams,
+    pendingSignalsRef,
+  );
 };
