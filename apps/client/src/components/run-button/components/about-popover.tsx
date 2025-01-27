@@ -58,13 +58,13 @@ const AboutPopover = () => (
             <p>
               For a list of supported programming languages, refer to the{' '}
               <a
-                href="https://github.com/engineer-man/piston#Supported-Languages"
+                href="https://github.com/dulapahv/Kasca/blob/main/manual.md#supported-execution-languages"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-foreground underline underline-offset-4 !transition-all
                   hover:text-muted-foreground"
               >
-                Piston documentation
+                manual
               </a>
               .
             </p>

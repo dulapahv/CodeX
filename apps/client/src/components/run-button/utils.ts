@@ -134,7 +134,7 @@ export const executeCode = async (
 
     if (!response.ok) {
       throw new Error(
-        `HTTP error! status: ${response.status}\nThis language may not be supported or the server is down.\nList of supported languages: https://github.com/engineer-man/piston?tab=readme-ov-file#Supported-Languages.`,
+        `HTTP error! status: ${response.status}\nThis language may not be supported or the server is down.\nList of supported languages: https://github.com/dulapahv/Kasca/blob/main/manual.md#supported-execution-languages.`,
       );
     }
 
