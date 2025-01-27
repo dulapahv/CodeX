@@ -49,43 +49,42 @@ export default async function Page({ searchParams }: PageProps) {
       >
         {/* Left Section - Form */}
         <div
-          className="flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8
-            min-[1189px]:h-dvh min-[1189px]:w-5/12 min-[1189px]:items-center"
+          className="my-2 flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8
+            min-[1189px]:w-5/12 min-[1189px]:items-center"
         >
           <div className="w-full max-w-xl">
-            <div className="mb-6">
-              <div className="space-y-6">
-                <h1
-                  className="text-foreground flex flex-row items-start gap-2 text-4xl font-bold
-                    tracking-tight sm:text-5xl"
-                >
-                  <Image
-                    src="/images/kasca-logo.svg"
-                    alt="Kasca Logo"
-                    width={96}
-                    height={96}
-                    className="size-20 min-[1189px]:size-24"
-                    priority
-                  />
-                  <div className="flex flex-col items-start text-start">
-                    <span>Code together</span>
-                    <span className="flex items-end gap-2 min-[1189px]:items-baseline">
-                      <span>now on</span>
-                      <span
-                        className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent
-                          drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]"
-                      >
-                        Kasca
-                      </span>
+            <div className="mb-6 space-y-6">
+              <h1
+                className="text-foreground flex flex-row items-start gap-2 text-4xl font-bold
+                  tracking-tight sm:text-5xl"
+              >
+                <Image
+                  src="/images/kasca-logo.svg"
+                  alt="Kasca Logo"
+                  width={96}
+                  height={96}
+                  className="size-20 min-[1189px]:size-24"
+                  priority
+                />
+                <div className="flex flex-col items-start text-start">
+                  <span>Code together</span>
+                  <span className="flex items-end gap-2 min-[1189px]:items-baseline">
+                    <span>now on</span>
+                    <span
+                      className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent
+                        drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]"
+                    >
+                      Kasca
                     </span>
-                  </div>
-                </h1>
-                <p className="text-foreground/90 w-full whitespace-pre-line text-lg sm:w-[93%] sm:text-xl">
-                  Your collaborative coding space, reimagined. Start now, no
-                  sign-up required.
-                </p>
-              </div>
+                  </span>
+                </div>
+              </h1>
+              <p className="text-foreground/90 w-full whitespace-pre-line text-lg sm:w-[93%] sm:text-xl">
+                Your collaborative coding space, reimagined. Start now, no
+                sign-up required.
+              </p>
             </div>
+
             <Suspense fallback={null}>
               <RoomAccessForm roomId={roomId} />
             </Suspense>
@@ -94,8 +93,8 @@ export default async function Page({ searchParams }: PageProps) {
 
         {/* Right Section - Showcase Grid */}
         <div
-          className="dark relative flex w-full flex-1 items-center justify-center overflow-y-auto
-            min-[1189px]:w-7/12 min-[1189px]:pr-8"
+          className="dark relative flex w-full max-w-5xl flex-1 items-center justify-center
+            overflow-y-auto min-[1189px]:w-7/12 min-[1189px]:pr-8"
         >
           <ShowcaseGrid />
         </div>
