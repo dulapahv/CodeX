@@ -180,7 +180,7 @@ export const createMenuConfig = (
         {
           label: 'Toggle Block Comment',
           icon: <MessageSquareText className="mr-2 size-4" />,
-          shortcut: `${modKey}+Shift+/`,
+          shortcut: `Shift+Alt+A`,
           action: 'toggleBlockComment',
         },
         'separator',
