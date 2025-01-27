@@ -1001,24 +1001,24 @@ Learn more about [GitHub's Scopes for OAuth apps](https://docs.github.com/en/app
 | abap | `abap` |
 | Apex | `cls` |
 | Azure CLI | `azcli` |
-| Batch | `bat`,`cmd` |
+| Batch | `bat`, `cmd` |
 | Bicep | `bicep` |
 | Cameligo | `mligo` |
-| clojure | `clj`,`cljs`,`cljc`,`edn` |
+| clojure | `clj`, `cljs`, `cljc`, `edn` |
 | CoffeeScript | `coffee` |
-| C | `c`,`h` |
-| C++ | `cpp`,`cc`,`cxx`,`hpp`,`hh`,`hxx` |
-| C# | `cs`,`csx`,`cake` |
+| C | `c`, `h` |
+| C++ | `cpp`, `cc`, `cxx`, `hpp`, `hh`, `hxx` |
+| C# | `cs`, `csx`, `cake` |
 | CSP | - |
 | CSS | `css` |
-| Cypher | `cypher`,`cyp` |
+| Cypher | `cypher`, `cyp` |
 | Dart | `dart` |
 | Dockerfile | `dockerfile` |
 | ECL | `ecl` |
-| Elixir | `ex`,`exs` |
+| Elixir | `ex`, `exs` |
 | Flow9 | `flow` |
-| F# | `fs`,`fsi`,`ml`,`mli`,`fsx`,`fsscript` |
-| FreeMarker2 | `ftl`,`ftlh`,`ftlx` |
+| F# | `fs`, `fsi`, `ml`, `mli`, `fsx`, `fsscript` |
+| FreeMarker2 | `ftl`, `ftlh`, `ftlx` |
 | FreeMarker2 | `Angle/Dollar` |
 | FreeMarker2 | `Bracket/Dollar` |
 | FreeMarker2 | `Angle/Bracket` |
@@ -1026,73 +1026,73 @@ Learn more about [GitHub's Scopes for OAuth apps](https://docs.github.com/en/app
 | FreeMarker2 | `Auto/Dollar` |
 | FreeMarker2 | `Auto/Bracket` |
 | Go | `go` |
-| GraphQL | `graphql`,`gql` |
-| Handlebars | `handlebars`,`hbs` |
-| Terraform | `tf`,`tfvars`,`hcl` |
-| HTML | `html`,`htm`,`shtml`,`xhtml`,`mdoc`,`jsp`,`asp`,`aspx`,`jshtm` |
-| Ini | `ini`,`properties`,`gitconfig` |
-| Java | `java`,`jav` |
-| JavaScript | `js`,`es6`,`jsx`,`mjs`,`cjs` |
+| GraphQL | `graphql`, `gql` |
+| Handlebars | `handlebars`, `hbs` |
+| Terraform | `tf`, `tfvars`, `hcl` |
+| HTML | `html`, `htm`, `shtml`, `xhtml`, `mdoc`, `jsp`, `asp`, `aspx`, `jshtm` |
+| Ini | `ini`, `properties`, `gitconfig` |
+| Java | `java`, `jav` |
+| JavaScript | `js`, `es6`, `jsx`, `mjs`, `cjs` |
 | julia | `jl` |
-| Kotlin | `kt`,`kts` |
+| Kotlin | `kt`, `kts` |
 | Less | `less` |
 | Lexon | `lex` |
 | Lua | `lua` |
-| Liquid | `liquid`,`html.liquid` |
-| Modula-3 | `m3`,`i3`,`mg`,`ig` |
-| Markdown | `md`,`markdown`,`mdown`,`mkdn`,`mkd`,`mdwn`,`mdtxt`,`mdtext` |
+| Liquid | `liquid`, `html.liquid` |
+| Modula-3 | `m3`, `i3`, `mg`, `ig` |
+| Markdown | `md`, `markdown`, `mdown`, `mkdn`, `mkd`, `mdwn`, `mdtxt`, `mdtext` |
 | MDX | `mdx` |
 | MIPS | `s` |
-| DAX | `dax`,`msdax` |
+| DAX | `dax`, `msdax` |
 | MySQL | - |
 | Objective-C | `m` |
-| Pascal | `pas`,`p`,`pp` |
+| Pascal | `pas`, `p`, `pp` |
 | Pascaligo | `ligo` |
-| Perl | `pl`,`pm` |
+| Perl | `pl`, `pm` |
 | PostgreSQL | - |
-| PHP | `php`,`php4`,`php5`,`phtml`,`ctp` |
+| PHP | `php`, `php4`, `php5`, `phtml`, `ctp` |
 | Unknown | `pla` |
-| ATS | `dats`,`sats`,`hats` |
-| PQ | `pq`,`pqm` |
-| PowerShell | `ps1`,`psm1`,`psd1` |
+| ATS | `dats`, `sats`, `hats` |
+| PQ | `pq`, `pqm` |
+| PowerShell | `ps1`, `psm1`, `psd1` |
 | protobuf | `proto` |
-| Pug | `jade`,`pug` |
-| Python | `py`,`rpy`,`pyw`,`cpy`,`gyp`,`gypi` |
+| Pug | `jade`, `pug` |
+| Python | `py`, `rpy`, `pyw`, `cpy`, `gyp`, `gypi` |
 | Q# | `qs` |
-| R | `r`,`rhistory`,`rmd`,`rprofile`,`rt` |
+| R | `r`, `rhistory`, `rmd`, `rprofile`, `rt` |
 | Razor | `cshtml` |
 | redis | `redis` |
 | Redshift | - |
 | reStructuredText | `rst` |
-| Ruby | `rb`,`rbx`,`rjs`,`gemspec`,`pp` |
-| Rust | `rs`,`rlib` |
+| Ruby | `rb`, `rbx`, `rjs`, `gemspec`, `pp` |
+| Rust | `rs`, `rlib` |
 | Small Basic | `sb` |
-| Scala | `scala`,`sc`,`sbt` |
-| scheme | `scm`,`ss`,`sch`,`rkt` |
+| Scala | `scala`, `sc`, `sbt` |
+| scheme | `scm`, `ss`, `sch`, `rkt` |
 | Sass | `scss` |
-| Shell | `sh`,`bash` |
+| Shell | `sh`, `bash` |
 | sol | `sol` |
 | aes | `aes` |
 | sparql | `rq` |
 | SQL | `sql` |
-| StructuredText | `st`,`iecst`,`iecplc`,`lc3lib`,`TcPOU`,`TcDUT`,`TcGVL`,`TcIO` |
+| StructuredText | `st`, `iecst`, `iecplc`, `lc3lib`, `TcPOU`, `TcDUT`, `TcGVL`, `TcIO` |
 | Swift | `swift` |
-| SV | `sv`,`svh` |
-| V | `v`,`vh` |
+| SV | `sv`, `svh` |
+| V | `v`, `vh` |
 | tcl | `tcl` |
 | Twig | `twig` |
-| TypeScript | `ts`,`tsx`,`cts`,`mts` |
+| TypeScript | `ts`, `tsx`, `cts`, `mts` |
 | Visual Basic | `vb` |
 | WebGPU Shading Language | `wgsl` |
-| XML | `xml`,`xsd`,`dtd`,`ascx`,`csproj`,`config`,`props`,`targets`,`wxi`,`wxl`,`wxs`,`xaml`,`svg`,`svgz`,`opf`,`xslt`,`xsl` |
-| YAML | `yaml`,`yml` |
-| JSON | `json`,`bowerrc`,`jshintrc`,`jscsrc`,`eslintrc`,`babelrc`,`har` |
+| XML | `xml`, `xsd`, `dtd`, `ascx`, `csproj`, `config`, `props`, `targets`, `wxi`, `wxl`, `wxs`, `xaml`, `svg`, `svgz`, `opf`, `xslt`, `xsl` |
+| YAML | `yaml`, `yml` |
+| JSON | `json`, `bowerrc`, `jshintrc`, `jscsrc`, `eslintrc`, `babelrc`, `har` |
 
 ### Supported Execution Languages
 
 Referenced from the [Piston documentation](https://github.com/engineer-man/piston#Supported-Languages).
 
-`awk`,`bash`,`befunge93`,`brachylog`,`brainfuck`,`bqn`,`c`,`c++`,`cjam`,`clojure`,`cobol`,`coffeescript`,`cow`,`crystal`,`csharp`,`csharp.net`,`d`,`dart`,`dash`,`dragon`,`elixir`,`emacs`,`emojicode`,`erlang`,`file`,`forte`,`forth`,`fortran`,`freebasic`,`fsharp.net`,`fsi`,`go`,`golfscript`,`groovy`,`haskell`,`husk`,`iverilog`,`japt`,`java`,`javascript`,`jelly`,`julia`,`kotlin`,`lisp`,`llvm_ir`,`lolcode`,`lua`,`matl`,`nasm`,`nasm64`,`nim`,`ocaml`,`octave`,`osabie`,`paradoc`,`pascal`,`perl`,`php`,`ponylang`,`powershell`,`prolog`,`pure`,`pyth`,`python`,`python2`,`racket`,`raku`,`retina`,`rockstar`,`rscript`,`ruby`,`rust`,`samarium`,`scala`,`smalltalk`,`sqlite3`,`swift`,`typescript`,`basic`,`basic.net`,`vlang`,`vyxal`,`yeethon`,`zig`,
+`awk`, `bash`, `befunge93`, `brachylog`, `brainfuck`, `bqn`, `c`, `c++`, `cjam`, `clojure`, `cobol`, `coffeescript`, `cow`, `crystal`, `csharp`, `csharp.net`, `d`, `dart`, `dash`, `dragon`, `elixir`, `emacs`, `emojicode`, `erlang`, `file`, `forte`, `forth`, `fortran`, `freebasic`, `fsharp.net`, `fsi`, `go`, `golfscript`, `groovy`, `haskell`, `husk`, `iverilog`, `japt`, `java`, `javascript`, `jelly`, `julia`, `kotlin`, `lisp`, `llvm_ir`, `lolcode`, `lua`, `matl`, `nasm`, `nasm64`, `nim`, `ocaml`, `octave`, `osabie`, `paradoc`, `pascal`, `perl`, `php`, `ponylang`, `powershell`, `prolog`, `pure`, `pyth`, `python`, `python2`, `racket`, `raku`, `retina`, `rockstar`, `rscript`, `ruby`, `rust`, `samarium`, `scala`, `smalltalk`, `sqlite3`, `swift`, `typescript`, `basic`, `basic.net`, `vlang`, `vyxal`, `yeethon`, `zig`,
 
 ### Keyboard Shortcuts in Menu Bar
 
@@ -1151,7 +1151,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 | Feature | Description | Shortcut / Markdown Code |
 |---------|-------------|---------------|
-| Open Note | Open a text file in the Notepad. Supports `txt`,`md`,`mdx`,`xbl`,`xsl`,`vtt`,`text`,`xslt`,`ehtml`,`sh`,`html`,`ics`,`mjs`,`js`,`shtml`,`xml`,`csv`,`css`,`shtm`,`htm` | |
+| Open Note | Open a text file in the Notepad. Supports `txt`, `md`, `mdx`, `xbl`, `xsl`, `vtt`, `text`, `xslt`, `ehtml`, `sh`, `html`, `ics`, `mjs`, `js`, `shtml`, `xml`, `csv`, `css`, `shtm`, `htm` | |
 | Save Note | Save the current note to as a markdown (`md`) file | |
 | Undo | Undo the last action | `ctrl + z` |
 | Redo | Redo the last undone action | `ctrl + y` or `ctrl + shift + z` |
@@ -1170,8 +1170,8 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Insert image | Insert an image. Supports only image URLs | `![Alt Text](image-url "title")` or `<img height="..." width="..." alt="..." src="...">` |
 | Insert table | Insert a table | |
 | Insert thematic break | Insert a thematic break | `***` |
-| Insert code block | Insert a code block. Supports `c`,`cpp`,`cs`,`css`,`go`,`html`,`java`,`js`,`json`,`jsx`,`md`,`php`,`py`,`rs`,`sh`,`ts`,`tsx`,`yaml` | \`\`\`py [code]\`\`\` |
-| Insert admonition | Insert an admonition. Supports `note`,`tip`,`danger`,`info`,`caution` | `:::note [text] :::` |
+| Insert code block | Insert a code block. Supports languages: `apl`, `asn1`, `asterisk`, `brainfuck`, `c`, `cpp`, `csharp`, `ceylon`, `clojure`, `gss`, `cmake`, `cobol`, `coffeescript`, `commonlisp`, `crystal`, `css`, `cypher`, `cython`, `d`, `dart`, `django`, `dockerfile`, `diff`, `dtd`, `dylan`, `ebnf`, `ecl`, `eiffel`, `elixir`, `elm`, `erlang`, `factor`, `fcl`, `forth`, `fortran`, `fsharp`, `gas`, `gherkin`, `go`, `groovy`, `haml`, `handlebars`, `haskell`, `haxe`, `html`, `http`, `idl`, `java`, `js`, `jsx`, `jinja2`, `julia`, `kotlin`, `less`, `livescript`, `lua`, `md`, `mathematica`, `mbox`, `mirc`, `modelica`, `mscgen`, `mumps`, `nginx`, `nsis`, `ntriples`, `objc`, `ocaml`, `octave`, `oz`, `pascal`, `pegjs`, `perl`, `pgp`, `php`, `pig`, `powershell`, `properties`, `protobuf`, `pug`, `puppet`, `python`, `q`, `r`, `rpm`, `rst`, `ruby`, `rust`, `sas`, `sass`, `spreadsheet`, `scala`, `scheme`, `scss`, `shell`, `sieve`, `slim`, `smalltalk`, `smarty`, `solr`, `soy`, `stylus`, `sql`, `sparql`, `squirrel`, `swift`, `stex`, `tcl`, `textile`, `tiddlywiki`, `tiki`, `toml`, `tornado`, `troff`, `tsx`, `ttcn`, `turtle`, `twig`, `vb`, `vbscript`, `velocity`, `verilog`, `vhdl`, `vue`, `webidl`, `wast`, `xml`, `xquery`, `yacas`, `yaml`, `z80` | `[language] [code]` |
+| Insert admonition | Insert an admonition. Supports `note`, `tip`, `danger`, `info`, `caution` | `:::note [text] :::` |
 | Rich text mode| Switch to rich text mode | |
 | Diff mode | Switch to diff mode | |
 | Source mode | Switch to source mode (markdown) | |
