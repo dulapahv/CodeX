@@ -1128,24 +1128,24 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 | Library | Version |
 |---------|---------|
-| Tailwind CSS | v3.x |
-| Animate.css | v4.1.1 |
-| AOS | v2.3.1 |
+| Tailwind CSS | v4.x |
+| Animate.css | v4.x |
+| AOS | v2.x |
 | Swiper | v11.x |
-| HTMX | v2.0.4 |
-| Lucide Icons | latest |
+| HTMX | v2.x |
+| Lucide Icons | v0.x |
 | Alpine.js | v3.x |
-| GSAP | v3.12.5 |
+| GSAP | v3.x |
 | Popper | v2.x |
 | Tippy.js | v6.x |
 | React | v18.x |
 | React DOM | v18.x |
-| PropTypes | latest |
-| Recharts | latest |
-| Chart.js | latest |
-| Lodash | v4.17.21 |
-| Day.js | v1.11.10 |
-| Sortable.js | v1.15.0 |
+| PropTypes | v15.x |
+| Recharts | v2.x |
+| Chart.js | v4.x |
+| Lodash | v4.x |
+| Day.js | v1.x |
+| Sortable.js | v1.x |
 
 ### Notepad Features and Markdown Syntax
 
