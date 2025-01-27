@@ -51,11 +51,11 @@ interface AboutDialogRef {
 }
 
 interface AboutDialogProps {
-  className?: string;
+  forceDark?: boolean;
 }
 
 const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
-  ({ className = '' }, ref) => {
+  ({ forceDark = false }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isImgLoaded, setIsImgLoaded] = useState(false);
 
@@ -83,7 +83,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
     if (isDesktop) {
       return (
         <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="About Kasca">
-          <DialogContent className={cn('max-w-2xl', className)}>
+          <DialogContent className={cn('max-w-2xl', forceDark && 'dark')}>
             <DialogHeader className="text-left text-foreground">
               <DialogTitle>{SITE_NAME}</DialogTitle>
               <DialogDescription className="pt-2 text-base">
@@ -125,7 +125,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
                 className="grid grid-cols-4 gap-2"
                 aria-label="External links"
               >
-                <ExternalLink />
+                <ExternalLink forceDark={forceDark} />
               </nav>
             </div>
 
@@ -183,7 +183,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               Made with 💕 by <span className="font-medium">dulapahv</span>
             </p>
             <nav className="grid grid-cols-2 gap-2" aria-label="External links">
-              <ExternalLink />
+              <ExternalLink forceDark={forceDark} />
             </nav>
           </div>
 

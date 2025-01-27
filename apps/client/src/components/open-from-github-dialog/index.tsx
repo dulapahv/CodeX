@@ -22,6 +22,7 @@ import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
+import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 
 import { loginWithGithub } from '@/lib/utils';
@@ -67,6 +68,9 @@ const OpenFromGithubDialog = forwardRef<
   OpenFromGithubDialogRef,
   OpenFromGithubDialogProps
 >(({ monaco, editor }, ref) => {
+  const { resolvedTheme } = useTheme();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
     null,
@@ -77,8 +81,6 @@ const OpenFromGithubDialog = forwardRef<
   const [githubUser, setGithubUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingContent, setIsFetchingContent] = useState(false);
-
-  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -204,7 +206,7 @@ const OpenFromGithubDialog = forwardRef<
             aria-describedby="login-prompt"
           >
             <Image
-              src="/images/github.svg"
+              src={`/images/${resolvedTheme === 'light' ? 'octocat' : 'octocat-white'}.svg`}
               alt="GitHub logo"
               className="mr-2"
               width={16}

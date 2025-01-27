@@ -45,7 +45,7 @@ const AboutButton = () => {
           About
         </TooltipContent>
       </Tooltip>
-      <AboutDialog ref={aboutDialogRef} className="dark" />
+      <AboutDialog ref={aboutDialogRef} forceDark />
     </>
   );
 };

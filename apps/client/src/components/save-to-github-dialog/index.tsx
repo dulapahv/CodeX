@@ -21,6 +21,7 @@ import Image from 'next/image';
 
 import { Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
+import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 
 import { loginWithGithub } from '@/lib/utils';
@@ -68,15 +69,7 @@ const SaveToGithubDialog = forwardRef<
   SaveToGithubDialogRef,
   SaveToGithubDialogProps
 >(({ editor }, ref) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
-    null,
-  );
-  const [repo, setRepo] = useState('');
-  const [branch, setBranch] = useState('');
-  const [githubUser, setGithubUser] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+  const { resolvedTheme } = useTheme();
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const {
     register,
@@ -87,6 +80,15 @@ const SaveToGithubDialog = forwardRef<
     watch,
     formState: { errors, isSubmitting },
   } = useCommitForm();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
+    null,
+  );
+  const [repo, setRepo] = useState('');
+  const [branch, setBranch] = useState('');
+  const [githubUser, setGithubUser] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useLayoutEffect(() => {
     if (isOpen) {
@@ -170,7 +172,7 @@ const SaveToGithubDialog = forwardRef<
             aria-describedby="login-prompt"
           >
             <Image
-              src="/images/github.svg"
+              src={`/images/${resolvedTheme === 'light' ? 'octocat' : 'octocat-white'}.svg`}
               alt="GitHub logo"
               className="mr-2"
               width={16}

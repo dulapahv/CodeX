@@ -22,6 +22,7 @@ import Image from 'next/image';
 import type { Monaco } from '@monaco-editor/react';
 import { Unplug } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
+import { useTheme } from 'next-themes';
 
 import { cn, loginWithGithub } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,8 @@ interface SettingsSheetProps {
 
 const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
   ({ monaco, editor }, ref) => {
+    const { resolvedTheme } = useTheme();
+
     const [isOpen, setIsOpen] = useState(false);
     const [githubUser, setGithubUser] = useState<GithubUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -215,7 +218,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 aria-describedby="github-section"
               >
                 <Image
-                  src="/images/github.svg"
+                  src={`/images/${resolvedTheme === 'light' ? 'octocat' : 'octocat-white'}.svg`}
                   alt="GitHub logo"
                   className="mr-2"
                   width={18}
