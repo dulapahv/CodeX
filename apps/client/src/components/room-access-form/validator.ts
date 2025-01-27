@@ -14,7 +14,7 @@ import { NAME_MAX_LENGTH } from '@/lib/constants';
 
 const nameSchema = z
   .string()
-  .transform((value) => value.replace(/\s+/g, ''))
+  .transform((value) => value.trim())
   .pipe(
     z
       .string()
