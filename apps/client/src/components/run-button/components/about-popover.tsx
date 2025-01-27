@@ -31,7 +31,7 @@ const AboutPopover = () => (
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 animate-fade-in-top rounded-sm p-0 hover:bg-transparent
+            className="animate-fade-in-top size-7 rounded-sm p-0 hover:bg-transparent
               [&>svg]:transition-opacity hover:[&>svg]:opacity-70"
           >
             <Info className="size-4 text-[color:var(--panel-text)]" />
@@ -47,7 +47,7 @@ const AboutPopover = () => (
       <div className="space-y-4">
         <div className="space-y-2">
           <h4 className="font-medium">Code Execution</h4>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground space-y-2 text-sm">
             <p>
               Use the dropdown menu to add command-line arguments and input to
               your program.
@@ -61,8 +61,8 @@ const AboutPopover = () => (
                 href="https://github.com/dulapahv/Kasca/blob/main/manual.md#supported-execution-languages"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-foreground underline underline-offset-4 !transition-all
-                  hover:text-muted-foreground"
+                className="text-foreground hover:text-muted-foreground font-medium underline
+                  underline-offset-4 !transition-all"
               >
                 manual
               </a>
@@ -74,15 +74,15 @@ const AboutPopover = () => (
 
         <Separator />
 
-        <div className="text-xs text-muted-foreground">
+        <div className="text-muted-foreground text-xs">
           <p>
             Powered by{' '}
             <a
               href="https://github.com/engineer-man/piston"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground underline underline-offset-2 !transition-all
-                hover:text-muted-foreground"
+              className="text-foreground hover:text-muted-foreground font-medium underline
+                underline-offset-2 !transition-all"
             >
               Piston
             </a>

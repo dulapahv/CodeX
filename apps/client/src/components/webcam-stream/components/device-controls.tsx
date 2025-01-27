@@ -173,7 +173,7 @@ const DeviceControls = ({
           <TooltipTrigger asChild>
             <SelectTrigger
               className={cn(
-                `h-10 w-5 rounded-l-none border-0 p-0 transition-all hover:bg-foreground/20
+                `hover:bg-foreground/20 h-10 w-5 rounded-l-none border-0 p-0 transition-all
                 [&>svg]:w-full [&>svg]:rotate-180`,
                 disabled && 'cursor-not-allowed opacity-50',
               )}
@@ -190,7 +190,7 @@ const DeviceControls = ({
           {!hasValidDevices ? (
             <SelectItem
               value="default"
-              className="italic text-muted-foreground"
+              className="text-muted-foreground italic"
             >
               Allow {label.toLowerCase()} access...
             </SelectItem>

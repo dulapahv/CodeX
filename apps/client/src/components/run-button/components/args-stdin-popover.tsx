@@ -74,8 +74,10 @@ const ArgsInputPopover = ({
               className={cn(
                 `relative size-7 rounded-l-none border-l
                 border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)]
-                text-[color:var(--panel-text-accent)] transition-opacity hover:text-[color:var(--panel-text-accent)]
-                hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50`,
+                text-[color:var(--panel-text-accent)] transition-opacity
+                hover:bg-[color:var(--toolbar-accent)]
+                hover:text-[color:var(--panel-text-accent)] hover:!opacity-80
+                disabled:!opacity-50`,
                 disabled && 'bg-red-600',
               )}
               disabled={disabled}
@@ -84,7 +86,8 @@ const ArgsInputPopover = ({
               <ChevronDown className="size-4" />
               {hasInput && (
                 <span
-                  className="absolute -right-0.5 -top-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
+                  className="animate-scale-up-center absolute -right-0.5 -top-0.5 size-2 rounded-full
+                    bg-red-500"
                   aria-hidden="true"
                 />
               )}
@@ -119,8 +122,8 @@ const ArgsInputPopover = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-1 size-6 rounded-full 
-                    text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6
+                    rounded-full"
                   onClick={clearArgs}
                   aria-label="Clear arguments"
                 >
@@ -144,8 +147,8 @@ const ArgsInputPopover = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-1 size-6 rounded-full 
-                    text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6
+                    rounded-full"
                   onClick={clearStdin}
                   aria-label="Clear program input"
                 >
@@ -155,7 +158,7 @@ const ArgsInputPopover = ({
             </div>
           </div>
 
-          <div className="text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-xs">
             <p className="font-medium">Example:</p>
             <ul className="font-mono">
               <li>input1</li>

@@ -303,8 +303,8 @@ export default function Room() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             className={cn(
-              'h-[calc(100%-24px)] animate-fade-in-left [&>div]:h-full',
-              monaco && editor && 'border-t border-muted-foreground',
+              'animate-fade-in-left h-[calc(100%-24px)] [&>div]:h-full',
+              monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
               !showNotepad && 'hidden',
             )}
@@ -331,7 +331,7 @@ export default function Room() {
               className="!h-[calc(100%-24px)] overflow-clip"
             >
               <ResizablePanel
-                className="z-[1] animate-fade-in"
+                className="animate-fade-in z-[1]"
                 role="region"
                 aria-label="Code Editor"
                 defaultSize={75}
@@ -340,7 +340,7 @@ export default function Room() {
                 <ResizablePanelGroup
                   direction="horizontal"
                   className={cn(
-                    monaco && editor && 'border-t border-muted-foreground',
+                    monaco && editor && 'border-muted-foreground border-t',
                   )}
                 >
                   <ResizablePanel defaultSize={60} minSize={10}>
@@ -410,8 +410,8 @@ export default function Room() {
           />
           <ResizablePanel
             className={cn(
-              'h-[calc(100%-24px)] animate-fade-in-right',
-              monaco && editor && 'border-t border-muted-foreground',
+              'animate-fade-in-right h-[calc(100%-24px)]',
+              monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
               !showWebcam && 'hidden',
             )}
@@ -430,7 +430,7 @@ export default function Room() {
           role="status"
           aria-live="polite"
         >
-          <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
+          <Alert className="bg-background/50 flex max-w-md gap-x-2 backdrop-blur">
             <Spinner className="size-6" />
             <div>
               <AlertTitle>Loading session</AlertTitle>

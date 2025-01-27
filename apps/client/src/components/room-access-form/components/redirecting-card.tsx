@@ -13,12 +13,12 @@ import { Spinner } from '@/components/spinner';
 
 export const RedirectingCard = () => (
   <div
-    className="w-full max-w-md animate-fade-in backdrop-blur-sm"
+    className="animate-fade-in w-full max-w-md backdrop-blur-sm"
     role="status"
     aria-live="polite"
   >
     <Alert
-      className="flex gap-x-2 bg-background/50"
+      className="bg-background/50 flex gap-x-2"
       aria-labelledby="redirect-title"
       aria-describedby="redirect-description"
     >

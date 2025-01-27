@@ -324,7 +324,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search
-            className="absolute left-2.5 top-3 size-4 text-muted-foreground"
+            className="text-muted-foreground absolute left-2.5 top-3 size-4"
             aria-hidden="true"
           />
           <Input
@@ -381,7 +381,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             role="status"
             aria-live="polite"
           >
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {search ? `No settings found.` : 'No settings available.'}
             </p>
           </div>

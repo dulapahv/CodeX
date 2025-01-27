@@ -47,8 +47,8 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
             aria-expanded="false"
             variant="ghost"
             size="icon"
-            className="size-7 animate-fade-in-top rounded-sm p-0 text-[color:var(--toolbar-foreground)]
-              hover:!text-foreground"
+            className="animate-fade-in-top hover:!text-foreground size-7 rounded-sm p-0
+              text-[color:var(--toolbar-foreground)]"
             onClick={handleButtonClick}
           >
             <Settings className="size-4" aria-hidden="true" />

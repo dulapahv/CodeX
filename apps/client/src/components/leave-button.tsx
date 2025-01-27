@@ -47,7 +47,7 @@ const LeaveButton = ({ className }: LeaveButtonProps) => {
             size="icon"
             variant="ghost"
             className={cn(
-              'size-7 animate-fade-in-top rounded-sm p-0',
+              'animate-fade-in-top size-7 rounded-sm p-0',
               className,
             )}
             onClick={handleButtonClick}

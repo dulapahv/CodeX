@@ -88,7 +88,7 @@ const RepoBrowser = memo(
       () => (
         <Tree
           data={treeData}
-          className="h-full animate-fade-in"
+          className="animate-fade-in h-full"
           onSelectChange={handleSelectChangeCallback}
         />
       ),
@@ -103,7 +103,7 @@ const RepoBrowser = memo(
       >
         <div className="relative border-b">
           <Search
-            className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground absolute left-4 top-1/2 size-4 -translate-y-1/2"
             aria-hidden="true"
           />
           <Input
@@ -111,7 +111,7 @@ const RepoBrowser = memo(
             value={text}
             onChange={handleSearchChange}
             placeholder="Search repositories..."
-            className="border-transparent pl-10 focus-visible:border-input"
+            className="focus-visible:border-input border-transparent pl-10"
             type="search"
             role="searchbox"
             aria-label="Search repositories"

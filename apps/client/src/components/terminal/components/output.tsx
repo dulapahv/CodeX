@@ -30,7 +30,7 @@ const Output = ({ result }: OutputProps) => {
   return (
     <div>
       <div className="flex">
-        <span className="mr-4 text-muted-foreground">
+        <span className="text-muted-foreground mr-4">
           [{formatTimestamp(timestamp)}]
         </span>
         <div className="flex-1">

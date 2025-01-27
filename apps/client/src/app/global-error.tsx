@@ -55,7 +55,7 @@ URL: ${window.location.href}`;
             <AlertDescription className="text-muted-foreground">
               A critical error has occurred. We apologize for the inconvenience.
               {error.digest && (
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-2 text-sm">
                   Error ID: {error.digest}
                 </p>
               )}

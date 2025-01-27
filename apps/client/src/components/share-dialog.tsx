@@ -70,10 +70,10 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
       <Label htmlFor="room-id" className="text-sm">
         Room ID
       </Label>
-      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+      <div className="bg-secondary flex w-full items-center gap-2 rounded-md p-2 md:p-3">
         <code
           id="room-id"
-          className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
+          className="text-md flex-1 break-all font-medium sm:text-lg md:text-2xl"
           data-testid="room-id-text"
         >
           {roomId}
@@ -82,17 +82,17 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
           onClick={handleCopy}
           size="icon"
           variant="ghost"
-          className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+          className="hover:bg-secondary-foreground/10 size-6 shrink-0 md:size-10"
           data-testid="room-id-copy-button"
           aria-label={copied ? 'Room ID copied' : 'Copy Room ID'}
         >
           {copied ? (
             <Check
-              className="size-4 animate-scale-up-center"
+              className="animate-scale-up-center size-4"
               aria-hidden="true"
             />
           ) : (
-            <Copy className="size-4 animate-fade-in" aria-hidden="true" />
+            <Copy className="animate-fade-in size-4" aria-hidden="true" />
           )}
         </Button>
       </div>
@@ -120,10 +120,10 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
       <Label htmlFor="invite-link" className="text-sm">
         Invite Link
       </Label>
-      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+      <div className="bg-secondary flex w-full items-center gap-2 rounded-md p-2 md:p-3">
         <code
           id="invite-link"
-          className="flex-1 break-all text-md font-medium sm:text-lg md:text-2xl"
+          className="text-md flex-1 break-all font-medium sm:text-lg md:text-2xl"
           data-testid="invite-link-text"
         >
           {`${window.location.origin}/room/${roomId}`}
@@ -132,17 +132,17 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
           onClick={handleCopy}
           size="icon"
           variant="ghost"
-          className="shrink-0 hover:bg-secondary-foreground/10 size-6 md:size-10"
+          className="hover:bg-secondary-foreground/10 size-6 shrink-0 md:size-10"
           data-testid="invite-link-copy-button"
           aria-label={copied ? 'Invite link copied' : 'Copy invite link'}
         >
           {copied ? (
             <Check
-              className="size-4 animate-scale-up-center"
+              className="animate-scale-up-center size-4"
               aria-hidden="true"
             />
           ) : (
-            <Copy className="size-4 animate-fade-in" aria-hidden="true" />
+            <Copy className="animate-fade-in size-4" aria-hidden="true" />
           )}
         </Button>
       </div>

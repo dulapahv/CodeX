@@ -173,7 +173,7 @@ const LanguageSelection = memo(
                     <div className="flex flex-col">
                       <span className="font-medium">{language.alias}</span>
                       {language.extensions.length > 0 && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           {language.extensions.join(', ')}
                         </span>
                       )}

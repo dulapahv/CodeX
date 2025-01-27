@@ -58,7 +58,10 @@ const DesktopMenu = ({
     >
       {menuConfig.map((group) => (
         <MenubarMenu key={group.label}>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+          <MenubarTrigger
+            className="hover:bg-accent hover:text-accent-foreground px-2 py-1 font-normal
+              transition-colors"
+          >
             {group.label}
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>

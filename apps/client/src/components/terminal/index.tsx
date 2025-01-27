@@ -87,8 +87,8 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
       </div>
       <div ref={terminalRef} className="h-full overflow-y-auto p-4">
         <div
-          className="flex flex-col space-y-2 divide-y whitespace-pre-wrap font-mono text-sm
-            *:border-muted-foreground/40 *:pt-2"
+          className="*:border-muted-foreground/40 flex flex-col space-y-2 divide-y
+            whitespace-pre-wrap font-mono text-sm *:pt-2"
         >
           <WelcomeMsg />
           {results.map((result, index) => (

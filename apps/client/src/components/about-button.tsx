@@ -32,7 +32,7 @@ const AboutButton = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+            className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
             aria-label="About"
             type="button"
             aria-haspopup="dialog"

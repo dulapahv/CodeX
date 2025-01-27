@@ -37,7 +37,7 @@ export default function Page() {
 
   return (
     <main className="fixed left-0 top-0 flex size-full items-center justify-center p-2">
-      <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
+      <Alert className="bg-background/50 flex max-w-md gap-x-2 backdrop-blur">
         <Spinner className="size-6" />
         <div>
           <AlertTitle>Processing authentication...</AlertTitle>

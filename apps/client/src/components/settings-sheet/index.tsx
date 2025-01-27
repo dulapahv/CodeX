@@ -146,7 +146,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               <Label className="text-base" id="github-section">
                 GitHub Connection
               </Label>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Connect to GitHub to save your work and open files from your
                 repositories.
               </div>
@@ -165,7 +165,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 role="status"
                 aria-label={`Connected to GitHub as ${githubUser.username}`}
               >
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   Connected to GitHub as:
                 </div>
                 <div className="flex items-center justify-between gap-4">
@@ -232,15 +232,15 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               <Label className="text-base" id="editor-section">
                 Editor Settings
               </Label>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Customize the appearance of the editor and other settings. For
                 more information on editor settings, refer to the{' '}
                 <a
                   href="https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-foreground underline underline-offset-2 !transition-all
-                    hover:text-muted-foreground"
+                  className="text-foreground hover:text-muted-foreground font-medium underline
+                    underline-offset-2 !transition-all"
                 >
                   Monaco Editor documentation
                 </a>

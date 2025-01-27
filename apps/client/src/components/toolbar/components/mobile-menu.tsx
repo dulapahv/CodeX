@@ -56,7 +56,7 @@ const MobileMenu = ({
   }, []);
   return (
     <Menubar
-      className="flex h-fit animate-fade-in border-none bg-transparent p-0 md:hidden"
+      className="animate-fade-in flex h-fit border-none bg-transparent p-0 md:hidden"
       ref={menubarRef}
     >
       <MenubarMenu>

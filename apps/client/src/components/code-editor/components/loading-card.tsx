@@ -18,7 +18,7 @@ export const LoadingCard = memo(() => (
     className="fixed left-0 top-0 flex size-full items-center justify-center p-2
       backdrop-blur-sm"
   >
-    <Alert className="flex max-w-md gap-x-2 bg-background/50">
+    <Alert className="bg-background/50 flex max-w-md gap-x-2">
       <Spinner className="size-6" />
       <div>
         <AlertTitle>Setting up editor</AlertTitle>

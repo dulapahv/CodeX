@@ -161,7 +161,7 @@ const SaveToGithubDialog = forwardRef<
       ) : !githubUser ? (
         <>
           <p
-            className="text-center text-sm text-muted-foreground"
+            className="text-muted-foreground text-center text-sm"
             id="login-prompt"
           >
             Please connect to GitHub to save your work to a repository.
@@ -269,7 +269,7 @@ const SaveToGithubDialog = forwardRef<
             <AlertDialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
               {githubUser && (
                 <div className="w-full">
-                  <p className="break-all text-xs text-muted-foreground">
+                  <p className="text-muted-foreground break-all text-xs">
                     Save to{' '}
                     <span className="font-semibold">
                       {getDisplayPath(
@@ -281,7 +281,7 @@ const SaveToGithubDialog = forwardRef<
                       )}
                     </span>
                   </p>
-                  <div className="flex flex-wrap items-center text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex flex-wrap items-center text-xs">
                     <span>To disconnect GitHub, go to</span>
                     <span className="flex items-center font-semibold">
                       <Settings
@@ -361,7 +361,7 @@ const SaveToGithubDialog = forwardRef<
               {githubUser && (
                 <>
                   <div className="w-full">
-                    <p className="break-all text-xs text-muted-foreground">
+                    <p className="text-muted-foreground break-all text-xs">
                       Saving to{' '}
                       <span className="font-semibold">
                         {getDisplayPath(
@@ -373,7 +373,7 @@ const SaveToGithubDialog = forwardRef<
                         )}
                       </span>
                     </p>
-                    <div className="flex flex-wrap items-center text-xs text-muted-foreground">
+                    <div className="text-muted-foreground flex flex-wrap items-center text-xs">
                       <span>To disconnect GitHub, go to</span>
                       <span className="flex items-center font-semibold">
                         <Settings

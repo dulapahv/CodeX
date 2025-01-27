@@ -146,7 +146,7 @@ const LatencyTest = () => {
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
-      <Button variant="link" className="mt-4 px-6 text-foreground" asChild>
+      <Button variant="link" className="text-foreground mt-4 px-6" asChild>
         <Link href={BASE_CLIENT_URL}>
           <ArrowLeft className="mr-2 size-4" />
           Go back
@@ -194,7 +194,7 @@ const LatencyTest = () => {
           </div>
 
           {error && (
-            <div className="mt-2 text-sm text-destructive">Error: {error}</div>
+            <div className="text-destructive mt-2 text-sm">Error: {error}</div>
           )}
 
           {results.length > 0 && (

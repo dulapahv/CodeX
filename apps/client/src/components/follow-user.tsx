@@ -89,7 +89,7 @@ const FollowUser = ({ users }: UserListProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 animate-fade-in-top rounded-sm p-0"
+              className="animate-fade-in-top size-7 rounded-sm p-0"
               aria-label="Follow user"
             >
               {value === null ? (
@@ -116,7 +116,7 @@ const FollowUser = ({ users }: UserListProps) => {
           <Label className="px-3 pt-3 text-sm font-medium">Follow user</Label>
           <CommandInput placeholder="Search users..." />
           <CommandList>
-            <CommandEmpty className="p-3 text-sm text-muted-foreground">
+            <CommandEmpty className="text-muted-foreground p-3 text-sm">
               No users found.
             </CommandEmpty>
             <CommandGroup>

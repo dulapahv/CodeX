@@ -41,7 +41,7 @@ export const onSubmit = (
         return (
           <div className="flex flex-col font-medium [font-size:13px] [line-height:1.5rem]">
             <p>Changes committed successfully!</p>
-            <div className="flex items-center gap-x-1 text-accent-foreground">
+            <div className="text-accent-foreground flex items-center gap-x-1">
               <a
                 href={result.content.html_url}
                 target="_blank"

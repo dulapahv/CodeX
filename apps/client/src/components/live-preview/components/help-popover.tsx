@@ -49,7 +49,7 @@ const HelpPopover = () => (
       <div className="space-y-4">
         <div className="space-y-2">
           <h4 className="font-medium leading-none">Live Preview</h4>
-          <div className="space-y-4 text-sm text-muted-foreground">
+          <div className="text-muted-foreground space-y-4 text-sm">
             <div>
               <h5 className="mb-2 font-medium">Usage Instructions</h5>
               <ul className="list-inside list-disc space-y-1">
@@ -57,21 +57,21 @@ const HelpPopover = () => (
                 <li>Tailwind CSS utility classes are available</li>
                 <li>
                   Add custom styles with{' '}
-                  <code className="rounded bg-muted px-1 text-xs">
+                  <code className="bg-muted rounded px-1 text-xs">
                     &lt;style&gt;
                   </code>{' '}
                   tags
                 </li>
                 <li>
                   Add custom scripts with{' '}
-                  <code className="rounded bg-muted px-1 text-xs">
+                  <code className="bg-muted rounded px-1 text-xs">
                     &lt;script&gt;
                   </code>{' '}
                   tags
                 </li>
                 <li>
                   Add external libraries in{' '}
-                  <code className="rounded bg-muted px-1 text-xs">
+                  <code className="bg-muted rounded px-1 text-xs">
                     &lt;head&gt;
                   </code>{' '}
                   tags
@@ -81,8 +81,8 @@ const HelpPopover = () => (
                     href="https://github.com/dulapahv/Kasca/blob/main/manual.md#live-preview-example"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-foreground underline underline-offset-2
-                      !transition-all hover:text-muted-foreground"
+                    className="text-foreground hover:text-muted-foreground inline-flex items-center gap-1
+                      underline underline-offset-2 !transition-all"
                   >
                     See live preview examples
                     <span className="sr-only">(opens in new tab)</span>
@@ -93,7 +93,7 @@ const HelpPopover = () => (
 
             <div>
               <h5 className="mb-2 font-medium">Pre-installed Libraries</h5>
-              <div className="overflow-y-auto rounded border border-border p-2">
+              <div className="border-border overflow-y-auto rounded border p-2">
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                   {PRE_INSTALLED_LIBS.map((lib) => (
                     <li
@@ -101,7 +101,7 @@ const HelpPopover = () => (
                       className="flex items-center justify-between"
                     >
                       <span>{lib.name}</span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         v{lib.version}
                       </span>
                     </li>
@@ -114,15 +114,15 @@ const HelpPopover = () => (
 
         <Separator />
 
-        <div className="text-xs text-muted-foreground">
+        <div className="text-muted-foreground text-xs">
           <p>
             Powered by{' '}
             <a
               href="https://sandpack.codesandbox.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground underline underline-offset-2 !transition-all
-                hover:text-muted-foreground"
+              className="text-foreground hover:text-muted-foreground font-medium underline
+                underline-offset-2 !transition-all"
             >
               Sandpack
             </a>

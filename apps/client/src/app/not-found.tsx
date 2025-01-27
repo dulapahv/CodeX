@@ -29,7 +29,7 @@ export default function NotFound() {
           Sorry, we couldn&apos;t find the page you&apos;re looking for. Please
           check the URL or navigate back to the homepage.
         </AlertDescription>
-        <div className="flex mt-6 justify-end">
+        <div className="mt-6 flex justify-end">
           <Button variant="default" asChild className="gap-2">
             <Link href={BASE_CLIENT_URL}>
               <Home className="size-4" />

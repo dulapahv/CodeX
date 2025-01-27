@@ -51,7 +51,7 @@ Stack: ${error.stack || 'No stack trace available'}`;
           {error.message ||
             'An unexpected error occurred. Please try again later.'}
           {error.digest && (
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-sm">
               Error ID: {error.digest}
             </p>
           )}

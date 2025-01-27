@@ -20,7 +20,7 @@ interface BackButtonProps {
 const BackButton = ({ onClick, disabled }: BackButtonProps) => (
   <Button
     variant="link"
-    className="size-fit p-0 text-foreground"
+    className="text-foreground size-fit p-0"
     size="sm"
     onClick={onClick}
     disabled={disabled}

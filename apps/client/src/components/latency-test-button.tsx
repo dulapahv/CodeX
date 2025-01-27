@@ -32,7 +32,7 @@ const LatencyTestButton = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+            className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
             onClick={() => router.push('/test/latency')}
           >
             <Gauge className="size-5" />

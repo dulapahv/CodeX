@@ -61,7 +61,7 @@ const StatusBar = memo(function StatusBar({
   return (
     <section
       className={cn(
-        `fixed inset-x-0 bottom-0 h-6 animate-fade-in
+        `animate-fade-in fixed inset-x-0 bottom-0 h-6
         bg-[color:var(--toolbar-bg-primary)] py-1`,
         className,
       )}
@@ -69,9 +69,8 @@ const StatusBar = memo(function StatusBar({
       aria-label="Editor status bar"
     >
       <div
-        className={
-          'flex items-center justify-end gap-x-2 px-2 text-xs text-[color:var(--status-bar-text)]'
-        }
+        className={`flex items-center justify-end gap-x-2 px-2 text-xs
+          text-[color:var(--status-bar-text)]`}
       >
         <div className="flex items-center">
           <MemoizedLanguageLabel />
