@@ -94,7 +94,7 @@ export default async function Page({ searchParams }: PageProps) {
         {/* Right Section - Showcase Grid */}
         <div
           className="dark relative flex w-full max-w-5xl flex-1 items-center justify-center
-            overflow-y-auto min-[1189px]:w-7/12 min-[1189px]:pr-8"
+            min-[1189px]:w-7/12 min-[1189px]:pr-8"
         >
           <ShowcaseGrid />
         </div>
