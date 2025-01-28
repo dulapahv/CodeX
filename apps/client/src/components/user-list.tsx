@@ -27,7 +27,7 @@ const UserList = ({ users }: UserListProps) => {
   return (
     <div role="region" aria-label="Active users">
       <ScrollArea
-        className="max-w-16 sm:max-w-28 lg:max-w-52"
+        className="max-w-32 lg:max-w-52"
         aria-label={`${totalUsers} active users in this session`}
       >
         <div className="flex -space-x-2" role="list">
