@@ -276,7 +276,7 @@ export default function Room() {
 
   return (
     <main
-      className="flex h-full min-w-[500px] flex-col overflow-clip"
+      className="flex h-full min-w-[821px] flex-col overflow-clip"
       aria-label="Code Editor Workspace"
     >
       <RemotePointers />

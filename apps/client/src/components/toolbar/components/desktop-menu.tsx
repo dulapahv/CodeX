@@ -53,7 +53,7 @@ const DesktopMenu = ({
 
   return (
     <Menubar
-      className="hidden h-fit border-none bg-transparent p-0 sm:flex"
+      className="h-fit border-none bg-transparent p-0 sm:flex" /* hidden */
       ref={menubarRef}
     >
       {menuConfig.map((group) => (
