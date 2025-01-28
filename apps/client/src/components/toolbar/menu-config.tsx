@@ -300,13 +300,13 @@ export const createMenuConfig = (
         {
           label: 'Zoom In',
           icon: <ZoomIn className="mr-2 size-4" />,
-          shortcut: 'Ctrl+=',
+          shortcut: `${modKey}+=`,
           action: 'zoomIn',
         },
         {
           label: 'Zoom Out',
           icon: <ZoomOut className="mr-2 size-4" />,
-          shortcut: 'Ctrl+-',
+          shortcut: `${modKey}+-`,
           action: 'zoomOut',
         },
         'separator',
