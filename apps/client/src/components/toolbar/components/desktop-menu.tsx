@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/menubar';
 
 import { createMenuConfig } from '../menu-config';
-import type { DesktopMenuProps } from '../types';
+import type { MenuProps } from '../types';
 import { SharedMenuItem } from './shared-menu-item';
 
 const DesktopMenu = ({
@@ -28,7 +28,7 @@ const DesktopMenu = ({
   terminal,
   webcam,
   livePreview,
-}: DesktopMenuProps) => {
+}: MenuProps) => {
   const menuConfig = createMenuConfig(
     modKey,
     notepad,

@@ -22,13 +22,13 @@ import type { ToolbarActions } from '../types';
 interface SharedMenuItemProps {
   item: MenuItem | 'separator';
   actions: ToolbarActions;
-  mobile?: boolean;
+  hideShortcut?: boolean;
 }
 
 export const SharedMenuItem = ({
   item,
   actions,
-  mobile,
+  hideShortcut,
 }: SharedMenuItemProps) => {
   if (item === 'separator') {
     return <MenubarSeparator />;
@@ -50,8 +50,10 @@ export const SharedMenuItem = ({
     <MenubarItem onSelect={() => actions[item.action]()}>
       {item.icon}
       {item.label}
-      {!mobile && item.shortcut && (
-        <MenubarShortcut className="pl-2">{item.shortcut}</MenubarShortcut>
+      {!hideShortcut && item.shortcut && (
+        <MenubarShortcut className="pl-2 max-[486px]:hidden">
+          {item.shortcut}
+        </MenubarShortcut>
       )}
     </MenubarItem>
   );

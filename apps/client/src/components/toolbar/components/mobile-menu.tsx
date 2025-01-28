@@ -23,18 +23,19 @@ import {
 } from '@/components/ui/menubar';
 
 import { createMenuConfig } from '../menu-config';
-import type { MobileMenuProps } from '../types';
+import type { MenuProps } from '../types';
 import { SharedMenuItem } from './shared-menu-item';
 
 const MobileMenu = ({
+  modKey,
   actions,
   notepad,
   terminal,
   webcam,
   livePreview,
-}: MobileMenuProps) => {
+}: MenuProps) => {
   const menuConfig = createMenuConfig(
-    '',
+    modKey,
     notepad,
     terminal,
     webcam,
@@ -75,7 +76,6 @@ const MobileMenu = ({
                     key={typeof item === 'string' ? `sep-${index}` : item.label}
                     item={item}
                     actions={actions}
-                    mobile
                   />
                 ))}
               </MenubarSubContent>

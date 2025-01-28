@@ -283,6 +283,7 @@ const Toolbar = ({
         />
       ) : (
         <MobileMenu
+          modKey={modKey}
           actions={toolbarActions}
           notepad={showNotepad}
           terminal={showTerminal}
