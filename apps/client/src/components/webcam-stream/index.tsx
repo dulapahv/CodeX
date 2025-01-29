@@ -41,12 +41,7 @@ import {
 import { DeviceControls } from './components/device-controls';
 import { VideoControls } from './components/video-controls';
 import type { MediaDevice } from './types';
-import {
-  rotateCamera,
-  toggleCamera,
-  toggleMic,
-  toggleSpeaker,
-} from './utils/controls';
+import { rotateCamera, toggleCamera, toggleMic } from './utils/controls';
 import {
   enumerateDevices,
   handleDevicePermissionGranted,
@@ -267,14 +262,26 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     };
   }, [selectedVideoDevice, selectedAudioInput, selectedAudioOutput]);
 
-  // Handle socket events
+  const toggleSpeaker = (newState: boolean) => {
+    setSpeakerOn(newState);
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, newState);
+
+    // Find all video elements in the component and update their muted state
+    const videoElements = document.querySelectorAll('video');
+    videoElements.forEach((video) => {
+      if (video !== videoRef.current) {
+        // Don't mute local video
+        video.muted = !newState;
+      }
+    });
+  };
+
+  // Socket event effect
   useEffect(() => {
-    // Only emit stream ready after permissions are requested
     if (hasRequestedPermissions) {
       socket.emit(StreamServiceMsg.STREAM_READY);
+      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
     }
-
-    socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       if (hasRequestedPermissions) {
@@ -330,8 +337,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       }
     });
 
-    const currentPeers = peersRef.current;
-
     return () => {
       socket.off(StreamServiceMsg.STREAM_READY);
       socket.off(StreamServiceMsg.USER_READY);
@@ -339,40 +344,25 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.off(StreamServiceMsg.USER_DISCONNECTED);
       socket.off(StreamServiceMsg.MIC_STATE);
       socket.off(StreamServiceMsg.SPEAKER_STATE);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, hasRequestedPermissions]);
 
-      // Don't stop the stream here if it's just a speaker state change
-      if (!speakerOn && streamRef.current) {
-        const audioTracks = streamRef.current.getAudioTracks();
-        audioTracks.forEach((track) => {
-          track.enabled = false;
-        });
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
-
-      // Only cleanup peers, don't stop the stream
-      Object.keys(currentPeers).forEach((userID) => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.keys(peersRef.current).forEach((userID) => {
         cleanupPeer(userID, peersRef, setRemoteStreams);
       });
-    };
-  }, [socket, speakerOn, hasRequestedPermissions]);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-        });
-        streamRef.current = null;
-      }
       socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      handleBeforeUnload();
-    };
-  }, [socket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
@@ -538,7 +528,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           devices={audioOutputDevices}
           selectedDevice={selectedAudioOutput}
           onDeviceSelect={handleAudioOutputSelect}
-          onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn, videoRef)}
+          onToggle={() => toggleSpeaker(!speakerOn)}
           isEnabled={speakerOn}
           onDevicePermissionGranted={async (kind) => {
             await handleDevicePermissionGranted(

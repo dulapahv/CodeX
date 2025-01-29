@@ -112,21 +112,3 @@ export const toggleMic = (
     toast.error(`Error toggling microphone.\n${parseError(error)}`);
   }
 };
-
-// Toggle speaker
-export const toggleSpeaker = (
-  speakerOn: boolean,
-  setSpeakersOn: Dispatch<SetStateAction<boolean>>,
-  videoRef: RefObject<HTMLVideoElement | null>,
-) => {
-  const socket = getSocket();
-  const newSpeakerState = !speakerOn;
-
-  // Only modify the video element's muted state
-  if (videoRef.current) {
-    videoRef.current.muted = !newSpeakerState;
-  }
-
-  setSpeakersOn(newSpeakerState);
-  socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
-};
