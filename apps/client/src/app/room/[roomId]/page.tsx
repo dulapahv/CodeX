@@ -318,6 +318,7 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
+            hitAreaMargins={{ coarse: 16, fine: 8 }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
@@ -354,6 +355,7 @@ export default function Room() {
                   </ResizablePanel>
                   <ResizableHandle
                     aria-label="Resize Handle"
+                    hitAreaMargins={{ coarse: 16, fine: 8 }}
                     className={cn(
                       'bg-muted-foreground',
                       (!monaco || !editor) && 'hidden',
@@ -378,6 +380,7 @@ export default function Room() {
               </ResizablePanel>
               <ResizableHandle
                 aria-label="Resize Handle"
+                hitAreaMargins={{ coarse: 16, fine: 8 }}
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
@@ -402,6 +405,7 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
+            hitAreaMargins={{ coarse: 16, fine: 8 }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
