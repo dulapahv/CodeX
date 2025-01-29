@@ -23,6 +23,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
+import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@kasca/types/message';
 import type { ExecutionResult } from '@kasca/types/terminal';
@@ -318,7 +319,10 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
-            hitAreaMargins={{ coarse: 16, fine: 8 }}
+            hitAreaMargins={{
+              coarse: isMobile ? 32 : 16,
+              fine: isMobile ? 16 : 8,
+            }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
@@ -355,7 +359,10 @@ export default function Room() {
                   </ResizablePanel>
                   <ResizableHandle
                     aria-label="Resize Handle"
-                    hitAreaMargins={{ coarse: 16, fine: 8 }}
+                    hitAreaMargins={{
+                      coarse: isMobile ? 32 : 16,
+                      fine: isMobile ? 16 : 8,
+                    }}
                     className={cn(
                       'bg-muted-foreground',
                       (!monaco || !editor) && 'hidden',
@@ -380,7 +387,10 @@ export default function Room() {
               </ResizablePanel>
               <ResizableHandle
                 aria-label="Resize Handle"
-                hitAreaMargins={{ coarse: 16, fine: 8 }}
+                hitAreaMargins={{
+                  coarse: isMobile ? 32 : 16,
+                  fine: isMobile ? 16 : 8,
+                }}
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
@@ -405,7 +415,10 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
-            hitAreaMargins={{ coarse: 16, fine: 8 }}
+            hitAreaMargins={{
+              coarse: isMobile ? 32 : 16,
+              fine: isMobile ? 16 : 8,
+            }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
