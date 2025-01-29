@@ -75,7 +75,7 @@ const Toolbar = ({
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
   const aboutDialogRef = useRef<AboutDialogRef>(null);
 
-  const modKey = getOS() === 'Mac' || getOS() === 'iOS' ? '⌘' : 'Ctrl';
+  const modKey = getOS() === 'Mac OS' || getOS() === 'iOS' ? '⌘' : 'Ctrl';
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {

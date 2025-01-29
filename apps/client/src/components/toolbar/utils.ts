@@ -18,17 +18,27 @@ import { parseError } from '@/lib/utils';
  * Get the current operating system
  * @returns The current operating system
  */
-export const getOS = (): string => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userAgent = navigator.userAgent || (window as any).opera;
-
-  if (/windows phone/i.test(userAgent)) return 'Windows Phone';
-  if (/win/i.test(userAgent)) return 'Windows';
-  if (/mac/i.test(userAgent)) return 'MacOS';
-  if (/android/i.test(userAgent)) return 'Android';
-  if (/linux/i.test(userAgent)) return 'Linux';
-  if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
-
+export const getOS = ():
+  | 'iOS'
+  | 'Android'
+  | 'Windows'
+  | 'Mac OS'
+  | 'Linux'
+  | 'Unknown' => {
+  const userAgent = navigator.userAgent;
+  const platform = navigator.platform;
+  // Detect iOS devices (iPhone, iPad, iPod)
+  if (/iPad|iPhone|iPod/.test(userAgent)) return 'iOS';
+  // Detect Android
+  if (/Android/.test(userAgent)) return 'Android';
+  // Detect Windows
+  if (/Win/.test(platform)) return 'Windows';
+  // Detect macOS
+  if (/Mac/.test(platform)) return 'Mac OS';
+  // Detect Linux (includes Linux-based OS but not Android)
+  if (/Linux/.test(platform)) return 'Linux';
+  // Fallback for older iOS devices that might not have the userAgent string
+  if (['iPhone', 'iPad', 'iPod'].includes(platform)) return 'iOS';
   return 'Unknown';
 };
 
