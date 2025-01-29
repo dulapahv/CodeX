@@ -113,18 +113,20 @@ export const toggleMic = (
   }
 };
 
+// Toggle speaker
 export const toggleSpeaker = (
   speakerOn: boolean,
   setSpeakersOn: Dispatch<SetStateAction<boolean>>,
+  videoRef: RefObject<HTMLVideoElement | null>,
 ) => {
   const socket = getSocket();
   const newSpeakerState = !speakerOn;
 
-  // Update local state
-  setSpeakersOn(newSpeakerState);
+  // Only modify the video element's muted state
+  if (videoRef.current) {
+    videoRef.current.muted = !newSpeakerState;
+  }
 
-  // Emit to other users with a small delay to ensure state is updated
-  setTimeout(() => {
-    socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
-  }, 0);
+  setSpeakersOn(newSpeakerState);
+  socket.emit(StreamServiceMsg.SPEAKER_STATE, newSpeakerState);
 };

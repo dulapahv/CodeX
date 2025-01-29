@@ -274,7 +274,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.emit(StreamServiceMsg.STREAM_READY);
     }
 
-    socket.emit(StreamServiceMsg.SPEAKER_STATE, true);
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       if (hasRequestedPermissions) {
@@ -321,11 +321,13 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     );
 
     socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
-      setRemoteStreams((prev) => {
-        const newStreams = { ...prev };
-        delete newStreams[userID];
-        return newStreams;
-      });
+      if (userID !== storage.getUserId()) {
+        setRemoteStreams((prev) => {
+          const newStreams = { ...prev };
+          delete newStreams[userID];
+          return newStreams;
+        });
+      }
     });
 
     const currentPeers = peersRef.current;
@@ -338,19 +340,18 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       socket.off(StreamServiceMsg.MIC_STATE);
       socket.off(StreamServiceMsg.SPEAKER_STATE);
 
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-        streamRef.current = null;
+      // Don't stop the stream here if it's just a speaker state change
+      if (!speakerOn && streamRef.current) {
+        const audioTracks = streamRef.current.getAudioTracks();
+        audioTracks.forEach((track) => {
+          track.enabled = false;
+        });
       }
 
+      // Only cleanup peers, don't stop the stream
       Object.keys(currentPeers).forEach((userID) => {
         cleanupPeer(userID, peersRef, setRemoteStreams);
       });
-
-      setCameraOn(false);
-      setMicOn(false);
-
-      socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
   }, [socket, speakerOn, hasRequestedPermissions]);
 
@@ -360,6 +361,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         streamRef.current.getTracks().forEach((track) => {
           track.stop();
         });
+        streamRef.current = null;
       }
       socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
@@ -536,7 +538,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           devices={audioOutputDevices}
           selectedDevice={selectedAudioOutput}
           onDeviceSelect={handleAudioOutputSelect}
-          onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn)}
+          onToggle={() => toggleSpeaker(speakerOn, setSpeakerOn, videoRef)}
           isEnabled={speakerOn}
           onDevicePermissionGranted={async (kind) => {
             await handleDevicePermissionGranted(
