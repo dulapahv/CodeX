@@ -6,6 +6,7 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 import { IS_DEV_ENV } from '@/lib/constants';
 
@@ -16,7 +17,7 @@ if (!isCi) {
   Sentry.init({
     dsn: 'https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832',
     enabled: !IS_DEV_ENV, // Disable Sentry in development
-    integrations: [Sentry.replayIntegration()], // Enable replay for client-side errors
+    integrations: [Sentry.replayIntegration(), nodeProfilingIntegration()], // Enable Session Replay and Profiling
     tracesSampleRate: 1, // Sample rate for performance monitoring
     replaysSessionSampleRate: 0.1, // Sample rate for session replay
     replaysOnErrorSampleRate: 1.0, // Sample rate for error replay
