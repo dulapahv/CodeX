@@ -15,8 +15,8 @@ import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import themeList from 'monaco-themes/themes/themelist.json';
 
-import { CodeServiceMsg, ScrollServiceMsg } from '@kasca/types/message';
-import type { Cursor, EditOp } from '@kasca/types/operation';
+import { CodeServiceMsg, ScrollServiceMsg } from '@codex/types/message';
+import type { Cursor, EditOp } from '@codex/types/operation';
 
 import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
 import { storage } from '@/lib/services/storage';

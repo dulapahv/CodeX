@@ -11,11 +11,11 @@ import { performance } from 'perf_hooks';
 
 import { io as Client } from 'socket.io-client';
 
-import { CodeServiceMsg, RoomServiceMsg } from '@kasca/types/message';
+import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
 import {
   ExecutionResultType,
   type ExecutionResult,
-} from '@kasca/types/terminal';
+} from '@codex/types/terminal';
 
 const SERVER_URL = process.env.SERVER_URL;
 const SAMPLES_PER_TEST = 50;

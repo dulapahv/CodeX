@@ -13,7 +13,7 @@ import type { RefObject } from 'react';
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
-import type { Cursor } from '@kasca/types/operation';
+import type { Cursor } from '@codex/types/operation';
 
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';

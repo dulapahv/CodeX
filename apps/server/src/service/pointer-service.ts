@@ -10,8 +10,8 @@
 
 import type { Socket } from 'socket.io';
 
-import { PointerServiceMsg } from '@kasca/types/message';
-import type { Pointer } from '@kasca/types/pointer';
+import { PointerServiceMsg } from '@codex/types/message';
+import type { Pointer } from '@codex/types/pointer';
 
 import { getUserRoom } from './room-service';
 import { getCustomId } from './user-service';

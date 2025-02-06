@@ -10,7 +10,7 @@
 
 import { useTheme } from 'next-themes';
 
-import type { User } from '@kasca/types/user';
+import type { User } from '@codex/types/user';
 
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';

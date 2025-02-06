@@ -1,5 +1,5 @@
 {
-  "name": "kasca",
+  "name": "codex",
   "private": true,
   "scripts": {
     "dev": "turbo dev",

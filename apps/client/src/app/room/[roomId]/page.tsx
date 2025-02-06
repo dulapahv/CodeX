@@ -25,9 +25,9 @@ import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { isMobile } from 'react-device-detect';
 
-import { CodeServiceMsg, RoomServiceMsg } from '@kasca/types/message';
-import type { ExecutionResult } from '@kasca/types/terminal';
-import type { User } from '@kasca/types/user';
+import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
+import type { ExecutionResult } from '@codex/types/terminal';
+import type { User } from '@codex/types/user';
 
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';

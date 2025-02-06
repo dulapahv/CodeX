@@ -16,7 +16,7 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 import { isMobile } from 'react-device-detect';
 
-import { CodeServiceMsg } from '@kasca/types/message';
+import { CodeServiceMsg } from '@codex/types/message';
 
 import { getSocket } from '@/lib/socket';
 import { cn } from '@/lib/utils';

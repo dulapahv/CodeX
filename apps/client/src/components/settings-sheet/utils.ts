@@ -31,7 +31,7 @@ export const exportSettings = (settings: Record<string, any>) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kasca-editor-settings.json';
+    a.download = 'codex-editor-settings.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -78,7 +78,7 @@ const HelpPopover = () => (
                 </li>
                 <li>
                   <a
-                    href="https://github.com/dulapahv/Kasca/blob/main/manual.md#live-preview-example"
+                    href="https://github.com/dulapahv/CodeX/blob/main/manual.md#live-preview-example"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-foreground hover:text-muted-foreground inline-flex items-center gap-1

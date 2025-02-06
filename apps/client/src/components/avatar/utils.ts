@@ -6,7 +6,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { User } from '@kasca/types/user';
+import type { User } from '@codex/types/user';
 
 /**
  * Generates initials from a name

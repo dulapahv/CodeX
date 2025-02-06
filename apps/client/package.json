@@ -18,7 +18,7 @@
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.19.11",
     "@hookform/resolvers": "^3.10.0",
-    "@kasca/types": "workspace:*",
+    "@codex/types": "workspace:*",
     "@mdxeditor/editor": "^3.21.2",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/colors": "^3.0.0",

@@ -12,7 +12,7 @@ import type { RefObject } from 'react';
 
 import type * as monaco from 'monaco-editor';
 
-import type { Scroll } from '@kasca/types/scroll';
+import type { Scroll } from '@codex/types/scroll';
 
 import { storage } from '@/lib/services/storage';
 

@@ -1,5 +1,5 @@
 /**
- * Socket.IO server entry point for Kasca.
+ * Socket.IO server entry point for CodeX.
  * Features:
  * - WebSocket server setup
  * - Service initialization
@@ -19,11 +19,11 @@ import {
   RoomServiceMsg,
   ScrollServiceMsg,
   StreamServiceMsg,
-} from '@kasca/types/message';
-import type { Cursor, EditOp } from '@kasca/types/operation';
-import type { Pointer } from '@kasca/types/pointer';
-import type { Scroll } from '@kasca/types/scroll';
-import type { ExecutionResult } from '@kasca/types/terminal';
+} from '@codex/types/message';
+import type { Cursor, EditOp } from '@codex/types/operation';
+import type { Pointer } from '@codex/types/pointer';
+import type { Scroll } from '@codex/types/scroll';
+import type { ExecutionResult } from '@codex/types/terminal';
 
 import * as codeService from '@/service/code-service';
 import * as pointerService from '@/service/pointer-service';
@@ -74,7 +74,7 @@ app.listen(PORT, (token) => {
   if (!token) {
     console.warn(`Port ${PORT} is already in use`);
   }
-  console.log(`kasca-server listening on port: ${PORT}`);
+  console.log(`codex-server listening on port: ${PORT}`);
 });
 
 app.get('/', (res, req) => {
@@ -87,7 +87,7 @@ app.get('/', (res, req) => {
   res.writeHeader('Content-Type', 'text/plain');
 
   res.end(
-    'Hello from kasca-server! Go to https://kasca.dulapahv.dev/ to start coding.',
+    'Hello from codex-server! Go to https://codex.dulapahv.dev/ to start coding.',
   );
 });
 

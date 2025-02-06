@@ -11,7 +11,7 @@
 import {
   ExecutionResultType,
   type ExecutionResult,
-} from '@kasca/types/terminal';
+} from '@codex/types/terminal';
 
 export const formatExecutionTime = (ms: number) => {
   if (ms < 1000) {
@@ -76,7 +76,7 @@ export const handleDownloadLogs = (results: ExecutionResult[]) => {
   const now = new Date();
   const datePart = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
   const timePart = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
-  a.download = `kasca-terminal-${datePart}--${timePart}.txt`;
+  a.download = `codex-terminal-${datePart}--${timePart}.txt`;
 
   document.body.appendChild(a);
   a.click();

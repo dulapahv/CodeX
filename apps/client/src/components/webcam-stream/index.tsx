@@ -24,8 +24,8 @@ import { isMobile } from 'react-device-detect';
 import type Peer from 'simple-peer';
 import { toast } from 'sonner';
 
-import { StreamServiceMsg } from '@kasca/types/message';
-import type { User } from '@kasca/types/user';
+import { StreamServiceMsg } from '@codex/types/message';
+import type { User } from '@codex/types/user';
 
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';

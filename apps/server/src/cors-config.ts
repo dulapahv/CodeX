@@ -9,15 +9,15 @@
  */
 
 const ALLOWED_ORIGINS = [
-  'https://kasca.dulapahv.dev',
-  'https://kasca.vercel.app',
-  'https://dev-kasca.dulapahv.dev',
+  'https://codex.dulapahv.dev',
+  'https://codex.vercel.app',
+  'https://dev-codex.dulapahv.dev',
   'http://localhost:3000',
 ] as const;
 
 const isVercelDeployment = (origin: string): boolean => {
   const VERCEL_PATTERN =
-    /^https:\/\/kasca-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
+    /^https:\/\/codex-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
   return VERCEL_PATTERN.test(origin);
 };
 

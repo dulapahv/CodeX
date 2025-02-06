@@ -13,7 +13,7 @@
     "test:watch": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local --watch'"
   },
   "dependencies": {
-    "@kasca/types": "workspace:*",
+    "@codex/types": "workspace:*",
     "socket.io": "^4.8.1",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.51.0"
   },

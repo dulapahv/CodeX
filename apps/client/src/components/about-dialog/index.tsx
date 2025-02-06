@@ -82,7 +82,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
 
     if (isDesktop) {
       return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="About Kasca">
+        <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="About CodeX">
           <DialogContent className={cn('max-w-2xl', forceDark && 'dark')}>
             <DialogHeader className="text-foreground text-left">
               <DialogTitle>{SITE_NAME}</DialogTitle>
@@ -94,11 +94,11 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
 
             <div
               className="relative aspect-[600/315]"
-              aria-label="Kasca application preview"
+              aria-label="CodeX application preview"
             >
               <Image
                 src="/images/cover.png"
-                alt="Kasca application interface preview"
+                alt="CodeX application interface preview"
                 className="absolute rounded-md object-cover"
                 fill
                 sizes="1200px"
@@ -142,7 +142,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
     }
 
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen} aria-label="About Kasca">
+      <Drawer open={isOpen} onOpenChange={setIsOpen} aria-label="About CodeX">
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="text-left">{SITE_NAME}</DrawerTitle>
@@ -152,11 +152,11 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
             </DrawerDescription>
           </DrawerHeader>
 
-          <div className="w-full px-4" aria-label="Kasca application preview">
+          <div className="w-full px-4" aria-label="CodeX application preview">
             <div className="relative aspect-[600/315] w-full max-w-full">
               <Image
                 src="/images/cover.png"
-                alt="Kasca application interface preview"
+                alt="CodeX application interface preview"
                 className="rounded-md object-cover"
                 fill
                 sizes="(max-width: 768px) 100vw, 600px"

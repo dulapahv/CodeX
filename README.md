@@ -1,27 +1,27 @@
-# Kasca - Code Collaboration Platform
+# CodeX - Code Collaboration Platform
 
 <div align="center">
-  <a href="https://kasca.dulapahv.dev/">
-    <img src="apps/client/public/images/cover.png?raw=true" width="630" alt="kasca cover image"/>
+  <a href="https://codex.dulapahv.dev/">
+    <img src="apps/client/public/images/cover.png?raw=true" width="630" alt="codex cover image"/>
   </a>
 </div>
 
 <br />
 
 <div align="center">
-  <a href="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml"><img src="https://github.com/dulapahv/Kasca/actions/workflows/playwright.yml/badge.svg"></a>
-  <a href="https://github.com/dulapahv/Kasca/actions/workflows/jest.yml"><img src="https://github.com/dulapahv/Kasca/actions/workflows/jest.yml/badge.svg"></a>
+  <a href="https://github.com/dulapahv/CodeX/actions/workflows/playwright.yml"><img src="https://github.com/dulapahv/CodeX/actions/workflows/playwright.yml/badge.svg"></a>
+  <a href="https://github.com/dulapahv/CodeX/actions/workflows/jest.yml"><img src="https://github.com/dulapahv/CodeX/actions/workflows/jest.yml/badge.svg"></a>
 </div>
 <div align="center">
-  <a href="https://github.com/dulapahv/Kasca/issues"><img src="https://img.shields.io/github/issues/dulapahv/Kasca.svg?style=flat" /></a>
-  <a href="https://codeclimate.com/github/dulapahv/Kasca/maintainability"><img src="https://api.codeclimate.com/v1/badges/3984a19491b5e90cfa08/maintainability" /></a>
+  <a href="https://github.com/dulapahv/CodeX/issues"><img src="https://img.shields.io/github/issues/dulapahv/CodeX.svg?style=flat" /></a>
+  <a href="https://codeclimate.com/github/dulapahv/CodeX/maintainability"><img src="https://api.codeclimate.com/v1/badges/3984a19491b5e90cfa08/maintainability" /></a>
 </div>
 
 <br />
 
-**Kasca is an online code collaboration platform that enables real-time coding, cursor sharing, live UI preview, and video communication with integrated Git support—no sign-up required.**
+**CodeX is an online code collaboration platform that enables real-time coding, cursor sharing, live UI preview, and video communication with integrated Git support—no sign-up required.**
 
-**✨ Try now at [kasca.dulapahv.dev](https://kasca.dulapahv.dev/)**
+**✨ Try now at [codex.dulapahv.dev](https://codex.dulapahv.dev/)**
 
 > This project is part of the course "COMPSCI4025P Level 4 Individual Project" at the University of Glasgow.
 
@@ -38,7 +38,7 @@ For detailed usage instructions and feature documentation, please see the **[Use
 
 ## Table of Contents
 
-- [Kasca - Code Collaboration Platform](#kasca---code-collaboration-platform)
+- [CodeX - Code Collaboration Platform](#codex---code-collaboration-platform)
   - [Features](#features)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
@@ -62,7 +62,7 @@ For detailed usage instructions and feature documentation, please see the **[Use
 The project is organized as a [monorepo](https://en.wikipedia.org/wiki/Monorepo) using [Turborepo](https://turbo.build/repo/docs):
 
 ```txt
-Kasca
+CodeX
 ├── apps/                   # Application packages
 │   ├── client/             # Frontend Next.js application
 │   │   ├── public/         # Static assets
@@ -105,8 +105,8 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/dulapahv/Kasca.git
-   cd Kasca
+   git clone https://github.com/dulapahv/CodeX.git
+   cd CodeX
    ```
 
 2. **Install dependencies**

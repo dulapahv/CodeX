@@ -179,7 +179,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             marginSize={2}
             className="rounded-lg"
             imageSettings={{
-              src: '/images/kasca-logo.svg',
+              src: '/images/codex-logo.svg',
               height: 48,
               width: 48,
               excavate: true,

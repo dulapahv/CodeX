@@ -43,7 +43,7 @@ const isCi = process.env.CI === 'true';
 
 export default withSentryConfig(nextConfig, {
   org: 'dulapahv',
-  project: 'kasca',
+  project: 'codex',
   silent: !process.env.CI, // Only print logs for uploading source maps in CI
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   // Automatically annotate React components to show their full name in breadcrumbs and session replay

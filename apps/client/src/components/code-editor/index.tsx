@@ -26,9 +26,9 @@ import {
   CodeServiceMsg,
   RoomServiceMsg,
   ScrollServiceMsg,
-} from '@kasca/types/message';
-import type { Cursor, EditOp } from '@kasca/types/operation';
-import type { Scroll } from '@kasca/types/scroll';
+} from '@codex/types/message';
+import type { Cursor, EditOp } from '@codex/types/operation';
+import type { Scroll } from '@codex/types/scroll';
 
 import { getSocket } from '@/lib/socket';
 import type { StatusBarCursorPosition } from '@/components/status-bar';

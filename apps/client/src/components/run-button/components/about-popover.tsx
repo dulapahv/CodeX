@@ -58,7 +58,7 @@ const AboutPopover = () => (
             <p>
               For a list of supported programming languages, refer to the{' '}
               <a
-                href="https://github.com/dulapahv/Kasca/blob/main/manual.md#supported-execution-languages"
+                href="https://github.com/dulapahv/CodeX/blob/main/manual.md#supported-execution-languages"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-foreground hover:text-muted-foreground font-medium underline

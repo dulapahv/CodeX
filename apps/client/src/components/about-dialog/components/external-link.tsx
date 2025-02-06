@@ -38,7 +38,7 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
           aria-label="Visit portfolio website (opens in new tab)"
         >
           <Image
-            src="/images/kasca-logo.svg"
+            src="/images/codex-logo.svg"
             alt="Mirai logo"
             className="mr-2"
             width={16}
@@ -69,7 +69,7 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
           href={REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Visit Kasca GitHub repository (opens in new tab)"
+          aria-label="Visit CodeX GitHub repository (opens in new tab)"
         >
           <Image
             src={`/images/${resolvedTheme === 'light' && !forceDark ? 'octocat' : 'octocat-white'}.svg`}
@@ -78,7 +78,7 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
             width={16}
             height={16}
           />
-          Kasca GitHub
+          CodeX GitHub
         </a>
       </Button>
       <Button variant="outline" size="sm" asChild>

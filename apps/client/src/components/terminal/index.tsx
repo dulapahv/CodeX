@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 
 import { Download, Trash2 } from 'lucide-react';
 
-import type { ExecutionResult } from '@kasca/types/terminal';
+import type { ExecutionResult } from '@codex/types/terminal';
 
 import { Button } from '@/components/ui/button';
 import {

@@ -11,7 +11,7 @@
 import type { SignalData } from 'simple-peer';
 import type { Socket } from 'socket.io';
 
-import { StreamServiceMsg } from '@kasca/types/message';
+import { StreamServiceMsg } from '@codex/types/message';
 
 import * as roomService from './room-service';
 import * as userService from './user-service';

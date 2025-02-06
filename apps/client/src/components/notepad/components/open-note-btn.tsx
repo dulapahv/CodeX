@@ -13,7 +13,7 @@ import type { RefObject } from 'react';
 import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';
 import { Folder } from 'lucide-react';
 
-import { RoomServiceMsg } from '@kasca/types/message';
+import { RoomServiceMsg } from '@codex/types/message';
 
 import { getSocket } from '@/lib/socket';
 

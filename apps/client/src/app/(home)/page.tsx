@@ -59,8 +59,8 @@ export default async function Page({ searchParams }: PageProps) {
                   tracking-tight sm:text-5xl"
               >
                 <Image
-                  src="/images/kasca-logo.svg"
-                  alt="Kasca Logo"
+                  src="/images/codex-logo.svg"
+                  alt="CodeX Logo"
                   width={96}
                   height={96}
                   className="size-20 min-[1189px]:size-24"
@@ -74,7 +74,7 @@ export default async function Page({ searchParams }: PageProps) {
                       className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent
                         drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]"
                     >
-                      Kasca
+                      CodeX
                     </span>
                   </span>
                 </div>

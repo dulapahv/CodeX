@@ -12,7 +12,7 @@ import type { RefObject } from 'react';
 
 import type * as monaco from 'monaco-editor';
 
-import type { EditOp } from '@kasca/types/operation';
+import type { EditOp } from '@codex/types/operation';
 
 /**
  * Update the code in the editor.
@@ -30,7 +30,7 @@ import type { EditOp } from '@kasca/types/operation';
  * ```
  *
  * @remarks
- * Uses [`EditOp`](@kasca/types/operation.ts) type for operation data
+ * Uses [`EditOp`](@codex/types/operation.ts) type for operation data
  */
 export const updateCode = (
   op: EditOp,

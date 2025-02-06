@@ -28,7 +28,7 @@
     "",
     "<THIRD_PARTY_MODULES>",
     "",
-    "^@kasca/(.*)$",
+    "^@codex/(.*)$",
     "",
     "^@/config/(.*)$",
     "^@/types/(.*)$",

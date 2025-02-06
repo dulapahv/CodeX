@@ -16,12 +16,12 @@ export const IS_DEV_ENV =
 
 export const BASE_CLIENT_URL = IS_DEV_ENV
   ? 'http://localhost:3000'
-  : 'https://kasca.dulapahv.dev';
+  : 'https://codex.dulapahv.dev';
 export const BASE_SERVER_URL = IS_DEV_ENV
   ? 'http://localhost:3001'
-  : 'https://kasca-server.dulapahv.dev';
+  : 'https://codex-server.dulapahv.dev';
 
-export const STATUS_URL = 'https://kasca-status.dulapahv.dev';
+export const STATUS_URL = 'https://codex-status.dulapahv.dev';
 export const KASCA_SERVER_MONITOR_ID = '2887417';
 
 export const GITHUB_API_URL = 'https://api.github.com';
@@ -35,21 +35,21 @@ export const GITHUB_CLIENT_SECRET = IS_DEV_ENV
 
 export const NAME_MAX_LENGTH = 64;
 
-export const SITE_NAME = 'Kasca - Code Collaboration Platform';
+export const SITE_NAME = 'CodeX - Code Collaboration Platform';
 export const SITE_DESCRIPTION =
-  'Your collaborative coding space, reimagined. Code together now on Kasca, no sign-up required.';
+  'Your collaborative coding space, reimagined. Code together now on CodeX, no sign-up required.';
 export const INVITED_DESCRIPTION =
   'You have been invited to a coding session. Happy coding!';
 export const LATENCY_TEST_TITLE = 'Server Latency Test';
 export const LATENCY_TEST_DESCRIPTION =
-  'Test your latency to the Kasca server.';
+  'Test your latency to the CodeX server.';
 export const GITHUB_OAUTH_TITLE = 'GitHub OAuth Callback';
 export const GITHUB_OAUTH_DESCRIPTION =
   'This page is used to handle the GitHub OAuth callback.';
 export const NAME = 'Dulapah Vibulsanti';
 export const PORTFOLIO_URL = 'https://dulapahv.dev';
 export const CONTACT_URL = 'https://dulapahv.dev/contact';
-export const REPO_URL = 'https://github.com/dulapahv/kasca';
+export const REPO_URL = 'https://github.com/dulapahv/codex';
 export const GITHUB_URL = 'https://github.com/dulapahv';
 
 export const EDITOR_SETTINGS_KEY = 'editor-settings';

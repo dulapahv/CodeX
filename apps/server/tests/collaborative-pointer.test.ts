@@ -11,8 +11,8 @@ import { performance } from 'perf_hooks';
 
 import { io as Client } from 'socket.io-client';
 
-import { PointerServiceMsg, RoomServiceMsg } from '@kasca/types/message';
-import type { Pointer } from '@kasca/types/pointer';
+import { PointerServiceMsg, RoomServiceMsg } from '@codex/types/message';
+import type { Pointer } from '@codex/types/pointer';
 
 const SERVER_URL = process.env.SERVER_URL;
 const SAMPLES_PER_TEST = 50;

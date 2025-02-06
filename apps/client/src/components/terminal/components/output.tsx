@@ -9,7 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { ExecutionResult } from '@kasca/types/terminal';
+import type { ExecutionResult } from '@codex/types/terminal';
 
 import { cn } from '@/lib/utils';
 

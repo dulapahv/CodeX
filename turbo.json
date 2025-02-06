@@ -13,7 +13,7 @@
       "outputs": ["dist/**"],
       "cache": true
     },
-    "@kasca/types#build": {
+    "@codex/types#build": {
       "outputs": ["dist/**/*.d.ts", "dist/**/*.js"],
       "cache": true
     },

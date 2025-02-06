@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { Check, Navigation, NavigationOff } from 'lucide-react';
 import { isMobile } from 'react-device-detect';
 
-import type { User } from '@kasca/types/user';
+import type { User } from '@codex/types/user';
 
 import { storage } from '@/lib/services/storage';
 import { Button } from '@/components/ui/button';
