@@ -23,7 +23,6 @@ import { useParams, useRouter } from 'next/navigation';
 
 import type { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
-import { isMobile } from 'react-device-detect';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
 import type { ExecutionResult } from '@codex/types/terminal';
@@ -277,11 +276,15 @@ export default function Room() {
 
   return (
     <main
-      className="flex h-full min-w-[821px] flex-col overflow-clip"
+      className="flex h-full min-w-[821px] flex-col"
       aria-label="Code Editor Workspace"
     >
       <RemotePointers />
-      <div className="h-9" role="toolbar" aria-label="Editor Controls">
+      <div
+        className="h-9 flex-shrink-0"
+        role="toolbar"
+        aria-label="Editor Controls"
+      >
         {monaco && editor && (
           <MemoizedToolbar
             monaco={monaco}
@@ -319,10 +322,6 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
-            hitAreaMargins={{
-              coarse: isMobile ? 32 : 16,
-              fine: isMobile ? 16 : 8,
-            }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
@@ -359,10 +358,6 @@ export default function Room() {
                   </ResizablePanel>
                   <ResizableHandle
                     aria-label="Resize Handle"
-                    hitAreaMargins={{
-                      coarse: isMobile ? 32 : 16,
-                      fine: isMobile ? 16 : 8,
-                    }}
                     className={cn(
                       'bg-muted-foreground',
                       (!monaco || !editor) && 'hidden',
@@ -387,10 +382,6 @@ export default function Room() {
               </ResizablePanel>
               <ResizableHandle
                 aria-label="Resize Handle"
-                hitAreaMargins={{
-                  coarse: isMobile ? 32 : 16,
-                  fine: isMobile ? 16 : 8,
-                }}
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
@@ -415,10 +406,6 @@ export default function Room() {
           </ResizablePanel>
           <ResizableHandle
             aria-label="Resize Handle"
-            hitAreaMargins={{
-              coarse: isMobile ? 32 : 16,
-              fine: isMobile ? 16 : 8,
-            }}
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
