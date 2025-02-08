@@ -26,5 +26,5 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  return <div className="h-full overflow-hidden">{children}</div>;
+  return <div className="h-full overflow-y-hidden">{children}</div>;
 }
