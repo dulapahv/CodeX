@@ -89,8 +89,8 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
 }) {
   return (
     <div
-      className="flex items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)]
-        p-1"
+      className="fixed flex w-full items-center justify-between gap-x-2
+        bg-[color:var(--toolbar-bg-secondary)] p-1"
     >
       <div
         className="animate-fade-in-top"
@@ -112,7 +112,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
       </div>
       <RunButton monaco={monaco} editor={editor} setOutput={setOutput} />
       <nav aria-label="Collaboration Tools">
-        <div className="flex items-center gap-x-2">
+        <div className="flex items-center gap-x-1 sm:gap-x-2">
           <UserList users={users} />
           <ShareButton roomId={roomId} />
           <FollowUser users={users} />

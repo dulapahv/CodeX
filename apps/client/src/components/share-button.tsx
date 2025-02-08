@@ -40,15 +40,15 @@ const ShareButton = ({ roomId }: RoomProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="animate-fade-in-top hover:!text-foreground h-7 rounded-sm px-2
-                text-[color:var(--toolbar-foreground)]"
+              className="animate-fade-in-top hover:!text-foreground aspect-square h-7 rounded-sm p-1
+                text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
               aria-label="Share this coding room"
               aria-haspopup="dialog"
               aria-expanded="false"
               onClick={handleButtonClick}
             >
-              <Share className="mr-2 size-4" aria-hidden="true" />
-              <span>Share</span>
+              <Share className="mr-0 size-4 sm:mr-2" aria-hidden="true" />
+              <span className="hidden sm:flex">Share</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent role="tooltip" sideOffset={8}>

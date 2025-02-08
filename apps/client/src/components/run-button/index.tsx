@@ -93,13 +93,16 @@ const RunButton = ({
         >
           {isRunning ? (
             <>
-              <OctagonX className="mr-1 size-4" aria-hidden="true" />
-              <span>Cancel</span>
+              <OctagonX className="mr-0 size-4 sm:mr-1" aria-hidden="true" />
+              <span className="hidden sm:flex">Cancel</span>
             </>
           ) : (
             <>
-              <Play className="mr-1 size-4 fill-green-600" aria-hidden="true" />
-              <span>Run Code</span>
+              <Play
+                className="mr-0 size-4 fill-green-600 sm:mr-1"
+                aria-hidden="true"
+              />
+              <span className="hidden sm:flex">Run Code</span>
             </>
           )}
         </Button>

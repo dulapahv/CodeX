@@ -15,7 +15,7 @@ import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
 import { REPO_URL } from '@/lib/constants';
-// import { useMediaQuery } from '@/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
 import {
@@ -36,7 +36,7 @@ import {
 } from '@/components/settings-sheet';
 
 import { DesktopMenu } from './components/desktop-menu';
-// import { MobileMenu } from './components/mobile-menu';
+import { MobileMenu } from './components/mobile-menu';
 import type { ToolbarActions } from './types';
 import { getOS, openLocal, saveLocal } from './utils';
 
@@ -65,7 +65,7 @@ const Toolbar = ({
   showWebcam,
   showLivePreview,
 }: ToolbarProps) => {
-  // const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const openFromGithubDialogRef = useRef<OpenFromGithubDialogRef>(null);
   const openPromptDialogRef1 = useRef<OpenPromptDialogRef>(null);
@@ -272,7 +272,7 @@ const Toolbar = ({
 
   return (
     <>
-      {/* {isDesktop ? (
+      {isDesktop ? (
         <DesktopMenu
           modKey={modKey}
           actions={toolbarActions}
@@ -290,15 +290,7 @@ const Toolbar = ({
           webcam={showWebcam}
           livePreview={showLivePreview}
         />
-      )} */}
-      <DesktopMenu
-        modKey={modKey}
-        actions={toolbarActions}
-        notepad={showNotepad}
-        terminal={showTerminal}
-        webcam={showWebcam}
-        livePreview={showLivePreview}
-      />
+      )}
       <OpenFromGithubDialog
         ref={openFromGithubDialogRef}
         monaco={monaco}

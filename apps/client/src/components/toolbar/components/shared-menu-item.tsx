@@ -51,9 +51,7 @@ export const SharedMenuItem = ({
       {item.icon}
       {item.label}
       {!hideShortcut && item.shortcut && (
-        <MenubarShortcut className="pl-2 max-[375px]:hidden">
-          {' '}
-          {/* 486px */}
+        <MenubarShortcut className="pl-2 max-[486px]:hidden">
           {item.shortcut}
         </MenubarShortcut>
       )}
