@@ -71,7 +71,7 @@
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "dotenv": "^16.4.7",
-    "eslint": "^9.19.0",
+    "eslint": "^9.20.0",
     "eslint-config-next": "^15.1.6",
     "eslint-config-prettier": "^9.1.0",
     "monaco-themes": "^0.4.4",
