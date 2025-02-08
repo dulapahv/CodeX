@@ -304,10 +304,13 @@ export default function Room() {
         )}
       </div>
       {defaultCode !== null && mdContent !== null ? (
-        <ResizablePanelGroup direction="horizontal">
+        <ResizablePanelGroup
+          className="!h-[calc(100%-54px)]"
+          direction="horizontal"
+        >
           <ResizablePanel
             className={cn(
-              'animate-fade-in-left h-[calc(100%-24px)] [&>div]:h-full',
+              'animate-fade-in-left [&>div]:h-full',
               monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
               !showNotepad && 'hidden',
@@ -330,10 +333,7 @@ export default function Room() {
           />
 
           <ResizablePanel defaultSize={65} minSize={10}>
-            <ResizablePanelGroup
-              direction="vertical"
-              className="!h-[calc(100%-24px)] overflow-clip"
-            >
+            <ResizablePanelGroup direction="vertical">
               <ResizablePanel
                 className="animate-fade-in z-[1]"
                 role="region"
@@ -414,7 +414,7 @@ export default function Room() {
           />
           <ResizablePanel
             className={cn(
-              'animate-fade-in-right h-[calc(100%-24px)]',
+              'animate-fade-in-right',
               monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
               !showWebcam && 'hidden',
