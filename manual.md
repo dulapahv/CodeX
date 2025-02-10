@@ -1152,7 +1152,7 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 | Feature | Description | Shortcut / Markdown Code |
 |---------|-------------|---------------|
 | Open Note | Open a text file in the Notepad. Supports `txt`, `md`, `mdx`, `xbl`, `xsl`, `vtt`, `text`, `xslt`, `ehtml`, `sh`, `html`, `ics`, `mjs`, `js`, `shtml`, `xml`, `csv`, `css`, `shtm`, `htm` | |
-| Save Note | Save the current note to as a markdown (`md`) file | |
+| Save Note | Save the current note as a markdown (`md`) file | |
 | Undo | Undo the last action | `ctrl + z` |
 | Redo | Redo the last undone action | `ctrl + y` or `ctrl + shift + z` |
 | Bold | Make selected text bold | `ctrl + b` or `**text**` |
