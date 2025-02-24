@@ -164,7 +164,7 @@ const OpenFromGithubDialog = forwardRef<
       );
 
       // Set content and language (default to plaintext)
-      editor.setValue(decodeURIComponent(data.content));
+      editor.setValue(data.content);
       const model = editor.getModel();
       if (model) {
         monaco.editor.setModelLanguage(model, language?.id || 'plaintext');
