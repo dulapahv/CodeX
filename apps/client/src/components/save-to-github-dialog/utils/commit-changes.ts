@@ -42,7 +42,7 @@ export const commitChanges = async (
           : selectedItem.path?.split('/').slice(0, -1).join('/'),
       filename: data.fileName,
       commitMessage: data.commitSummary,
-      content: btoa(content),
+      content: btoa(encodeURIComponent(content)),
     };
 
     const response = await fetch('/api/github/commit', {
