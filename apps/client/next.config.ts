@@ -51,7 +51,7 @@ export default withSentryConfig(nextConfig, {
     enabled: true,
   },
   tunnelRoute: '/monitoring', // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  hideSourceMaps: true, // Hides source maps from generated client bundles
+  // hideSourceMaps: true, // Hides source maps from generated client bundles
   disableLogger: true, // Automatically tree-shake Sentry logger statements to reduce bundle size
   automaticVercelMonitors: true, // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
   // Automatically upload source maps for all Next.js pages
