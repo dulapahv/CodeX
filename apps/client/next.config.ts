@@ -23,9 +23,6 @@ const nextConfig: NextConfig = {
       '@monaco-editor/react',
       'monaco-editor',
     ],
-    turbo: {
-      minify: true,
-    },
   },
   images: {
     remotePatterns: [
