@@ -213,12 +213,10 @@ The build artifacts of the frontend will be available in the `apps/client/.next`
 
 ## Deployment
 
-The project is configured for automatic deployment:
+The project is configured for automatic deployment through Deploy Hooks which trigger after the GitHub Actions CI/CD pipeline completes successfully:
 
 - Frontend (client): Automatically deploys to [Vercel](https://vercel.com)
 - Backend (server): Automatically deploys to [Render](https://render.com)
-
-Simply push to the main branch, and both platforms will automatically build and deploy the changes.
 
 ## Scripts
 
