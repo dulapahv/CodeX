@@ -16,6 +16,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  poweredByHeader: false,
   experimental: {
     optimizePackageImports: [
       '@codesandbox/sandpack-react',
@@ -23,6 +24,10 @@ const nextConfig: NextConfig = {
       '@monaco-editor/react',
       'monaco-editor',
     ],
+    useLightningcss: true,
+    turbo: {
+      minify: true,
+    },
   },
   images: {
     remotePatterns: [
