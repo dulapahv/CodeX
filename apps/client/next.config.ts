@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
       '@monaco-editor/react',
       'monaco-editor',
     ],
-    useLightningcss: true,
     turbo: {
       minify: true,
     },
