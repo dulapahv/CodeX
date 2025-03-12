@@ -1,6 +1,6 @@
-# CodeX User manual
+# CodeX User Manual
 
-- [CodeX User manual](#codex-user-manual)
+- [CodeX User Manual](#codex-user-manual)
   - [Getting Started](#getting-started)
     - [Accessing CodeX](#accessing-codex)
     - [Creating a Room](#creating-a-room)
