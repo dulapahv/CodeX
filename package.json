@@ -34,7 +34,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@types/simple-peer": "^9.11.8",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.3",
+    "lint-staged": "^15.5.0",
     "prettier": "^3.5.3",
     "prettier-plugin-classnames": "^0.7.7",
     "prettier-plugin-merge": "^0.7.2",

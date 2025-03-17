@@ -19,7 +19,7 @@
     "@codesandbox/sandpack-react": "^2.20.0",
     "@codex/types": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
-    "@mdxeditor/editor": "^3.26.0",
+    "@mdxeditor/editor": "^3.28.0",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.3",
