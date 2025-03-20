@@ -14,7 +14,7 @@ import type { NextRequest } from 'next/server';
 
 import { GITHUB_API_URL } from '@/lib/constants';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 export async function GET(
   req: NextRequest,

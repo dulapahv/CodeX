@@ -13,7 +13,7 @@ import { NextResponse } from 'next/server';
 import { KASCA_SERVER_MONITOR_ID } from '@/lib/constants';
 import type { BetterStackResponse } from '@/components/status/types';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 export async function GET() {
   try {

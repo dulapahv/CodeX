@@ -11,7 +11,7 @@
 
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
 

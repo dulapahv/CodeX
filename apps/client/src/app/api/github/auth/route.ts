@@ -12,7 +12,7 @@ import type { NextRequest } from 'next/server';
 
 import { githubAuthHandlers } from '@/lib/github';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 export async function GET(req: NextRequest) {
   const code = new URL(req.url).searchParams.get('code');
