@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://codex.dulapahv.dev/">
-    <img src="apps/client/public/images/cover.png?raw=true" width="630" alt="codex cover image"/>
+    <img src="apps/client/public/images/cover.png" width="630" alt="codex cover image"/>
   </a>
 </div>
 

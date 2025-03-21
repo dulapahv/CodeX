@@ -99,7 +99,7 @@ To create a new coding session:
 4. You'll be automatically redirected to your coding room
 
 <div align="center">
-  <img src="./docs/images/create-room.png" alt="Create a Room" width="400"/>
+  <img src="docs/images/create-room.png" alt="Create a Room" width="400"/>
 </div>
 
 ### Joining a Room
@@ -117,7 +117,7 @@ There are three ways to join an existing room:
 4. Click `Join Room →`
 
 <div align="center">
-  <img src="./docs/images/join-room.png" alt="Join a Room" width="400"/>
+  <img src="docs/images/join-room.png" alt="Join a Room" width="400"/>
 </div>
 
 #### Using an Invite Link
@@ -127,7 +127,7 @@ There are three ways to join an existing room:
 3. Click `Join Room →`
 
 <div align="center">
-  <img src="./docs/images/invite-link.png" alt="Invite Link" width="400"/>
+  <img src="docs/images/invite-link.png" alt="Invite Link" width="400"/>
 </div>
 
 #### Scanning QR Code
@@ -137,7 +137,7 @@ There are three ways to join an existing room:
 3. Click `Join Room →`
 
 <div align="center">
-  <img src="./docs/images/share-room.png" alt="Share Room" width="400"/>
+  <img src="docs/images/share-room.png" alt="Share Room" width="400"/>
 </div>
 
 ### User Interface Overview
@@ -149,13 +149,13 @@ The interface is divided into several sections, each section contains multiple p
 - Panels can be hidden/shown using toolbar buttons (`view > panel name`)
 
 <div align="center">
-  <img src="./docs/images/interface-overview.png" alt="Interface Overview" width="800"/>
+  <img src="docs/images/interface-overview.png" alt="Interface Overview" width="800"/>
 </div>
 
 #### Top Bar
 
 <div align="center">
-  <img src="./docs/images/top-bar.png" alt="Top Bar" width="800"/>
+  <img src="docs/images/top-bar.png" alt="Top Bar" width="800"/>
 </div>
 
 1. **Menu Bar**
@@ -175,7 +175,7 @@ The interface is divided into several sections, each section contains multiple p
 #### Main Work Area (Split into Panels)
 
 <div align="center">
-  <img src="./docs/images/main-work-area.png" alt="Main Work Area" width="800"/>
+  <img src="docs/images/main-work-area.png" alt="Main Work Area" width="800"/>
 </div>
 
 1. **Left Most Panel - Notepad**
@@ -205,7 +205,7 @@ The interface is divided into several sections, each section contains multiple p
 #### Bottom Panel
 
 <div align="center">
-  <img src="./docs/images/bottom-panel.png" alt="Bottom Panel" width="800"/>
+  <img src="docs/images/bottom-panel.png" alt="Bottom Panel" width="800"/>
 </div>
 
 1. **Terminal**
@@ -218,7 +218,7 @@ The interface is divided into several sections, each section contains multiple p
 #### Status Bar
 
 <div align="center">
-  <img src="./docs/images/status-bar.png" alt="Status Bar" width="800"/>
+  <img src="docs/images/status-bar.png" alt="Status Bar" width="800"/>
 </div>
 
 1. **Language Selector:**
@@ -232,11 +232,11 @@ The interface is divided into several sections, each section contains multiple p
 CodeX allows you to share your room with others using multiple methods:
 
 <div align="center">
-  <img src="./docs/images/share-button.png" alt="Share Room Button" width="200"/>
+  <img src="docs/images/share-button.png" alt="Share Room Button" width="200"/>
 </div>
 
 <div align="center">
-  <img src="./docs/images/share-room.png" alt="Share Room" width="400"/>
+  <img src="docs/images/share-room.png" alt="Share Room" width="400"/>
 </div>
 
 ### Room ID
@@ -274,7 +274,7 @@ Each participant's cursor is displayed with a unique color. The color is generat
 - Cursor labels appear above the text by default, and appear below when at the first line of the editor
 
 <div align="center">
-  <img src="./docs/images/cursor.png" alt="Cursor" width="400"/>
+  <img src="docs/images/cursor.png" alt="Cursor" width="400"/>
 </div>
 
 ### Text Selection
@@ -285,7 +285,7 @@ Each participant's cursor is displayed with a unique color. The color is generat
 - Selection information (character count) is displayed in the lower right corner of the status bar
 
 <div align="center">
-  <img src="./docs/images/text-selection.png" alt="Text Selection" width="400"/>
+  <img src="docs/images/text-selection.png" alt="Text Selection" width="400"/>
 </div>
 
 ### Code Editor Settings
@@ -293,7 +293,7 @@ Each participant's cursor is displayed with a unique color. The color is generat
 You can configure the code editor as well as its theme to suit your preferences by going to `Settings` in the upper right corner of the top bar.
 
 <div align="center">
-  <img src="./docs/images/settings-button.png" alt="Settings Button" width="150"/>
+  <img src="docs/images/settings-button.png" alt="Settings Button" width="150"/>
 </div>
 
 - To import settings, click on the `Import Settings` button and upload a JSON file
@@ -302,7 +302,7 @@ You can configure the code editor as well as its theme to suit your preferences 
 The settings are persisted across sessions and are stored in your browser's local storage.
 
 <div align="center">
-  <img src="./docs/images/editor-settings.png" alt="Editor Settings" width="400"/>
+  <img src="docs/images/editor-settings.png" alt="Editor Settings" width="400"/>
 </div>
 
 ## Follow Mode
@@ -314,13 +314,13 @@ Follow Mode allows users to track another participant's actions in real-time by 
 1. Click on the Follow User button in the upper right corner of the top bar
 
     <div align="center">
-      <img src="./docs/images/follow-mode-button.png" alt="Follow Mode Button" width="200"/>
+      <img src="docs/images/follow-mode-button.png" alt="Follow Mode Button" width="200"/>
     </div>
 
 2. Select or search for the user you want to follow
 
     <div align="center">
-      <img src="./docs/images/follow-mode.png" alt="Follow Mode Button" width="300"/>
+      <img src="docs/images/follow-mode.png" alt="Follow Mode Button" width="300"/>
     </div>
 
 3. Your editor view will now sync with the selected user's actions
@@ -333,7 +333,7 @@ Follow Mode allows users to track another participant's actions in real-time by 
 ## Code Execution
 
 <div align="center">
-  <img src="./docs/images/run-code-button.png" alt="Run Code Button" width="200"/>
+  <img src="docs/images/run-code-button.png" alt="Run Code Button" width="200"/>
 </div>
 
 You can execute code directly from the editor using the `Run Code` button in the top bar. The output will be displayed in the [Shared Terminal](#shared-terminal).
@@ -345,7 +345,7 @@ For a list of supported execution languages, refer to the [Supported Execution L
 You can pass arguments to your code by:
 
 <div align="center">
-  <img src="./docs/images/arguments-input.png" alt="Arguments and Input" width="300"/>
+  <img src="docs/images/arguments-input.png" alt="Arguments and Input" width="300"/>
 </div>
 
 1. Click on the arrow down icon next to the `Run Code` button
@@ -368,7 +368,7 @@ The Shared Terminal allows you to execute commands and view the output in real-t
 At the upper right corner of the terminal panel, you can [Download Output](#download-output) or [Clear Output](#clear-output).
 
 <div align="center">
-  <img src="./docs/images/shared-terminal.png" alt="Shared Terminal" width="500"/>
+  <img src="docs/images/shared-terminal.png" alt="Shared Terminal" width="500"/>
 </div>
 
 ### Download Output
@@ -401,7 +401,7 @@ CodeX requires `repo` access scope to read and write to your repositories. For m
 To connect your GitHub account:
 
 <div align="center">
-  <img src="./docs/images/connect-to-github.png" alt="Connect to Github" width="500"/>
+  <img src="docs/images/connect-to-github.png" alt="Connect to Github" width="500"/>
 </div>
 
 1. Click on the `Settings` button in the top bar
@@ -414,7 +414,7 @@ To connect your GitHub account:
 To disconnect your GitHub account:
 
 <div align="center">
-  <img src="./docs/images/connected-to-github.png" alt="Connected to Github" width="500"/>
+  <img src="docs/images/connected-to-github.png" alt="Connected to Github" width="500"/>
 </div>
 
 1. Click on the `Settings` button in the top bar
@@ -425,20 +425,20 @@ To disconnect your GitHub account:
 1. Click on the `File` menu in the top bar
 
     <div align="center">
-      <img src="./docs/images/open-from-github-button.png" alt="Open from Github Button" width="200"/>
+      <img src="docs/images/open-from-github-button.png" alt="Open from Github Button" width="200"/>
     </div>
 
 2. Click on `Open from GitHub`
    - If you are not connected to GitHub, you will be prompted to connect your account
    - If the current code editor is not empty, a confirmation dialog will appear asking if you want to replace the current code with the file from GitHub
       <div align="center">
-        <img src="./docs/images/open-file-confirmation.png" alt="Open File Confirmation" width="400"/>
+        <img src="docs/images/open-file-confirmation.png" alt="Open File Confirmation" width="400"/>
       </div>
 3. Select the repository, branch, and file you want to open
 4. The file will be loaded into the editor
 
 <div align="center">
-  <img src="./docs/images/open-from-github.png" alt="Open from Github" width="400"/>
+  <img src="docs/images/open-from-github.png" alt="Open from Github" width="400"/>
 </div>
 
 CodeX will automatically detect the language of the file and switch the editor's language mode accordingly. Other users' editors will also automatically switch to the same language mode.
@@ -448,7 +448,7 @@ CodeX will automatically detect the language of the file and switch the editor's
 1. Click on the `File` menu in the top bar
 
 <div align="center">
-  <img src="./docs/images/save-to-github-button.png" alt="Save to Github Button" width="200"/>
+  <img src="docs/images/save-to-github-button.png" alt="Save to Github Button" width="200"/>
 </div>
 
 2. Click on `Save to GitHub`
@@ -457,13 +457,13 @@ CodeX will automatically detect the language of the file and switch the editor's
 4. Click `Save`
 
 <div align="center">
-  <img src="./docs/images/save-to-github.png" alt="Save to Github" width="400"/>
+  <img src="docs/images/save-to-github.png" alt="Save to Github" width="400"/>
 </div>
 
 Upon saving, an alert will appear at the bottom right corner of the screen indicating the success or failure of the save operation. From there, you can click on the link to view the commit on GitHub.
 
 <div align="center">
-  <img src="./docs/images/save-to-github-alert.png" alt="Save to Github Alert" width="300"/>
+  <img src="docs/images/save-to-github-alert.png" alt="Save to Github Alert" width="300"/>
 </div>
 
 ## Live Preview
@@ -471,7 +471,7 @@ Upon saving, an alert will appear at the bottom right corner of the screen indic
 The Live Preview panel allows you to see real-time updates of your code output. It is particularly useful for web development to see how your code renders in a browser.
 
 <div align="center">
-  <img src="./docs/images/live-preview.png" alt="Live Preview Button" width="500"/>
+  <img src="docs/images/live-preview.png" alt="Live Preview Button" width="500"/>
 </div>
 
 - Tailwind CSS utility classes are available
@@ -487,7 +487,7 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 2. Click on `Live Preview`
 
 <div align="center">
-  <img src="./docs/images/live-preview-button.png" alt="Live Preview Menu" width="200"/>
+  <img src="docs/images/live-preview-button.png" alt="Live Preview Menu" width="200"/>
 </div>
 
 ### Limitations of Live Preview
@@ -511,7 +511,7 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 ```
 
 <div align="center">
-  <img src="./docs/images/live-preview_example_1.png" alt="Live preview example 1" width="300"/>
+  <img src="docs/images/live-preview_example_1.png" alt="Live preview example 1" width="300"/>
 </div>
 
 #### Example 2: HTML with Alpine.js, GSAP, and Chart.js
@@ -653,7 +653,7 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 ```
 
 <div align="center">
-  <img src="./docs/images/live-preview_example_2.png" alt="Live preview example 2" width="400"/>
+  <img src="docs/images/live-preview_example_2.png" alt="Live preview example 2" width="400"/>
 </div>
 
 ## Notepad
@@ -661,7 +661,7 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 The Notepad panel allows you to take notes in a rich text format. It supports markdown syntax for text formatting and organization.
 
 <div align="center">
-  <img src="./docs/images/notepad.png" alt="Notepad" width="400"/>
+  <img src="docs/images/notepad.png" alt="Notepad" width="400"/>
 </div>
 
 ### Notepad Features
@@ -673,7 +673,7 @@ For a list of supported notepad features, markdown syntax, and shortcuts, refer 
 You can switch between `rich text` and `source` modes in the Notepad to view and edit markdown syntax.
 
 <div align="center">
-  <img src="./docs/images/markdown-support.png" alt="Markdown Support" width="400"/>
+  <img src="docs/images/markdown-support.png" alt="Markdown Support" width="400"/>
 </div>
 
 In case of an error parsing markdown, you can switch to `source` mode to fix the error. Refer to the [Error parsing markdown](#error-parsing-markdown) section.
@@ -687,7 +687,7 @@ Notepad, unlike the code editor, is not optimized for real-time updates and may 
 You can save notes to your local device or open existing notes in the Notepad.
 
 <div align="center">
-  <img src="./docs/images/notepad-buttons.png" alt="Notepad Buttons" width="100"/>
+  <img src="docs/images/notepad-buttons.png" alt="Notepad Buttons" width="100"/>
 </div>
 
 #### Saving Notes
@@ -711,7 +711,7 @@ CodeX supports video and voice communication between participants in a room. You
 Upon joining the room, CodeX will prompt you to grant permissions to access your media devices (camera, microphone, audio).
 
 <div align="center">
-  <img src="./docs/images/video-voice-communication.png" alt="Video & Voice Communication" width="200"/>
+  <img src="docs/images/video-voice-communication.png" alt="Video & Voice Communication" width="200"/>
 </div>
 
 - To turn on camera, microphone, or audio, simply click on the respective buttons in the Video & Voice Communication panel.
@@ -739,7 +739,7 @@ The webpage at https://xxxxxx-preview.sandpack-static-server.codesandbox.io/ mig
 - Re-toggle the Live Preview panel by going to `View > Live Preview` in the top menu bar
 
 <div align="center">
-  <img src="./docs/images/live-preview-button.png" alt="Live Preview Menu" width="200"/>
+  <img src="docs/images/live-preview-button.png" alt="Live Preview Menu" width="200"/>
 </div>
 
 ### Follow Mode not working
