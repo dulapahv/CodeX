@@ -10,8 +10,8 @@
 
 const fs = require('fs/promises');
 const path = require('path');
-const { execSync } = require('child_process');
 const readline = require('readline');
+const { execSync } = require('child_process');
 
 const dirsToClean = [
   'apps/client/.next',
@@ -23,6 +23,8 @@ const dirsToClean = [
   'apps/server/dist',
   'apps/server/node_modules',
   'apps/server/test-results',
+  'packages/types/.turbo',
+  'packages/types/dist',
   '.turbo',
   'node_modules',
 ];
