@@ -28,6 +28,7 @@ import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
 import type { ExecutionResult } from '@codex/types/terminal';
 import type { User } from '@codex/types/user';
 
+import { initEditorTheme } from '@/lib/init-editor-theme';
 import { userMap } from '@/lib/services/user-map';
 import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
@@ -242,6 +243,8 @@ export default function Room() {
     socket.on(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
 
     window.addEventListener('popstate', disconnect);
+
+    initEditorTheme();
 
     return () => {
       window.removeEventListener('popstate', disconnect);

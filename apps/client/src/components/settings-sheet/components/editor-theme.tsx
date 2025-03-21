@@ -8,13 +8,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { Monaco } from '@monaco-editor/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import themeList from 'monaco-themes/themes/themelist.json';
 import { useTheme } from 'next-themes';
 
+import {
+  applyEditorTheme,
+  initEditorTheme,
+  registerMonaco,
+} from '@/lib/init-editor-theme';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,19 +41,7 @@ interface EditorThemeSettingsProps {
   monaco: Monaco;
 }
 
-const setCSSVariables = (variables: Record<string, string>) => {
-  const root = document.documentElement;
-  Object.entries(variables).forEach(([key, value]) => {
-    root.style.setProperty(key, value);
-  });
-};
-
-type ThemeConfig = {
-  name: string;
-  variables: Record<string, string>;
-};
-
-const DEFAULT_THEMES: Record<string, ThemeConfig> = {
+const DEFAULT_THEMES = {
   'vs-dark': {
     name: 'Dark (Visual Studio)',
     variables: {
@@ -78,69 +71,52 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const [open, setOpen] = useState(false);
   const [editorTheme, setEditorTheme] = useState('vs-dark'); // Set default theme
 
-  const handleThemeChange = useCallback(
-    (key: string, value: string) => {
-      setEditorTheme(key); // Always set the new theme
-      localStorage.setItem('editorTheme', key);
-      setOpen(false);
-
-      if (key in DEFAULT_THEMES) {
-        const themeConfig = DEFAULT_THEMES[key];
-        setTheme(key === 'vs-dark' ? 'dark' : 'light');
-        setCSSVariables(themeConfig.variables);
-        setCSSVariables({
-          '--status-bar-text': '#fff',
-        });
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const themeData = require(`monaco-themes/themes/${value}.json`);
-        setTheme(themeData.base === 'vs-dark' ? 'dark' : 'light');
-
-        setCSSVariables({
-          '--toolbar-bg-primary': themeData.colors[
-            'editor.selectionBackground'
-          ].slice(0, 7),
-          '--toolbar-bg-secondary': themeData.colors[
-            'editor.selectionBackground'
-          ].slice(0, 7),
-          '--toolbar-foreground': themeData.colors['editor.foreground'].slice(
-            0,
-            7,
-          ),
-          '--toolbar-accent': themeData.colors['editorCursor.foreground'].slice(
-            0,
-            7,
-          ),
-          '--panel-text-accent': themeData.colors['editor.background'].slice(
-            0,
-            7,
-          ),
-          '--panel-background': themeData.colors['editor.background'].slice(
-            0,
-            7,
-          ),
-          '--status-bar-text': themeData.base === 'vs-dark' ? 'dark' : 'light',
-        });
-      }
-
-      if (monaco) {
-        monaco.editor.setTheme(key);
-      }
-    },
-    [monaco, setTheme],
-  );
-
-  // Load theme from localStorage on component mount
+  // Register Monaco when the component mounts
   useEffect(() => {
+    if (monaco) {
+      registerMonaco(monaco);
+    }
+  }, [monaco]);
+
+  // Run the init function once and sync with next-themes
+  useEffect(() => {
+    // Initialize editor theme
+    initEditorTheme();
+
+    // Load saved theme to update the UI
     const savedTheme = localStorage.getItem('editorTheme');
     if (savedTheme) {
       setEditorTheme(savedTheme);
+
+      // Also sync with next-themes
+      if (savedTheme === 'vs-dark') {
+        setTheme('dark');
+      } else if (savedTheme in DEFAULT_THEMES) {
+        setTheme('light');
+      } else {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const themeData = require(
+            `monaco-themes/themes/${themeList[savedTheme as keyof typeof themeList]}.json`,
+          );
+          setTheme(themeData.base === 'vs-dark' ? 'dark' : 'light');
+        } catch (error) {
+          console.error('Failed to sync theme:', error);
+        }
+      }
     }
-    // Apply default theme if no saved theme exists
-    else {
-      handleThemeChange('vs-dark', DEFAULT_THEMES['vs-dark'].name);
-    }
-  }, [handleThemeChange]);
+  }, [setTheme]);
+
+  const handleThemeChange = (key: string, value: string) => {
+    setEditorTheme(key);
+    setOpen(false);
+
+    // Apply the theme and get the appropriate next-theme value
+    const nextTheme = applyEditorTheme(key, value);
+
+    // Update next-themes
+    setTheme(nextTheme);
+  };
 
   // Combine default and custom themes with explicit typing
   const themes = Object.entries({
