@@ -66,10 +66,28 @@ const DEFAULT_THEMES = {
   },
 };
 
+// Function to detect system color preference
+const getSystemTheme = (): 'vs-dark' | 'light' => {
+  if (typeof window === 'undefined') return 'vs-dark'; // Default for SSR
+
+  return window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'vs-dark'
+    : 'light';
+};
+
 const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(false);
-  const [editorTheme, setEditorTheme] = useState('vs-dark'); // Set default theme
+
+  // Initialize with system preference if no saved theme
+  const savedTheme =
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem('editorTheme')
+      : null;
+  const initialTheme = savedTheme || getSystemTheme();
+
+  const [editorTheme, setEditorTheme] = useState(initialTheme);
 
   // Register Monaco when the component mounts
   useEffect(() => {
@@ -104,6 +122,11 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
           console.error('Failed to sync theme:', error);
         }
       }
+    } else {
+      // No saved theme, use system preference
+      const systemTheme = getSystemTheme();
+      setEditorTheme(systemTheme);
+      setTheme(systemTheme === 'vs-dark' ? 'dark' : 'light');
     }
   }, [setTheme]);
 

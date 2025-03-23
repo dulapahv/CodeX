@@ -50,7 +50,6 @@ const setCSSVariables = (variables: Record<string, string>) => {
 let globalMonaco: Monaco | null = null;
 
 // Function to register Monaco
-
 export const registerMonaco = (monaco: Monaco) => {
   globalMonaco = monaco;
 
@@ -61,7 +60,26 @@ export const registerMonaco = (monaco: Monaco) => {
       : null;
   if (savedTheme && globalMonaco) {
     globalMonaco.editor.setTheme(savedTheme);
+  } else if (globalMonaco) {
+    // If no saved theme, check system preference
+    const systemPrefersDark =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const defaultTheme = systemPrefersDark ? 'vs-dark' : 'light';
+    globalMonaco.editor.setTheme(defaultTheme);
   }
+};
+
+// Function to check system preference for dark mode
+const getSystemPreference = (): 'dark' | 'light' => {
+  if (typeof window === 'undefined') return 'dark'; // Default for SSR
+
+  return window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 };
 
 export const initEditorTheme = () => {
@@ -70,7 +88,7 @@ export const initEditorTheme = () => {
   const savedTheme = localStorage.getItem('editorTheme');
 
   if (savedTheme) {
-    // Apply theme variables
+    // Apply saved theme variables
     if (savedTheme in DEFAULT_THEMES) {
       // For default themes
       const themeConfig =
@@ -132,15 +150,40 @@ export const initEditorTheme = () => {
         console.error('Failed to load theme:', error);
       }
     }
+  } else {
+    // No saved theme, check system preference and apply appropriate default theme
+    const systemPreference = getSystemPreference();
+    const defaultTheme = systemPreference === 'dark' ? 'vs-dark' : 'light';
+
+    // Store in localStorage to maintain consistency
+    localStorage.setItem('editorTheme', defaultTheme);
+
+    // Apply default theme based on system preference
+    const themeConfig =
+      DEFAULT_THEMES[defaultTheme as keyof typeof DEFAULT_THEMES];
+    setCSSVariables(themeConfig.variables);
+    setCSSVariables({ '--status-bar-text': '#fff' });
+
+    // Set document classes
+    if (defaultTheme === 'vs-dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
   }
 
   // Apply theme to Monaco if it's available
-  if (globalMonaco && savedTheme) {
-    globalMonaco.editor.setTheme(savedTheme);
+  if (globalMonaco) {
+    const theme =
+      localStorage.getItem('editorTheme') ||
+      (getSystemPreference() === 'dark' ? 'vs-dark' : 'light');
+    globalMonaco.editor.setTheme(theme);
   }
 };
 
-// Run initialization immediately (without hooks)
+// Run initialization immediately
 if (typeof window !== 'undefined') {
   // Use setTimeout to ensure this runs after the browser has fully loaded
   setTimeout(initEditorTheme, 0);
