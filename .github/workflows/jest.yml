@@ -56,7 +56,7 @@ jobs:
 
       # Install dependencies
       - name: 🏗️ Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       # Build packages
       - name: 🔨 Build packages
