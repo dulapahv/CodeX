@@ -29,19 +29,19 @@
     ]
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.0",
-    "@commitlint/config-conventional": "^19.8.0",
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
     "@types/simple-peer": "^9.11.8",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.0",
+    "lint-staged": "^15.5.2",
     "prettier": "^3.5.3",
-    "prettier-plugin-classnames": "^0.7.7",
-    "prettier-plugin-merge": "^0.7.2",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-classnames": "^0.7.9",
+    "prettier-plugin-merge": "^0.7.4",
+    "prettier-plugin-tailwindcss": "^0.6.12",
     "rimraf": "^6.0.1",
-    "turbo": "^2.4.4",
-    "typescript": "^5.8.2"
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9",
