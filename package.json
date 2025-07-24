@@ -31,21 +31,22 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
+    "@ianvs/prettier-plugin-sort-imports": "^4.5.1",
+    "@prettier/plugin-oxc": "^0.0.4",
     "@types/simple-peer": "^9.11.8",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "prettier-plugin-classnames": "^0.7.9",
     "prettier-plugin-merge": "^0.7.4",
-    "prettier-plugin-tailwindcss": "^0.6.12",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "rimraf": "^6.0.1",
-    "turbo": "^2.5.4",
+    "turbo": "^2.5.5",
     "typescript": "^5.8.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9",
     "utf-8-validate": "^6.0.5"
   },
-  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
+  "packageManager": "pnpm@10.14.0-0+sha512.2cd47a0cbf5f1d1de7693a88307a0ede5be94e0d3b34853d800ee775efbea0650cb562b77605ec80bc8d925f5cd27c4dfe8bb04d3a0b76090784c664450d32d6"
 }
