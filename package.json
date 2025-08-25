@@ -31,7 +31,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@ianvs/prettier-plugin-sort-imports": "^4.5.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.6.2",
     "@prettier/plugin-oxc": "^0.0.4",
     "@types/simple-peer": "^9.11.8",
     "husky": "^9.1.7",
@@ -41,12 +41,12 @@
     "prettier-plugin-merge": "^0.7.4",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "rimraf": "^6.0.1",
-    "turbo": "^2.5.5",
-    "typescript": "^5.8.3"
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9",
     "utf-8-validate": "^6.0.5"
   },
-  "packageManager": "pnpm@10.14.0-0+sha512.2cd47a0cbf5f1d1de7693a88307a0ede5be94e0d3b34853d800ee775efbea0650cb562b77605ec80bc8d925f5cd27c4dfe8bb04d3a0b76090784c664450d32d6"
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }
