@@ -65,7 +65,7 @@ jobs:
           path: |
             ~/.pnpm-store
             ${{ github.workspace }}/apps/client/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/src/**/*.{js,jsx,ts,tsx}') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/client/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-

@@ -27,7 +27,7 @@ const eslintConfig = [
       '**/node_modules/*',
       '**/.next/*',
       '**/playwright-report/*',
-      '**/src/components/ui/*',
+      '**/components/ui/*',
       'tailwind.config.ts',
       'out/**',
       'build/**',
