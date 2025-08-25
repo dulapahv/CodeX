@@ -7,7 +7,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Suspense, type ReactNode } from 'react';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { GITHUB_OAUTH_DESCRIPTION, GITHUB_OAUTH_TITLE } from '@/lib/constants';
@@ -17,10 +17,6 @@ export const metadata: Metadata = {
   description: GITHUB_OAUTH_DESCRIPTION,
 };
 
-interface RootLayoutProps {
-  readonly children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: LayoutProps<'/oauth/github'>) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }

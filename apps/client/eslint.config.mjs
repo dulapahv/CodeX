@@ -9,12 +9,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
 import { FlatCompat } from '@eslint/eslintrc';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
-  baseDirectory: import.meta.dirname,
+  baseDirectory: __dirname,
 });
+
 const eslintConfig = [
   {
     ignores: [
@@ -23,13 +29,15 @@ const eslintConfig = [
       '**/playwright-report/*',
       '**/src/components/ui/*',
       'tailwind.config.ts',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
     ],
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
   },
-  ...compat.config({
-    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
-  }),
+  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
 ];
+
 export default eslintConfig;

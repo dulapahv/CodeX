@@ -17,7 +17,9 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
   poweredByHeader: false,
+  typedRoutes: true,
   experimental: {
+    typedEnv: true,
     optimizePackageImports: [
       '@codesandbox/sandpack-react',
       '@mdxeditor/editor',

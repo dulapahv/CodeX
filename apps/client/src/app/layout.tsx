@@ -10,7 +10,6 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 
 import { GeistMono } from 'geist/font/mono';
@@ -80,11 +79,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-interface RootLayoutProps {
-  readonly children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"

@@ -11,6 +11,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type { Route } from 'next';
 import Error from 'next/error';
 import Link from 'next/link';
 
@@ -62,7 +63,7 @@ URL: ${window.location.href}`;
             </AlertDescription>
             <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
               <Button variant="outline" asChild className="gap-2">
-                <Link href={generateErrorReport()} target="_blank">
+                <Link href={generateErrorReport() as Route} target="_blank">
                   <Bug className="size-4" />
                   Report Issue
                 </Link>
