@@ -6,8 +6,8 @@
     "dev": "nodemon -r tsconfig-paths/register src/index.ts",
     "start": "nodemon -r tsconfig-paths/register src/index.ts",
     "build": "rimraf dist && tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && echo Server built successfully!",
-    "format:check": "prettier . --c",
-    "format:fix": "prettier . --w",
+    "format:check": "prettier --c",
+    "format:fix": "prettier --w",
     "test:socket": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local'",
     "test:socket:remote": "jest --server=remote",
     "test:watch": "start-server-and-test 'pnpm start' tcp:3001 'jest --server=local --watch'"
