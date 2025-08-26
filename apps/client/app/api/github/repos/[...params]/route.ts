@@ -18,7 +18,7 @@ import { GITHUB_API_URL } from '@/lib/constants';
 
 export async function GET(
   req: NextRequest,
-  props: { params: Promise<{ params: string[] }> },
+  props: RouteContext<'/api/github/repos/[...params]'>,
 ) {
   const params = await props.params;
   try {

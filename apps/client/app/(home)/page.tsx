@@ -19,13 +19,9 @@ import { RoomAccessForm } from '@/components/room-access-form';
 import { ShowcaseGrid } from '@/components/showcase-grid';
 import { Status } from '@/components/status';
 
-interface PageProps {
-  searchParams: Promise<{
-    room: string;
-  }>;
-}
-export default async function Page({ searchParams }: PageProps) {
-  const roomId = (await searchParams).room;
+export default async function Page({ searchParams }: PageProps<'/'>) {
+  const params = await searchParams;
+  const roomId = params.roomId?.toString() || '';
 
   return (
     <>
