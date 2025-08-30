@@ -15,7 +15,7 @@
       "@codex/types/*": ["../../packages/types/*"]
     },
     "lib": ["ESNext"],
-    "types": []
+    "types": ["jest"]
   },
   "include": ["src/**/*", "tests/**/*", "jest.setup.ts"]
 }
