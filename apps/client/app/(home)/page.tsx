@@ -21,7 +21,7 @@ import { Status } from '@/components/status';
 
 export default async function Page({ searchParams }: PageProps<'/'>) {
   const params = await searchParams;
-  const roomId = params.roomId?.toString() || '';
+  const roomId = params.room?.toString() || '';
 
   return (
     <>
