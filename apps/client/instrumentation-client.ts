@@ -23,3 +23,5 @@ if (!isCi) {
     debug: false, // Print useful information to the console while setting up Sentry
   });
 }
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
