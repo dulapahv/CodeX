@@ -56,7 +56,6 @@
       "cache": true
     },
     "client#deploy": {
-      "dependsOn": ["build:client"],
       "cache": false
     }
   }
