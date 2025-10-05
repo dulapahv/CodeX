@@ -18,7 +18,8 @@
     "test:server:remote": "turbo test:socket:remote",
     "test:server:watch": "turbo test:watch",
     "clean": "node scripts/clean.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:client": "turbo deploy --filter=client..."
   },
   "lint-staged": {
     "**/*.{js,mjs,jsx,ts,tsx,json}": [
