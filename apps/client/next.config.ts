@@ -12,6 +12,7 @@
 import path from 'path';
 import type { NextConfig } from 'next';
 
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
@@ -60,3 +61,5 @@ export default withSentryConfig(nextConfig, {
   },
   telemetry: !isCi, // Disable Sentry telemetry in CI
 });
+
+initOpenNextCloudflareForDev();
