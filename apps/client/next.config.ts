@@ -15,6 +15,8 @@ import type { NextConfig } from 'next';
 import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 import { withSentryConfig } from '@sentry/nextjs';
 
+initOpenNextCloudflareForDev();
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
   poweredByHeader: false,
@@ -61,5 +63,3 @@ export default withSentryConfig(nextConfig, {
   },
   telemetry: !isCi, // Disable Sentry telemetry in CI
 });
-
-initOpenNextCloudflareForDev();
