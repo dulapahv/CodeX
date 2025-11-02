@@ -74,9 +74,3 @@ jobs:
           name: jest-report
           path: apps/server/test-results/junit.xml
           retention-days: 30
-
-      # Trigger Render deployment if tests pass
-      - name: 🚀 Trigger Render Deployment
-        if: success() && github.ref == 'refs/heads/main'
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
