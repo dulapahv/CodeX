@@ -31,10 +31,7 @@ export async function POST(request: Request) {
     const accessToken = cookieStore.get('access_token')?.value;
 
     if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body: CommitRequest = await request.json();
@@ -51,9 +48,9 @@ export async function POST(request: Request) {
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              'X-GitHub-Api-Version': '2022-11-28',
-            },
-          },
+              'X-GitHub-Api-Version': '2022-11-28'
+            }
+          }
         );
 
         if (response.status === 404) {
@@ -76,28 +73,25 @@ export async function POST(request: Request) {
       message: commitMessage,
       content,
       branch,
-      ...(currentSha && { sha: currentSha }),
+      ...(currentSha && { sha: currentSha })
     };
 
     // Create or update the file
-    const response = await fetch(
-      `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-        body: JSON.stringify(commitBody),
+    const response = await fetch(`${GITHUB_API_URL}/repos/${repo}/contents/${filePath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28'
       },
-    );
+      body: JSON.stringify(commitBody)
+    });
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
         { error: 'Failed to commit file', details: error },
-        { status: response.status },
+        { status: response.status }
       );
     }
 
@@ -105,9 +99,6 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error in commit route:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

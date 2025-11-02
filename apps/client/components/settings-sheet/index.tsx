@@ -15,7 +15,7 @@ import {
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
-  useState,
+  useState
 } from 'react';
 import Image from 'next/image';
 
@@ -33,7 +33,7 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
+  SheetTitle
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/spinner';
@@ -70,21 +70,21 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
 
     useImperativeHandle(ref, () => ({
       openDialog,
-      closeDialog,
+      closeDialog
     }));
 
     useLayoutEffect(() => {
       fetch('/api/github/auth', {
-        credentials: 'include',
+        credentials: 'include'
       })
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) =>
+        .then(res => (res.ok ? res.json() : null))
+        .then(data =>
           data
             ? setGithubUser({
                 username: data.username,
-                avatarUrl: data.avatarUrl,
+                avatarUrl: data.avatarUrl
               })
-            : null,
+            : null
         )
         .catch(console.error)
         .finally(() => setIsLoading(false));
@@ -94,13 +94,13 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
       const handleMessage = async (event: MessageEvent) => {
         if (event.data.type === 'github-oauth' && event.data.success) {
           const response = await fetch('/api/github/auth', {
-            credentials: 'include',
+            credentials: 'include'
           });
           if (response.ok) {
             const data = await response.json();
             setGithubUser({
               username: data.username,
-              avatarUrl: data.avatarUrl,
+              avatarUrl: data.avatarUrl
             });
           }
           window.authWindow?.close();
@@ -115,7 +115,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
       try {
         const response = await fetch('/api/github/auth', {
           method: 'DELETE',
-          credentials: 'include',
+          credentials: 'include'
         });
         if (response.ok) setGithubUser(null);
       } catch (error) {
@@ -133,22 +133,15 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
         >
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
-            <SheetDescription>
-              Configure your editor and GitHub connection.
-            </SheetDescription>
+            <SheetDescription>Configure your editor and GitHub connection.</SheetDescription>
           </SheetHeader>
-          <div
-            className="flex flex-col gap-y-4 py-4"
-            role="group"
-            aria-label="Settings Options"
-          >
+          <div className="flex flex-col gap-y-4 py-4" role="group" aria-label="Settings Options">
             <div>
               <Label className="text-base" id="github-section">
                 GitHub Connection
               </Label>
               <div className="text-muted-foreground text-sm">
-                Connect to GitHub to save your work and open files from your
-                repositories.
+                Connect to GitHub to save your work and open files from your repositories.
               </div>
             </div>
             {isLoading ? (
@@ -165,9 +158,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 role="status"
                 aria-label={`Connected to GitHub as ${githubUser.username}`}
               >
-                <div className="text-muted-foreground text-sm">
-                  Connected to GitHub as:
-                </div>
+                <div className="text-muted-foreground text-sm">Connected to GitHub as:</div>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="relative size-8 overflow-hidden rounded-full">
@@ -183,7 +174,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                         sizes="32px"
                         className={cn(
                           'object-cover transition-opacity',
-                          imageLoaded ? 'opacity-100' : 'opacity-0',
+                          imageLoaded ? 'opacity-100' : 'opacity-0'
                         )}
                         priority
                         onLoad={() => setImageLoaded(true)}
@@ -233,37 +224,29 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 Editor Settings
               </Label>
               <div className="text-muted-foreground text-sm">
-                Customize the appearance of the editor and other settings. For
-                more information on editor settings, refer to the{' '}
+                Customize the appearance of the editor and other settings. For more information on
+                editor settings, refer to the{' '}
                 <a
                   href="https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-foreground hover:text-muted-foreground font-medium underline
-                    underline-offset-2 !transition-all"
+                  className="text-foreground hover:text-muted-foreground font-medium underline underline-offset-2 !transition-all"
                 >
                   Monaco Editor documentation
                 </a>
                 .
               </div>
             </div>
-            <EditorThemeSettings
-              monaco={monaco}
-              aria-labelledby="editor-section"
-            />
+            <EditorThemeSettings monaco={monaco} aria-labelledby="editor-section" />
             <div className="top-16 space-y-2">
               <Label className="font-normal">Settings</Label>
-              <EditorConfig
-                monaco={monaco}
-                editor={editor}
-                aria-labelledby="editor-section"
-              />
+              <EditorConfig monaco={monaco} editor={editor} aria-labelledby="editor-section" />
             </div>
           </div>
         </SheetContent>
       </Sheet>
     );
-  },
+  }
 );
 
 SettingsSheet.displayName = 'SettingsSheet';

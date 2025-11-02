@@ -26,43 +26,41 @@ export default defineConfig({
   reporter: process.env.CI ? [['html'], ['github']] : 'html', // Reporter to use
   timeout: 120000, // Timeout for each test
   expect: {
-    timeout: 30000, // Timeout for each expect
+    timeout: 30000 // Timeout for each expect
   },
   // Shared settings for all the projects below
   use: {
     baseURL: 'http://localhost:3000', // Base URL for all the projects
     trace: 'on-first-retry', // Collect trace when retrying the failed test
-    screenshot: 'only-on-failure', // Collect screenshot after each test failure
+    screenshot: 'only-on-failure' // Collect screenshot after each test failure
   },
   // Configure projects for major browsers
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'] }
     },
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
+      use: { ...devices['Pixel 5'] }
+    }
   ],
 
   // Configure the web server for the test
   webServer: [
     {
-      command: process.env.CI
-        ? 'cd ../server && pnpm start'
-        : 'cd ../server && pnpm dev',
+      command: process.env.CI ? 'cd ../server && pnpm start' : 'cd ../server && pnpm dev',
       url: 'http://localhost:3001',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
-      stderr: 'pipe',
+      stderr: 'pipe'
     },
     {
       command: process.env.CI ? 'pnpm start' : 'pnpm dev',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
-      stderr: 'pipe',
-    },
-  ],
+      stderr: 'pipe'
+    }
+  ]
 });

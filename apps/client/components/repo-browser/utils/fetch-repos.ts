@@ -20,7 +20,7 @@ export const fetchRepos = async (
   setLoading: Dispatch<SetStateAction<boolean>>,
   setError: Dispatch<SetStateAction<string>>,
   setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
-  query?: string,
+  query?: string
 ) => {
   if (query?.trim() === '') {
     query = undefined;
@@ -29,8 +29,7 @@ export const fetchRepos = async (
   setLoading(true);
   setError('');
   try {
-    const endpoint =
-      '/api/github/repos' + (query ? `?q=${encodeURIComponent(query)}` : '');
+    const endpoint = '/api/github/repos' + (query ? `?q=${encodeURIComponent(query)}` : '');
     const response = await fetch(endpoint);
     if (!response.ok) throw new Error('Failed to fetch repositories');
     const data = await response.json();

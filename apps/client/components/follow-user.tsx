@@ -24,19 +24,11 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
+  CommandList
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar } from '@/components/avatar';
 
 interface UserListProps {
@@ -48,14 +40,12 @@ const FollowUser = ({ users }: UserListProps) => {
   const [value, setValue] = useState<string | null>(storage.getFollowUserId());
 
   const currentUserId = storage.getUserId();
-  const filteredUsers = users.filter((user) => user.id !== currentUserId);
+  const filteredUsers = users.filter(user => user.id !== currentUserId);
 
   useEffect(() => {
     const followedUserId = storage.getFollowUserId();
     if (followedUserId) {
-      const isUserStillPresent = users.some(
-        (user) => user.id === followedUserId,
-      );
+      const isUserStillPresent = users.some(user => user.id === followedUserId);
       if (!isUserStillPresent) {
         setValue(null);
         storage.setFollowUserId(null);
@@ -75,10 +65,8 @@ const FollowUser = ({ users }: UserListProps) => {
     if (value === null) {
       return 'Not following anyone';
     }
-    const followedUser = users.find((user) => user.id === value);
-    return followedUser
-      ? `Following ${followedUser.username}`
-      : 'Not following anyone';
+    const followedUser = users.find(user => user.id === value);
+    return followedUser ? `Following ${followedUser.username}` : 'Not following anyone';
   };
 
   return (
@@ -105,10 +93,10 @@ const FollowUser = ({ users }: UserListProps) => {
       <PopoverContent
         className="mr-1 w-64 p-0"
         sideOffset={8}
-        onOpenAutoFocus={(event) => {
+        onOpenAutoFocus={event => {
           if (isMobile) event.preventDefault();
         }}
-        onCloseAutoFocus={(event) => {
+        onCloseAutoFocus={event => {
           event.preventDefault();
         }}
       >
@@ -125,12 +113,10 @@ const FollowUser = ({ users }: UserListProps) => {
                 onSelect={handleSelect}
                 className="flex h-9 items-center justify-between px-2 py-1.5"
               >
-                <span className="max-w-44 truncate text-ellipsis">
-                  Don&apos;t follow anyone
-                </span>
+                <span className="max-w-44 truncate text-ellipsis">Don&apos;t follow anyone</span>
                 {value === null && <Check className="size-4 flex-shrink-0" />}
               </CommandItem>
-              {filteredUsers.map((user) => (
+              {filteredUsers.map(user => (
                 <CommandItem
                   key={user.id}
                   value={`${user.id}$${user.username}`}
@@ -138,19 +124,10 @@ const FollowUser = ({ users }: UserListProps) => {
                   className="flex items-center justify-between px-2 py-1.5"
                 >
                   <div className="flex items-center gap-2">
-                    <Avatar
-                      user={user}
-                      size="sm"
-                      showTooltip={false}
-                      animate={false}
-                    />
-                    <span className="max-w-44 truncate text-ellipsis">
-                      {user.username}
-                    </span>
+                    <Avatar user={user} size="sm" showTooltip={false} animate={false} />
+                    <span className="max-w-44 truncate text-ellipsis">{user.username}</span>
                   </div>
-                  {value === user.id && (
-                    <Check className="size-4 flex-shrink-0" />
-                  )}
+                  {value === user.id && <Check className="size-4 flex-shrink-0" />}
                 </CommandItem>
               ))}
             </CommandGroup>

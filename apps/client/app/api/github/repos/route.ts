@@ -26,10 +26,7 @@ export async function GET(request: Request) {
     const accessToken = cookieStore.get('access_token');
 
     if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Unauthorized - No access token found' },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: 'Unauthorized - No access token found' }, { status: 401 });
     }
 
     // Construct the GitHub API URL with search query and sort parameters
@@ -41,15 +38,15 @@ export async function GET(request: Request) {
     const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
-        Accept: 'application/vnd.github.v3+json',
-      },
+        Accept: 'application/vnd.github.v3+json'
+      }
     });
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
         { error: error.message || 'Failed to fetch repositories' },
-        { status: response.status },
+        { status: response.status }
       );
     }
 
@@ -59,13 +56,10 @@ export async function GET(request: Request) {
     // Return the repositories data
     return NextResponse.json({
       repositories,
-      total: repositories.length,
+      total: repositories.length
     });
   } catch (error) {
     console.error('Error fetching repositories:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

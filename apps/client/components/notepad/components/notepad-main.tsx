@@ -44,7 +44,7 @@ import {
   thematicBreakPlugin,
   toolbarPlugin,
   UndoRedo,
-  type MDXEditorMethods,
+  type MDXEditorMethods
 } from '@mdxeditor/editor';
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
 import { useTheme } from 'next-themes';
@@ -86,19 +86,17 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
       codeBlockPlugin({ defaultCodeBlockLanguage: '' }),
       markdownShortcutPlugin(),
       directivesPlugin({
-        directiveDescriptors: [AdmonitionDirectiveDescriptor],
+        directiveDescriptors: [AdmonitionDirectiveDescriptor]
       }),
       diffSourcePlugin({
         diffMarkdown: markdown,
-        viewMode: 'rich-text',
+        viewMode: 'rich-text'
       }),
       imagePlugin(),
       codeMirrorPlugin({
-        codeMirrorExtensions: [
-          resolvedTheme === 'dark' ? githubDark : githubLight,
-        ],
+        codeMirrorExtensions: [resolvedTheme === 'dark' ? githubDark : githubLight],
         codeBlockLanguages,
-        autoLoadLanguageSupport: true,
+        autoLoadLanguageSupport: true
       }),
       toolbarPlugin({
         toolbarContents: () => (
@@ -127,10 +125,10 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
             <InsertAdmonition />
             <Separator />
           </DiffSourceToggleWrapper>
-        ),
-      }),
+        )
+      })
     ],
-    [resolvedTheme, markdown],
+    [resolvedTheme, markdown]
   );
 
   useEffect(() => {
@@ -148,7 +146,7 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
     const editor = markdownEditorRef.current;
     if (editor) {
       contentRef.current = editor.getMarkdown();
-      setKey((prev) => prev + 1);
+      setKey(prev => prev + 1);
     }
   }, [resolvedTheme]);
 
@@ -172,14 +170,12 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full
         [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full
         [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full
-        [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full
-        [&>*:nth-child(2)]:overflow-auto
-        [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
-        [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
-        [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)]
-        first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap
-        first:[&>div]:!rounded-none`,
-        resolvedTheme === 'dark' && '!dark-editor !dark-theme',
+        [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto
+        [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0
+        [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
+        [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex
+        first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none`,
+        resolvedTheme === 'dark' && '!dark-editor !dark-theme'
       )}
       contentEditableClassName={cn(
         `prose h-full max-w-none dark:prose-invert
@@ -203,7 +199,7 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         prose-hr:border-foreground/30 prose-hr:my-4
         prose-table:my-0
         prose-th:!py-0
-        prose-td:!py-0 prose-td:align-middle`,
+        prose-td:!py-0 prose-td:align-middle`
       )}
     />
   );

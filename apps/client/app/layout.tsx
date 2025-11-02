@@ -15,13 +15,7 @@ import type { Metadata, Viewport } from 'next';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 
-import {
-  BASE_CLIENT_URL,
-  NAME,
-  PORTFOLIO_URL,
-  SITE_DESCRIPTION,
-  SITE_NAME,
-} from '@/lib/constants';
+import { BASE_CLIENT_URL, NAME, PORTFOLIO_URL, SITE_DESCRIPTION, SITE_NAME } from '@/lib/constants';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Analytics } from '@/components/analytics';
@@ -34,7 +28,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: {
     default: SITE_NAME,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s | ${SITE_NAME}`
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
@@ -45,29 +39,29 @@ export const metadata: Metadata = {
   publisher: NAME,
   authors: {
     name: NAME,
-    url: PORTFOLIO_URL,
+    url: PORTFOLIO_URL
   },
   metadataBase: new URL(BASE_CLIENT_URL),
   formatDetection: {
-    telephone: false,
+    telephone: false
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'default'
   },
   openGraph: {
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_US',
-    url: BASE_CLIENT_URL,
+    url: BASE_CLIENT_URL
   },
   twitter: {
     card: 'summary_large_image',
-    creator: '@dulapahv',
+    creator: '@dulapahv'
   },
   alternates: {
-    canonical: BASE_CLIENT_URL,
-  },
+    canonical: BASE_CLIENT_URL
+  }
 };
 
 export const viewport: Viewport = {
@@ -76,7 +70,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   userScalable: false,
   maximumScale: 1,
-  viewportFit: 'cover',
+  viewportFit: 'cover'
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

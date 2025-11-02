@@ -8,17 +8,14 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import {
-  itemType,
-  type ExtendedTreeDataItem,
-} from '@/components/repo-browser/types/tree';
+import { itemType, type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 
 export const getDisplayPath = (
   repo: string,
   githubUser: string,
   branch: string,
   selectedItem: ExtendedTreeDataItem | null,
-  fileName: string,
+  fileName: string
 ) => {
   // Start with repo or githubUser
   let path = repo || githubUser;

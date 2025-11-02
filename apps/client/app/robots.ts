@@ -20,9 +20,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/room/*', '/oauth/*', '/test/*', '/api/*'],
-      },
+        disallow: ['/room/*', '/oauth/*', '/test/*', '/api/*']
+      }
     ],
-    host: BASE_CLIENT_URL,
+    host: BASE_CLIENT_URL
   };
 }

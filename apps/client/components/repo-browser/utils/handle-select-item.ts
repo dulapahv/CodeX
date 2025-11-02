@@ -20,7 +20,7 @@ import { fetchContents } from './fetch-contents';
 // Helper function to find item's parent repo and branch
 const findParents = (
   treeData: ExtendedTreeDataItem[],
-  itemId: string,
+  itemId: string
 ): {
   parentRepo: ExtendedTreeDataItem | undefined;
   parentBranch: ExtendedTreeDataItem | undefined;
@@ -56,11 +56,11 @@ export const handleSelectItem = async (
   setItemLoading: (
     itemId: string,
     isLoading: boolean,
-    setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
+    setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>
   ) => void,
   setError: Dispatch<SetStateAction<string>>,
   setRepo: Dispatch<SetStateAction<string>>,
-  setBranch: Dispatch<SetStateAction<string>>,
+  setBranch: Dispatch<SetStateAction<string>>
 ) => {
   const extendedItem = item as ExtendedTreeDataItem;
   setSelectedItem(extendedItem);
@@ -79,25 +79,17 @@ export const handleSelectItem = async (
     setBranch(extendedItem.name);
 
     if (!item.children) {
-      const parentRepo = treeData.find((repo) =>
-        repo.children?.some((branch) => branch.id === item.id),
+      const parentRepo = treeData.find(repo =>
+        repo.children?.some(branch => branch.id === item.id)
       );
       if (parentRepo) {
-        await fetchContents(
-          parentRepo,
-          extendedItem,
-          '',
-          setTreeData,
-          setItemLoading,
-          setError,
-        );
+        await fetchContents(parentRepo, extendedItem, '', setTreeData, setItemLoading, setError);
       }
     }
   }
   // Update path when selecting a directory or file
   else if (
-    (extendedItem.type === itemType.DIR ||
-      extendedItem.type === itemType.FILE) &&
+    (extendedItem.type === itemType.DIR || extendedItem.type === itemType.FILE) &&
     extendedItem.path
   ) {
     if (extendedItem.type === itemType.DIR && !item.children) {
@@ -110,7 +102,7 @@ export const handleSelectItem = async (
           extendedItem.path,
           setTreeData,
           setItemLoading,
-          setError,
+          setError
         );
       }
     }

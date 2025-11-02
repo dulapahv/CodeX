@@ -10,11 +10,7 @@
  */
 
 import { ArrowRight } from 'lucide-react';
-import type {
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-} from 'react-hook-form';
+import type { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +36,7 @@ export const InvitedSection = ({
   onError,
   errors,
   isSubmitting,
-  isCreating,
+  isCreating
 }: InvitedSectionProps) => {
   const isDisabled = isCreating || isSubmitting;
   const nameErrorId = 'invited-name-error';
@@ -48,15 +44,11 @@ export const InvitedSection = ({
   return (
     <section aria-label="Join Room Form">
       <form
-        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        onSubmit={handleSubmit(data => onSubmit(data), onError)}
         className="flex flex-col gap-y-4"
         noValidate
       >
-        <div
-          className="flex flex-col space-y-1.5"
-          role="group"
-          aria-labelledby="name-join"
-        >
+        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby="name-join">
           <Label htmlFor="name-join" className="text-sm sm:text-base">
             Name
           </Label>
@@ -84,9 +76,7 @@ export const InvitedSection = ({
         >
           {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
           {isSubmitting ? 'Joining...' : 'Join Room'}
-          {!isSubmitting && (
-            <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />
-          )}
+          {!isSubmitting && <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />}
         </Button>
       </form>
     </section>

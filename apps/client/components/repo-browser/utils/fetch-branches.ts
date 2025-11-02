@@ -22,9 +22,9 @@ export const fetchBranches = async (
   setItemLoading: (
     itemId: string,
     isLoading: boolean,
-    setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
+    setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>
   ) => void,
-  setError: Dispatch<SetStateAction<string>>,
+  setError: Dispatch<SetStateAction<string>>
 ) => {
   if (!repo.full_name) return;
 
@@ -32,9 +32,7 @@ export const fetchBranches = async (
   setError('');
   try {
     const [owner, repoName] = repo.full_name.split('/');
-    const response = await fetch(
-      `/api/github/repos/branches/${owner}/${repoName}`,
-    );
+    const response = await fetch(`/api/github/repos/branches/${owner}/${repoName}`);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -44,12 +42,10 @@ export const fetchBranches = async (
     const branches = await response.json();
     const branchData = transformBranchesToTreeData(repo.id, branches);
 
-    setTreeData((prevData) =>
-      prevData.map((item) =>
-        item.id === repo.id
-          ? { ...item, children: branchData, isLoading: false }
-          : item,
-      ),
+    setTreeData(prevData =>
+      prevData.map(item =>
+        item.id === repo.id ? { ...item, children: branchData, isLoading: false } : item
+      )
     );
   } catch (err) {
     setError(parseError(err));

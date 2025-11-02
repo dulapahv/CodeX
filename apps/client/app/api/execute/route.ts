@@ -32,10 +32,7 @@ export async function POST(request: Request) {
     }
 
     if (!body.language) {
-      return NextResponse.json(
-        { error: 'Language is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Language is required' }, { status: 400 });
     }
 
     const controller = new AbortController();
@@ -46,7 +43,7 @@ export async function POST(request: Request) {
     const response = await fetch(PISTON_API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         language: body.language.toLowerCase(),
@@ -55,9 +52,9 @@ export async function POST(request: Request) {
         stdin: body.stdin || '',
         args: Array.isArray(body.args) ? body.args : [],
         run_timeout: 30000, // 30 seconds timeout
-        compile_timeout: 30000,
+        compile_timeout: 30000
       }),
-      signal: controller.signal,
+      signal: controller.signal
     });
 
     if (!response.ok) {
@@ -70,25 +67,22 @@ export async function POST(request: Request) {
     const metadata = {
       args: body.args || [],
       stdin: body.stdin || '',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     return NextResponse.json({
       ...data,
-      metadata,
+      metadata
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       return NextResponse.json(
         { error: 'Code execution cancelled' },
-        { status: 499 }, // Using 499 Client Closed Request
+        { status: 499 } // Using 499 Client Closed Request
       );
     }
 
     console.error('Code execution error:', error);
-    return NextResponse.json(
-      { error: 'Failed to execute code' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to execute code' }, { status: 500 });
   }
 }

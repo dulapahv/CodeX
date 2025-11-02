@@ -35,7 +35,7 @@ import type { EditOp } from '@codex/types/operation';
 export const updateCode = (
   op: EditOp,
   editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
-  skipUpdateRef: RefObject<boolean>,
+  skipUpdateRef: RefObject<boolean>
 ): void => {
   const editor = editorInstanceRef.current;
   if (!editor) return;
@@ -53,11 +53,11 @@ export const updateCode = (
             startLineNumber: op[1],
             startColumn: op[2],
             endLineNumber: op[3],
-            endColumn: op[4],
-          },
-        },
+            endColumn: op[4]
+          }
+        }
       ],
-      () => [],
+      () => []
     );
   }
   skipUpdateRef.current = false;

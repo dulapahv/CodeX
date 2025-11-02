@@ -10,11 +10,7 @@
  */
 
 import { CirclePlus } from 'lucide-react';
-import type {
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-} from 'react-hook-form';
+import type { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +36,7 @@ export const CreateRoomSection = ({
   onError,
   errors,
   isSubmitting,
-  isJoining,
+  isJoining
 }: CreateRoomSectionProps) => {
   const isDisabled = isSubmitting || isJoining;
   const inputId = 'name-create';
@@ -49,18 +45,14 @@ export const CreateRoomSection = ({
   return (
     <section aria-labelledby="create-room-heading">
       <form
-        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        onSubmit={handleSubmit(data => onSubmit(data), onError)}
         className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
       >
         <h1 id="create-room-heading" className="text-lg font-medium sm:text-xl">
           Create a Room
         </h1>
-        <div
-          className="flex flex-col space-y-1.5"
-          role="group"
-          aria-labelledby={inputId}
-        >
+        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby={inputId}>
           <Label htmlFor={inputId} className="text-sm font-medium sm:text-base">
             Name
           </Label>

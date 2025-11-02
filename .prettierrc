@@ -1,30 +1,22 @@
 {
-  "printWidth": 80,
-  "tabWidth": 2,
-  "useTabs": false,
-  "semi": true,
   "singleQuote": true,
-  "quoteProps": "as-needed",
-  "jsxSingleQuote": false,
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "bracketSameLine": false,
-  "arrowParens": "always",
+  "arrowParens": "avoid",
+  "trailingComma": "none",
   "endOfLine": "lf",
-  "embeddedLanguageFormatting": "auto",
-  "singleAttributePerLine": false,
-  "importOrderTypeScriptVersion": "5.0.0",
-  "importOrderParserPlugins": [
-    "typescript",
-    "jsx",
-    "decorators-legacy",
-    "importAssertions"
+  "printWidth": 100,
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "prettier-plugin-classnames",
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-merge"
   ],
   "importOrder": [
     "^(react|react-dom)$",
     "^react/(.*)$",
     "^(next|next-auth)$",
     "^next/(.*)$",
+    "",
+    "<BUILTIN_MODULES>",
     "",
     "<THIRD_PARTY_MODULES>",
     "",
@@ -43,11 +35,5 @@
     "^@/(.*)$",
     "",
     "^[./]"
-  ],
-  "plugins": [
-    "prettier-plugin-tailwindcss",
-    "prettier-plugin-classnames",
-    "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-merge"
   ]
 }

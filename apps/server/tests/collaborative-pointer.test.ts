@@ -22,32 +22,32 @@ const testCases = [
     name: 'Small movement',
     start: [100, 100] as Pointer,
     end: [110, 110] as Pointer,
-    description: 'Small diagonal pointer movement (10px)',
+    description: 'Small diagonal pointer movement (10px)'
   },
   {
     name: 'Medium horizontal movement',
     start: [100, 100] as Pointer,
     end: [300, 100] as Pointer,
-    description: 'Medium horizontal movement (200px)',
+    description: 'Medium horizontal movement (200px)'
   },
   {
     name: 'Medium vertical movement',
     start: [100, 100] as Pointer,
     end: [100, 300] as Pointer,
-    description: 'Medium vertical movement (200px)',
+    description: 'Medium vertical movement (200px)'
   },
   {
     name: 'Large diagonal movement',
     start: [100, 100] as Pointer,
     end: [500, 500] as Pointer,
-    description: 'Large diagonal movement (~565px)',
+    description: 'Large diagonal movement (~565px)'
   },
   {
     name: 'Screen corner movement',
     start: [0, 0] as Pointer,
     end: [1920, 1080] as Pointer,
-    description: 'Movement across typical screen dimensions',
-  },
+    description: 'Movement across typical screen dimensions'
+  }
 ];
 
 interface TestResult {
@@ -91,7 +91,7 @@ ${result.movement.speed ? `Movement Speed: ${this.formatNumber(result.movement.s
 `
     : ''
 }
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(', ')} ms
+Samples: ${result.samples.map(s => this.formatNumber(s)).join(', ')} ms
 
 Statistics:
 • Average Latency:      ${this.formatNumber(result.average)} ms
@@ -112,21 +112,17 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join('\n')}
+${this.results.map(r => this.generateTestCaseReport(r)).join('\n')}
 
 ${this.rapidMovementResults ? this.generateTestCaseReport(this.rapidMovementResults) : ''}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
 Overall Average Latency: ${this.formatNumber(
-      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length,
+      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(
-      Math.min(...this.results.map((r) => r.minimum)),
-    )} ms
-Worst Performance: ${this.formatNumber(
-      Math.max(...this.results.map((r) => r.maximum)),
-    )} ms
+Best Performance: ${this.formatNumber(Math.min(...this.results.map(r => r.minimum)))} ms
+Worst Performance: ${this.formatNumber(Math.max(...this.results.map(r => r.maximum)))} ms
 `;
   }
 
@@ -154,7 +150,7 @@ describe('Pointer Tracking Latency Tests', () => {
     // Create sender socket and room
     senderSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      senderSocket.on('connect_error', (error) => reject(error));
+      senderSocket.on('connect_error', error => reject(error));
       senderSocket.on('connect', () => {
         resolve();
       });
@@ -172,7 +168,7 @@ describe('Pointer Tracking Latency Tests', () => {
     // Setup receiver
     receiverSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      receiverSocket.on('connect_error', (error) => reject(error));
+      receiverSocket.on('connect_error', error => reject(error));
       receiverSocket.on('connect', () => {
         resolve();
       });
@@ -187,7 +183,7 @@ describe('Pointer Tracking Latency Tests', () => {
     });
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       setTimeout(resolve, 1000);
     });
   }, 130000);
@@ -204,17 +200,14 @@ describe('Pointer Tracking Latency Tests', () => {
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  const measureLatency = async (
-    start: Pointer,
-    end: Pointer,
-  ): Promise<number[]> => {
+  const measureLatency = async (start: Pointer, end: Pointer): Promise<number[]> => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
+      await new Promise(resolve => setTimeout(resolve, 100)); // Delay between samples
 
       // First movement to start position
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         receiverSocket.once(PointerServiceMsg.POINTER, () => {
           resolve();
         });
@@ -223,7 +216,7 @@ describe('Pointer Tracking Latency Tests', () => {
 
       // Measure movement to end position
       const startTime = performance.now();
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         receiverSocket.once(PointerServiceMsg.POINTER, () => {
           const latency = performance.now() - startTime;
           latencies.push(latency);
@@ -237,7 +230,7 @@ describe('Pointer Tracking Latency Tests', () => {
   };
 
   const calculateStats = (
-    samples: number[],
+    samples: number[]
   ): {
     average: number;
     standardDeviation: number;
@@ -246,36 +239,32 @@ describe('Pointer Tracking Latency Tests', () => {
   } => {
     const average = samples.reduce((a, b) => a + b) / samples.length;
     const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) /
-        samples.length,
+      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / samples.length
     );
     return {
       average,
       standardDeviation,
       minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
+      maximum: Math.max(...samples)
     };
   };
 
-  test.each(testCases)(
-    'Pointer latency for $name',
-    async ({ name, start, end, description }) => {
-      const latencies = await measureLatency(start, end);
-      const stats = calculateStats(latencies);
-      const distance = calculateDistance(start, end);
+  test.each(testCases)('Pointer latency for $name', async ({ name, start, end, description }) => {
+    const latencies = await measureLatency(start, end);
+    const stats = calculateStats(latencies);
+    const distance = calculateDistance(start, end);
 
-      report.addResult({
-        name,
-        samples: latencies,
-        description,
-        movement: {
-          distance,
-          speed: distance / (stats.average / 1000), // pixels per second
-        },
-        ...stats,
-      });
-    },
-  );
+    report.addResult({
+      name,
+      samples: latencies,
+      description,
+      movement: {
+        distance,
+        speed: distance / (stats.average / 1000) // pixels per second
+      },
+      ...stats
+    });
+  });
 
   test('Rapid pointer movements', async () => {
     const movements = 100;
@@ -289,12 +278,12 @@ describe('Pointer Tracking Latency Tests', () => {
         .map((_, i) => {
           const newPosition: Pointer = [
             100 * Math.cos((i * Math.PI) / 10) + 500,
-            100 * Math.sin((i * Math.PI) / 10) + 500,
+            100 * Math.sin((i * Math.PI) / 10) + 500
           ];
           totalDistance += calculateDistance(lastPosition, newPosition);
           lastPosition = newPosition;
 
-          return new Promise<void>((resolve) => {
+          return new Promise<void>(resolve => {
             const startTime = performance.now();
             receiverSocket.once(PointerServiceMsg.POINTER, () => {
               timings.push(performance.now() - startTime);
@@ -302,7 +291,7 @@ describe('Pointer Tracking Latency Tests', () => {
             });
             senderSocket.emit(PointerServiceMsg.POINTER, newPosition);
           });
-        }),
+        })
     );
 
     const stats = calculateStats(timings);
@@ -312,9 +301,9 @@ describe('Pointer Tracking Latency Tests', () => {
       description: `${movements} rapid circular pointer movements`,
       movement: {
         distance: totalDistance,
-        speed: totalDistance / ((stats.average * movements) / 1000),
+        speed: totalDistance / ((stats.average * movements) / 1000)
       },
-      ...stats,
+      ...stats
     });
   });
 });

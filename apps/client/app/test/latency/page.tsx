@@ -15,7 +15,7 @@ import { LatencyTest } from '@/components/latency-test';
 
 export const metadata: Metadata = {
   title: LATENCY_TEST_TITLE,
-  description: LATENCY_TEST_DESCRIPTION,
+  description: LATENCY_TEST_DESCRIPTION
 };
 
 export default function LatencyTestPage() {

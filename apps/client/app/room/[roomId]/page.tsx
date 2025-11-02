@@ -11,14 +11,7 @@
 
 'use client';
 
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react';
+import { memo, useCallback, useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 import type { Monaco } from '@monaco-editor/react';
@@ -34,11 +27,7 @@ import { getSocket } from '@/lib/socket';
 import { cn, leaveRoom } from '@/lib/utils';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { CodeEditor } from '@/components/code-editor';
 import { FollowUser } from '@/components/follow-user';
 import { LeaveButton } from '@/components/leave-button';
@@ -49,10 +38,7 @@ import { RunButton } from '@/components/run-button';
 import { SettingsButton } from '@/components/settings-button';
 import { ShareButton } from '@/components/share-button';
 import { Spinner } from '@/components/spinner';
-import {
-  StatusBar,
-  type StatusBarCursorPosition,
-} from '@/components/status-bar';
+import { StatusBar, type StatusBarCursorPosition } from '@/components/status-bar';
 import { Terminal } from '@/components/terminal';
 import { Toolbar } from '@/components/toolbar';
 import { UserList } from '@/components/user-list';
@@ -71,7 +57,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   setShowNotepad,
   setShowTerminal,
   setShowWebcam,
-  setShowLivePreview,
+  setShowLivePreview
 }: {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
@@ -88,15 +74,8 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   setShowLivePreview: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
-    <div
-      className="fixed flex w-full items-center justify-between gap-x-2
-        bg-[color:var(--toolbar-bg-secondary)] p-1"
-    >
-      <div
-        className="animate-fade-in-top"
-        role="group"
-        aria-label="Editor Toolbar"
-      >
+    <div className="fixed flex w-full items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
+      <div className="animate-fade-in-top" role="group" aria-label="Editor Toolbar">
         <Toolbar
           monaco={monaco}
           editor={editor}
@@ -124,17 +103,13 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   );
 });
 
-const MemoizedNotepad = memo(function MemoizedNotepad({
-  markdown,
-}: {
-  markdown: string;
-}) {
+const MemoizedNotepad = memo(function MemoizedNotepad({ markdown }: { markdown: string }) {
   return <Notepad markdown={markdown} />;
 });
 
 const MemoizedTerminal = memo(function MemoizedTerminal({
   results,
-  setResults,
+  setResults
 }: {
   results: ExecutionResult[];
   setResults: Dispatch<SetStateAction<ExecutionResult[]>>;
@@ -142,38 +117,24 @@ const MemoizedTerminal = memo(function MemoizedTerminal({
   return <Terminal results={results} setResults={setResults} />;
 });
 
-const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
-  users,
-}: {
-  users: User[];
-}) {
+const MemoizedWebcamStream = memo(function MemoizedWebcamStream({ users }: { users: User[] }) {
   return <WebcamStream users={users} />;
 });
 
-const MemoizedLivePreview = memo(function MemoizedLivePreview({
-  value,
-}: {
-  value: string;
-}) {
+const MemoizedLivePreview = memo(function MemoizedLivePreview({ value }: { value: string }) {
   return <LivePreview value={value} />;
 });
 
 const MemoizedStatusBar = memo(function MemoizedStatusBar({
   monaco,
   editor,
-  cursorPosition,
+  cursorPosition
 }: {
   monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
   cursorPosition: StatusBarCursorPosition;
 }) {
-  return (
-    <StatusBar
-      monaco={monaco}
-      editor={editor}
-      cursorPosition={cursorPosition}
-    />
-  );
+  return <StatusBar monaco={monaco} editor={editor} cursorPosition={cursorPosition} />;
 });
 
 export default function Room() {
@@ -189,15 +150,12 @@ export default function Room() {
   const [showLivePreview, setShowLivePreview] = useState(true);
   const [code, setCode] = useState<string | null>(null);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
-  const [editor, setEditor] =
-    useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
-    {
-      line: 1,
-      column: 1,
-      selected: 0,
-    },
-  );
+  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>({
+    line: 1,
+    column: 1,
+    selected: 0
+  });
 
   const [users, setUsers] = useState<User[]>([]);
   const [defaultCode, setDefaultCode] = useState<string | null>(null);
@@ -225,7 +183,7 @@ export default function Room() {
   }, []);
 
   const handleTerminalReceive = useCallback((result: ExecutionResult) => {
-    setOutput((prev) => [...prev, result]);
+    setOutput(prev => [...prev, result]);
   }, []);
 
   useEffect(() => {
@@ -263,31 +221,21 @@ export default function Room() {
     handleUsersUpdate,
     handleCodeReceive,
     handleMarkdownReceive,
-    handleTerminalReceive,
+    handleTerminalReceive
   ]);
 
   const handleMonacoSetup = useCallback((monacoInstance: Monaco) => {
     setMonaco(monacoInstance);
   }, []);
 
-  const handleEditorSetup = useCallback(
-    (editorInstance: monaco.editor.IStandaloneCodeEditor) => {
-      setEditor(editorInstance);
-    },
-    [],
-  );
+  const handleEditorSetup = useCallback((editorInstance: monaco.editor.IStandaloneCodeEditor) => {
+    setEditor(editorInstance);
+  }, []);
 
   return (
-    <main
-      className="flex h-full min-w-[821px] flex-col"
-      aria-label="Code Editor Workspace"
-    >
+    <main className="flex h-full min-w-[821px] flex-col" aria-label="Code Editor Workspace">
       <RemotePointers />
-      <div
-        className="h-9 flex-shrink-0"
-        role="toolbar"
-        aria-label="Editor Controls"
-      >
+      <div className="h-9 flex-shrink-0" role="toolbar" aria-label="Editor Controls">
         {monaco && editor && (
           <MemoizedToolbar
             monaco={monaco}
@@ -307,16 +255,13 @@ export default function Room() {
         )}
       </div>
       {defaultCode !== null && mdContent !== null ? (
-        <ResizablePanelGroup
-          className="!h-[calc(100%-54px)]"
-          direction="horizontal"
-        >
+        <ResizablePanelGroup className="!h-[calc(100%-54px)]" direction="horizontal">
           <ResizablePanel
             className={cn(
               'animate-fade-in-left [&>div]:h-full',
               monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
-              !showNotepad && 'hidden',
+              !showNotepad && 'hidden'
             )}
             role="region"
             aria-label="Notepad"
@@ -331,7 +276,7 @@ export default function Room() {
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
-              !showNotepad && 'hidden',
+              !showNotepad && 'hidden'
             )}
           />
 
@@ -346,9 +291,7 @@ export default function Room() {
               >
                 <ResizablePanelGroup
                   direction="horizontal"
-                  className={cn(
-                    monaco && editor && 'border-muted-foreground border-t',
-                  )}
+                  className={cn(monaco && editor && 'border-muted-foreground border-t')}
                 >
                   <ResizablePanel defaultSize={60} minSize={10}>
                     <CodeEditor
@@ -364,7 +307,7 @@ export default function Room() {
                     className={cn(
                       'bg-muted-foreground',
                       (!monaco || !editor) && 'hidden',
-                      !showLivePreview && 'hidden',
+                      !showLivePreview && 'hidden'
                     )}
                   />
                   <ResizablePanel
@@ -374,12 +317,10 @@ export default function Room() {
                     className={cn(
                       'animate-fade-in-right',
                       (!monaco || !editor) && 'hidden',
-                      !showLivePreview && 'hidden',
+                      !showLivePreview && 'hidden'
                     )}
                   >
-                    {editor && (
-                      <MemoizedLivePreview value={code || defaultCode} />
-                    )}
+                    {editor && <MemoizedLivePreview value={code || defaultCode} />}
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </ResizablePanel>
@@ -388,14 +329,14 @@ export default function Room() {
                 className={cn(
                   'bg-muted-foreground',
                   (!monaco || !editor) && 'hidden',
-                  !showTerminal && 'hidden',
+                  !showTerminal && 'hidden'
                 )}
               />
               <ResizablePanel
                 className={cn(
                   'animate-fade-in-bottom',
                   (!monaco || !editor) && 'hidden',
-                  !showTerminal && 'hidden',
+                  !showTerminal && 'hidden'
                 )}
                 role="region"
                 aria-label="Terminal"
@@ -412,7 +353,7 @@ export default function Room() {
             className={cn(
               'bg-muted-foreground',
               (!monaco || !editor) && 'hidden',
-              !showWebcam && 'hidden',
+              !showWebcam && 'hidden'
             )}
           />
           <ResizablePanel
@@ -420,7 +361,7 @@ export default function Room() {
               'animate-fade-in-right',
               monaco && editor && 'border-muted-foreground border-t',
               (!monaco || !editor) && 'hidden',
-              !showWebcam && 'hidden',
+              !showWebcam && 'hidden'
             )}
             role="region"
             aria-label="Webcam Stream"
@@ -441,19 +382,13 @@ export default function Room() {
             <Spinner className="size-6" />
             <div>
               <AlertTitle>Loading session</AlertTitle>
-              <AlertDescription>
-                Loading your coding session. Please wait...
-              </AlertDescription>
+              <AlertDescription>Loading your coding session. Please wait...</AlertDescription>
             </div>
           </Alert>
         </div>
       )}
       {monaco && editor && (
-        <MemoizedStatusBar
-          monaco={monaco}
-          editor={editor}
-          cursorPosition={cursorPosition}
-        />
+        <MemoizedStatusBar monaco={monaco} editor={editor} cursorPosition={cursorPosition} />
       )}
     </main>
   );

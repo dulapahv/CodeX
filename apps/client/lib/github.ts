@@ -17,7 +17,7 @@ import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
   GITHUB_OAUTH_URL,
-  IS_DEV_ENV,
+  IS_DEV_ENV
 } from '@/lib/constants';
 
 interface GithubUser {
@@ -36,7 +36,7 @@ export const authCookie = {
       secure: !isDev,
       httpOnly: true,
       sameSite: isDev ? ('lax' as const) : ('strict' as const),
-      expires: new Date(Date.now() + SEVEN_DAYS),
+      expires: new Date(Date.now() + SEVEN_DAYS)
     };
 
     cookieStore.set(ACCESS_TOKEN, token, options);
@@ -48,7 +48,7 @@ export const authCookie = {
   delete: async () => {
     const cookieStore = await cookies();
     cookieStore.delete('access_token');
-  },
+  }
 };
 
 // Shared authentication check
@@ -58,7 +58,7 @@ export const verifyGithubAuth = async () => {
 
   try {
     const response = await fetch(`${GITHUB_API_URL}/user`, {
-      headers: { Authorization: `Bearer ${token.value}` },
+      headers: { Authorization: `Bearer ${token.value}` }
     });
 
     if (!response.ok) return null;
@@ -66,7 +66,7 @@ export const verifyGithubAuth = async () => {
     const userData: GithubUser = await response.json();
     return {
       username: userData.login,
-      avatarUrl: userData.avatar_url,
+      avatarUrl: userData.avatar_url
     };
   } catch {
     return null;
@@ -89,8 +89,8 @@ export const githubAuthHandlers = {
         `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
         {
           method: 'POST',
-          headers: { Accept: 'application/json' },
-        },
+          headers: { Accept: 'application/json' }
+        }
       );
 
       const data = await response.json();
@@ -109,5 +109,5 @@ export const githubAuthHandlers = {
   async logout() {
     await authCookie.delete();
     return NextResponse.json({ success: true });
-  },
+  }
 };

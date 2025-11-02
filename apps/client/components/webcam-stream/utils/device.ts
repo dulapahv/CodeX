@@ -34,28 +34,24 @@ export const enumerateDevices = async (
   selectedAudioInput: string,
   setSelectedAudioInput: Dispatch<SetStateAction<string>>,
   selectedAudioOutput: string,
-  setSelectedAudioOutput: Dispatch<SetStateAction<string>>,
+  setSelectedAudioOutput: Dispatch<SetStateAction<string>>
 ) => {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
     // Group devices by kind and ensure they have valid deviceIds
     const videoInputs = devices.filter(
-      (device) => device.kind === 'videoinput' && device.deviceId !== '',
+      device => device.kind === 'videoinput' && device.deviceId !== ''
     );
     const audioInputs = devices.filter(
-      (device) => device.kind === 'audioinput' && device.deviceId !== '',
+      device => device.kind === 'audioinput' && device.deviceId !== ''
     );
     const audioOutputs = devices.filter(
-      (device) => device.kind === 'audiooutput' && device.deviceId !== '',
+      device => device.kind === 'audiooutput' && device.deviceId !== ''
     );
 
     // Function to get a generic label if permissions haven't been granted
-    const getDeviceLabel = (
-      device: MediaDeviceInfo,
-      type: string,
-      index: number,
-    ) => {
+    const getDeviceLabel = (device: MediaDeviceInfo, type: string, index: number) => {
       return device.label || `${type} ${index + 1}`;
     };
 
@@ -63,20 +59,20 @@ export const enumerateDevices = async (
     setVideoDevices(
       videoInputs.map((device, index) => ({
         deviceId: device.deviceId,
-        label: getDeviceLabel(device, 'Camera', index),
-      })),
+        label: getDeviceLabel(device, 'Camera', index)
+      }))
     );
     setAudioInputDevices(
       audioInputs.map((device, index) => ({
         deviceId: device.deviceId,
-        label: getDeviceLabel(device, 'Microphone', index),
-      })),
+        label: getDeviceLabel(device, 'Microphone', index)
+      }))
     );
     setAudioOutputDevices(
       audioOutputs.map((device, index) => ({
         deviceId: device.deviceId,
-        label: getDeviceLabel(device, 'Speaker', index),
-      })),
+        label: getDeviceLabel(device, 'Speaker', index)
+      }))
     );
 
     // Set default devices if not already set
@@ -103,33 +99,31 @@ export const enumerateDevices = async (
 export const updateDeviceLabels = async (
   setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
   setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
+  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>
 ) => {
   const devices = await navigator.mediaDevices.enumerateDevices();
 
-  const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-  const audioInputs = devices.filter((device) => device.kind === 'audioinput');
-  const audioOutputs = devices.filter(
-    (device) => device.kind === 'audiooutput',
-  );
+  const videoInputs = devices.filter(device => device.kind === 'videoinput');
+  const audioInputs = devices.filter(device => device.kind === 'audioinput');
+  const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
 
   setVideoDevices(
-    videoInputs.map((device) => ({
+    videoInputs.map(device => ({
       deviceId: device.deviceId,
-      label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
-    })),
+      label: device.label || `Camera ${device.deviceId.slice(0, 4)}`
+    }))
   );
   setAudioInputDevices(
-    audioInputs.map((device) => ({
+    audioInputs.map(device => ({
       deviceId: device.deviceId,
-      label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
-    })),
+      label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`
+    }))
   );
   setAudioOutputDevices(
-    audioOutputs.map((device) => ({
+    audioOutputs.map(device => ({
       deviceId: device.deviceId,
-      label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
-    })),
+      label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`
+    }))
   );
 };
 
@@ -137,7 +131,7 @@ export const handleDevicePermissionGranted = async (
   deviceKind: 'videoinput' | 'audioinput' | 'audiooutput',
   setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
   setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
+  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>
 ) => {
   const devices = await navigator.mediaDevices.enumerateDevices();
 
@@ -146,31 +140,31 @@ export const handleDevicePermissionGranted = async (
     case 'videoinput':
       setVideoDevices(
         devices
-          .filter((device) => device.kind === 'videoinput')
-          .map((device) => ({
+          .filter(device => device.kind === 'videoinput')
+          .map(device => ({
             deviceId: device.deviceId,
-            label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
-          })),
+            label: device.label || `Camera ${device.deviceId.slice(0, 4)}`
+          }))
       );
       break;
     case 'audioinput':
       setAudioInputDevices(
         devices
-          .filter((device) => device.kind === 'audioinput')
-          .map((device) => ({
+          .filter(device => device.kind === 'audioinput')
+          .map(device => ({
             deviceId: device.deviceId,
-            label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
-          })),
+            label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`
+          }))
       );
       break;
     case 'audiooutput':
       setAudioOutputDevices(
         devices
-          .filter((device) => device.kind === 'audiooutput')
-          .map((device) => ({
+          .filter(device => device.kind === 'audiooutput')
+          .map(device => ({
             deviceId: device.deviceId,
-            label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
-          })),
+            label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`
+          }))
       );
       break;
   }

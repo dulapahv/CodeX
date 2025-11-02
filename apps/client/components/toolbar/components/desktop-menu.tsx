@@ -10,32 +10,14 @@
 
 import { useEffect, useRef } from 'react';
 
-import {
-  Menubar,
-  MenubarContent,
-  MenubarMenu,
-  MenubarTrigger,
-} from '@/components/ui/menubar';
+import { Menubar, MenubarContent, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 
 import { createMenuConfig } from '../menu-config';
 import type { MenuProps } from '../types';
 import { SharedMenuItem } from './shared-menu-item';
 
-const DesktopMenu = ({
-  modKey,
-  actions,
-  notepad,
-  terminal,
-  webcam,
-  livePreview,
-}: MenuProps) => {
-  const menuConfig = createMenuConfig(
-    modKey,
-    notepad,
-    terminal,
-    webcam,
-    livePreview,
-  );
+const DesktopMenu = ({ modKey, actions, notepad, terminal, webcam, livePreview }: MenuProps) => {
+  const menuConfig = createMenuConfig(modKey, notepad, terminal, webcam, livePreview);
 
   const menubarRef = useRef<HTMLDivElement>(null);
 
@@ -52,16 +34,10 @@ const DesktopMenu = ({
   }, []);
 
   return (
-    <Menubar
-      className="hidden h-fit border-none bg-transparent p-0 md:flex"
-      ref={menubarRef}
-    >
-      {menuConfig.map((group) => (
+    <Menubar className="hidden h-fit border-none bg-transparent p-0 md:flex" ref={menubarRef}>
+      {menuConfig.map(group => (
         <MenubarMenu key={group.label}>
-          <MenubarTrigger
-            className="hover:bg-accent hover:text-accent-foreground px-2 py-1 font-normal
-              transition-colors"
-          >
+          <MenubarTrigger className="hover:bg-accent hover:text-accent-foreground px-2 py-1 font-normal transition-colors">
             {group.label}
           </MenubarTrigger>
           <MenubarContent className="ml-1" loop>

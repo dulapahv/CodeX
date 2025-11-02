@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 
 export default function GlobalError({
   error,
-  reset,
+  reset
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -50,15 +50,11 @@ URL: ${window.location.href}`;
       <body>
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
           <Alert className="max-w-lg">
-            <AlertTitle className="text-xl font-semibold">
-              Critical Error
-            </AlertTitle>
+            <AlertTitle className="text-xl font-semibold">Critical Error</AlertTitle>
             <AlertDescription className="text-muted-foreground">
               A critical error has occurred. We apologize for the inconvenience.
               {error.digest && (
-                <p className="text-muted-foreground mt-2 text-sm">
-                  Error ID: {error.digest}
-                </p>
+                <p className="text-muted-foreground mt-2 text-sm">Error ID: {error.digest}</p>
               )}
             </AlertDescription>
             <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
@@ -68,11 +64,7 @@ URL: ${window.location.href}`;
                   Report Issue
                 </Link>
               </Button>
-              <Button
-                variant="default"
-                onClick={() => reset()}
-                className="gap-2"
-              >
+              <Button variant="default" onClick={() => reset()} className="gap-2">
                 <RefreshCcw className="size-4" />
                 Reload Application
               </Button>

@@ -13,18 +13,8 @@
 
 export const SELECT_OPTIONS: Record<string, string[]> = {
   acceptSuggestionOnEnter: ['on', 'off', 'smart'],
-  autoClosingBrackets: [
-    'always',
-    'languageDefined',
-    'beforeWhitespace',
-    'never',
-  ],
-  autoClosingComments: [
-    'always',
-    'languageDefined',
-    'beforeWhitespace',
-    'never',
-  ],
+  autoClosingBrackets: ['always', 'languageDefined', 'beforeWhitespace', 'never'],
+  autoClosingComments: ['always', 'languageDefined', 'beforeWhitespace', 'never'],
   autoClosingDelete: ['auto', 'always', 'never'],
   autoClosingOvertype: ['auto', 'always', 'never'],
   autoClosingQuotes: ['always', 'languageDefined', 'beforeWhitespace', 'never'],
@@ -53,5 +43,5 @@ export const SELECT_OPTIONS: Record<string, string[]> = {
   wordWrap: ['wordWrapColumn', 'on', 'off', 'bounded'],
   wordWrapOverride1: ['on', 'off', 'inherit'],
   wordWrapOverride2: ['on', 'off', 'inherit'],
-  wrappingStrategy: ['simple', 'advanced'],
+  wrappingStrategy: ['simple', 'advanced']
 };

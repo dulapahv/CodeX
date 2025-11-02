@@ -20,56 +20,56 @@ const testCases: TestCase[] = [
     name: 'Simple insertion at start',
     initialCode: 'world',
     operation: ['hello ', 1, 1, 1, 1] as EditOp,
-    expectedResult: 'hello world',
+    expectedResult: 'hello world'
   },
   {
     name: 'Replace word in middle',
     initialCode: 'The quick brown fox',
     operation: ['lazy', 1, 5, 1, 10] as EditOp,
-    expectedResult: 'The lazy brown fox',
+    expectedResult: 'The lazy brown fox'
   },
   {
     name: 'Add new line',
     initialCode: 'First line',
     operation: ['\nSecond line', 1, 11, 1, 11] as EditOp,
-    expectedResult: 'First line\nSecond line',
+    expectedResult: 'First line\nSecond line'
   },
   {
     name: 'Delete empty lines',
     initialCode: 'First\n\n\nLast',
     operation: ['', 2, 1, 4, 1] as EditOp,
-    expectedResult: 'First\nLast',
+    expectedResult: 'First\nLast'
   },
   {
     name: 'Insert at non-existent line',
     initialCode: 'Line 1',
     operation: ['Line 3', 3, 1, 3, 1] as EditOp,
-    expectedResult: 'Line 1\n\nLine 3',
+    expectedResult: 'Line 1\n\nLine 3'
   },
   {
     name: 'Multi-line insertion',
     initialCode: 'Start\nEnd',
     operation: ['Middle\nLine', 2, 1, 2, 1] as EditOp,
-    expectedResult: 'Start\nMiddle\nLineEnd',
+    expectedResult: 'Start\nMiddle\nLineEnd'
   },
   {
     name: 'Delete partial line',
     initialCode: 'Hello beautiful world',
     operation: ['', 1, 6, 1, 16] as EditOp,
-    expectedResult: 'Hello world',
+    expectedResult: 'Hello world'
   },
   {
     name: 'Handle very long line',
     initialCode: 'x'.repeat(1000),
     operation: ['test', 1, 500, 1, 500] as EditOp,
-    expectedResult: 'x'.repeat(499) + 'test' + 'x'.repeat(501),
+    expectedResult: 'x'.repeat(499) + 'test' + 'x'.repeat(501)
   },
   {
     name: 'Multiple consecutive newlines',
     initialCode: 'Start',
     operation: ['\n\n\n\n', 1, 6, 1, 6] as EditOp,
-    expectedResult: 'Start\n\n\n\n',
-  },
+    expectedResult: 'Start\n\n\n\n'
+  }
 ];
 
 interface TestResult {
@@ -109,7 +109,7 @@ class LatencyReport {
     return `Test Case: ${result.name}
 ─────────────────────────────────────────────────────
 Operation Size: ${result.operationSize} bytes
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(', ')} ms
+Samples: ${result.samples.map(s => this.formatNumber(s)).join(', ')} ms
 
 Statistics:
 • Average Latency:      ${this.formatNumber(result.average)} ms
@@ -145,21 +145,17 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join('\n')}
+${this.results.map(r => this.generateTestCaseReport(r)).join('\n')}
 
 ${this.generateRapidEditsReport()}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
 Overall Average Latency: ${this.formatNumber(
-      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length,
+      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(
-      Math.min(...this.results.map((r) => r.minimum)),
-    )} ms
-Worst Performance: ${this.formatNumber(
-      Math.max(...this.results.map((r) => r.maximum)),
-    )} ms
+Best Performance: ${this.formatNumber(Math.min(...this.results.map(r => r.minimum)))} ms
+Worst Performance: ${this.formatNumber(Math.max(...this.results.map(r => r.maximum)))} ms
 `;
 
     return summary;
@@ -189,7 +185,7 @@ describe('Socket.IO Latency Tests', () => {
     // Create sender socket and room
     senderSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      senderSocket.on('connect_error', (error) => reject(error));
+      senderSocket.on('connect_error', error => reject(error));
       senderSocket.on('connect', () => {
         resolve();
       });
@@ -207,7 +203,7 @@ describe('Socket.IO Latency Tests', () => {
     // Setup receiver
     receiverSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      receiverSocket.on('connect_error', (error) => reject(error));
+      receiverSocket.on('connect_error', error => reject(error));
       receiverSocket.on('connect', () => {
         resolve();
       });
@@ -222,7 +218,7 @@ describe('Socket.IO Latency Tests', () => {
     });
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       setTimeout(resolve, 1000);
     });
   }, 130000);
@@ -237,10 +233,10 @@ describe('Socket.IO Latency Tests', () => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
+      await new Promise(resolve => setTimeout(resolve, 100)); // Delay between samples
 
       const startTime = performance.now();
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         receiverSocket.once(CodeServiceMsg.UPDATE_CODE, () => {
           const latency = performance.now() - startTime;
           latencies.push(latency);
@@ -254,7 +250,7 @@ describe('Socket.IO Latency Tests', () => {
   };
 
   const calculateStats = (
-    samples: number[],
+    samples: number[]
   ): {
     average: number;
     standardDeviation: number;
@@ -263,31 +259,27 @@ describe('Socket.IO Latency Tests', () => {
   } => {
     const average = samples.reduce((a, b) => a + b) / samples.length;
     const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) /
-        samples.length,
+      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / samples.length
     );
     return {
       average,
       standardDeviation,
       minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
+      maximum: Math.max(...samples)
     };
   };
 
-  test.each(testCases)(
-    'Socket.IO latency for $name',
-    async ({ name, operation }) => {
-      const latencies = await measureLatency(operation);
-      const stats = calculateStats(latencies);
+  test.each(testCases)('Socket.IO latency for $name', async ({ name, operation }) => {
+    const latencies = await measureLatency(operation);
+    const stats = calculateStats(latencies);
 
-      report.addResult({
-        name,
-        samples: latencies,
-        ...stats,
-        operationSize: Buffer.from(String(operation[0])).length,
-      });
-    },
-  );
+    report.addResult({
+      name,
+      samples: latencies,
+      ...stats,
+      operationSize: Buffer.from(String(operation[0])).length
+    });
+  });
 
   test('Socket.IO latency for rapid edits', async () => {
     const edits: EditOp[] = Array(100)
@@ -297,16 +289,16 @@ describe('Socket.IO Latency Tests', () => {
 
     await Promise.all(
       edits.map(
-        (edit) =>
-          new Promise<void>((resolve) => {
+        edit =>
+          new Promise<void>(resolve => {
             const startTime = performance.now();
             receiverSocket.once(CodeServiceMsg.UPDATE_CODE, () => {
               timings.push(performance.now() - startTime);
               resolve();
             });
             senderSocket.emit(CodeServiceMsg.UPDATE_CODE, edit);
-          }),
-      ),
+          })
+      )
     );
 
     const stats = calculateStats(timings);
@@ -314,7 +306,7 @@ describe('Socket.IO Latency Tests', () => {
       name: 'Rapid Edits',
       samples: timings,
       ...stats,
-      operationSize: 1,
+      operationSize: 1
     });
   });
 });

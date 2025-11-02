@@ -25,11 +25,9 @@ export const createPeer = (
   initiator: boolean,
   streamRef: RefObject<MediaStream | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pendingSignalsRef: RefObject<Record<string, any[]>>,
+  pendingSignalsRef: RefObject<Record<string, any[]>>
 ) => {
   const socket = getSocket();
   try {
@@ -40,23 +38,21 @@ export const createPeer = (
     const peer = new Peer({
       initiator,
       // Only include stream if it exists and has active tracks
-      stream: streamRef.current?.getTracks().length
-        ? streamRef.current
-        : undefined,
+      stream: streamRef.current?.getTracks().length ? streamRef.current : undefined
     });
 
-    peer.on('signal', (signal) => {
+    peer.on('signal', signal => {
       socket.emit(StreamServiceMsg.SIGNAL, signal);
     });
 
-    peer.on('stream', (stream) => {
-      setRemoteStreams((prev) => ({
+    peer.on('stream', stream => {
+      setRemoteStreams(prev => ({
         ...prev,
-        [userID]: stream,
+        [userID]: stream
       }));
     });
 
-    peer.on('error', (err) => {
+    peer.on('error', err => {
       console.warn(`Peer connection error:\n${parseError(err)}`);
       cleanupPeer(userID, peersRef, setRemoteStreams);
     });
@@ -67,13 +63,11 @@ export const createPeer = (
 
     // Process any pending signals
     const pendingSignals = pendingSignalsRef.current[userID] || [];
-    pendingSignals.forEach((signal) => {
+    pendingSignals.forEach(signal => {
       try {
         peer.signal(signal);
       } catch (error) {
-        console.warn(
-          `Error processing pending signal for ${userID}:\n${error}`,
-        );
+        console.warn(`Error processing pending signal for ${userID}:\n${error}`);
       }
     });
     delete pendingSignalsRef.current[userID];
@@ -93,10 +87,8 @@ export const handleSignal = (
   userID: string,
   streamRef: RefObject<MediaStream | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
-  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>
 ) => {
   try {
     let peer = peersRef.current[userID];
@@ -115,7 +107,7 @@ export const handleSignal = (
         streamRef,
         peersRef,
         setRemoteStreams,
-        pendingSignalsRef,
+        pendingSignalsRef
       ) as Peer.Instance;
     }
 
@@ -131,9 +123,7 @@ export const handleSignal = (
 export const cleanupPeer = (
   userID: string,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>
 ) => {
   const peer = peersRef.current[userID];
   if (peer) {
@@ -141,16 +131,14 @@ export const cleanupPeer = (
       try {
         peer.destroy();
       } catch (error) {
-        console.warn(
-          `Error destroying peer connection for ${userID}.\n${error}`,
-        );
+        console.warn(`Error destroying peer connection for ${userID}.\n${error}`);
       }
     }
     delete peersRef.current[userID];
   }
 
   // Always clean up remote streams for this user
-  setRemoteStreams((prev) => {
+  setRemoteStreams(prev => {
     const newStreams = { ...prev };
     delete newStreams[userID];
     return newStreams;

@@ -16,12 +16,7 @@ import { Download, Trash2 } from 'lucide-react';
 import type { ExecutionResult } from '@codex/types/terminal';
 
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Output } from './components/output';
 import { WelcomeMsg } from './components/welcome-msg';
@@ -87,8 +82,8 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
       </div>
       <div ref={terminalRef} className="h-full overflow-y-auto p-4">
         <div
-          className="*:border-muted-foreground/40 flex flex-col space-y-2 divide-y
-            whitespace-pre-wrap font-mono text-sm *:pt-2"
+          className="*:border-muted-foreground/40 flex flex-col space-y-2 divide-y whitespace-pre-wrap font-mono text-sm
+            *:pt-2"
         >
           <WelcomeMsg />
           {results.map((result, index) => (

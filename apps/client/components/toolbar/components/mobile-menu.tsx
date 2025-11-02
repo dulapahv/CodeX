@@ -19,28 +19,15 @@ import {
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
-  MenubarTrigger,
+  MenubarTrigger
 } from '@/components/ui/menubar';
 
 import { createMenuConfig } from '../menu-config';
 import type { MenuProps } from '../types';
 import { SharedMenuItem } from './shared-menu-item';
 
-const MobileMenu = ({
-  modKey,
-  actions,
-  notepad,
-  terminal,
-  webcam,
-  livePreview,
-}: MenuProps) => {
-  const menuConfig = createMenuConfig(
-    modKey,
-    notepad,
-    terminal,
-    webcam,
-    livePreview,
-  );
+const MobileMenu = ({ modKey, actions, notepad, terminal, webcam, livePreview }: MenuProps) => {
+  const menuConfig = createMenuConfig(modKey, notepad, terminal, webcam, livePreview);
 
   const menubarRef = useRef<HTMLDivElement>(null);
 
@@ -65,11 +52,9 @@ const MobileMenu = ({
           <Menu className="size-5" />
         </MenubarTrigger>
         <MenubarContent className="ml-1">
-          {menuConfig.map((group) => (
+          {menuConfig.map(group => (
             <MenubarSub key={group.label}>
-              <MenubarSubTrigger className="px-2 py-1 font-normal">
-                {group.label}
-              </MenubarSubTrigger>
+              <MenubarSubTrigger className="px-2 py-1 font-normal">{group.label}</MenubarSubTrigger>
               <MenubarSubContent>
                 {group.items.map((item, index) => (
                   <SharedMenuItem

@@ -14,10 +14,7 @@ import { Monaco } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 
 import { CodeServiceMsg } from '@codex/types/message';
-import {
-  ExecutionResultType,
-  type ExecutionResult,
-} from '@codex/types/terminal';
+import { ExecutionResultType, type ExecutionResult } from '@codex/types/terminal';
 
 import { getSocket } from '@/lib/socket';
 import { parseError } from '@/lib/utils';
@@ -25,7 +22,7 @@ import { parseError } from '@/lib/utils';
 export const cancelExecution = (
   abortControllerRef: RefObject<AbortController | null>,
   setIsRunning: Dispatch<SetStateAction<boolean>>,
-  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>,
+  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>
 ) => {
   const socket = getSocket();
   if (abortControllerRef.current) {
@@ -40,13 +37,13 @@ export const cancelExecution = (
         stderr: '',
         code: 0,
         signal: null,
-        output: '',
+        output: ''
       },
       timestamp: endTime,
-      type: ExecutionResultType.WARNING,
+      type: ExecutionResultType.WARNING
     };
 
-    setOutput((currentOutput) => [...currentOutput, res]);
+    setOutput(currentOutput => [...currentOutput, res]);
     socket.emit(CodeServiceMsg.UPDATE_TERM, res);
     setIsRunning(false);
     socket.emit(CodeServiceMsg.EXEC, false);
@@ -60,7 +57,7 @@ export const executeCode = async (
   setIsRunning: Dispatch<SetStateAction<boolean>>,
   abortControllerRef: RefObject<AbortController | null>,
   args: string[],
-  stdin: string,
+  stdin: string
 ) => {
   if (!monaco || !editor) return;
 
@@ -85,12 +82,12 @@ export const executeCode = async (
           stderr: '',
           code: 0,
           signal: null,
-          output: '',
+          output: ''
         },
         timestamp: new Date(),
-        type: ExecutionResultType.WARNING,
+        type: ExecutionResultType.WARNING
       };
-      setOutput((currentOutput) => [...currentOutput, res]);
+      setOutput(currentOutput => [...currentOutput, res]);
       socket.emit(CodeServiceMsg.UPDATE_TERM, res);
       return;
     }
@@ -103,38 +100,36 @@ export const executeCode = async (
         stderr: '',
         code: 0,
         signal: null,
-        output: '',
+        output: ''
       },
       timestamp: startTime,
-      type: ExecutionResultType.INFO,
+      type: ExecutionResultType.INFO
     };
 
-    setOutput((currentOutput) => [...currentOutput, res]);
+    setOutput(currentOutput => [...currentOutput, res]);
     socket.emit(CodeServiceMsg.UPDATE_TERM, res);
 
     const model = editor.getModel();
     const currentLanguageId = model?.getLanguageId();
-    const language = monaco.languages
-      .getLanguages()
-      .find((lang) => lang.id === currentLanguageId);
+    const language = monaco.languages.getLanguages().find(lang => lang.id === currentLanguageId);
 
     const response = await fetch('/api/execute', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         code,
         language: language?.id,
         args: args,
-        stdin: stdin,
+        stdin: stdin
       }),
-      signal: abortControllerRef.current.signal,
+      signal: abortControllerRef.current.signal
     });
 
     if (!response.ok) {
       throw new Error(
-        `HTTP error! status: ${response.status}\nThis language may not be supported or the server is down.\nList of supported languages: https://github.com/dulapahv/CodeX/blob/main/manual.md#supported-execution-languages.`,
+        `HTTP error! status: ${response.status}\nThis language may not be supported or the server is down.\nList of supported languages: https://github.com/dulapahv/CodeX/blob/main/manual.md#supported-execution-languages.`
       );
     }
 
@@ -146,9 +141,9 @@ export const executeCode = async (
       ...result,
       timestamp: endTime,
       executionTime,
-      type: ExecutionResultType.OUTPUT,
+      type: ExecutionResultType.OUTPUT
     };
-    setOutput((currentOutput) => [...currentOutput, resultWithTimestamp]);
+    setOutput(currentOutput => [...currentOutput, resultWithTimestamp]);
     socket.emit(CodeServiceMsg.UPDATE_TERM, resultWithTimestamp);
   } catch (error) {
     // Don't show error message if the request was cancelled
@@ -167,13 +162,13 @@ export const executeCode = async (
         stderr: parseError(error),
         code: 1,
         signal: null,
-        output: parseError(error),
+        output: parseError(error)
       },
       timestamp: endTime,
       executionTime,
-      type: ExecutionResultType.ERROR,
+      type: ExecutionResultType.ERROR
     };
-    setOutput((currentOutput) => [...currentOutput, res]);
+    setOutput(currentOutput => [...currentOutput, res]);
     socket.emit(CodeServiceMsg.UPDATE_TERM, res);
   } finally {
     abortControllerRef.current = null;

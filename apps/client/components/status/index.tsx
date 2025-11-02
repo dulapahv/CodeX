@@ -21,14 +21,12 @@ import type { BetterStackResponse, ServiceStatus } from './types';
 
 const REFRESH_INTERVAL = 15000; // 15 seconds
 
-const getServerStatus = (
-  monitor: BetterStackResponse['data'],
-): ServiceStatus => {
+const getServerStatus = (monitor: BetterStackResponse['data']): ServiceStatus => {
   if (!monitor) {
     return {
       color: 'bg-muted-foreground',
       label: 'Unknown Server Status',
-      description: 'Unable to fetch server status',
+      description: 'Unable to fetch server status'
     };
   }
 
@@ -39,14 +37,14 @@ const getServerStatus = (
       return {
         color: 'bg-blue-600',
         label: 'Server Maintenance',
-        description: 'Server under maintenance',
+        description: 'Server under maintenance'
       };
 
     case 'down':
       return {
         color: 'bg-red-600',
         label: 'Server Offline',
-        description: 'Server is offline',
+        description: 'Server is offline'
       };
 
     case 'validating':
@@ -54,21 +52,21 @@ const getServerStatus = (
       return {
         color: 'bg-yellow-600',
         label: 'Server Connecting',
-        description: 'Server is connecting',
+        description: 'Server is connecting'
       };
 
     case 'up':
       return {
         color: 'bg-green-600',
         label: 'Server Online',
-        description: 'Server is online',
+        description: 'Server is online'
       };
 
     default:
       return {
         color: 'bg-yellow-600',
         label: 'Server Issues',
-        description: 'Server experiencing issues',
+        description: 'Server experiencing issues'
       };
   }
 };
@@ -77,7 +75,7 @@ const Status = () => {
   const [systemStatus, setSystemStatus] = useState<ServiceStatus>({
     color: 'bg-muted-foreground',
     label: 'Unknown Server Status',
-    description: 'Unable to fetch server status',
+    description: 'Unable to fetch server status'
   });
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -85,7 +83,7 @@ const Status = () => {
   const fetchStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/status', {
-        cache: 'no-store',
+        cache: 'no-store'
       });
 
       if (!response.ok) {
@@ -99,7 +97,7 @@ const Status = () => {
       setSystemStatus({
         color: 'bg-muted-foreground',
         label: 'Error Fetching Server Status',
-        description: 'Failed to fetch server status',
+        description: 'Failed to fetch server status'
       });
     } finally {
       setIsInitialLoad(false);
@@ -121,9 +119,9 @@ const Status = () => {
   return (
     <a
       className={cn(
-        `text-foreground/70 hover:text-foreground/50 flex items-center gap-x-2 text-sm
-        underline-offset-2 transition-all hover:underline`,
-        isInitialLoad && 'cursor-wait',
+        `text-foreground/70 hover:text-foreground/50 flex items-center gap-x-2 text-sm underline-offset-2
+        transition-all hover:underline`,
+        isInitialLoad && 'cursor-wait'
       )}
       href={STATUS_URL}
       target="_blank"
@@ -137,24 +135,17 @@ const Status = () => {
         </>
       ) : (
         <>
-          <span
-            className="relative flex size-2"
-            role="status"
-            aria-label={systemStatus.label}
-          >
+          <span className="relative flex size-2" role="status" aria-label={systemStatus.label}>
             <span
               className={cn(
                 'absolute inline-flex size-full animate-ping rounded-full opacity-75',
                 systemStatus.color,
-                isRefreshing && 'animate-pulse',
+                isRefreshing && 'animate-pulse'
               )}
               aria-hidden="true"
             />
             <span
-              className={cn(
-                'relative inline-flex size-2 rounded-full',
-                systemStatus.color,
-              )}
+              className={cn('relative inline-flex size-2 rounded-full', systemStatus.color)}
               aria-hidden="true"
             />
           </span>

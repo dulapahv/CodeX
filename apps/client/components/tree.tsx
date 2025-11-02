@@ -19,7 +19,7 @@ import {
   forwardRef,
   HTMLAttributes,
   useCallback,
-  useState,
+  useState
 } from 'react';
 
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
@@ -48,13 +48,8 @@ interface TreeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Tree = forwardRef<HTMLDivElement, TreeProps>(
-  (
-    { data, initialSelectedItemId, onSelectChange, className, ...props },
-    ref,
-  ) => {
-    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
-      initialSelectedItemId,
-    );
+  ({ data, initialSelectedItemId, onSelectChange, className, ...props }, ref) => {
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(initialSelectedItemId);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
     const handleSelectChange = useCallback(
@@ -64,13 +59,13 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
           onSelectChange(item);
         }
       },
-      [onSelectChange],
+      [onSelectChange]
     );
 
     const handleExpand = useCallback((itemId: string) => {
-      setExpandedIds((prev) => {
+      setExpandedIds(prev => {
         if (prev.includes(itemId)) {
-          return prev.filter((id) => id !== itemId);
+          return prev.filter(id => id !== itemId);
         }
         return [...prev, itemId];
       });
@@ -97,7 +92,7 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
         </ScrollArea>
       </div>
     );
-  },
+  }
 );
 Tree.displayName = 'Tree';
 
@@ -123,13 +118,13 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
       ItemIcon,
       ...props
     },
-    ref,
+    ref
   ) => {
     return (
       <div ref={ref} role="tree" className={className} {...props}>
         <ul>
           {data instanceof Array ? (
-            data.map((item) => (
+            data.map(item => (
               <li key={item.id}>
                 {item.children ||
                 item.type === itemType.REPO ||
@@ -145,12 +140,12 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          `before:bg-secondary px-2 before:absolute before:left-1 before:-z-10
-                            before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:opacity-0
-                            before:transition-opacity hover:before:opacity-50`,
+                          `before:bg-secondary px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem]
+                            before:w-[calc(100%-8px)] before:rounded before:opacity-0 before:transition-opacity
+                            hover:before:opacity-50`,
                           selectedItemId === item.id &&
-                            `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent
-                              before:border-l-4 before:opacity-50`,
+                            `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent before:border-l-4
+                              before:opacity-50`
                         )}
                         onClick={() => handleSelectChange(item)}
                       >
@@ -167,9 +162,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                           />
                         )}
                         <span className="truncate text-sm">{item.name}</span>
-                        {item.isLoading && (
-                          <Spinner size="sm" className="ml-2" />
-                        )}
+                        {item.isLoading && <Spinner size="sm" className="ml-2" />}
                       </AccordionTrigger>
                       <AccordionContent className="ml-4 pl-2">
                         {item.children && (
@@ -209,7 +202,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
         </ul>
       </div>
     );
-  },
+  }
 );
 TreeItem.displayName = 'TreeItem';
 
@@ -224,28 +217,21 @@ const Leaf = forwardRef<
   <div
     ref={ref}
     className={cn(
-      `before:bg-secondary flex cursor-pointer items-center px-2 py-2 before:absolute
-      before:left-1 before:right-1 before:-z-10 before:h-[1.75rem]
-      before:w-[calc(100%-8px)] before:rounded before:opacity-0
-      before:transition-opacity hover:before:opacity-50`,
+      `before:bg-secondary flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1
+      before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded
+      before:opacity-0 before:transition-opacity hover:before:opacity-50`,
       className,
       isSelected &&
-        `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent
-        before:border-l-4 before:opacity-50`,
+        `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent before:border-l-4
+        before:opacity-50`
     )}
     {...props}
   >
     {item.icon && (
-      <item.icon
-        className="text-accent-foreground/50 mr-2 size-4 shrink-0"
-        aria-hidden="true"
-      />
+      <item.icon className="text-accent-foreground/50 mr-2 size-4 shrink-0" aria-hidden="true" />
     )}
     {!item.icon && Icon && (
-      <Icon
-        className="text-accent-foreground/50 mr-2 size-4 shrink-0"
-        aria-hidden="true"
-      />
+      <Icon className="text-accent-foreground/50 mr-2 size-4 shrink-0" aria-hidden="true" />
     )}
     <span className="flex-grow truncate text-sm">{item.name}</span>
   </div>
@@ -260,17 +246,13 @@ const AccordionTrigger = forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        `flex w-full flex-1 items-center py-2 transition-all
-        last:[&[data-state=open]>svg]:rotate-90`,
-        className,
+        'flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90',
+        className
       )}
       {...props}
     >
       {children}
-      <ChevronRight
-        className="text-accent-foreground/50 ml-auto size-4 shrink-0 transition-transform
-          duration-200"
-      />
+      <ChevronRight className="text-accent-foreground/50 ml-auto size-4 shrink-0 transition-transform duration-200" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -283,10 +265,9 @@ const AccordionContent = forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      `data-[state=closed]:animate-accordion-up
-      data-[state=open]:animate-accordion-down border-foreground/10 left-3
-      overflow-hidden border-l text-sm transition-all`,
-      className,
+      `data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down
+      border-foreground/10 left-3 overflow-hidden border-l text-sm transition-all`,
+      className
     )}
     {...props}
   >

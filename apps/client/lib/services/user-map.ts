@@ -30,7 +30,7 @@ export class UserMap {
     return {
       username,
       backgroundColor: getBackgroundColor(username),
-      textColor: getTextColor(getBackgroundColor(username)),
+      textColor: getTextColor(getBackgroundColor(username))
     };
   }
 
@@ -76,7 +76,7 @@ export class UserMap {
     const userData = this.users.get(id);
     return {
       backgroundColor: userData?.backgroundColor ?? getBackgroundColor(''),
-      color: userData?.textColor ?? getTextColor(''),
+      color: userData?.textColor ?? getTextColor('')
     };
   }
 
@@ -84,7 +84,7 @@ export class UserMap {
   getAll(): User[] {
     return Array.from(this.users.entries()).map(([id, data]) => ({
       id,
-      username: data.username,
+      username: data.username
     }));
   }
 }

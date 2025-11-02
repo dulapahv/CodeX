@@ -14,7 +14,7 @@ export enum itemType {
   REPO = 'repo',
   BRANCH = 'branch',
   DIR = 'dir',
-  FILE = 'file',
+  FILE = 'file'
 }
 
 // Extended interface for GitHub-specific functionality

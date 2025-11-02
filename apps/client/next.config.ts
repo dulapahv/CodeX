@@ -9,8 +9,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import path from 'path';
 import type { NextConfig } from 'next';
+
+import path from 'path';
 
 import { withSentryConfig } from '@sentry/nextjs';
 
@@ -26,8 +27,8 @@ const nextConfig: NextConfig = {
       '@codesandbox/sandpack-react',
       '@mdxeditor/editor',
       '@monaco-editor/react',
-      'monaco-editor',
-    ],
+      'monaco-editor'
+    ]
   },
   images: {
     remotePatterns: [
@@ -35,10 +36,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
         port: '',
-        pathname: '/**',
-      },
-    ],
-  },
+        pathname: '/**'
+      }
+    ]
+  }
 };
 
 const isCi = process.env.CI === 'true';
@@ -50,7 +51,7 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   // Automatically annotate React components to show their full name in breadcrumbs and session replay
   reactComponentAnnotation: {
-    enabled: true,
+    enabled: true
   },
   tunnelRoute: '/monitoring', // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // hideSourceMaps: true, // Hides source maps from generated client bundles
@@ -58,7 +59,7 @@ export default withSentryConfig(nextConfig, {
   automaticVercelMonitors: true, // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
   // Automatically upload source maps for all Next.js pages
   sourcemaps: {
-    deleteSourcemapsAfterUpload: isCi,
+    deleteSourcemapsAfterUpload: isCi
   },
-  telemetry: !isCi, // Disable Sentry telemetry in CI
+  telemetry: !isCi // Disable Sentry telemetry in CI
 });

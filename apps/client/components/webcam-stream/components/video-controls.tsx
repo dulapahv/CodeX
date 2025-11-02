@@ -27,19 +27,14 @@ const VideoControls = ({
   micOn,
   speakersOn,
   remoteMicStates,
-  remoteSpeakerStates,
+  remoteSpeakerStates
 }: VideoControlsProps) => {
   const micState = isLocal ? micOn : remoteMicStates[userId];
   const speakerState = isLocal ? speakersOn : remoteSpeakerStates[userId];
 
   return (
     <div className="absolute right-2 top-2 flex gap-1">
-      <div
-        className={cn(
-          'rounded px-1.5 py-0.5',
-          micState ? 'bg-green-500/70' : 'bg-red-500/70',
-        )}
-      >
+      <div className={cn('rounded px-1.5 py-0.5', micState ? 'bg-green-500/70' : 'bg-red-500/70')}>
         {micState ? (
           <Mic className="size-4 text-white" />
         ) : (
@@ -47,10 +42,7 @@ const VideoControls = ({
         )}
       </div>
       <div
-        className={cn(
-          'rounded px-1.5 py-0.5',
-          speakerState ? 'bg-green-500/70' : 'bg-red-500/70',
-        )}
+        className={cn('rounded px-1.5 py-0.5', speakerState ? 'bg-green-500/70' : 'bg-red-500/70')}
       >
         {speakerState ? (
           <Volume2 className="size-4 text-white" />

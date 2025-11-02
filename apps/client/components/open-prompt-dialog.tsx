@@ -19,7 +19,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Drawer,
@@ -28,7 +28,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
+  DrawerTitle
 } from '@/components/ui/drawer';
 
 const DEFAULT_TITLE = 'Open a new file?';
@@ -56,7 +56,7 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
       openDialog,
-      closeDialog,
+      closeDialog
     }));
 
     if (isDesktop) {
@@ -105,7 +105,7 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
         </DrawerContent>
       </Drawer>
     );
-  },
+  }
 );
 
 OpenPromptDialog.displayName = 'OpenPromptDialog';

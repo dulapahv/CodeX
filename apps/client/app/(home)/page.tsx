@@ -25,35 +25,24 @@ export default async function Page({ searchParams }: PageProps<'/'>) {
 
   return (
     <>
+      <div aria-hidden="true" role="presentation" className="fixed inset-0 -z-10 bg-[#111623]" />
       <div
         aria-hidden="true"
         role="presentation"
-        className="fixed inset-0 -z-10 bg-[#111623]"
-      />
-      <div
-        aria-hidden="true"
-        role="presentation"
-        className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50
-          to-[#3b77fd]/50 to-90%"
+        className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-[#3b77fd]/50 to-90%"
       />
       <div className="dark fixed inset-0 -z-10">
         <AnimatedGridBackground />
       </div>
-      <main
-        className="dark relative flex min-h-full w-full flex-col overflow-hidden
-          min-[1189px]:flex-row"
-      >
+      <main className="dark relative flex min-h-full w-full flex-col overflow-hidden min-[1189px]:flex-row">
         {/* Left Section - Form */}
         <div
-          className="my-2 flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8
-            min-[1189px]:w-5/12 min-[1189px]:items-center"
+          className="my-2 flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8 min-[1189px]:w-5/12
+            min-[1189px]:items-center"
         >
           <div className="w-full max-w-xl">
             <div className="mb-6 space-y-6">
-              <h1
-                className="text-foreground flex flex-row items-start gap-2 text-4xl font-bold
-                  tracking-tight sm:text-5xl"
-              >
+              <h1 className="text-foreground flex flex-row items-start gap-2 text-4xl font-bold tracking-tight sm:text-5xl">
                 <Image
                   src="/images/codex-logo.svg"
                   alt="CodeX Logo"
@@ -76,8 +65,7 @@ export default async function Page({ searchParams }: PageProps<'/'>) {
                 </div>
               </h1>
               <p className="text-foreground/90 w-full whitespace-pre-line text-lg sm:w-[93%] sm:text-xl">
-                Your collaborative coding space, reimagined. Start now, no
-                sign-up required.
+                Your collaborative coding space, reimagined. Start now, no sign-up required.
               </p>
             </div>
 
@@ -89,8 +77,8 @@ export default async function Page({ searchParams }: PageProps<'/'>) {
 
         {/* Right Section - Showcase Grid */}
         <div
-          className="dark relative flex w-full max-w-5xl flex-1 items-center justify-center
-            min-[1189px]:w-7/12 min-[1189px]:pr-8"
+          className="dark relative flex w-full max-w-5xl flex-1 items-center justify-center min-[1189px]:w-7/12
+            min-[1189px]:pr-8"
         >
           <ShowcaseGrid />
         </div>

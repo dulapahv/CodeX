@@ -112,12 +112,7 @@ export const updateLang = (socket: Socket, langId: string): void => {
 /**
  * Original optimized string splicing function
  */
-const spliceString = (
-  original: string,
-  start: number,
-  end: number,
-  insert: string,
-): string => {
+const spliceString = (original: string, start: number, end: number, insert: string): string => {
   if (start === end && !insert) return original;
   if (start === 0 && end === original.length) return insert;
   return original.substring(0, start) + insert + original.substring(end);
@@ -149,8 +144,7 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   }
 
   // Handle empty line deletion specifically
-  const isEmptyLineDeletion =
-    txt === '' && startLnNum < endLnNum && startCol === 1 && endCol === 1;
+  const isEmptyLineDeletion = txt === '' && startLnNum < endLnNum && startCol === 1 && endCol === 1;
 
   if (isEmptyLineDeletion) {
     // Remove the empty lines
@@ -181,18 +175,8 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     const safeEndCol = Math.min(Math.max(0, endCol - 1), endLine.length);
 
     // Create new start and end lines efficiently
-    const newStartLine = spliceString(
-      startLine,
-      safeStartCol,
-      startLine.length,
-      textLines[0],
-    );
-    const newEndLine = spliceString(
-      endLine,
-      0,
-      safeEndCol,
-      textLines[textLines.length - 1],
-    );
+    const newStartLine = spliceString(startLine, safeStartCol, startLine.length, textLines[0]);
+    const newEndLine = spliceString(endLine, 0, safeEndCol, textLines[textLines.length - 1]);
 
     // Optimize array operations by calculating exact size needed
     const newLinesCount = textLines.length;

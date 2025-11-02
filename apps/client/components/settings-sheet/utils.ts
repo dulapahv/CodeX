@@ -17,16 +17,14 @@ import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
 
 // Convert camelCase to Title Case
 export const formatTitle = (key: string): string => {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase());
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const exportSettings = (settings: Record<string, any>) => {
   try {
     const blob = new Blob([JSON.stringify(settings, null, 2)], {
-      type: 'application/json',
+      type: 'application/json'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -44,13 +42,13 @@ export const exportSettings = (settings: Record<string, any>) => {
 export const importSettings = (
   editor: monaco.editor.IStandaloneCodeEditor,
   setSettings: (settings: Record<string, unknown>) => void,
-  event: ChangeEvent<HTMLInputElement>,
+  event: ChangeEvent<HTMLInputElement>
 ) => {
   const file = event.target.files?.[0];
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = async (e) => {
+  reader.onload = async e => {
     try {
       const content = e.target?.result as string;
       const imported = JSON.parse(content);

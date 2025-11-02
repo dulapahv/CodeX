@@ -15,15 +15,8 @@ import { Settings } from 'lucide-react';
 import type * as monaco from 'monaco-editor';
 
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  SettingsSheet,
-  type SettingsSheetRef,
-} from '@/components/settings-sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SettingsSheet, type SettingsSheetRef } from '@/components/settings-sheet';
 
 interface SettingsButtonProps {
   monaco: Monaco;

@@ -20,7 +20,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Drawer,
@@ -29,7 +29,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
+  DrawerTitle
 } from '@/components/ui/drawer';
 
 const DEFAULT_TITLE = 'Are you sure you want to leave this room?';
@@ -53,16 +53,12 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
   // Expose openDialog and closeDialog to the parent component
   useImperativeHandle(ref, () => ({
     openDialog,
-    closeDialog,
+    closeDialog
   }));
 
   if (isDesktop) {
     return (
-      <Dialog
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        aria-label="Leave room dialog"
-      >
+      <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="Leave room dialog">
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
@@ -95,19 +91,11 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
           <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Button
-            variant="destructive"
-            onClick={handleLeaveRoom}
-            aria-label="Confirm leaving room"
-          >
+          <Button variant="destructive" onClick={handleLeaveRoom} aria-label="Confirm leaving room">
             Leave
           </Button>
           <DrawerClose asChild>
-            <Button
-              variant="secondary"
-              onClick={closeDialog}
-              aria-label="Cancel leaving room"
-            >
+            <Button variant="secondary" onClick={closeDialog} aria-label="Cancel leaving room">
               Cancel
             </Button>
           </DrawerClose>

@@ -52,7 +52,7 @@ import {
   UnfoldVertical,
   Video,
   ZoomIn,
-  ZoomOut,
+  ZoomOut
 } from 'lucide-react';
 
 import type { ToolbarActions } from './types';
@@ -77,7 +77,7 @@ export const createMenuConfig = (
   notepad: boolean,
   terminal: boolean,
   webcam: boolean,
-  livePreview: boolean,
+  livePreview: boolean
 ) => {
   const menuConfig: MenuGroup[] = [
     {
@@ -87,41 +87,41 @@ export const createMenuConfig = (
           label: 'Open from Local',
           icon: <Folder className="mr-2 size-4" />,
           shortcut: `${modKey}+O`,
-          action: 'openLocal',
+          action: 'openLocal'
         },
         {
           label: 'Open from GitHub',
           icon: <FolderGit2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Shift+O`,
-          action: 'openGitHub',
+          action: 'openGitHub'
         },
         {
           label: 'Save to Local',
           icon: <Download className="mr-2 size-4" />,
           shortcut: `${modKey}+S`,
-          action: 'saveLocal',
+          action: 'saveLocal'
         },
         {
           label: 'Save to GitHub',
           icon: <CloudUpload className="mr-2 size-4" />,
           shortcut: `${modKey}+Shift+S`,
-          action: 'saveGitHub',
+          action: 'saveGitHub'
         },
         'separator',
         {
           label: 'Settings',
           icon: <Settings className="mr-2 size-4" />,
           shortcut: `${modKey}+,`,
-          action: 'settings',
+          action: 'settings'
         },
         'separator',
         {
           label: 'Leave Room',
           icon: <LogOut className="mr-2 size-4" />,
           shortcut: `${modKey}+Q`,
-          action: 'leaveRoom',
-        },
-      ],
+          action: 'leaveRoom'
+        }
+      ]
     },
     {
       label: 'Edit',
@@ -130,87 +130,87 @@ export const createMenuConfig = (
           label: 'Undo',
           icon: <Undo2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Z`,
-          action: 'undo',
+          action: 'undo'
         },
         {
           label: 'Redo',
           icon: <Redo2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Y`,
-          action: 'redo',
+          action: 'redo'
         },
         'separator',
         {
           label: 'Cut',
           icon: <Scissors className="mr-2 size-4" />,
           shortcut: `${modKey}+X`,
-          action: 'cut',
+          action: 'cut'
         },
         {
           label: 'Copy',
           icon: <Copy className="mr-2 size-4" />,
           shortcut: `${modKey}+C`,
-          action: 'copy',
+          action: 'copy'
         },
         {
           label: 'Paste',
           icon: <Clipboard className="mr-2 size-4" />,
           shortcut: `${modKey}+V`,
-          action: 'paste',
+          action: 'paste'
         },
         'separator',
         {
           label: 'Find',
           icon: <Search className="mr-2 size-4" />,
           shortcut: `${modKey}+F`,
-          action: 'find',
+          action: 'find'
         },
         {
           label: 'Replace',
           icon: <Replace className="mr-2 size-4" />,
           shortcut: `${modKey}+H`,
-          action: 'replace',
+          action: 'replace'
         },
         'separator',
         {
           label: 'Toggle Line Comment',
           icon: <MessageSquare className="mr-2 size-4" />,
           shortcut: `${modKey}+/`,
-          action: 'toggleLineComment',
+          action: 'toggleLineComment'
         },
         {
           label: 'Toggle Block Comment',
           icon: <MessageSquareText className="mr-2 size-4" />,
           shortcut: `Shift+Alt+A`,
-          action: 'toggleBlockComment',
+          action: 'toggleBlockComment'
         },
         'separator',
         {
           label: 'UPPERCASE',
           icon: <CaseUpper className="mr-2 size-4" />,
-          action: 'uppercase',
+          action: 'uppercase'
         },
         {
           label: 'lowercase',
           icon: <CaseLower className="mr-2 size-4" />,
-          action: 'lowercase',
+          action: 'lowercase'
         },
         {
           label: 'Title Case',
           icon: <CaseSensitive className="mr-2 size-4" />,
-          action: 'titleCase',
+          action: 'titleCase'
         },
         'separator',
         {
           label: 'Sort Lines Ascending',
           icon: <ArrowUpNarrowWide className="mr-2 size-4" />,
-          action: 'sortLinesAscending',
+          action: 'sortLinesAscending'
         },
         {
           label: 'Sort Lines Descending',
           icon: <ArrowDownWideNarrow className="mr-2 size-4" />,
-          action: 'sortLinesDescending',
-        },
-      ],
+          action: 'sortLinesDescending'
+        }
+      ]
     },
     {
       label: 'Selection',
@@ -219,73 +219,73 @@ export const createMenuConfig = (
           label: 'Select All',
           icon: <MousePointerClick className="mr-2 size-4" />,
           shortcut: `${modKey}+A`,
-          action: 'selectAll',
+          action: 'selectAll'
         },
         {
           label: 'Select to Bracket',
           icon: <SquareDashedMousePointer className="mr-2 size-4" />,
-          action: 'selectToBracket',
+          action: 'selectToBracket'
         },
         {
           label: 'Select Highlights',
           icon: <TextSelect className="mr-2 size-4" />,
-          action: 'selectHighlights',
+          action: 'selectHighlights'
         },
         'separator',
         {
           label: 'Copy Line Up',
           icon: <ChevronsUp className="mr-2 size-4" />,
           shortcut: 'Shift+Alt+↑',
-          action: 'copyLineUp',
+          action: 'copyLineUp'
         },
         {
           label: 'Copy Line Down',
           icon: <ChevronsDown className="mr-2 size-4" />,
           shortcut: 'Shift+Alt+↓',
-          action: 'copyLineDown',
+          action: 'copyLineDown'
         },
         {
           label: 'Move Line Up',
           icon: <ArrowUpToLine className="mr-2 size-4" />,
           shortcut: 'Alt+↑',
-          action: 'moveLineUp',
+          action: 'moveLineUp'
         },
         {
           label: 'Move Line Down',
           icon: <ArrowDownToLine className="mr-2 size-4" />,
           shortcut: 'Alt+↓',
-          action: 'moveLineDown',
+          action: 'moveLineDown'
         },
         {
           label: 'Duplicate Selection',
           icon: <CopyPlus className="mr-2 size-4" />,
-          action: 'duplicateSelection',
+          action: 'duplicateSelection'
         },
         'separator',
         {
           label: 'Add Cursor Above',
           icon: <ArrowBigUpDash className="mr-2 size-4" />,
           shortcut: `${modKey}+Alt+↑`,
-          action: 'addCursorAbove',
+          action: 'addCursorAbove'
         },
         {
           label: 'Add Cursor Below',
           icon: <ArrowBigDownDash className="mr-2 size-4" />,
           shortcut: `${modKey}+Alt+↓`,
-          action: 'addCursorBelow',
+          action: 'addCursorBelow'
         },
         'separator',
         {
           label: 'Expand Selection',
           icon: <Maximize2 className="mr-2 size-4" />,
-          action: 'expandSelection',
+          action: 'expandSelection'
         },
         {
           label: 'Shrink Selection',
           icon: <Minimize2 className="mr-2 size-4" />,
-          action: 'shrinkSelection',
-        },
-      ],
+          action: 'shrinkSelection'
+        }
+      ]
     },
     {
       label: 'View',
@@ -294,36 +294,36 @@ export const createMenuConfig = (
           label: 'Command Palette',
           icon: <Command className="mr-2 size-4" />,
           shortcut: 'F1',
-          action: 'commandPalette',
+          action: 'commandPalette'
         },
         'separator',
         {
           label: 'Zoom In',
           icon: <ZoomIn className="mr-2 size-4" />,
           shortcut: `${modKey}+=`,
-          action: 'zoomIn',
+          action: 'zoomIn'
         },
         {
           label: 'Zoom Out',
           icon: <ZoomOut className="mr-2 size-4" />,
           shortcut: `${modKey}+-`,
-          action: 'zoomOut',
+          action: 'zoomOut'
         },
         'separator',
         {
           label: 'Fold All',
           icon: <FoldVertical className="mr-2 size-4" />,
-          action: 'foldAll',
+          action: 'foldAll'
         },
         {
           label: 'Unfold All',
           icon: <UnfoldVertical className="mr-2 size-4" />,
-          action: 'unfoldAll',
+          action: 'unfoldAll'
         },
         {
           label: 'Toggle Fold',
           icon: <FlipVertical className="mr-2 size-4" />,
-          action: 'toggleFold',
+          action: 'toggleFold'
         },
         'separator',
         {
@@ -331,30 +331,30 @@ export const createMenuConfig = (
           icon: <NotebookPen className="mr-2 size-4" />,
           type: 'checkbox',
           checked: notepad,
-          action: 'toggleNotepadPanel',
+          action: 'toggleNotepadPanel'
         },
         {
           label: 'Terminal',
           icon: <Terminal className="mr-2 size-4" />,
           type: 'checkbox',
           checked: terminal,
-          action: 'toggleTerminalPanel',
+          action: 'toggleTerminalPanel'
         },
         {
           label: 'Webcam Stream',
           icon: <Video className="mr-2 size-4" />,
           type: 'checkbox',
           checked: webcam,
-          action: 'toggleWebcamPanel',
+          action: 'toggleWebcamPanel'
         },
         {
           label: 'Live Preview',
           icon: <LayoutTemplate className="mr-2 size-4" />,
           type: 'checkbox',
           checked: livePreview,
-          action: 'toggleSandpackPanel',
-        },
-      ],
+          action: 'toggleSandpackPanel'
+        }
+      ]
     },
     {
       label: 'Help',
@@ -362,15 +362,15 @@ export const createMenuConfig = (
         {
           label: 'Manual',
           icon: <HelpCircle className="mr-2 size-4" />,
-          action: 'manual',
+          action: 'manual'
         },
         {
           label: 'About',
           icon: <Info className="mr-2 size-4" />,
-          action: 'about',
-        },
-      ],
-    },
+          action: 'about'
+        }
+      ]
+    }
   ];
 
   return menuConfig;

@@ -29,16 +29,14 @@ export const getMedia = async (
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
-  pendingSignalsRef: RefObject<Record<string, unknown[]>>,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
+  pendingSignalsRef: RefObject<Record<string, unknown[]>>
 ) => {
   try {
     // Stop any existing tracks before requesting new ones
     if (streamRef.current) {
       const tracks = streamRef.current.getTracks();
-      tracks.forEach((track) => {
+      tracks.forEach(track => {
         track.stop();
       });
     }
@@ -49,15 +47,13 @@ export const getMedia = async (
           facingMode: cameraFacingMode,
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          aspectRatio: { ideal: 16 / 9 },
+          aspectRatio: { ideal: 16 / 9 }
         }
       : {
-          deviceId: selectedVideoDevice
-            ? { exact: selectedVideoDevice }
-            : undefined,
+          deviceId: selectedVideoDevice ? { exact: selectedVideoDevice } : undefined,
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          aspectRatio: { ideal: 16 / 9 },
+          aspectRatio: { ideal: 16 / 9 }
         };
 
     // Build audio constraints
@@ -68,14 +64,14 @@ export const getMedia = async (
     // Complete constraints object
     const constraints: MediaStreamConstraints = {
       video: videoConstraints,
-      audio: audioConstraints,
+      audio: audioConstraints
     };
 
     // Get new stream
     const newStream = await navigator.mediaDevices.getUserMedia(constraints);
 
     // Set audio track state based on mic status
-    newStream.getAudioTracks().forEach((track) => {
+    newStream.getAudioTracks().forEach(track => {
       track.enabled = micOn;
     });
 
@@ -99,13 +95,13 @@ export const getMedia = async (
         try {
           // Remove old tracks
           if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => {
+            streamRef.current.getTracks().forEach(track => {
               peer.removeTrack(track, streamRef.current!);
             });
           }
 
           // Add new tracks
-          newStream.getTracks().forEach((track) => {
+          newStream.getTracks().forEach(track => {
             peer.addTrack(track, newStream);
           });
         } catch (error) {
@@ -118,7 +114,7 @@ export const getMedia = async (
             { current: newStream },
             peersRef,
             setRemoteStreams,
-            pendingSignalsRef,
+            pendingSignalsRef
           );
         }
       }
@@ -139,14 +135,12 @@ export const switchVideoDevice = async (
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   pendingSignalsRef: RefObject<Record<string, unknown[]>>,
   micOn: boolean,
   selectedAudioInput: string,
   selectedAudioOutput: string,
-  cameraFacingMode: 'user' | 'environment',
+  cameraFacingMode: 'user' | 'environment'
 ) => {
   return getMedia(
     deviceId,
@@ -158,7 +152,7 @@ export const switchVideoDevice = async (
     videoRef,
     peersRef,
     setRemoteStreams,
-    pendingSignalsRef,
+    pendingSignalsRef
   );
 };
 
@@ -168,14 +162,12 @@ export const switchAudioDevice = async (
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<
-    SetStateAction<Record<string, MediaStream | null>>
-  >,
+  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
   pendingSignalsRef: RefObject<Record<string, unknown[]>>,
   micOn: boolean,
   selectedVideoDevice: string,
   selectedAudioOutput: string,
-  cameraFacingMode: 'user' | 'environment',
+  cameraFacingMode: 'user' | 'environment'
 ) => {
   return getMedia(
     selectedVideoDevice,
@@ -187,6 +179,6 @@ export const switchAudioDevice = async (
     videoRef,
     peersRef,
     setRemoteStreams,
-    pendingSignalsRef,
+    pendingSignalsRef
   );
 };

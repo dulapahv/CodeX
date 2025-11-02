@@ -31,7 +31,7 @@ const UserList = ({ users }: UserListProps) => {
         aria-label={`${totalUsers} active users in this session`}
       >
         <div className="flex -space-x-2" role="list">
-          {users.map((user) => (
+          {users.map(user => (
             <div key={user.id} role="listitem">
               <Avatar key={user.id} user={user} />
             </div>
@@ -42,9 +42,7 @@ const UserList = ({ users }: UserListProps) => {
           color="white"
           className={cn(
             'h-1.5',
-            resolvedTheme === 'dark'
-              ? '[&>div]:bg-foreground'
-              : '[&>div]:bg-primary',
+            resolvedTheme === 'dark' ? '[&>div]:bg-foreground' : '[&>div]:bg-primary'
           )}
           aria-orientation="horizontal"
           aria-label="Scroll through user avatars"

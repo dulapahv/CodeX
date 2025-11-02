@@ -11,7 +11,7 @@
 const LOCAL_SERVER = 'http://localhost:3001';
 const REMOTE_SERVER = 'https://codex-server.dulapahv.dev';
 
-const serverArg = process.argv.find((arg) => arg.startsWith('--server='));
+const serverArg = process.argv.find(arg => arg.startsWith('--server='));
 if (!serverArg) {
   console.warn('⚠️ Server not specified. Defaulting to local server.');
 }

@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Error({
   error,
-  reset,
+  reset
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -45,16 +45,11 @@ Stack: ${error.stack || 'No stack trace available'}`;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <Alert className="max-w-lg">
-        <AlertTitle className="text-xl font-semibold">
-          Something went wrong!
-        </AlertTitle>
+        <AlertTitle className="text-xl font-semibold">Something went wrong!</AlertTitle>
         <AlertDescription className="text-muted-foreground">
-          {error.message ||
-            'An unexpected error occurred. Please try again later.'}
+          {error.message || 'An unexpected error occurred. Please try again later.'}
           {error.digest && (
-            <p className="text-muted-foreground mt-2 text-sm">
-              Error ID: {error.digest}
-            </p>
+            <p className="text-muted-foreground mt-2 text-sm">Error ID: {error.digest}</p>
           )}
         </AlertDescription>
         <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">

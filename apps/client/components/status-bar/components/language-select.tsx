@@ -27,13 +27,9 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
+  CommandList
 } from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface Language {
   alias: string;
@@ -49,12 +45,7 @@ interface LanguageSelectionProps {
 }
 
 const LanguageSelection = memo(
-  ({
-    monaco,
-    editor,
-    defaultLanguage = 'html',
-    className,
-  }: LanguageSelectionProps) => {
+  ({ monaco, editor, defaultLanguage = 'html', className }: LanguageSelectionProps) => {
     const socket = useMemo(() => getSocket(), []);
 
     const [open, setOpen] = useState(false);
@@ -65,12 +56,12 @@ const LanguageSelection = memo(
       if (!monaco) return [];
 
       return monaco.languages.getLanguages().map(
-        (language) =>
+        language =>
           ({
             alias: language.aliases?.[0] || 'Unknown',
             extensions: language.extensions || [],
-            id: language.id,
-          }) as Language,
+            id: language.id
+          }) as Language
       );
     }, [monaco]);
 
@@ -83,10 +74,10 @@ const LanguageSelection = memo(
         const model = editor?.getModel();
         if (!model || !monaco) return;
 
-        const selectedLang = languages.find((l) => l.alias === newLanguage);
+        const selectedLang = languages.find(l => l.alias === newLanguage);
         monaco.editor.setModelLanguage(model, selectedLang?.id || 'plaintext');
       },
-      [editor, monaco, languages],
+      [editor, monaco, languages]
     );
 
     // Sync with editor's current language
@@ -108,18 +99,14 @@ const LanguageSelection = memo(
 
       // Get initial language
       const currentLanguage = model.getLanguageId();
-      const language = monaco.languages
-        .getLanguages()
-        .find((lang) => lang.id === currentLanguage);
+      const language = monaco.languages.getLanguages().find(lang => lang.id === currentLanguage);
       if (language?.aliases?.[0]) {
         setSelectedLanguage(language.aliases[0]);
       }
 
       // Listen for language changes
-      const disposable = model.onDidChangeLanguage((e) => {
-        const newLanguage = monaco.languages
-          .getLanguages()
-          .find((lang) => lang.id === e.newLanguage);
+      const disposable = model.onDidChangeLanguage(e => {
+        const newLanguage = monaco.languages.getLanguages().find(lang => lang.id === e.newLanguage);
         if (newLanguage?.aliases?.[0]) {
           setSelectedLanguage(newLanguage.aliases[0]);
           socket.emit(CodeServiceMsg.UPDATE_LANG, newLanguage.id);
@@ -144,7 +131,7 @@ const LanguageSelection = memo(
             aria-label="Select programming language"
             className={cn(
               'size-fit justify-between gap-x-1 rounded-sm p-0 pl-2 pr-1 text-xs',
-              className,
+              className
             )}
           >
             {selectedLanguage}
@@ -154,7 +141,7 @@ const LanguageSelection = memo(
         <PopoverContent
           className="mr-1 w-64 p-0"
           sideOffset={8}
-          onOpenAutoFocus={(event) => {
+          onOpenAutoFocus={event => {
             if (isMobile) event.preventDefault();
           }}
         >
@@ -163,7 +150,7 @@ const LanguageSelection = memo(
             <CommandList>
               <CommandEmpty>No language found.</CommandEmpty>
               <CommandGroup>
-                {languages.map((language) => (
+                {languages.map(language => (
                   <CommandItem
                     key={language.id}
                     value={`${language.alias}$${language.extensions.join(', ')}`}
@@ -181,9 +168,7 @@ const LanguageSelection = memo(
                     <Check
                       className={cn(
                         'ml-2 size-4 flex-shrink-0 transition-opacity',
-                        selectedLanguage === language.alias
-                          ? 'opacity-100'
-                          : 'opacity-0',
+                        selectedLanguage === language.alias ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                   </CommandItem>
@@ -194,7 +179,7 @@ const LanguageSelection = memo(
         </PopoverContent>
       </Popover>
     );
-  },
+  }
 );
 
 LanguageSelection.displayName = 'LanguageSelection';

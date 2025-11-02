@@ -20,7 +20,7 @@ export const useJoinRoomForm = (roomId: string) => {
     resolver: zodResolver(joinRoomSchema),
     defaultValues: {
       name: '',
-      roomId: isRoomIdValid(roomId) ? roomId : '',
-    },
+      roomId: isRoomIdValid(roomId) ? roomId : ''
+    }
   });
 };

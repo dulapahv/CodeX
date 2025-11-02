@@ -18,7 +18,7 @@ import {
   useState,
   type ChangeEvent,
   type Dispatch,
-  type SetStateAction,
+  type SetStateAction
 } from 'react';
 
 import { Search } from 'lucide-react';
@@ -41,101 +41,99 @@ interface RepoBrowserProps {
   setBranch: Dispatch<SetStateAction<string>>;
 }
 
-const RepoBrowser = memo(
-  ({ setSelectedItem, setRepo, setBranch }: RepoBrowserProps) => {
-    const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [text, setText] = useState('');
-    const [searchQuery] = useDebounce(text, 500);
+const RepoBrowser = memo(({ setSelectedItem, setRepo, setBranch }: RepoBrowserProps) => {
+  const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [text, setText] = useState('');
+  const [searchQuery] = useDebounce(text, 500);
 
-    const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSearchChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => setText(event.target.value),
-      [],
-    );
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => setText(event.target.value),
+    []
+  );
 
-    const fetchReposCallback = useCallback(() => {
-      fetchRepos(setLoading, setError, setTreeData, searchQuery);
-    }, [searchQuery]);
+  const fetchReposCallback = useCallback(() => {
+    fetchRepos(setLoading, setError, setTreeData, searchQuery);
+  }, [searchQuery]);
 
-    useEffect(() => {
-      fetchRepos(setLoading, setError, setTreeData);
-    }, []);
+  useEffect(() => {
+    fetchRepos(setLoading, setError, setTreeData);
+  }, []);
 
-    useEffect(() => {
-      fetchReposCallback();
-    }, [fetchReposCallback]);
+  useEffect(() => {
+    fetchReposCallback();
+  }, [fetchReposCallback]);
 
-    const handleSelectChangeCallback = useCallback(
-      (item: TreeDataItem) => {
-        handleSelectItem(
-          item as ExtendedTreeDataItem,
-          treeData,
-          setSelectedItem,
-          setTreeData,
-          setItemLoading,
-          setError,
-          setRepo,
-          setBranch,
-        );
-      },
-      [treeData, setSelectedItem, setTreeData, setError, setRepo, setBranch],
-    );
+  const handleSelectChangeCallback = useCallback(
+    (item: TreeDataItem) => {
+      handleSelectItem(
+        item as ExtendedTreeDataItem,
+        treeData,
+        setSelectedItem,
+        setTreeData,
+        setItemLoading,
+        setError,
+        setRepo,
+        setBranch
+      );
+    },
+    [treeData, setSelectedItem, setTreeData, setError, setRepo, setBranch]
+  );
 
-    const memoizedTree = useMemo(
-      () => (
-        <Tree
-          data={treeData}
-          className="animate-fade-in h-full"
-          onSelectChange={handleSelectChangeCallback}
+  const memoizedTree = useMemo(
+    () => (
+      <Tree
+        data={treeData}
+        className="animate-fade-in h-full"
+        onSelectChange={handleSelectChangeCallback}
+      />
+    ),
+    [treeData, handleSelectChangeCallback]
+  );
+
+  return (
+    <div
+      className="flex h-full flex-col rounded-md border"
+      role="region"
+      aria-label="Repository search"
+    >
+      <div className="relative border-b">
+        <Search
+          className="text-muted-foreground absolute left-4 top-1/2 size-4 -translate-y-1/2"
+          aria-hidden="true"
         />
-      ),
-      [treeData, handleSelectChangeCallback],
-    );
-
-    return (
-      <div
-        className="flex h-full flex-col rounded-md border"
-        role="region"
-        aria-label="Repository search"
-      >
-        <div className="relative border-b">
-          <Search
-            className="text-muted-foreground absolute left-4 top-1/2 size-4 -translate-y-1/2"
-            aria-hidden="true"
-          />
-          <Input
-            ref={searchInputRef}
-            value={text}
-            onChange={handleSearchChange}
-            placeholder="Search repositories..."
-            className="focus-visible:border-input border-transparent pl-10"
-            type="search"
-            role="searchbox"
-            aria-label="Search repositories"
-            aria-busy={loading}
-          />
-        </div>
-        {loading ? (
-          <LoadingState />
-        ) : error ? (
-          <Alert
-            variant="destructive"
-            className="flex h-full items-center justify-center border-none"
-          >
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : !treeData || treeData.length === 0 ? (
-          <NotFound searchQuery={searchQuery} searchInputRef={searchInputRef} />
-        ) : (
-          memoizedTree
-        )}
+        <Input
+          ref={searchInputRef}
+          value={text}
+          onChange={handleSearchChange}
+          placeholder="Search repositories..."
+          className="focus-visible:border-input border-transparent pl-10"
+          type="search"
+          role="searchbox"
+          aria-label="Search repositories"
+          aria-busy={loading}
+        />
       </div>
-    );
-  },
-);
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <Alert
+          variant="destructive"
+          className="flex h-full items-center justify-center border-none"
+        >
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : !treeData || treeData.length === 0 ? (
+        <NotFound searchQuery={searchQuery} searchInputRef={searchInputRef} />
+      ) : (
+        memoizedTree
+      )}
+    </div>
+  );
+});
 
 RepoBrowser.displayName = 'RepoBrowser';
 

@@ -25,6 +25,6 @@ export const useRoomActions = () => {
   };
 
   return {
-    handleLeaveRoom,
+    handleLeaveRoom
   };
 };

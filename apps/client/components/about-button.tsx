@@ -15,11 +15,7 @@ import { useRef } from 'react';
 import { Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 
 const AboutButton = () => {

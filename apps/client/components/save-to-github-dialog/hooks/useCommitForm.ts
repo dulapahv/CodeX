@@ -19,7 +19,7 @@ export const useCommitForm = () => {
     resolver: zodResolver(commitSchema),
     defaultValues: {
       fileName: '',
-      commitSummary: '',
-    },
+      commitSummary: ''
+    }
   });
 };

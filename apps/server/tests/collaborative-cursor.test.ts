@@ -21,28 +21,28 @@ const testCases = [
   {
     name: 'Simple cursor movement',
     cursor: [1, 1] as Cursor,
-    description: 'Basic cursor position update at start of document',
+    description: 'Basic cursor position update at start of document'
   },
   {
     name: 'Long-distance cursor jump',
     cursor: [100, 50] as Cursor,
-    description: 'Cursor movement to a distant position',
+    description: 'Cursor movement to a distant position'
   },
   {
     name: 'Simple text selection',
     cursor: [1, 1, 1, 1, 1, 10] as Cursor,
-    description: 'Selection within a single line',
+    description: 'Selection within a single line'
   },
   {
     name: 'Multi-line selection',
     cursor: [1, 1, 1, 1, 5, 10] as Cursor,
-    description: 'Selection spanning multiple lines',
+    description: 'Selection spanning multiple lines'
   },
   {
     name: 'Large text selection',
     cursor: [1, 1, 1, 1, 100, 100] as Cursor,
-    description: 'Selection of a large portion of text',
-  },
+    description: 'Selection of a large portion of text'
+  }
 ];
 
 interface TestResult {
@@ -75,7 +75,7 @@ class CursorLatencyReport {
     return `Test Case: ${result.name}
 ─────────────────────────────────────────────────────
 Description: ${result.description}
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(', ')} ms
+Samples: ${result.samples.map(s => this.formatNumber(s)).join(', ')} ms
 
 Statistics:
 • Average Latency:      ${this.formatNumber(result.average)} ms
@@ -96,21 +96,17 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join('\n')}
+${this.results.map(r => this.generateTestCaseReport(r)).join('\n')}
 
 ${this.rapidMovementResults ? this.generateTestCaseReport(this.rapidMovementResults) : ''}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
 Overall Average Latency: ${this.formatNumber(
-      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length,
+      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(
-      Math.min(...this.results.map((r) => r.minimum)),
-    )} ms
-Worst Performance: ${this.formatNumber(
-      Math.max(...this.results.map((r) => r.maximum)),
-    )} ms
+Best Performance: ${this.formatNumber(Math.min(...this.results.map(r => r.minimum)))} ms
+Worst Performance: ${this.formatNumber(Math.max(...this.results.map(r => r.maximum)))} ms
 `;
   }
 
@@ -138,7 +134,7 @@ describe('Cursor Synchronization Latency Tests', () => {
     // Create sender socket and room
     senderSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      senderSocket.on('connect_error', (error) => reject(error));
+      senderSocket.on('connect_error', error => reject(error));
       senderSocket.on('connect', () => {
         resolve();
       });
@@ -156,7 +152,7 @@ describe('Cursor Synchronization Latency Tests', () => {
     // Setup receiver
     receiverSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      receiverSocket.on('connect_error', (error) => reject(error));
+      receiverSocket.on('connect_error', error => reject(error));
       receiverSocket.on('connect', () => {
         resolve();
       });
@@ -171,7 +167,7 @@ describe('Cursor Synchronization Latency Tests', () => {
     });
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       setTimeout(resolve, 1000);
     });
   }, 130000);
@@ -186,10 +182,10 @@ describe('Cursor Synchronization Latency Tests', () => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
+      await new Promise(resolve => setTimeout(resolve, 100)); // Delay between samples
 
       const startTime = performance.now();
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         receiverSocket.once(CodeServiceMsg.UPDATE_CURSOR, () => {
           const latency = performance.now() - startTime;
           latencies.push(latency);
@@ -203,7 +199,7 @@ describe('Cursor Synchronization Latency Tests', () => {
   };
 
   const calculateStats = (
-    samples: number[],
+    samples: number[]
   ): {
     average: number;
     standardDeviation: number;
@@ -212,31 +208,27 @@ describe('Cursor Synchronization Latency Tests', () => {
   } => {
     const average = samples.reduce((a, b) => a + b) / samples.length;
     const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) /
-        samples.length,
+      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / samples.length
     );
     return {
       average,
       standardDeviation,
       minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
+      maximum: Math.max(...samples)
     };
   };
 
-  test.each(testCases)(
-    'Cursor latency for $name',
-    async ({ name, cursor, description }) => {
-      const latencies = await measureLatency(cursor);
-      const stats = calculateStats(latencies);
+  test.each(testCases)('Cursor latency for $name', async ({ name, cursor, description }) => {
+    const latencies = await measureLatency(cursor);
+    const stats = calculateStats(latencies);
 
-      report.addResult({
-        name,
-        samples: latencies,
-        description,
-        ...stats,
-      });
-    },
-  );
+    report.addResult({
+      name,
+      samples: latencies,
+      description,
+      ...stats
+    });
+  });
 
   test('Rapid cursor movements', async () => {
     const movements = 100;
@@ -247,7 +239,7 @@ describe('Cursor Synchronization Latency Tests', () => {
         .fill(null)
         .map((_, i) => {
           const cursor: Cursor = [i + 1, i + 1];
-          return new Promise<void>((resolve) => {
+          return new Promise<void>(resolve => {
             const startTime = performance.now();
             receiverSocket.once(CodeServiceMsg.UPDATE_CURSOR, () => {
               timings.push(performance.now() - startTime);
@@ -255,7 +247,7 @@ describe('Cursor Synchronization Latency Tests', () => {
             });
             senderSocket.emit(CodeServiceMsg.UPDATE_CURSOR, cursor);
           });
-        }),
+        })
     );
 
     const stats = calculateStats(timings);
@@ -263,7 +255,7 @@ describe('Cursor Synchronization Latency Tests', () => {
       name: 'Rapid Cursor Movements',
       samples: timings,
       description: `${movements} rapid sequential cursor position updates`,
-      ...stats,
+      ...stats
     });
   });
 });

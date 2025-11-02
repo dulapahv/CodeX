@@ -21,14 +21,10 @@ interface RepoBrowserProps {
 
 export const NotFound = ({ searchQuery, searchInputRef }: RepoBrowserProps) => (
   <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-    <FolderSearch
-      className="text-muted-foreground/80 mb-3 size-10"
-      strokeWidth={1.5}
-    />
+    <FolderSearch className="text-muted-foreground/80 mb-3 size-10" strokeWidth={1.5} />
     <h3 className="mb-1.5 text-base font-medium">No repositories found</h3>
     <p className="text-muted-foreground max-w-[250px] text-sm">
-      Your search for &quot;<strong>{searchQuery}</strong>&quot; did not return
-      any results.
+      Your search for &quot;<strong>{searchQuery}</strong>&quot; did not return any results.
     </p>
     <Button
       variant="ghost"

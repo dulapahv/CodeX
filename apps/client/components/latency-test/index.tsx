@@ -29,7 +29,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from '@/components/ui/table';
 import { Spinner } from '@/components/spinner';
 
@@ -114,18 +114,18 @@ const LatencyTest = () => {
     try {
       for (let i = 0; i < iterations; i++) {
         if (i > 0) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
         const result = await singleTest();
-        setResults((prev) => [
+        setResults(prev => [
           ...prev,
           {
             id: i + 1,
             http: result.http,
             socket: result.socket,
-            timestamp: new Date().toISOString(),
-          },
+            timestamp: new Date().toISOString()
+          }
         ]);
         setTestCount(i + 1);
       }
@@ -137,12 +137,8 @@ const LatencyTest = () => {
     }
   };
 
-  const httpStats = results.length
-    ? calculateStats(results.map((r) => r.http))
-    : null;
-  const socketStats = results.length
-    ? calculateStats(results.map((r) => r.socket))
-    : null;
+  const httpStats = results.length ? calculateStats(results.map(r => r.http)) : null;
+  const socketStats = results.length ? calculateStats(results.map(r => r.socket)) : null;
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
@@ -193,9 +189,7 @@ const LatencyTest = () => {
             </Button>
           </div>
 
-          {error && (
-            <div className="text-destructive mt-2 text-sm">Error: {error}</div>
-          )}
+          {error && <div className="text-destructive mt-2 text-sm">Error: {error}</div>}
 
           {results.length > 0 && (
             <>
@@ -208,7 +202,7 @@ const LatencyTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {results.map((result) => (
+                  {results.map(result => (
                     <TableRow key={result.id}>
                       <TableCell>{result.id}</TableCell>
                       <TableCell>{result.http}</TableCell>

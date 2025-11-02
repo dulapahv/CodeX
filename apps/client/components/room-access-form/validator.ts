@@ -14,24 +14,21 @@ import { NAME_MAX_LENGTH } from '@/lib/constants';
 
 const nameSchema = z
   .string()
-  .transform((value) => value.trim())
+  .transform(value => value.trim())
   .pipe(
     z
       .string()
       .min(1, { message: 'Name is required' })
-      .max(
-        NAME_MAX_LENGTH,
-        `Name must not exceed ${NAME_MAX_LENGTH} characters`,
-      ),
+      .max(NAME_MAX_LENGTH, `Name must not exceed ${NAME_MAX_LENGTH} characters`)
   );
 
 export const joinRoomSchema = z.object({
   name: nameSchema,
-  roomId: z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/, 'Invalid room ID'),
+  roomId: z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/, 'Invalid room ID')
 });
 
 export const createRoomSchema = z.object({
-  name: nameSchema,
+  name: nameSchema
 });
 
 export type JoinRoomFormSchema = z.infer<typeof joinRoomSchema>;

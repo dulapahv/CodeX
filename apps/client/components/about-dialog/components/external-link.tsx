@@ -13,12 +13,7 @@ import Image from 'next/image';
 import { Send } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
-import {
-  CONTACT_URL,
-  GITHUB_URL,
-  PORTFOLIO_URL,
-  REPO_URL,
-} from '@/lib/constants';
+import { CONTACT_URL, GITHUB_URL, PORTFOLIO_URL, REPO_URL } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 
 interface ExternalLinkProps {

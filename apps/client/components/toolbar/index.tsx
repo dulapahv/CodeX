@@ -20,20 +20,11 @@ import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
 import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
 import {
   OpenFromGithubDialog,
-  type OpenFromGithubDialogRef,
+  type OpenFromGithubDialogRef
 } from '@/components/open-from-github-dialog';
-import {
-  OpenPromptDialog,
-  type OpenPromptDialogRef,
-} from '@/components/open-prompt-dialog';
-import {
-  SaveToGithubDialog,
-  type SaveToGithubDialogRef,
-} from '@/components/save-to-github-dialog';
-import {
-  SettingsSheet,
-  type SettingsSheetRef,
-} from '@/components/settings-sheet';
+import { OpenPromptDialog, type OpenPromptDialogRef } from '@/components/open-prompt-dialog';
+import { SaveToGithubDialog, type SaveToGithubDialogRef } from '@/components/save-to-github-dialog';
+import { SettingsSheet, type SettingsSheetRef } from '@/components/settings-sheet';
 
 import { DesktopMenu } from './components/desktop-menu';
 import { MobileMenu } from './components/mobile-menu';
@@ -63,7 +54,7 @@ const Toolbar = ({
   showNotepad,
   showTerminal,
   showWebcam,
-  showLivePreview,
+  showLivePreview
 }: ToolbarProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -124,8 +115,7 @@ const Toolbar = ({
       else openPromptDialogRef1.current?.openDialog();
     },
     openGitHub: () => {
-      if (!editor.getModel()?.getValue())
-        openFromGithubDialogRef.current?.openDialog();
+      if (!editor.getModel()?.getValue()) openFromGithubDialogRef.current?.openDialog();
       else openPromptDialogRef2.current?.openDialog();
     },
     saveLocal: () => saveLocal(monaco, editor),
@@ -260,14 +250,14 @@ const Toolbar = ({
       editor.focus();
       editor.trigger('keyboard', 'editor.fold', null);
     },
-    toggleNotepadPanel: () => setShowNotepad((show) => !show),
-    toggleTerminalPanel: () => setShowTerminal((show) => !show),
-    toggleWebcamPanel: () => setShowWebcam((show) => !show),
-    toggleSandpackPanel: () => setShowLivePreview((show) => !show),
+    toggleNotepadPanel: () => setShowNotepad(show => !show),
+    toggleTerminalPanel: () => setShowTerminal(show => !show),
+    toggleWebcamPanel: () => setShowWebcam(show => !show),
+    toggleSandpackPanel: () => setShowLivePreview(show => !show),
     manual: () => {
       window.open(`${REPO_URL}/blob/main/manual.md`, '_blank');
     },
-    about: () => aboutDialogRef.current?.openDialog(),
+    about: () => aboutDialogRef.current?.openDialog()
   };
 
   return (
@@ -291,15 +281,8 @@ const Toolbar = ({
           livePreview={showLivePreview}
         />
       )}
-      <OpenFromGithubDialog
-        ref={openFromGithubDialogRef}
-        monaco={monaco}
-        editor={editor}
-      />
-      <OpenPromptDialog
-        ref={openPromptDialogRef1}
-        callback={() => openLocal(monaco, editor)}
-      />
+      <OpenFromGithubDialog ref={openFromGithubDialogRef} monaco={monaco} editor={editor} />
+      <OpenPromptDialog ref={openPromptDialogRef1} callback={() => openLocal(monaco, editor)} />
       <OpenPromptDialog
         ref={openPromptDialogRef2}
         callback={() => openFromGithubDialogRef.current?.openDialog()}

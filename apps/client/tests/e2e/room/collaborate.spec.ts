@@ -13,9 +13,7 @@ import { expect, test } from '@playwright/test';
 import { createRoom, joinRoom } from '@/tests/utils/setup';
 
 test.describe('Collaborative Features', () => {
-  test('should sync code changes between users in real-time', async ({
-    browser,
-  }) => {
+  test('should sync code changes between users in real-time', async ({ browser }) => {
     // Create two browser contexts for different users
     const userAContext = await browser.newContext();
     const userBContext = await browser.newContext();
@@ -51,9 +49,7 @@ test.describe('Collaborative Features', () => {
     await expect(userBPage.getByText(EXPECTED_CODE)).toBeVisible();
   });
 
-  test('should execute code and show output in shared terminal', async ({
-    browser,
-  }) => {
+  test('should execute code and show output in shared terminal', async ({ browser }) => {
     const userAContext = await browser.newContext();
     const userBContext = await browser.newContext();
 
@@ -78,13 +74,9 @@ test.describe('Collaborative Features', () => {
     const terminal = 'Hello from Python!';
     const outputSelector = 'div.flex-1 > div.whitespace-pre-wrap.break-all';
 
-    await expect(
-      userAPage.locator(outputSelector).filter({ hasText: terminal }),
-    ).toBeVisible();
+    await expect(userAPage.locator(outputSelector).filter({ hasText: terminal })).toBeVisible();
 
-    await expect(
-      userBPage.locator(outputSelector).filter({ hasText: terminal }),
-    ).toBeVisible();
+    await expect(userBPage.locator(outputSelector).filter({ hasText: terminal })).toBeVisible();
   });
 
   test('should sync notepad edits between users', async ({ browser }) => {
@@ -102,9 +94,7 @@ test.describe('Collaborative Features', () => {
     const userBNotepad = userBPage.getByLabel('editable markdown');
 
     // User A types note
-    await userANotepad.pressSequentially(
-      '# Collaborative Notes\nThis is a shared note.',
-    );
+    await userANotepad.pressSequentially('# Collaborative Notes\nThis is a shared note.');
 
     // Verify note appears in User B's notepad
     await expect(userBPage.getByText('Collaborative Notes')).toBeVisible();
@@ -128,35 +118,23 @@ test.describe('Collaborative Features', () => {
 
     // Verify content in CodeMirror editor for both users
     await expect(
-      userAPage
-        .locator('.cm-line')
-        .filter({ hasText: '# Collaborative Notes' }),
+      userAPage.locator('.cm-line').filter({ hasText: '# Collaborative Notes' })
     ).toBeVisible();
     await expect(
-      userAPage
-        .locator('.cm-line')
-        .filter({ hasText: 'This is a shared note.' }),
+      userAPage.locator('.cm-line').filter({ hasText: 'This is a shared note.' })
     ).toBeVisible();
     await expect(
-      userAPage
-        .locator('.cm-line')
-        .filter({ hasText: 'Adding more collaborative content!' }),
+      userAPage.locator('.cm-line').filter({ hasText: 'Adding more collaborative content!' })
     ).toBeVisible();
 
     await expect(
-      userBPage
-        .locator('.cm-line')
-        .filter({ hasText: '# Collaborative Notes' }),
+      userBPage.locator('.cm-line').filter({ hasText: '# Collaborative Notes' })
     ).toBeVisible();
     await expect(
-      userBPage
-        .locator('.cm-line')
-        .filter({ hasText: 'This is a shared note.' }),
+      userBPage.locator('.cm-line').filter({ hasText: 'This is a shared note.' })
     ).toBeVisible();
     await expect(
-      userBPage
-        .locator('.cm-line')
-        .filter({ hasText: 'Adding more collaborative content!' }),
+      userBPage.locator('.cm-line').filter({ hasText: 'Adding more collaborative content!' })
     ).toBeVisible();
   });
 });

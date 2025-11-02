@@ -16,10 +16,7 @@ import { GITHUB_API_URL } from '@/lib/constants';
 
 // export const runtime = 'edge';
 
-export async function GET(
-  req: NextRequest,
-  props: RouteContext<'/api/github/repos/[...params]'>,
-) {
+export async function GET(req: NextRequest, props: RouteContext<'/api/github/repos/[...params]'>) {
   const params = await props.params;
   try {
     const cookieStore = await cookies();
@@ -51,8 +48,8 @@ export async function GET(
       headers: {
         Authorization: `token ${accessToken}`,
         Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
     });
 
     if (!response.ok) {
@@ -60,7 +57,7 @@ export async function GET(
       console.error('GitHub API Error:', error);
       return Response.json(
         { error: `GitHub API error: ${response.status}` },
-        { status: response.status },
+        { status: response.status }
       );
     }
 

@@ -18,13 +18,7 @@ import { parseError } from '@/lib/utils';
  * Get the current operating system
  * @returns The current operating system
  */
-export const getOS = ():
-  | 'iOS'
-  | 'Android'
-  | 'Windows'
-  | 'Mac OS'
-  | 'Linux'
-  | 'Unknown' => {
+export const getOS = (): 'iOS' | 'Android' | 'Windows' | 'Mac OS' | 'Linux' | 'Unknown' => {
   const userAgent = navigator.userAgent;
   const platform = navigator.platform;
   // Detect iOS devices (iPhone, iPad, iPod)
@@ -64,15 +58,13 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
       (language): Language => ({
         alias: language.aliases?.[0] ?? 'Unknown',
         extensions: language.extensions ?? [],
-        id: language.id,
-      }),
+        id: language.id
+      })
     );
   }
 
-  const language = languagesCache.find((lang) => lang.id === languageId);
-  return language?.extensions[0]
-    ? `.${language.extensions[0].replace(/^\./, '')}`
-    : '.txt';
+  const language = languagesCache.find(lang => lang.id === languageId);
+  return language?.extensions[0] ? `.${language.extensions[0].replace(/^\./, '')}` : '.txt';
 }
 
 /**
@@ -83,7 +75,7 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
  */
 export const openLocal = (
   monaco: Monaco,
-  editor: monaco.editor.IStandaloneCodeEditor | null,
+  editor: monaco.editor.IStandaloneCodeEditor | null
 ): void => {
   // Create input element
   const input = document.createElement('input');
@@ -97,14 +89,14 @@ export const openLocal = (
 
     // Create file reader
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = event => {
       const content = event.target?.result as string;
 
       // Try to detect language from file extension
       const extension = file.name.split('.').pop() || '';
       const languages = monaco.languages.getLanguages();
-      const language = languages.find((lang) =>
-        lang.extensions?.some((ext) => ext.replace('.', '') === extension),
+      const language = languages.find(lang =>
+        lang.extensions?.some(ext => ext.replace('.', '') === extension)
       );
 
       // Set content and language (default to plaintext)
@@ -137,7 +129,7 @@ export const openLocal = (
 export const saveLocal = (
   monaco: Monaco,
   editor: monaco.editor.IStandaloneCodeEditor | null,
-  filename = `codex-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`,
+  filename = `codex-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`
 ): void => {
   if (!editor) {
     throw new Error('Editor instance is required');

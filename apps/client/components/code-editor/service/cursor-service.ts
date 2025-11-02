@@ -29,7 +29,7 @@ const isLineInViewport = (
   monaco: Monaco,
   editor: monaco.editor.IStandaloneCodeEditor,
   lineNumber: number,
-  padding: number = VIEWPORT_PADDING,
+  padding: number = VIEWPORT_PADDING
 ): boolean => {
   const visibleRanges = editor.getVisibleRanges();
   if (!visibleRanges.length) return false;
@@ -42,10 +42,7 @@ const isLineInViewport = (
   const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
   const paddingLines = Math.ceil(padding / lineHeight);
 
-  return (
-    lineNumber >= viewportTop - paddingLines &&
-    lineNumber <= viewportBottom + paddingLines
-  );
+  return lineNumber >= viewportTop - paddingLines && lineNumber <= viewportBottom + paddingLines;
 };
 
 /**
@@ -62,10 +59,8 @@ export const updateCursor = (
   cursor: Cursor,
   editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
   monacoInstanceRef: RefObject<Monaco | null>,
-  cursorDecorationsRef: RefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
-  >,
-  cleanupTimeoutsRef: RefObject<Record<string, NodeJS.Timeout>>,
+  cursorDecorationsRef: RefObject<Record<string, monaco.editor.IEditorDecorationsCollection>>,
+  cleanupTimeoutsRef: RefObject<Record<string, NodeJS.Timeout>>
 ): void => {
   const editor = editorInstanceRef.current;
   const monacoInstance = monacoInstanceRef.current;
@@ -96,16 +91,14 @@ export const updateCursor = (
       startLineNumber: cursor[0],
       startColumn: cursor[1],
       endLineNumber: cursor[0],
-      endColumn: cursor[1],
+      endColumn: cursor[1]
     },
     options: {
       className: `cursor-${userID}`,
       beforeContentClassName: 'cursor-widget',
       hoverMessage: { value: `${name}'s cursor` },
-      stickiness:
-        monacoInstance.editor.TrackedRangeStickiness
-          .NeverGrowsWhenTypingAtEdges,
-    },
+      stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+    }
   });
 
   // Add selection decoration if there is a selection
@@ -122,20 +115,20 @@ export const updateCursor = (
         startLineNumber: cursor[2] ?? 1,
         startColumn: cursor[3] ?? 1,
         endLineNumber: cursor[4] ?? 1,
-        endColumn: cursor[5] ?? 1,
+        endColumn: cursor[5] ?? 1
       },
       options: {
         className: `cursor-${userID}-selection`,
         hoverMessage: { value: `${name}'s selection` },
         minimap: {
           color: backgroundColor,
-          position: monacoInstance.editor.MinimapPosition.Inline,
+          position: monacoInstance.editor.MinimapPosition.Inline
         },
         overviewRuler: {
           color: backgroundColor,
-          position: monacoInstance.editor.OverviewRulerLane.Center,
-        },
-      },
+          position: monacoInstance.editor.OverviewRulerLane.Center
+        }
+      }
     });
   }
 
@@ -156,7 +149,7 @@ export const updateCursor = (
     color,
     name,
     isFirstLine,
-    hasSelection,
+    hasSelection
   );
 
   // Store decoration
@@ -176,16 +169,12 @@ export const updateCursor = (
  */
 export const removeCursor = (
   userID: string,
-  cursorDecorationsRef: RefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
-  >,
+  cursorDecorationsRef: RefObject<Record<string, monaco.editor.IEditorDecorationsCollection>>
 ): void => {
   const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-  cursorElements.forEach((el) => el.remove());
-  const selectionElements = document.querySelectorAll(
-    `.cursor-${userID}-selection`,
-  );
-  selectionElements.forEach((el) => el.remove());
+  cursorElements.forEach(el => el.remove());
+  const selectionElements = document.querySelectorAll(`.cursor-${userID}-selection`);
+  selectionElements.forEach(el => el.remove());
 
   cursorDecorationsRef.current[userID]?.clear();
 };

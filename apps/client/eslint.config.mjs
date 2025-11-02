@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: __dirname
 });
 
 const eslintConfig = [
@@ -31,13 +31,13 @@ const eslintConfig = [
       'tailwind.config.ts',
       'out/**',
       'build/**',
-      'next-env.d.ts',
-    ],
+      'next-env.d.ts'
+    ]
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts', '**/*.tsx']
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier')
 ];
 
 export default eslintConfig;

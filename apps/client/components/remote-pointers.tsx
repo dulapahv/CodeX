@@ -32,13 +32,11 @@ const THROTTLE_MS = 16; // Approximately 60fps for smoother updates
 
 const RemotePointers = () => {
   const socket = getSocket();
-  const [pointers, setPointers] = useState<Map<string, RemotePointer>>(
-    new Map(),
-  );
+  const [pointers, setPointers] = useState<Map<string, RemotePointer>>(new Map());
   const [lastEmit, setLastEmit] = useState<number>(0);
   const [viewport, setViewport] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0
   });
 
   // Update viewport dimensions on resize
@@ -46,7 +44,7 @@ const RemotePointers = () => {
     const handleResize = () => {
       setViewport({
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: window.innerHeight
       });
     };
 
@@ -61,37 +59,33 @@ const RemotePointers = () => {
       if (now - lastEmit < THROTTLE_MS) return;
 
       // Calculate relative positions as percentages and round to 2 decimal places
-      const relativeX = Number(
-        ((event.clientX / window.innerWidth) * 100).toFixed(2),
-      );
-      const relativeY = Number(
-        ((event.clientY / window.innerHeight) * 100).toFixed(2),
-      );
+      const relativeX = Number(((event.clientX / window.innerWidth) * 100).toFixed(2));
+      const relativeY = Number(((event.clientY / window.innerHeight) * 100).toFixed(2));
 
       const pointer: Pointer = [relativeX, relativeY];
 
       socket.emit(PointerServiceMsg.POINTER, pointer);
       setLastEmit(now);
     },
-    [socket, lastEmit],
+    [socket, lastEmit]
   );
 
   useEffect(() => {
     const handlePointerUpdate = (userId: string, pointer: Pointer) => {
-      setPointers((prev) => {
+      setPointers(prev => {
         const updated = new Map(prev);
         updated.set(userId, {
           id: userId,
           position: pointer,
           lastUpdate: Date.now(),
-          isVisible: true,
+          isVisible: true
         });
         return updated;
       });
     };
 
     const cleanup = setInterval(() => {
-      setPointers((prev) => {
+      setPointers(prev => {
         const now = Date.now();
         const updated = new Map(prev);
         let hasChanges = false;
@@ -106,7 +100,7 @@ const RemotePointers = () => {
 
             // Remove pointer after fade animation completes
             setTimeout(() => {
-              setPointers((current) => {
+              setPointers(current => {
                 const next = new Map(current);
                 next.delete(id);
                 return next;
@@ -131,7 +125,7 @@ const RemotePointers = () => {
 
   return (
     <>
-      {Array.from(pointers.values()).map((pointer) => {
+      {Array.from(pointers.values()).map(pointer => {
         const username = userMap.get(pointer.id);
         if (!username) return null;
 
@@ -144,15 +138,14 @@ const RemotePointers = () => {
         return (
           <div
             key={pointer.id}
-            className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%]
-              transform-gpu transition-all duration-100 ease-out
-              will-change-[left,top,opacity]"
+            className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%] transform-gpu transition-all
+              duration-100 ease-out will-change-[left,top,opacity]"
             style={{
               left: `${scaledX}px`,
               top: `${scaledY}px`,
               opacity: pointer.isVisible ? 1 : 0,
               backfaceVisibility: 'hidden',
-              transition: `opacity ${FADE_DURATION}ms ease-out, left 100ms ease-out, top 100ms ease-out`,
+              transition: `opacity ${FADE_DURATION}ms ease-out, left 100ms ease-out, top 100ms ease-out`
             }}
             aria-hidden="true"
           >
@@ -161,21 +154,17 @@ const RemotePointers = () => {
                 className="absolute -left-[2px] -top-[2px] size-5 drop-shadow"
                 style={{
                   color: backgroundColor,
-                  fill: 'currentColor',
+                  fill: 'currentColor'
                 }}
               />
 
               <div
-                className="absolute left-4 top-4 flex h-[19px] max-w-[120px] items-center rounded-[3px]
-                  px-1 shadow"
+                className="absolute left-4 top-4 flex h-[19px] max-w-[120px] items-center rounded-[3px] px-1 shadow"
                 style={{
-                  backgroundColor,
+                  backgroundColor
                 }}
               >
-                <span
-                  className="truncate text-xs font-medium"
-                  style={{ color }}
-                >
+                <span className="truncate text-xs font-medium" style={{ color }}>
                   {username}
                 </span>
               </div>

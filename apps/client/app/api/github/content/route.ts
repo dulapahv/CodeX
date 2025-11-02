@@ -22,10 +22,7 @@ export async function GET(request: Request) {
     const accessToken = cookieStore.get('access_token')?.value;
 
     if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse URL parameters
@@ -37,10 +34,7 @@ export async function GET(request: Request) {
 
     // Validate required parameters
     if (!repo || !branch || !filename) {
-      return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
 
     // Construct the file path
@@ -53,9 +47,9 @@ export async function GET(request: Request) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/vnd.github.v3.raw',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      },
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      }
     );
 
     if (!response.ok) {
@@ -65,7 +59,7 @@ export async function GET(request: Request) {
       const error = await response.json();
       return NextResponse.json(
         { error: 'Failed to fetch file content', details: error },
-        { status: response.status },
+        { status: response.status }
       );
     }
 
@@ -78,9 +72,9 @@ export async function GET(request: Request) {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      },
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      }
     );
 
     if (!metadataResponse.ok) {
@@ -96,13 +90,10 @@ export async function GET(request: Request) {
       encoding: metadata.encoding,
       url: metadata.url,
       git_url: metadata.git_url,
-      html_url: metadata.html_url,
+      html_url: metadata.html_url
     });
   } catch (error) {
     console.error('Error in content route:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

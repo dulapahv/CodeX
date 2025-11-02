@@ -23,20 +23,14 @@ export const onSubmit = (
   repo: string,
   branch: string,
   content: string,
-  closeDialog: () => void,
+  closeDialog: () => void
 ) => {
-  return new Promise((resolve) => {
-    const createPromise = commitChanges(
-      data,
-      selectedItem,
-      repo,
-      branch,
-      content,
-    );
+  return new Promise(resolve => {
+    const createPromise = commitChanges(data, selectedItem, repo, branch, content);
 
     toast.promise(createPromise, {
       loading: 'Committing changes...',
-      success: (result) => {
+      success: result => {
         closeDialog();
         return (
           <div className="flex flex-col font-medium [font-size:13px] [line-height:1.5rem]">
@@ -55,14 +49,14 @@ export const onSubmit = (
           </div>
         );
       },
-      error: (error) => `Failed to commit changes.\n${parseError(error)}`,
+      error: error => `Failed to commit changes.\n${parseError(error)}`
     });
 
     createPromise
-      .then((result) => {
+      .then(result => {
         resolve(result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Commit error:', error);
         // Resolve with null instead of rejecting to prevent uncaught errors
         resolve(null);

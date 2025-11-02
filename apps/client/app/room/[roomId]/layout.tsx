@@ -17,11 +17,9 @@ import { INVITED_DESCRIPTION } from '@/lib/constants';
  * shares a room link, the preview will show the room's metadata.
  */
 export const metadata: Metadata = {
-  description: INVITED_DESCRIPTION,
+  description: INVITED_DESCRIPTION
 };
 
-export default function RootLayout({
-  children,
-}: LayoutProps<'/room/[roomId]'>) {
+export default function RootLayout({ children }: LayoutProps<'/room/[roomId]'>) {
   return <div className="h-full overflow-y-hidden">{children}</div>;
 }

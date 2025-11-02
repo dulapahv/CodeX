@@ -12,12 +12,11 @@ const ALLOWED_ORIGINS = [
   'https://codex.dulapahv.dev',
   'https://codex.vercel.app',
   'https://dev-codex.dulapahv.dev',
-  'http://localhost:3000',
+  'http://localhost:3000'
 ] as const;
 
 const isVercelDeployment = (origin: string): boolean => {
-  const VERCEL_PATTERN =
-    /^https:\/\/codex-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
+  const VERCEL_PATTERN = /^https:\/\/codex-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
   return VERCEL_PATTERN.test(origin);
 };
 
@@ -42,7 +41,7 @@ const getAllowedOrigin = (origin: string | undefined): string => {
 const getCorsHeaders = (origin: string | undefined) => ({
   'Access-Control-Allow-Origin': getAllowedOrigin(origin),
   'Access-Control-Allow-Methods': 'GET',
-  Vary: 'Origin',
+  Vary: 'Origin'
 });
 
 export { ALLOWED_ORIGINS, getCorsHeaders, isVercelDeployment };

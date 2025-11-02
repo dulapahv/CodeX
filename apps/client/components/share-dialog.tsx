@@ -9,13 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { Check, Copy } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -29,7 +23,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Drawer,
@@ -38,7 +32,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
+  DrawerTitle
 } from '@/components/ui/drawer';
 import { Label } from '@/components/ui/label';
 
@@ -87,10 +81,7 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
           aria-label={copied ? 'Room ID copied' : 'Copy Room ID'}
         >
           {copied ? (
-            <Check
-              className="animate-scale-up-center size-4"
-              aria-hidden="true"
-            />
+            <Check className="animate-scale-up-center size-4" aria-hidden="true" />
           ) : (
             <Copy className="animate-fade-in size-4" aria-hidden="true" />
           )}
@@ -137,10 +128,7 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
           aria-label={copied ? 'Invite link copied' : 'Copy invite link'}
         >
           {copied ? (
-            <Check
-              className="animate-scale-up-center size-4"
-              aria-hidden="true"
-            />
+            <Check className="animate-scale-up-center size-4" aria-hidden="true" />
           ) : (
             <Copy className="animate-fade-in size-4" aria-hidden="true" />
           )}
@@ -150,108 +138,93 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
   );
 };
 
-const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
-  ({ roomId }, ref) => {
-    const isDesktop = useMediaQuery('(min-width: 768px)');
-    const [isOpen, setIsOpen] = useState(false);
-    const qrCodeRef = useRef<HTMLCanvasElement>(null);
+const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(({ roomId }, ref) => {
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [isOpen, setIsOpen] = useState(false);
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
-    const openDialog = useCallback(() => setIsOpen(true), []);
-    const closeDialog = useCallback(() => setIsOpen(false), []);
+  const openDialog = useCallback(() => setIsOpen(true), []);
+  const closeDialog = useCallback(() => setIsOpen(false), []);
 
-    useImperativeHandle(ref, () => ({
-      openDialog,
-      closeDialog,
-    }));
+  useImperativeHandle(ref, () => ({
+    openDialog,
+    closeDialog
+  }));
 
-    const content = (
-      <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-        {/* QR Code Section */}
-        <div
-          className="flex shrink-0 justify-center md:sticky md:top-0"
-          data-testid="qr-code"
-        >
-          <QRCodeCanvas
-            ref={qrCodeRef}
-            value={`${window.location.origin}/room/${roomId}`}
-            title={`QR code to join room ${roomId}`}
-            size={Math.min(256, window.innerWidth - 96)}
-            marginSize={2}
-            className="rounded-lg"
-            imageSettings={{
-              src: '/images/codex-logo.svg',
-              height: 48,
-              width: 48,
-              excavate: true,
-            }}
-          />
-        </div>
-
-        {/* Share Sections */}
-        <div className="flex flex-1 flex-col space-y-4">
-          <RoomIdSection roomId={roomId} />
-          {typeof window !== 'undefined' && (
-            <InviteLinkSection roomId={roomId} />
-          )}
-        </div>
+  const content = (
+    <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+      {/* QR Code Section */}
+      <div className="flex shrink-0 justify-center md:sticky md:top-0" data-testid="qr-code">
+        <QRCodeCanvas
+          ref={qrCodeRef}
+          value={`${window.location.origin}/room/${roomId}`}
+          title={`QR code to join room ${roomId}`}
+          size={Math.min(256, window.innerWidth - 96)}
+          marginSize={2}
+          className="rounded-lg"
+          imageSettings={{
+            src: '/images/codex-logo.svg',
+            height: 48,
+            width: 48,
+            excavate: true
+          }}
+        />
       </div>
-    );
 
-    if (isDesktop) {
-      return (
-        <Dialog
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          aria-label="Share room dialog"
-        >
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>Share Room</DialogTitle>
-              <DialogDescription>
-                Anyone with this Room ID or Invite Link can collaborate in this
-                room. Only share with people you trust.
-              </DialogDescription>
-            </DialogHeader>
-            {content}
-            <DialogFooter className="mt-6">
-              <DialogClose asChild>
-                <Button variant="secondary" aria-label="Close share dialog">
-                  Close
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      );
-    }
+      {/* Share Sections */}
+      <div className="flex flex-1 flex-col space-y-4">
+        <RoomIdSection roomId={roomId} />
+        {typeof window !== 'undefined' && <InviteLinkSection roomId={roomId} />}
+      </div>
+    </div>
+  );
 
+  if (isDesktop) {
     return (
-      <Drawer
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        aria-label="Share room drawer"
-      >
-        <DrawerContent>
-          <DrawerHeader className="text-left">
-            <DrawerTitle>Share Room</DrawerTitle>
-            <DrawerDescription>
-              Anyone with this Room ID or Invite Link can collaborate in this
-              room. Only share with people you trust.
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="px-4 pb-4">{content}</div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button variant="secondary" aria-label="Close share drawer">
+      <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="Share room dialog">
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Share Room</DialogTitle>
+            <DialogDescription>
+              Anyone with this Room ID or Invite Link can collaborate in this room. Only share with
+              people you trust.
+            </DialogDescription>
+          </DialogHeader>
+          {content}
+          <DialogFooter className="mt-6">
+            <DialogClose asChild>
+              <Button variant="secondary" aria-label="Close share dialog">
                 Close
               </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
-  },
-);
+  }
+
+  return (
+    <Drawer open={isOpen} onOpenChange={setIsOpen} aria-label="Share room drawer">
+      <DrawerContent>
+        <DrawerHeader className="text-left">
+          <DrawerTitle>Share Room</DrawerTitle>
+          <DrawerDescription>
+            Anyone with this Room ID or Invite Link can collaborate in this room. Only share with
+            people you trust.
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4 pb-4">{content}</div>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="secondary" aria-label="Close share drawer">
+              Close
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+});
 
 ShareDialog.displayName = 'ShareDialog';
 

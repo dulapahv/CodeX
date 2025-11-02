@@ -50,7 +50,7 @@ export const loginWithGithub = () => {
     window.authWindow = window.open(
       `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
       '_blank',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`,
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
     );
   }
 };
@@ -82,16 +82,13 @@ export const getBackgroundColor = (name: string): string => {
   // Use secondary golden ratio to vary saturation within a vibrant range
   const saturationBase = 85; // Higher base saturation for more vibrant colors
   const saturationRange = 15; // Allow some variation
-  const saturation =
-    saturationBase + ((hash * golden_ratio_squared) % 1) * saturationRange;
+  const saturation = saturationBase + ((hash * golden_ratio_squared) % 1) * saturationRange;
 
   // Vary lightness while keeping colors distinct
   const lightnessBase = 55; // Slightly darker base
   const lightnessRange = 20; // More variation
   const lightness =
-    lightnessBase +
-    ((hash * golden_ratio_conjugate * golden_ratio_squared) % 1) *
-      lightnessRange;
+    lightnessBase + ((hash * golden_ratio_conjugate * golden_ratio_squared) % 1) * lightnessRange;
 
   // Shift hue based on name length to add more variation
   hue = (hue + name.length * 37) % 360;

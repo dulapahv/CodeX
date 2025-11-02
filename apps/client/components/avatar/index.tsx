@@ -16,16 +16,8 @@ import type { User } from '@codex/types/user';
 import { storage } from '@/lib/services/storage';
 import { userMap } from '@/lib/services/user-map';
 import { cn } from '@/lib/utils';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { getDisplayName, getInitials } from './utils';
 
@@ -40,7 +32,7 @@ interface AvatarProps {
 const sizeClasses = {
   sm: 'size-6 text-xs',
   md: 'size-7 text-sm',
-  lg: 'size-12 text-lg',
+  lg: 'size-12 text-lg'
 };
 
 const Avatar = ({
@@ -48,7 +40,7 @@ const Avatar = ({
   size = 'md',
   className,
   showTooltip = true,
-  animate = true,
+  animate = true
 }: AvatarProps) => {
   const initials = getInitials(user.username);
   const colors = userMap.getColors(user.id);
@@ -58,11 +50,11 @@ const Avatar = ({
   const AvatarContent = (
     <div
       className={cn(
-        `flex cursor-default items-center justify-center rounded-full border-[1.5px]
-        border-white/50 font-medium text-[#fff] dark:border-black/50`,
+        `flex cursor-default items-center justify-center rounded-full border-[1.5px] border-white/50
+        font-medium text-[#fff] dark:border-black/50`,
         animate && 'animate-scale-up-center',
         sizeClasses[size],
-        className,
+        className
       )}
       style={colors}
       data-testid="avatar"
@@ -85,12 +77,7 @@ const Avatar = ({
         <PopoverTrigger asChild aria-label={`${displayName}'s avatar`}>
           {AvatarContent}
         </PopoverTrigger>
-        <PopoverContent
-          className="w-auto p-2 text-sm"
-          side="top"
-          sideOffset={8}
-          role="tooltip"
-        >
+        <PopoverContent className="w-auto p-2 text-sm" side="top" sideOffset={8} role="tooltip">
           {displayName}
         </PopoverContent>
       </Popover>

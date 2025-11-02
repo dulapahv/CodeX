@@ -9,11 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import {
-  SandpackLayout,
-  SandpackPreview,
-  SandpackProvider,
-} from '@codesandbox/sandpack-react';
+import { SandpackLayout, SandpackPreview, SandpackProvider } from '@codesandbox/sandpack-react';
 import { useTheme } from 'next-themes';
 
 import { DISABLE_TAILWIND_CDN_WARN, SANDPACK_CDN } from '@/lib/constants';
@@ -33,10 +29,10 @@ const LivePreview = ({ value }: LivePreviewProps) => {
       template="static"
       className="!h-full"
       files={{
-        'index.html': `<!DOCTYPE html><html><head>${DISABLE_TAILWIND_CDN_WARN}${SANDPACK_CDN}</head><body class="h-screen">${value}</body></html>`,
+        'index.html': `<!DOCTYPE html><html><head>${DISABLE_TAILWIND_CDN_WARN}${SANDPACK_CDN}</head><body class="h-screen">${value}</body></html>`
       }}
       options={{
-        initMode: 'user-visible',
+        initMode: 'user-visible'
       }}
     >
       <SandpackLayout className="!h-full !rounded-none !border-none">

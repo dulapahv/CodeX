@@ -26,7 +26,7 @@ export const toggleCamera = async (
   setMicOn: Dispatch<SetStateAction<boolean>>,
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
-  getMedia: () => Promise<boolean>,
+  getMedia: () => Promise<boolean>
 ) => {
   const socket = getSocket();
 
@@ -41,7 +41,7 @@ export const toggleCamera = async (
     } else {
       // Turning off camera
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
 
       if (videoRef.current) {
@@ -64,7 +64,7 @@ export const rotateCamera = async (
   cameraFacingMode: string,
   setCameraFacingMode: Dispatch<SetStateAction<'user' | 'environment'>>,
   streamRef: RefObject<MediaStream | null>,
-  getMedia: () => Promise<boolean>,
+  getMedia: () => Promise<boolean>
 ) => {
   if (!isMobile) return;
 
@@ -74,7 +74,7 @@ export const rotateCamera = async (
   if (cameraOn) {
     // Stop current stream
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current.getTracks().forEach(track => track.stop());
     }
     // Get new stream with rotated camera
     await getMedia();
@@ -85,7 +85,7 @@ export const rotateCamera = async (
 export const toggleMic = (
   micOn: boolean,
   setMicOn: Dispatch<SetStateAction<boolean>>,
-  streamRef: RefObject<MediaStream | null>,
+  streamRef: RefObject<MediaStream | null>
 ) => {
   const socket = getSocket();
 
@@ -102,7 +102,7 @@ export const toggleMic = (
     }
 
     const newMicState = !micOn;
-    audioTracks.forEach((track) => {
+    audioTracks.forEach(track => {
       track.enabled = newMicState;
     });
 

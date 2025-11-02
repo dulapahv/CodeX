@@ -22,12 +22,10 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <Alert className="max-w-lg">
-        <AlertTitle className="text-xl font-semibold">
-          404 - Page Not Found
-        </AlertTitle>
+        <AlertTitle className="text-xl font-semibold">404 - Page Not Found</AlertTitle>
         <AlertDescription className="text-muted-foreground">
-          Sorry, we couldn&apos;t find the page you&apos;re looking for. Please
-          check the URL or navigate back to the homepage.
+          Sorry, we couldn&apos;t find the page you&apos;re looking for. Please check the URL or
+          navigate back to the homepage.
         </AlertDescription>
         <div className="mt-6 flex justify-end">
           <Button variant="default" asChild className="gap-2">

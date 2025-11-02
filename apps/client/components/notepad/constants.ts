@@ -137,5 +137,5 @@ export const codeBlockLanguages: Record<string, string> = {
   xquery: 'XQuery',
   yacas: 'Yacas',
   yaml: 'YAML',
-  z80: 'Z80',
+  z80: 'Z80'
 };

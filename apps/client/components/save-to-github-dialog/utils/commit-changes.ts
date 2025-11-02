@@ -10,10 +10,7 @@
  */
 
 import { CommitResponse } from '@/components/repo-browser/types/github';
-import {
-  itemType,
-  type ExtendedTreeDataItem,
-} from '@/components/repo-browser/types/tree';
+import { itemType, type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
 
 import { CommitForm } from '../types';
 
@@ -22,7 +19,7 @@ export const commitChanges = async (
   selectedItem: ExtendedTreeDataItem | null,
   repo: string,
   branch: string,
-  content: string,
+  content: string
 ): Promise<CommitResponse> => {
   try {
     if (!selectedItem) {
@@ -42,15 +39,15 @@ export const commitChanges = async (
           : selectedItem.path?.split('/').slice(0, -1).join('/'),
       filename: data.fileName,
       commitMessage: data.commitSummary,
-      content: btoa(unescape(encodeURIComponent(content))),
+      content: btoa(unescape(encodeURIComponent(content)))
     };
 
     const response = await fetch('/api/github/commit', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(commitData),
+      body: JSON.stringify(commitData)
     });
 
     if (!response.ok) {

@@ -21,9 +21,9 @@ export async function GET() {
       `https://uptime.betterstack.com/api/v2/monitors/${KASCA_SERVER_MONITOR_ID}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.BETTERSTACK_API_KEY}`,
-        },
-      },
+          Authorization: `Bearer ${process.env.BETTERSTACK_API_KEY}`
+        }
+      }
     );
 
     if (!response.ok) {
@@ -34,9 +34,6 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching server status:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch server status' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to fetch server status' }, { status: 500 });
   }
 }

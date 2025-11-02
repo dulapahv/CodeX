@@ -27,5 +27,5 @@ export enum ExecutionResultType {
   INFO = 'info',
   WARNING = 'warning',
   ERROR = 'error',
-  OUTPUT = 'output',
+  OUTPUT = 'output'
 }

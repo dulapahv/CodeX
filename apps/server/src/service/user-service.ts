@@ -92,9 +92,7 @@ export const updateCursor = (socket: Socket, cursor: Cursor): void => {
   const userData = socketToUserData.get(socket.id);
 
   if (userData) {
-    socket
-      .to(roomId)
-      .emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
+    socket.to(roomId).emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
   }
 };
 

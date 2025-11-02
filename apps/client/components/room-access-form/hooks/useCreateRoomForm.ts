@@ -18,7 +18,7 @@ export const useCreateRoomForm = () => {
   return useForm<CreateRoomForm>({
     resolver: zodResolver(createRoomSchema),
     defaultValues: {
-      name: '',
-    },
+      name: ''
+    }
   });
 };

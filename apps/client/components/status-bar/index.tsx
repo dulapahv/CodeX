@@ -41,11 +41,7 @@ const MemoizedLanguageLabel = memo(function MemoizedLanguagesIcon() {
   );
 });
 
-function formatCursorPosition({
-  line,
-  column,
-  selected,
-}: StatusBarCursorPosition): string {
+function formatCursorPosition({ line, column, selected }: StatusBarCursorPosition): string {
   const basePosition = `Ln ${line}, Col ${column}`;
   return selected ? `${basePosition} (${selected} selected)` : basePosition;
 }
@@ -54,23 +50,23 @@ const StatusBar = memo(function StatusBar({
   monaco,
   editor,
   cursorPosition,
-  className,
+  className
 }: StatusBarProps) {
   if (!monaco || !editor) return null;
 
   return (
     <section
       className={cn(
-        `animate-fade-in fixed inset-x-0 bottom-0 h-6
-        bg-[color:var(--toolbar-bg-primary)] py-1`,
-        className,
+        'animate-fade-in fixed inset-x-0 bottom-0 h-6 bg-[color:var(--toolbar-bg-primary)] py-1',
+        className
       )}
       role="status"
       aria-label="Editor status bar"
     >
       <div
-        className={`flex items-center justify-end gap-x-2 px-2 text-xs
-          text-[color:var(--status-bar-text)]`}
+        className={
+          'flex items-center justify-end gap-x-2 px-2 text-xs text-[color:var(--status-bar-text)]'
+        }
       >
         <div className="flex items-center">
           <MemoizedLanguageLabel />
@@ -80,11 +76,7 @@ const StatusBar = memo(function StatusBar({
             className="hover:bg-primary-foreground/10"
           />
         </div>
-        <div
-          className="flex items-center"
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        <div className="flex items-center" aria-live="polite" aria-atomic="true">
           {formatCursorPosition(cursorPosition)}
         </div>
       </div>

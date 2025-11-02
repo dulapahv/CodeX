@@ -24,7 +24,7 @@ const SaveNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
     onClick={() => {
       const markdown = markdownEditorRef.current?.getMarkdown() ?? '';
       const blob = new Blob([markdown], {
-        type: 'text/markdown',
+        type: 'text/markdown'
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

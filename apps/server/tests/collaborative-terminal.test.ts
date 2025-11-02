@@ -12,10 +12,7 @@ import { performance } from 'perf_hooks';
 import { io as Client } from 'socket.io-client';
 
 import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
-import {
-  ExecutionResultType,
-  type ExecutionResult,
-} from '@codex/types/terminal';
+import { ExecutionResultType, type ExecutionResult } from '@codex/types/terminal';
 
 const SERVER_URL = process.env.SERVER_URL;
 const SAMPLES_PER_TEST = 50;
@@ -35,11 +32,11 @@ const testCases: Array<{
         stderr: '',
         code: 0,
         signal: null,
-        output: 'Hello, World!',
+        output: 'Hello, World!'
       },
-      type: ExecutionResultType.INFO,
+      type: ExecutionResultType.INFO
     },
-    description: 'Small informational message output',
+    description: 'Small informational message output'
   },
   {
     name: 'Program output with error',
@@ -51,11 +48,11 @@ const testCases: Array<{
         stderr: 'NameError: name x is not defined\n  File "<stdin>", line 1',
         code: 1,
         signal: null,
-        output: 'NameError: name x is not defined\n  File "<stdin>", line 1',
+        output: 'NameError: name x is not defined\n  File "<stdin>", line 1'
       },
-      type: ExecutionResultType.ERROR,
+      type: ExecutionResultType.ERROR
     },
-    description: 'Error message with stack trace',
+    description: 'Error message with stack trace'
   },
   {
     name: 'Large program output',
@@ -67,11 +64,11 @@ const testCases: Array<{
         stderr: '',
         code: 0,
         signal: null,
-        output: 'x'.repeat(10000),
+        output: 'x'.repeat(10000)
       },
-      type: ExecutionResultType.OUTPUT,
+      type: ExecutionResultType.OUTPUT
     },
-    description: 'Large program output (10KB)',
+    description: 'Large program output (10KB)'
   },
   {
     name: 'Mixed stdout and stderr',
@@ -83,12 +80,12 @@ const testCases: Array<{
         stderr: 'Warning: deprecated feature used',
         code: 0,
         signal: null,
-        output: 'Processing...\nDone!\nWarning: deprecated feature used',
+        output: 'Processing...\nDone!\nWarning: deprecated feature used'
       },
-      type: ExecutionResultType.WARNING,
+      type: ExecutionResultType.WARNING
     },
-    description: 'Output with both stdout and stderr content',
-  },
+    description: 'Output with both stdout and stderr content'
+  }
 ];
 
 interface TestResult {
@@ -131,7 +128,7 @@ class TerminalLatencyReport {
 Description: ${result.description}
 Output Type: ${result.type}
 Output Size: ${this.formatBytes(result.outputSize)}
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(', ')} ms
+Samples: ${result.samples.map(s => this.formatNumber(s)).join(', ')} ms
 
 Statistics:
 • Average Latency:      ${this.formatNumber(result.average)} ms
@@ -152,21 +149,17 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join('\n')}
+${this.results.map(r => this.generateTestCaseReport(r)).join('\n')}
 
 ${this.streamingResults ? this.generateTestCaseReport(this.streamingResults) : ''}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
 Overall Average Latency: ${this.formatNumber(
-      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length,
+      this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(
-      Math.min(...this.results.map((r) => r.minimum)),
-    )} ms
-Worst Performance: ${this.formatNumber(
-      Math.max(...this.results.map((r) => r.maximum)),
-    )} ms
+Best Performance: ${this.formatNumber(Math.min(...this.results.map(r => r.minimum)))} ms
+Worst Performance: ${this.formatNumber(Math.max(...this.results.map(r => r.maximum)))} ms
 `;
   }
 
@@ -194,7 +187,7 @@ describe('Terminal Output Synchronization Tests', () => {
     // Create sender socket and room
     senderSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      senderSocket.on('connect_error', (error) => reject(error));
+      senderSocket.on('connect_error', error => reject(error));
       senderSocket.on('connect', () => {
         resolve();
       });
@@ -212,7 +205,7 @@ describe('Terminal Output Synchronization Tests', () => {
     // Setup receiver
     receiverSocket = createSocket();
     await new Promise<void>((resolve, reject) => {
-      receiverSocket.on('connect_error', (error) => reject(error));
+      receiverSocket.on('connect_error', error => reject(error));
       receiverSocket.on('connect', () => {
         resolve();
       });
@@ -227,7 +220,7 @@ describe('Terminal Output Synchronization Tests', () => {
     });
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       setTimeout(resolve, 1000);
     });
   }, 160000);
@@ -242,10 +235,10 @@ describe('Terminal Output Synchronization Tests', () => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
+      await new Promise(resolve => setTimeout(resolve, 100)); // Delay between samples
 
       const startTime = performance.now();
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         receiverSocket.once(CodeServiceMsg.UPDATE_TERM, () => {
           const latency = performance.now() - startTime;
           latencies.push(latency);
@@ -259,7 +252,7 @@ describe('Terminal Output Synchronization Tests', () => {
   };
 
   const calculateStats = (
-    samples: number[],
+    samples: number[]
   ): {
     average: number;
     standardDeviation: number;
@@ -268,14 +261,13 @@ describe('Terminal Output Synchronization Tests', () => {
   } => {
     const average = samples.reduce((a, b) => a + b) / samples.length;
     const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) /
-        samples.length,
+      samples.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / samples.length
     );
     return {
       average,
       standardDeviation,
       minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
+      maximum: Math.max(...samples)
     };
   };
 
@@ -291,9 +283,9 @@ describe('Terminal Output Synchronization Tests', () => {
         description,
         outputSize: Buffer.from(output.run.output).length,
         type: output.type!,
-        ...stats,
+        ...stats
       });
-    },
+    }
   );
 
   test('Streaming large output simulation', async () => {
@@ -314,14 +306,14 @@ describe('Terminal Output Synchronization Tests', () => {
               stderr: '',
               code: 0,
               signal: null,
-              output: `Chunk ${i + 1}: ${'x'.repeat(chunkSize)}`,
+              output: `Chunk ${i + 1}: ${'x'.repeat(chunkSize)}`
             },
-            type: ExecutionResultType.OUTPUT,
+            type: ExecutionResultType.OUTPUT
           };
 
           totalSize += Buffer.from(chunk.run.output).length;
 
-          return new Promise<void>((resolve) => {
+          return new Promise<void>(resolve => {
             const startTime = performance.now();
             receiverSocket.once(CodeServiceMsg.UPDATE_TERM, () => {
               timings.push(performance.now() - startTime);
@@ -329,7 +321,7 @@ describe('Terminal Output Synchronization Tests', () => {
             });
             senderSocket.emit(CodeServiceMsg.UPDATE_TERM, chunk);
           });
-        }),
+        })
     );
 
     const stats = calculateStats(timings);
@@ -339,7 +331,7 @@ describe('Terminal Output Synchronization Tests', () => {
       description: `${chunks} chunks of ${chunkSize} bytes each, streamed sequentially`,
       outputSize: totalSize,
       type: ExecutionResultType.OUTPUT,
-      ...stats,
+      ...stats
     });
   });
 });

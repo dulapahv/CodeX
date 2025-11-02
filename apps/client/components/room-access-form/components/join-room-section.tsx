@@ -14,7 +14,7 @@ import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
-  UseFormSetValue,
+  UseFormSetValue
 } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,7 @@ export const JoinRoomSection = ({
   onError,
   errors,
   isSubmitting,
-  isCreating,
+  isCreating
 }: JoinRoomSectionProps) => {
   const isDisabled = isCreating || isSubmitting;
   const roomIdErrorId = 'room-id-error';
@@ -53,18 +53,14 @@ export const JoinRoomSection = ({
   return (
     <section aria-labelledby="join-room-heading">
       <form
-        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        onSubmit={handleSubmit(data => onSubmit(data), onError)}
         className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
       >
         <h1 id="join-room-heading" className="text-lg font-medium sm:text-xl">
           Join a Room
         </h1>
-        <div
-          className="flex flex-col space-y-1.5"
-          role="group"
-          aria-labelledby="room-id"
-        >
+        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby="room-id">
           <Label htmlFor="room-id" className="text-sm sm:text-base">
             Room ID
           </Label>
@@ -77,7 +73,7 @@ export const JoinRoomSection = ({
             aria-invalid={errors.roomId ? 'true' : 'false'}
             aria-describedby={errors.roomId ? roomIdErrorId : undefined}
             {...register('roomId', {
-              onChange: (e) => onRoomIdChange(e, setValue),
+              onChange: e => onRoomIdChange(e, setValue)
             })}
           />
           {errors.roomId && (
@@ -86,11 +82,7 @@ export const JoinRoomSection = ({
             </p>
           )}
         </div>
-        <div
-          className="flex flex-col space-y-1.5"
-          role="group"
-          aria-labelledby="name-join"
-        >
+        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby="name-join">
           <Label htmlFor="name-join" className="text-sm sm:text-base">
             Name
           </Label>
@@ -118,9 +110,7 @@ export const JoinRoomSection = ({
         >
           {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
           {isSubmitting ? 'Joining...' : 'Join Room'}
-          {!isSubmitting && (
-            <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />
-          )}
+          {!isSubmitting && <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />}
         </Button>
       </form>
     </section>

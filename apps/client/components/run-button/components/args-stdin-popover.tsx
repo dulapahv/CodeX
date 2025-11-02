@@ -15,17 +15,9 @@ import { ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ExecutionArgsProps {
   onArgsChange: (args: string[]) => void;
@@ -33,18 +25,14 @@ interface ExecutionArgsProps {
   disabled?: boolean;
 }
 
-const ArgsInputPopover = ({
-  onArgsChange,
-  onStdinChange,
-  disabled,
-}: ExecutionArgsProps) => {
+const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionArgsProps) => {
   const [argsStr, setArgsStr] = useState('');
   const [stdin, setStdin] = useState('');
   const [open, setOpen] = useState(false);
 
   const handleArgsChange = (value: string) => {
     setArgsStr(value);
-    const args = value.split('\n').filter((arg) => arg.trim());
+    const args = value.split('\n').filter(arg => arg.trim());
     onArgsChange(args);
   };
 
@@ -72,13 +60,11 @@ const ArgsInputPopover = ({
               variant="ghost"
               size="icon"
               className={cn(
-                `relative size-7 rounded-l-none border-l
-                border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)]
-                text-[color:var(--panel-text-accent)] transition-opacity
-                hover:bg-[color:var(--toolbar-accent)]
-                hover:text-[color:var(--panel-text-accent)] hover:!opacity-80
+                `relative size-7 rounded-l-none border-l border-l-[color:var(--panel-text-accent)]
+                bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] transition-opacity
+                hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)] hover:!opacity-80
                 disabled:!opacity-50`,
-                disabled && 'bg-red-600',
+                disabled && 'bg-red-600'
               )}
               disabled={disabled}
               aria-label="Program arguments and input"
@@ -86,8 +72,7 @@ const ArgsInputPopover = ({
               <ChevronDown className="size-4" />
               {hasInput && (
                 <span
-                  className="animate-scale-up-center absolute -right-0.5 -top-0.5 size-2 rounded-full
-                    bg-red-500"
+                  className="animate-scale-up-center absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-500"
                   aria-hidden="true"
                 />
               )}
@@ -115,15 +100,14 @@ const ArgsInputPopover = ({
                 id="args-input"
                 placeholder="Enter each argument on a new line..."
                 value={argsStr}
-                onChange={(e) => handleArgsChange(e.target.value)}
+                onChange={e => handleArgsChange(e.target.value)}
                 className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
               />
               {argsStr && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6
-                    rounded-full"
+                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6 rounded-full"
                   onClick={clearArgs}
                   aria-label="Clear arguments"
                 >
@@ -140,15 +124,14 @@ const ArgsInputPopover = ({
                 id="stdin-input"
                 placeholder="Enter each input on a new line..."
                 value={stdin}
-                onChange={(e) => handleStdinChange(e.target.value)}
+                onChange={e => handleStdinChange(e.target.value)}
                 className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
               />
               {stdin && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6
-                    rounded-full"
+                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6 rounded-full"
                   onClick={clearStdin}
                   aria-label="Clear program input"
                 >

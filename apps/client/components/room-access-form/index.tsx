@@ -42,19 +42,15 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
     formState: {
       errors: createErrors,
       isSubmitting: isCreating,
-      isSubmitSuccessful: createSuccessful,
-    },
+      isSubmitSuccessful: createSuccessful
+    }
   } = useCreateRoomForm();
 
   const {
     register: registerJoin,
     handleSubmit: handleSubmitJoin,
     setValue: setJoinValue,
-    formState: {
-      errors: joinErrors,
-      isSubmitting: isJoining,
-      isSubmitSuccessful: joinSuccessful,
-    },
+    formState: { errors: joinErrors, isSubmitting: isJoining, isSubmitSuccessful: joinSuccessful }
   } = useJoinRoomForm(roomId);
 
   const handleJoinRoom = (data: JoinRoomForm) => {
@@ -68,7 +64,7 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
           router.push(`/room/${roomId}`);
           return 'Joined room successfully. Happy coding!';
         },
-        error: (error) => `Failed to join room.\n${parseError(error)}`,
+        error: error => `Failed to join room.\n${parseError(error)}`
       });
 
       return joinPromise;
@@ -84,12 +80,12 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
 
       toast.promise(createPromise, {
         loading: 'Creating room, please wait...',
-        success: (roomId) => {
+        success: roomId => {
           router.push(`/room/${roomId}`);
           navigator.clipboard.writeText(roomId);
           return 'Room created successfully. Happy coding!';
         },
-        error: (error) => `Failed to create room.\n${parseError(error)}`,
+        error: error => `Failed to create room.\n${parseError(error)}`
       });
 
       return createPromise;
@@ -121,20 +117,14 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
           {roomId ? (
             isRoomIdValid(roomId) ? (
               <>
-                <div
-                  className="space-y-2 text-center"
-                  role="status"
-                  aria-live="polite"
-                >
+                <div className="space-y-2 text-center" role="status" aria-live="polite">
                   <p className="text-lg sm:text-xl">
                     You&apos;ve been invited to a coding session!
                   </p>
                   <p className="text-base sm:text-lg">
                     Room: <span className="font-mono font-bold">{roomId}</span>
                   </p>
-                  <p className="text-lg sm:text-xl">
-                    Enter your name to join the room
-                  </p>
+                  <p className="text-lg sm:text-xl">Enter your name to join the room</p>
                 </div>
                 <InvitedSection
                   register={registerJoin}
@@ -145,30 +135,18 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
                   isSubmitting={isJoining}
                   isCreating={isCreating}
                 />
-                <BackButton
-                  onClick={() => router.push('/')}
-                  disabled={isJoining}
-                />
+                <BackButton onClick={() => router.push('/')} disabled={isJoining} />
               </>
             ) : (
-              <div
-                className="flex flex-col space-y-4 text-center"
-                role="status"
-                aria-live="polite"
-              >
-                <p className="text-lg font-medium sm:text-xl">
-                  Invalid room ID
-                </p>
+              <div className="flex flex-col space-y-4 text-center" role="status" aria-live="polite">
+                <p className="text-lg font-medium sm:text-xl">Invalid room ID</p>
                 <p>
                   Please check the invite link and try again.
                   <br />
                   Room ID should look like this:{' '}
                   <span className="font-mono font-bold">XXXX-XXXX</span>
                 </p>
-                <BackButton
-                  onClick={() => router.push('/')}
-                  disabled={isJoining}
-                />
+                <BackButton onClick={() => router.push('/')} disabled={isJoining} />
               </div>
             )
           ) : (

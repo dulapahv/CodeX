@@ -10,10 +10,7 @@
 
 'use client';
 
-import {
-  Analytics as VercelAnalytics,
-  type BeforeSendEvent,
-} from '@vercel/analytics/next';
+import { Analytics as VercelAnalytics, type BeforeSendEvent } from '@vercel/analytics/next';
 
 const Analytics = () => (
   <VercelAnalytics
@@ -23,7 +20,7 @@ const Analytics = () => (
       if (url.pathname === '/') {
         return {
           ...event,
-          url: url.toString(),
+          url: url.toString()
         };
       }
       return null;
