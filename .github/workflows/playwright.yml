@@ -13,7 +13,6 @@ permissions:
   contents: read
   actions: write
   checks: write
-  statuses: write
 on:
   push:
     branches: [main, master]
@@ -117,9 +116,3 @@ jobs:
           name: playwright-screenshots
           path: apps/client/test-results/
           retention-days: 30
-
-      # Notify Vercel about test completion
-      - name: 🔔 Notify Vercel
-        uses: vercel/repository-dispatch/actions/status@v1
-        with:
-          name: 'Vercel - codex-client: E2E Tests'
