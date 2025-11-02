@@ -13,6 +13,7 @@ permissions:
   contents: read
   actions: write
   checks: write
+  statuses: write
 on:
   push:
     branches: [main, master]
