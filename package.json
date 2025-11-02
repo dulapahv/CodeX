@@ -6,9 +6,9 @@
     "build": "turbo build",
     "build:client": "turbo build --filter=client...",
     "build:server": "turbo build --filter=server...",
-    "lint:check": "turbo lint:check",
+    "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "format:check": "prettier --check **/*.{js,mjs,jsx,ts,tsx,json}",
+    "format": "prettier --check **/*.{js,mjs,jsx,ts,tsx,json}",
     "format:fix": "prettier --write **/*.{js,mjs,jsx,ts,tsx,json}",
     "test:client": "turbo test:e2e",
     "test:client:ui": "turbo test:e2e:ui",
@@ -22,10 +22,10 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,jsx,ts,tsx,json}": [
-      "pnpm format:check"
+      "pnpm format:fix"
     ],
-    "apps/client/**/*.{js,mjs,jsx,ts,tsx}": [
-      "pnpm --filter=client lint:check"
+    "apps/client/**/*.{js,mjs,jsx,ts,tsx,json}": [
+      "pnpm --filter=client lint:fix"
     ]
   },
   "devDependencies": {

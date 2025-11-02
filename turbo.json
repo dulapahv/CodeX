@@ -43,13 +43,13 @@
       "cache": false,
       "outputs": ["test-results/**"]
     },
-    "lint:check": {
+    "lint": {
       "cache": true
     },
     "lint:fix": {
       "cache": true
     },
-    "format:check": {
+    "format": {
       "cache": true
     },
     "format:fix": {

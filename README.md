@@ -168,10 +168,10 @@ Both the frontend server and the backend server will start automatically. To run
 
 ```bash
 # In root directory or client workspace
-pnpm test:client         # Run all frontend E2E tests
-pnpm test:client:ui      # Run frontend tests with UI mode
-pnpm test:client:debug   # Debug frontend tests
-pnpm test:client:report  # View frontend test report
+pnpm test:client            # Run all frontend E2E tests
+pnpm test:client:ui         # Run frontend tests with UI mode
+pnpm test:client:debug      # Debug frontend tests
+pnpm test:client:report     # View frontend test report
 
 # Run in client workspace only
 pnpm --filter client test:client
@@ -183,9 +183,9 @@ The backend server will start automatically. To run the backend tests:
 
 ```bash
 # In root directory or server workspace
-pnpm test:server           # Run backend tests against local server
-pnpm test:server:remote    # Run backend tests against remote server
-pnpm test:server:watch     # Run backend tests in watch mode (local server)
+pnpm test:server            # Run backend tests against local server
+pnpm test:server:remote     # Run backend tests against remote server
+pnpm test:server:watch      # Run backend tests in watch mode (local server)
 
 # Run in server workspace only
 pnpm --filter server test:server
@@ -224,26 +224,26 @@ These are the available scripts in the project:
 
 ```bash
 # Development
-pnpm dev              # Start all applications in development mode
-pnpm build            # Build all packages
-pnpm build:client     # Build frontend
-pnpm build:server     # Build backend
-pnpm clean            # Clean all builds, caches, test results, and node_modules
+pnpm dev                    # Start all applications in development mode
+pnpm build                  # Build all packages
+pnpm build:client           # Build frontend
+pnpm build:server           # Build backend
+pnpm clean                  # Clean all builds, caches, test results, and node_modules
 
 # Testing
-pnpm test:client          # Run frontend E2E tests (Playwright)
-pnpm test:client:ui       # Run frontend tests with UI mode
-pnpm test:client:debug    # Debug frontend tests
-pnpm test:client:report   # View frontend test report
-pnpm test:server          # Run backend tests against local server
-pnpm test:server:remote   # Run backend tests against remote server
-pnpm test:server:watch    # Run backend tests in watch mode (local server)
+pnpm test:client            # Run frontend E2E tests (Playwright)
+pnpm test:client:ui         # Run frontend tests with UI mode
+pnpm test:client:debug      # Debug frontend tests
+pnpm test:client:report     # View frontend test report
+pnpm test:server            # Run backend tests against local server
+pnpm test:server:remote     # Run backend tests against remote server
+pnpm test:server:watch      # Run backend tests in watch mode (local server)
 
 # Linting and Formatting
-pnpm lint:check       # Run ESLint checks (frontend only)
-pnpm lint:fix         # Fix ESLint issues (frontend only)
-pnpm format:check     # Check formatting
-pnpm format:fix       # Fix formatting issues
+pnpm lint                   # Run ESLint checks (frontend only)
+pnpm lint:fix               # Fix ESLint issues (frontend only)
+pnpm format                 # Check formatting
+pnpm format:fix             # Fix formatting issues
 ```
 
 You can also run scripts in the specific workspaces
@@ -318,10 +318,10 @@ We use several tools to maintain code quality:
 Check and fix code style:
 
 ```bash
-pnpm lint:check    # Check ESLint issues
-pnpm lint:fix      # Fix ESLint issues
-pnpm format:check  # Check formatting issues
-pnpm format:fix    # Fix formatting issues
+pnpm lint                   # Check ESLint issues
+pnpm lint:fix               # Fix ESLint issues
+pnpm format                 # Check formatting issues
+pnpm format:fix             # Fix formatting issues
 ```
 
 ## Contributing

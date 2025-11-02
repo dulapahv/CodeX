@@ -37,5 +37,7 @@
 
 # Deployment
 **/.vercel
-
 .vercel
+
+# Misc
+.eslintcache
