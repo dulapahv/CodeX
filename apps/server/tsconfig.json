@@ -9,7 +9,6 @@
     "moduleResolution": "nodenext",
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@codex/types/*": ["../../packages/types/*"]
