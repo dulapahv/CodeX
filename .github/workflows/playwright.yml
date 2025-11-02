@@ -117,8 +117,8 @@ jobs:
           path: apps/client/test-results/
           retention-days: 30
 
-      # Trigger Vercel deployment if tests pass
-      - name: 🚀 Trigger Vercel Deployment
-        if: success() && github.ref == 'refs/heads/main'
-        run: |
-          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+      # Notify Vercel about test completion
+      - name: 🔔 Notify Vercel
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: 'Vercel - codex-client: E2E Tests'
