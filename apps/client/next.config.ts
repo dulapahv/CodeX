@@ -16,10 +16,12 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  reactCompiler: true,
   poweredByHeader: false,
   typedRoutes: true,
   experimental: {
     typedEnv: true,
+    turbopackFileSystemCacheForDev: true,
     optimizePackageImports: [
       '@codesandbox/sandpack-react',
       '@mdxeditor/editor',
