@@ -1,3 +1,6 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
+
+patchedDependencies:
+  monaco-themes@0.4.8: patches/monaco-themes@0.4.8.patch
