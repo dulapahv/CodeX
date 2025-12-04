@@ -28,7 +28,8 @@ const nextConfig: NextConfig = {
       '@mdxeditor/editor',
       '@monaco-editor/react',
       'monaco-editor'
-    ]
+    ],
+    externalDir: true
   },
   images: {
     remotePatterns: [
@@ -39,6 +40,13 @@ const nextConfig: NextConfig = {
         pathname: '/**'
       }
     ]
+  },
+  transpilePackages: ['monaco-themes'],
+  webpack: (config, { isServer }) => {
+    // Bypass package.json exports field for monaco-themes
+    config.resolve.exportsFields = [];
+
+    return config;
   }
 };
 

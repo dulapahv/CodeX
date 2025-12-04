@@ -33,8 +33,7 @@ const spinnerVariants = cva('relative inline-block aspect-square transform-gpu',
 });
 
 export interface SpinnerProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    Omit<VariantProps<typeof spinnerVariants>, 'size'> {
+  extends React.HTMLAttributes<HTMLDivElement>, Omit<VariantProps<typeof spinnerVariants>, 'size'> {
   className?: string;
   size?: VariantProps<typeof spinnerVariants>['size'] | number;
 }

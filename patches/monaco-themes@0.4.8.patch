@@ -1,0 +1,14 @@
+diff --git a/package.json b/package.json
+index 76054d7e740520caf798005e808ff59cc466dcc7..0397613a81cdf6af1be7ea383f0c1d285d89ed74 100644
+--- a/package.json
++++ b/package.json
+@@ -12,7 +12,8 @@
+       "import": "./dist/index.js",
+       "require": "./dist/index.cjs"
+     },
+-    "./dist/monaco-themes.js": "./dist/monaco-themes.js"
++    "./dist/monaco-themes.js": "./dist/monaco-themes.js",
++    "./themes/*": "./themes/*"
+   },
+   "scripts": {
+     "prepublishOnly": "pnpm run build && pnpm run download && pnpm run generate",
