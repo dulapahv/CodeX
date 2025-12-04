@@ -6,12 +6,19 @@ settings:
 
 patchedDependencies:
   monaco-themes:
-    hash: 098faa05644084a3c5c1fc3e802009a44284b7433cf3b262704a0907af37ef87
+    hash: 6daxwvy6nnfmdndi2nd7zwkctm
     path: patches/monaco-themes.patch
 
 importers:
 
   .:
+    optionalDependencies:
+      bufferutil:
+        specifier: ^4.0.9
+        version: 4.0.9
+      utf-8-validate:
+        specifier: ^6.0.5
+        version: 6.0.5
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.1
@@ -58,13 +65,6 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
-    optionalDependencies:
-      bufferutil:
-        specifier: ^4.0.9
-        version: 4.0.9
-      utf-8-validate:
-        specifier: ^6.0.5
-        version: 6.0.5
 
   apps/client:
     dependencies:
@@ -160,7 +160,7 @@ importers:
         version: 0.52.2
       monaco-themes:
         specifier: ^0.4.8
-        version: 0.4.8(patch_hash=098faa05644084a3c5c1fc3e802009a44284b7433cf3b262704a0907af37ef87)
+        version: 0.4.8(patch_hash=6daxwvy6nnfmdndi2nd7zwkctm)
       motion:
         specifier: ^11.18.2
         version: 11.18.2(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -12282,7 +12282,7 @@ snapshots:
 
   monaco-editor@0.52.2: {}
 
-  monaco-themes@0.4.8(patch_hash=098faa05644084a3c5c1fc3e802009a44284b7433cf3b262704a0907af37ef87):
+  monaco-themes@0.4.8(patch_hash=6daxwvy6nnfmdndi2nd7zwkctm):
     dependencies:
       fast-plist: 0.1.3
 
