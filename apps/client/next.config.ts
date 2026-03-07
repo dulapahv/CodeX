@@ -22,7 +22,10 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   experimental: {
     typedEnv: true,
-    turbopackFileSystemCacheForDev: true,
+    viewTransition: true,
+    inlineCss: true,
+    turbopackFileSystemCacheForBuild: true,
+    browserDebugInfoInTerminal: true,
     optimizePackageImports: [
       '@codesandbox/sandpack-react',
       '@mdxeditor/editor',
