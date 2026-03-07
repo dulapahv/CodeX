@@ -66,13 +66,13 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.4",
+    "@eslint/eslintrc": "^3.3.5",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "dotenv": "^16.6.1",
-    "eslint": "^9.39.3",
+    "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.12",
     "eslint-config-prettier": "^9.1.2",
     "postcss": "^8.5.8",
