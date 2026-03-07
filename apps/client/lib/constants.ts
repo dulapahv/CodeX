@@ -29,6 +29,8 @@ export const GITHUB_CLIENT_SECRET = IS_DEV_ENV
   ? process.env.GITHUB_CLIENT_SECRET_DEV
   : process.env.GITHUB_CLIENT_SECRET_PROD;
 
+export const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
+
 export const NAME_MAX_LENGTH = 64;
 
 export const SITE_NAME = 'CodeX - Code Collaboration Platform';

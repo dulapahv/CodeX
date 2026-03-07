@@ -124,6 +124,7 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
     Create `apps/client/.env` using the template from `apps/client/.env.example`:
 
     ```bash
+    PISTON_API_KEY=
     BETTERSTACK_API_KEY=
     SENTRY_AUTH_TOKEN=
     GITHUB_CLIENT_SECRET_PROD=

@@ -11,9 +11,11 @@
 
 import { NextResponse } from 'next/server';
 
+import { PISTON_API_URL } from '@/lib/constants';
+
 // export const runtime = 'edge';
 
-const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
+const PISTON_API_KEY = process.env.PISTON_API_KEY;
 
 interface RequestBody {
   code: string;
@@ -43,7 +45,8 @@ export async function POST(request: Request) {
     const response = await fetch(PISTON_API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...(PISTON_API_KEY && { Authorization: PISTON_API_KEY })
       },
       body: JSON.stringify({
         language: body.language.toLowerCase(),
@@ -58,7 +61,11 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      const body = await response.text().catch(() => '');
+      return NextResponse.json(
+        { error: `Piston API error: ${response.status}`, detail: body },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
