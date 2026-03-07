@@ -45,7 +45,7 @@ const nextConfig: NextConfig = {
     ]
   },
   transpilePackages: ['monaco-themes'],
-  webpack: (config, { isServer }) => {
+  webpack: config => {
     // Bypass package.json exports field for monaco-themes
     config.resolve.exportsFields = [];
 

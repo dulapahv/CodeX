@@ -30,10 +30,10 @@ export async function createRoom(page: Page, name: string) {
 }
 
 export async function joinRoom(page: Page, roomUrl: string, name: string) {
-  await page.goto(roomUrl);
-
-  // Wait for the room to be joined and URL to change /?room=:id
-  await page.waitForURL(/\/\?room=.*/);
+  // Navigate directly to the join page to avoid race condition where
+  // the socket connects before the /room/:id page can redirect.
+  const roomId = roomUrl.split('/').pop();
+  await page.goto(`/?room=${roomId}`);
 
   // Fill name and join room
   await page.getByPlaceholder('Enter your name').fill(name);

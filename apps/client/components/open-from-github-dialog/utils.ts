@@ -12,15 +12,17 @@ import { itemType, type ExtendedTreeDataItem } from '@/components/repo-browser/t
 
 export const getDisplayPath = (
   repo: string,
-  githubUser: string,
+  githubUser: string | null,
   branch: string,
   selectedItem: ExtendedTreeDataItem | null,
   fileName: string
 ) => {
   // Start with repo or githubUser
-  let path = repo || githubUser;
+  let path = repo || githubUser || '';
 
-  path += '/';
+  if (path) {
+    path += '/';
+  }
 
   // Add branch if it exists
   if (branch) {
@@ -42,5 +44,5 @@ export const getDisplayPath = (
   // Add filename
   path += selectedItem?.name === fileName ? selectedItem.name : fileName;
 
-  return path;
+  return path || 'No path selected';
 };
