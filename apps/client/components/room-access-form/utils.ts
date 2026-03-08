@@ -9,29 +9,31 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ChangeEvent } from 'react';
+import { RoomServiceMsg } from "@codex/types/message";
+import type { ChangeEvent } from "react";
+import type { UseFormSetValue } from "react-hook-form";
 
-import type { UseFormSetValue } from 'react-hook-form';
+import { storage } from "@/lib/services/storage";
+import { getSocket } from "@/lib/socket";
 
-import { RoomServiceMsg } from '@codex/types/message';
+import type { JoinRoomForm } from "./types";
 
-import { storage } from '@/lib/services/storage';
-import { getSocket } from '@/lib/socket';
-
-import type { JoinRoomForm } from './types';
+const DASH_PATTERN = /-/g;
+const NON_ALPHANUMERIC_PATTERN = /[^A-Z0-9]/g;
+const ROOM_ID_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
 export const createRoom = (name: string): Promise<string> => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const socket = getSocket();
 
     socket.emit(RoomServiceMsg.CREATE, name);
     socket.on(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
-      roomId = formatRoomId(roomId);
+      const formattedRoomId = formatRoomId(roomId);
 
-      storage.setRoomId(roomId);
+      storage.setRoomId(formattedRoomId);
       storage.setUserId(userID);
 
-      resolve(roomId);
+      resolve(formattedRoomId);
     });
   });
 };
@@ -40,14 +42,14 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const socket = getSocket();
 
-    roomId = roomId.replace(/-/g, '');
+    const cleanedRoomId = roomId.replace(DASH_PATTERN, "");
 
-    socket.emit(RoomServiceMsg.JOIN, roomId, name);
+    socket.emit(RoomServiceMsg.JOIN, cleanedRoomId, name);
     socket.on(RoomServiceMsg.NOT_FOUND, () => {
-      reject('Room does not exist. Please check the room ID and try again.');
+      reject("Room does not exist. Please check the room ID and try again.");
     });
     socket.on(RoomServiceMsg.JOIN, (userID: string) => {
-      storage.setRoomId(roomId);
+      storage.setRoomId(cleanedRoomId);
       storage.setUserId(userID);
       resolve(true);
     });
@@ -70,14 +72,14 @@ export const onRoomIdChange = (
   e.target.value = formattedValue;
 
   // Update form value
-  setValue('roomId', formattedValue, {
-    shouldValidate: formattedValue.length === 9
+  setValue("roomId", formattedValue, {
+    shouldValidate: formattedValue.length === 9,
   });
 };
 
 const formatRoomId = (value: string) => {
   // Remove any non-alphanumeric characters
-  const cleaned = value.replace(/[^A-Z0-9]/g, '');
+  const cleaned = value.replace(NON_ALPHANUMERIC_PATTERN, "");
 
   // Limit to 8 characters
   const truncated = cleaned.slice(0, 8);
@@ -95,4 +97,4 @@ const formatRoomId = (value: string) => {
  * @param value
  * @returns
  */
-export const isRoomIdValid = (value: string) => /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(value);
+export const isRoomIdValid = (value: string) => ROOM_ID_PATTERN.test(value);

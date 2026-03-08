@@ -42,18 +42,6 @@
     "server#test:socket:remote": {
       "cache": false,
       "outputs": ["test-results/**"]
-    },
-    "lint": {
-      "cache": true
-    },
-    "lint:fix": {
-      "cache": true
-    },
-    "format": {
-      "cache": true
-    },
-    "format:fix": {
-      "cache": true
     }
   }
 }

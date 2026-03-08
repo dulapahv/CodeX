@@ -5,26 +5,30 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useEffect } from 'react';
+import { StreamServiceMsg } from "@codex/types/message";
+import { useEffect } from "react";
+import type Peer from "simple-peer";
 
-import type Peer from 'simple-peer';
+import { storage } from "@/lib/services/storage";
+import { getSocket } from "@/lib/socket";
 
-import { StreamServiceMsg } from '@codex/types/message';
-
-import { storage } from '@/lib/services/storage';
-import { getSocket } from '@/lib/socket';
-
-import { cleanupPeer, createPeer, handleSignal } from '../utils/peer';
+import { cleanupPeer, createPeer, handleSignal } from "../utils/peer";
 
 interface UseSocketEventsProps {
   hasRequestedPermissions: boolean;
+  peersRef: React.RefObject<Record<string, Peer.Instance>>;
+  pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>;
+  setRemoteMicStates: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  setRemoteSpeakerStates: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
+  setRemoteStreams: React.Dispatch<
+    React.SetStateAction<Record<string, MediaStream | null>>
+  >;
   speakerOn: boolean;
   streamRef: React.RefObject<MediaStream | null>;
-  peersRef: React.RefObject<Record<string, Peer.Instance>>;
-  pendingSignalsRef: React.RefObject<Record<string, unknown[]>>;
-  setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>;
-  setRemoteMicStates: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  setRemoteSpeakerStates: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export const useSocketEvents = ({
@@ -35,10 +39,11 @@ export const useSocketEvents = ({
   pendingSignalsRef,
   setRemoteStreams,
   setRemoteMicStates,
-  setRemoteSpeakerStates
+  setRemoteSpeakerStates,
 }: UseSocketEventsProps) => {
   const socket = getSocket();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs and socket methods are stable, only re-run on permission/speaker changes
   useEffect(() => {
     if (hasRequestedPermissions) {
       socket.emit(StreamServiceMsg.STREAM_READY);
@@ -47,7 +52,14 @@ export const useSocketEvents = ({
 
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
       if (hasRequestedPermissions) {
-        createPeer(userID, true, streamRef, peersRef, setRemoteStreams, pendingSignalsRef);
+        createPeer(
+          userID,
+          true,
+          streamRef,
+          peersRef,
+          setRemoteStreams,
+          pendingSignalsRef
+        );
         socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
       }
     });
@@ -55,29 +67,36 @@ export const useSocketEvents = ({
     socket.on(
       StreamServiceMsg.MIC_STATE,
       ({ userID, micOn }: { userID: string; micOn: boolean }) => {
-        setRemoteMicStates(prev => ({ ...prev, [userID]: micOn }));
+        setRemoteMicStates((prev) => ({ ...prev, [userID]: micOn }));
       }
     );
 
     socket.on(
       StreamServiceMsg.SPEAKER_STATE,
       ({ userID, speakersOn }: { userID: string; speakersOn: boolean }) => {
-        setRemoteSpeakerStates(prev => ({ ...prev, [userID]: speakersOn }));
+        setRemoteSpeakerStates((prev) => ({ ...prev, [userID]: speakersOn }));
       }
     );
 
     socket.on(
       StreamServiceMsg.SIGNAL,
-      ({ userID, signal }: { userID: string; signal: unknown }) => {
+      ({ userID, signal }: { userID: string; signal: Peer.SignalData }) => {
         if (hasRequestedPermissions) {
-          handleSignal(signal, userID, streamRef, peersRef, setRemoteStreams, pendingSignalsRef);
+          handleSignal(
+            signal,
+            userID,
+            streamRef,
+            peersRef,
+            setRemoteStreams,
+            pendingSignalsRef
+          );
         }
       }
     );
 
     socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
       if (userID !== storage.getUserId()) {
-        setRemoteStreams(prev => {
+        setRemoteStreams((prev) => {
           const newStreams = { ...prev };
           delete newStreams[userID];
           return newStreams;
@@ -94,22 +113,20 @@ export const useSocketEvents = ({
       socket.off(StreamServiceMsg.SPEAKER_STATE);
       socket.off(StreamServiceMsg.CAMERA_OFF);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRequestedPermissions, speakerOn]);
 
-  // Cleanup effect
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cleanup only on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        streamRef.current.getTracks().forEach(track => track.stop());
+        for (const track of streamRef.current.getTracks()) {
+          track.stop();
+        }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      Object.keys(peersRef.current).forEach(userID => {
+      for (const userID of Object.keys(peersRef.current)) {
         cleanupPeer(userID, peersRef, setRemoteStreams);
-      });
+      }
       socket.emit(StreamServiceMsg.CAMERA_OFF);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

@@ -19,8 +19,8 @@ export const createCursorStyle = (
   bgColor: string,
   color: string,
   name: string,
-  isFirstLine: boolean = false,
-  hasSelection: boolean = false
+  isFirstLine = false,
+  hasSelection = false
 ): string => `
   .cursor-${userID} {
     background-color: ${bgColor} !important;
@@ -29,7 +29,7 @@ export const createCursorStyle = (
   .cursor-${userID}::before {
     content: "";
     position: absolute;
-    ${isFirstLine ? 'top: 25px;' : 'top: 0px;'}
+    ${isFirstLine ? "top: 25px;" : "top: 0px;"}
     left: 0px;
     width: 6px;
     height: 6px;
@@ -38,25 +38,25 @@ export const createCursorStyle = (
     z-index: 100;
   }
   .cursor-${userID}::after {
-    content: "${name.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}";
+    content: "${name.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}";
     background-color: ${bgColor};
     color: ${color};
     font-family: var(--font-geist-sans);
     position: absolute;
     font-weight: 500;
-    ${isFirstLine ? 'top: 19px;' : 'top: -19px;'}
+    ${isFirstLine ? "top: 19px;" : "top: -19px;"}
     height: 19px;
     font-size: 12px;
     padding: 0 4px;
-    ${isFirstLine ? 'border-radius: 0px 3px 3px 3px;' : 'border-radius: 3px 3px 3px 0px;'}
+    ${isFirstLine ? "border-radius: 0px 3px 3px 3px;" : "border-radius: 3px 3px 3px 0px;"}
     white-space: nowrap;
     z-index: 100;
     ${
-      !hasSelection
-        ? `
+      hasSelection
+        ? ""
+        : `
     animation: cursorLabelFadeOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     animation-delay: 2.7s;`
-        : ''
     }
   }
   .cursor-${userID}-selection {

@@ -8,10 +8,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
-
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { Button } from '@/components/ui/button';
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -19,8 +17,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -28,27 +26,28 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle
-} from '@/components/ui/drawer';
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
-const DEFAULT_TITLE = 'Open a new file?';
+const DEFAULT_TITLE = "Open a new file?";
 const DEFAULT_DESCRIPTION =
-  'Opening a new file will replace the current content. Any unsaved changes will be lost.';
+  "Opening a new file will replace the current content. Any unsaved changes will be lost.";
 
 interface PromptSaveDialogProps {
   callback: () => void;
 }
 
 interface OpenPromptDialogRef {
-  openDialog: () => void;
   closeDialog: () => void;
+  openDialog: () => void;
 }
 
 const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
   ({ callback }: PromptSaveDialogProps, ref) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const isDesktop = useMediaQuery('(min-width: 768px)');
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -56,12 +55,12 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
       openDialog,
-      closeDialog
+      closeDialog,
     }));
 
     if (isDesktop) {
       return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog onOpenChange={setIsOpen} open={isOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
@@ -81,7 +80,7 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
     }
 
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer onOpenChange={setIsOpen} open={isOpen}>
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
@@ -97,7 +96,7 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
               Open
             </Button>
             <DrawerClose asChild>
-              <Button variant="secondary" onClick={closeDialog}>
+              <Button onClick={closeDialog} variant="secondary">
                 Close
               </Button>
             </DrawerClose>
@@ -108,6 +107,6 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
   }
 );
 
-OpenPromptDialog.displayName = 'OpenPromptDialog';
+OpenPromptDialog.displayName = "OpenPromptDialog";
 
 export { OpenPromptDialog, type OpenPromptDialogRef };

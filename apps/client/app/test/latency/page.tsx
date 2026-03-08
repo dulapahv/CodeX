@@ -8,14 +8,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Metadata } from 'next';
-
-import { LATENCY_TEST_DESCRIPTION, LATENCY_TEST_TITLE } from '@/lib/constants';
-import { LatencyTest } from '@/components/latency-test';
+import type { Metadata } from "next";
+import { LatencyTest } from "@/components/latency-test";
+import { LATENCY_TEST_DESCRIPTION, LATENCY_TEST_TITLE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: LATENCY_TEST_TITLE,
-  description: LATENCY_TEST_DESCRIPTION
+  description: LATENCY_TEST_DESCRIPTION,
 };
 
 export default function LatencyTestPage() {

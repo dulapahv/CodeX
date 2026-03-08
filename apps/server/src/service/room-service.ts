@@ -9,16 +9,15 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Server, Socket } from 'socket.io';
+import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
+import type { ExecutionResult } from "@codex/types/terminal";
+import type { Server, Socket } from "socket.io";
 
-import { CodeServiceMsg, RoomServiceMsg } from '@codex/types/message';
-import type { ExecutionResult } from '@codex/types/terminal';
+import { generateRoomID } from "@/utils/generate-room-id";
+import { normalizeRoomId } from "@/utils/normalize-room-id";
 
-import { generateRoomID } from '@/utils/generate-room-id';
-import { normalizeRoomId } from '@/utils/normalize-room-id';
-
-import * as codeService from './code-service';
-import * as userService from './user-service';
+import * as codeService from "./code-service";
+import * as userService from "./user-service";
 
 // Cache for room users to reduce repeated lookups
 const roomUsersCache = new Map<string, Record<string, string>>();
@@ -32,7 +31,9 @@ const roomNotes = new Map<string, string>();
 export const getUserRoom = (socket: Socket): string | undefined => {
   // Socket.rooms is a Set, so we convert to array only for room access
   for (const room of socket.rooms) {
-    if (room !== socket.id) return room;
+    if (room !== socket.id) {
+      return room;
+    }
   }
   return undefined;
 };
@@ -66,24 +67,24 @@ export const join = async (
   roomID: string,
   name: string
 ): Promise<void> => {
-  roomID = normalizeRoomId(roomID);
+  const normalizedRoomID = normalizeRoomId(roomID);
 
-  if (!io.sockets.adapter.rooms.has(roomID)) {
-    socket.emit(RoomServiceMsg.NOT_FOUND, roomID);
+  if (!io.sockets.adapter.rooms.has(normalizedRoomID)) {
+    socket.emit(RoomServiceMsg.NOT_FOUND, normalizedRoomID);
     return;
   }
 
   const customId = userService.connect(socket, name);
-  await socket.join(roomID);
+  await socket.join(normalizedRoomID);
 
   // Update room cache
-  const users = roomUsersCache.get(roomID) || {};
+  const users = roomUsersCache.get(normalizedRoomID) || {};
   users[customId] = name;
-  roomUsersCache.set(roomID, users);
+  roomUsersCache.set(normalizedRoomID, users);
 
   // Emit events
   socket.emit(RoomServiceMsg.JOIN, customId);
-  socket.to(roomID).emit(RoomServiceMsg.SYNC_USERS, users);
+  socket.to(normalizedRoomID).emit(RoomServiceMsg.SYNC_USERS, users);
 };
 
 /**
@@ -91,13 +92,19 @@ export const join = async (
  */
 export const leave = async (socket: Socket, io: Server): Promise<void> => {
   try {
-    if (!socket || socket.disconnected) return;
+    if (!socket || socket.disconnected) {
+      return;
+    }
 
     const roomID = getUserRoom(socket);
-    if (!roomID) return;
+    if (!roomID) {
+      return;
+    }
 
     const customId = userService.getSocCustomId(socket);
-    if (!customId) return;
+    if (!customId) {
+      return;
+    }
 
     const users = roomUsersCache.get(roomID);
     if (users) {
@@ -129,10 +136,12 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
 export const getUsersInRoom = (
   socket: Socket,
   io: Server,
-  roomID: string = getUserRoom(socket)
+  roomID: string = getUserRoom(socket) ?? ""
 ): Record<string, string> => {
   // Return empty object if no room
-  if (!roomID) return {};
+  if (!roomID) {
+    return {};
+  }
 
   // Check cache first
   let users = roomUsersCache.get(roomID);
@@ -140,12 +149,18 @@ export const getUsersInRoom = (
   // If not in cache, rebuild it
   if (!users) {
     const room = io.sockets.adapter.rooms.get(roomID);
-    if (!room) return {};
+    if (!room) {
+      return {};
+    }
 
     users = {};
     for (const socketId of room) {
       const username = userService.getUsername(socketId);
-      const customId = userService.getSocCustomId(io.sockets.sockets.get(socketId));
+      const sock = io.sockets.sockets.get(socketId);
+      if (!sock) {
+        continue;
+      }
+      const customId = userService.getSocCustomId(sock);
       if (username && customId) {
         users[customId] = username;
       }
@@ -173,9 +188,11 @@ export const cleanupRoomCache = (roomID: string): void => {
  */
 export const syncNote = (socket: Socket, io: Server): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
-  const note = roomNotes.get(roomID) || '';
+  const note = roomNotes.get(roomID) || "";
   io.to(socket.id).emit(RoomServiceMsg.UPDATE_MD, note);
 };
 
@@ -184,7 +201,9 @@ export const syncNote = (socket: Socket, io: Server): void => {
  */
 export const updateNote = (socket: Socket, note: string): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
   socket.to(roomID).emit(RoomServiceMsg.UPDATE_MD, note);
   roomNotes.set(roomID, note);
@@ -192,7 +211,9 @@ export const updateNote = (socket: Socket, note: string): void => {
 
 export const updateExecuting = (socket: Socket, executing: boolean): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
   socket.to(roomID).emit(CodeServiceMsg.EXEC, executing);
 };
@@ -202,7 +223,9 @@ export const updateExecuting = (socket: Socket, executing: boolean): void => {
  */
 export const updateTerminal = (socket: Socket, data: ExecutionResult): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
   socket.to(roomID).emit(CodeServiceMsg.UPDATE_TERM, data);
 };

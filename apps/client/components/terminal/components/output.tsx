@@ -9,11 +9,15 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { ExecutionResult } from '@codex/types/terminal';
+import type { ExecutionResult } from "@codex/types/terminal";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { formatExecutionTime, formatTimestamp, getMessageColor } from '../utils';
+import {
+  formatExecutionTime,
+  formatTimestamp,
+  getMessageColor,
+} from "../utils";
 
 interface OutputProps {
   result: ExecutionResult;
@@ -26,16 +30,18 @@ const Output = ({ result }: OutputProps) => {
   return (
     <div>
       <div className="flex">
-        <span className="text-muted-foreground mr-4">[{formatTimestamp(timestamp)}]</span>
+        <span className="mr-4 text-muted-foreground">
+          [{formatTimestamp(timestamp)}]
+        </span>
         <div className="flex-1">
-          {result.type === 'output' && (
+          {result.type === "output" && (
             <div className="text-muted-foreground">
-              {`${String(result.language).charAt(0).toUpperCase() + String(result.language).slice(1)} v${result.version} (${'executionTime' in result && formatExecutionTime(result.executionTime ?? 0)})`}
+              {`${String(result.language).charAt(0).toUpperCase() + String(result.language).slice(1)} v${result.version} (${"executionTime" in result && formatExecutionTime(result.executionTime ?? 0)})`}
             </div>
           )}
 
           {result.run.stdout && (
-            <div className={cn('whitespace-pre-wrap break-all', messageColor)}>
+            <div className={cn("whitespace-pre-wrap break-all", messageColor)}>
               {result.run.stdout}
             </div>
           )}
@@ -47,7 +53,9 @@ const Output = ({ result }: OutputProps) => {
           )}
 
           {result.run.code !== 0 && (
-            <div className="text-red-500">Process exited with code {result.run.code}</div>
+            <div className="text-red-500">
+              Process exited with code {result.run.code}
+            </div>
           )}
         </div>
       </div>

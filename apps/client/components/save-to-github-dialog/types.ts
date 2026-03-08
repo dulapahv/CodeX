@@ -7,7 +7,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-export type CommitForm = {
-  fileName: string;
+export interface CommitForm {
   commitSummary: string;
-};
+  fileName: string;
+}

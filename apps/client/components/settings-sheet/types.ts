@@ -8,9 +8,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-export type EditorOption = {
-  title: string;
-  type: 'boolean' | 'string' | 'number' | 'select' | 'text';
-  options?: string[];
+export interface EditorOption {
   currentValue: unknown;
-};
+  options?: string[];
+  title: string;
+  type: "boolean" | "string" | "number" | "select" | "text";
+}

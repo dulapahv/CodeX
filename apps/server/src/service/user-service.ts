@@ -8,18 +8,17 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Socket } from 'socket.io';
+import { CodeServiceMsg } from "@codex/types/message";
+import type { Cursor } from "@codex/types/operation";
+import type { Socket } from "socket.io";
 
-import { CodeServiceMsg } from '@codex/types/message';
-import type { Cursor } from '@codex/types/operation';
-
-import { getUserRoom } from './room-service';
+import { getUserRoom } from "./room-service";
 
 // Use a single Map for user data to reduce memory overhead
-type UserData = {
-  username: string;
+interface UserData {
   customId: string;
-};
+  username: string;
+}
 
 // Core data structures optimized for O(1) lookups
 const socketToUserData = new Map<string, UserData>();
@@ -31,10 +30,11 @@ const customIdToSocketId = new Map<string, string>();
  */
 const generateCustomId = (): string => {
   const generateId = (num: number): string => {
-    let id = '';
-    while (num >= 0) {
-      id = String.fromCharCode(65 + (num % 26)) + id;
-      num = Math.floor(num / 26) - 1;
+    let id = "";
+    let remaining = num;
+    while (remaining >= 0) {
+      id = String.fromCharCode(65 + (remaining % 26)) + id;
+      remaining = Math.floor(remaining / 26) - 1;
     }
     return id;
   };
@@ -91,8 +91,10 @@ export const updateCursor = (socket: Socket, cursor: Cursor): void => {
   const roomId = getUserRoom(socket);
   const userData = socketToUserData.get(socket.id);
 
-  if (userData) {
-    socket.to(roomId).emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
+  if (userData && roomId) {
+    socket
+      .to(roomId)
+      .emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
   }
 };
 

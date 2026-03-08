@@ -9,15 +9,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { StreamServiceMsg } from "@codex/types/message";
+import type { Dispatch, RefObject, SetStateAction } from "react";
+import Peer from "simple-peer";
+import { toast } from "sonner";
 
-import Peer from 'simple-peer';
-import { toast } from 'sonner';
-
-import { StreamServiceMsg } from '@codex/types/message';
-
-import { getSocket } from '@/lib/socket';
-import { parseError } from '@/lib/utils';
+import { getSocket } from "@/lib/socket";
+import { parseError } from "@/lib/utils";
 
 // Create a new peer connection
 export const createPeer = (
@@ -25,9 +23,10 @@ export const createPeer = (
   initiator: boolean,
   streamRef: RefObject<MediaStream | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pendingSignalsRef: RefObject<Record<string, any[]>>
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
+  pendingSignalsRef: RefObject<Record<string, Peer.SignalData[]>>
 ) => {
   const socket = getSocket();
   try {
@@ -38,38 +37,42 @@ export const createPeer = (
     const peer = new Peer({
       initiator,
       // Only include stream if it exists and has active tracks
-      stream: streamRef.current?.getTracks().length ? streamRef.current : undefined
+      stream: streamRef.current?.getTracks().length
+        ? streamRef.current
+        : undefined,
     });
 
-    peer.on('signal', signal => {
+    peer.on("signal", (signal) => {
       socket.emit(StreamServiceMsg.SIGNAL, signal);
     });
 
-    peer.on('stream', stream => {
-      setRemoteStreams(prev => ({
+    peer.on("stream", (stream) => {
+      setRemoteStreams((prev) => ({
         ...prev,
-        [userID]: stream
+        [userID]: stream,
       }));
     });
 
-    peer.on('error', err => {
+    peer.on("error", (err) => {
       console.warn(`Peer connection error:\n${parseError(err)}`);
       cleanupPeer(userID, peersRef, setRemoteStreams);
     });
 
-    peer.on('connect', () => {
+    peer.on("connect", () => {
       console.log(`Peer connection established with ${userID}`);
     });
 
     // Process any pending signals
     const pendingSignals = pendingSignalsRef.current[userID] || [];
-    pendingSignals.forEach(signal => {
+    for (const signal of pendingSignals) {
       try {
         peer.signal(signal);
       } catch (error) {
-        console.warn(`Error processing pending signal for ${userID}:\n${error}`);
+        console.warn(
+          `Error processing pending signal for ${userID}:\n${error}`
+        );
       }
-    });
+    }
     delete pendingSignalsRef.current[userID];
 
     peersRef.current[userID] = peer;
@@ -82,13 +85,14 @@ export const createPeer = (
 
 // Handle incoming signals
 export const handleSignal = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  signal: any,
+  signal: Peer.SignalData,
   userID: string,
   streamRef: RefObject<MediaStream | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  setRemoteStreams: Dispatch<SetStateAction<Record<string, MediaStream | null>>>,
-  pendingSignalsRef: RefObject<Record<string, unknown[]>>
+  setRemoteStreams: Dispatch<
+    SetStateAction<Record<string, MediaStream | null>>
+  >,
+  pendingSignalsRef: RefObject<Record<string, Peer.SignalData[]>>
 ) => {
   try {
     let peer = peersRef.current[userID];
@@ -131,14 +135,16 @@ export const cleanupPeer = (
       try {
         peer.destroy();
       } catch (error) {
-        console.warn(`Error destroying peer connection for ${userID}.\n${error}`);
+        console.warn(
+          `Error destroying peer connection for ${userID}.\n${error}`
+        );
       }
     }
     delete peersRef.current[userID];
   }
 
   // Always clean up remote streams for this user
-  setRemoteStreams(prev => {
+  setRemoteStreams((prev) => {
     const newStreams = { ...prev };
     delete newStreams[userID];
     return newStreams;

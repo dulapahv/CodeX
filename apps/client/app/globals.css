@@ -151,9 +151,9 @@
 
     --admonitionNoteBg: var(--mauve-4);
     --admonitionNoteBorder: var(--mauve-8);
+    --basePageBg: var(--panel-background);
 
     color: var(--foreground);
-    --basePageBg: var(--panel-background);
     background: var(--basePageBg);
   }
 }
@@ -205,7 +205,7 @@
   @apply hover:!bg-foreground/10 !cursor-pointer !transition-all;
 }
 
-._toolbarToggleItem_uazmk_206[data-state='on'] {
+._toolbarToggleItem_uazmk_206[data-state="on"] {
   @apply !bg-[color:var(--panel-background)];
 }
 
@@ -351,7 +351,7 @@
   @apply px-2;
 }
 
-._tableColumnEditorToolbar_uazmk_789 button:not([data-state='on']) {
+._tableColumnEditorToolbar_uazmk_789 button:not([data-state="on"]) {
   @apply hover:!bg-foreground/10 !transition-all;
 }
 

@@ -8,17 +8,17 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-import type { CreateRoomForm } from '../types';
-import { createRoomSchema } from '../validator';
+import type { CreateRoomForm } from "../types";
+import { createRoomSchema } from "../validator";
 
 export const useCreateRoomForm = () => {
   return useForm<CreateRoomForm>({
     resolver: zodResolver(createRoomSchema),
     defaultValues: {
-      name: ''
-    }
+      name: "",
+    },
   });
 };

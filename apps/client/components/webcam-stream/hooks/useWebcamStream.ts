@@ -5,25 +5,23 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, SetStateAction } from 'react';
-import { useCallback, useRef, useState } from 'react';
+import { StreamServiceMsg } from "@codex/types/message";
+import type { Dispatch, SetStateAction } from "react";
+import { useCallback, useRef, useState } from "react";
+import type Peer from "simple-peer";
+import { toast } from "sonner";
 
-import type Peer from 'simple-peer';
-import { toast } from 'sonner';
+import { getSocket } from "@/lib/socket";
+import { parseError } from "@/lib/utils";
 
-import { StreamServiceMsg } from '@codex/types/message';
-
-import { getSocket } from '@/lib/socket';
-import { parseError } from '@/lib/utils';
-
-import { rotateCamera, toggleCamera, toggleMic } from '../utils/controls';
-import { getMedia } from '../utils/media';
+import { rotateCamera, toggleCamera, toggleMic } from "../utils/controls";
+import { getMedia } from "../utils/media";
 
 interface UseWebcamStreamProps {
-  selectedVideoDevice: string;
+  micOn: boolean;
   selectedAudioInput: string;
   selectedAudioOutput: string;
-  micOn: boolean;
+  selectedVideoDevice: string;
   setMicOn: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -32,21 +30,25 @@ export const useWebcamStream = ({
   selectedAudioInput,
   selectedAudioOutput,
   micOn,
-  setMicOn
+  setMicOn,
 }: UseWebcamStreamProps) => {
   const socket = getSocket();
   const [cameraOn, setCameraOn] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(true);
-  const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('user');
+  const [cameraFacingMode, setCameraFacingMode] = useState<
+    "user" | "environment"
+  >("user");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const handleGetMedia = useCallback(
-    async (
+    (
       peersRef: React.RefObject<Record<string, Peer.Instance>>,
-      setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>,
-      pendingSignalsRef: React.RefObject<Record<string, unknown[]>>
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>
     ) => {
       return getMedia(
         selectedVideoDevice,
@@ -61,17 +63,30 @@ export const useWebcamStream = ({
         pendingSignalsRef
       );
     },
-    [selectedVideoDevice, selectedAudioInput, selectedAudioOutput, cameraFacingMode, micOn]
+    [
+      selectedVideoDevice,
+      selectedAudioInput,
+      selectedAudioOutput,
+      cameraFacingMode,
+      micOn,
+    ]
   );
 
   const handleToggleCamera = useCallback(
     async (
       peersRef: React.RefObject<Record<string, Peer.Instance>>,
-      setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>,
-      pendingSignalsRef: React.RefObject<Record<string, unknown[]>>
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>
     ) => {
-      await toggleCamera(cameraOn, setCameraOn, setMicOn, streamRef, videoRef, () =>
-        handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
+      await toggleCamera(
+        cameraOn,
+        setCameraOn,
+        setMicOn,
+        streamRef,
+        videoRef,
+        () => handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
       );
     },
     [cameraOn, handleGetMedia, setMicOn]
@@ -87,13 +102,13 @@ export const useWebcamStream = ({
       socket.emit(StreamServiceMsg.SPEAKER_STATE, newState);
 
       // Find all video elements in the component and update their muted state
-      const videoElements = document.querySelectorAll('video');
-      videoElements.forEach(video => {
+      const videoElements = document.querySelectorAll("video");
+      for (const video of videoElements) {
         if (video !== videoRef.current) {
           // Don't mute local video
           video.muted = !newState;
         }
-      });
+      }
     },
     [socket]
   );
@@ -101,11 +116,17 @@ export const useWebcamStream = ({
   const handleRotateCamera = useCallback(
     async (
       peersRef: React.RefObject<Record<string, Peer.Instance>>,
-      setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>,
-      pendingSignalsRef: React.RefObject<Record<string, unknown[]>>
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>
     ) => {
-      await rotateCamera(cameraOn, cameraFacingMode, setCameraFacingMode, streamRef, () =>
-        handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
+      await rotateCamera(
+        cameraOn,
+        cameraFacingMode,
+        setCameraFacingMode,
+        streamRef,
+        () => handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
       );
     },
     [cameraOn, cameraFacingMode, handleGetMedia]
@@ -115,12 +136,14 @@ export const useWebcamStream = ({
     async (
       deviceId: string,
       peersRef: React.RefObject<Record<string, Peer.Instance>>,
-      setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>,
-      pendingSignalsRef: React.RefObject<Record<string, unknown[]>>,
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>,
       setSelectedVideoDevice: (value: string) => void
     ) => {
       try {
-        const { switchVideoDevice } = await import('../utils/media');
+        const { switchVideoDevice } = await import("../utils/media");
         const success = await switchVideoDevice(
           deviceId,
           streamRef,
@@ -148,12 +171,14 @@ export const useWebcamStream = ({
     async (
       deviceId: string,
       peersRef: React.RefObject<Record<string, Peer.Instance>>,
-      setRemoteStreams: React.Dispatch<React.SetStateAction<Record<string, MediaStream | null>>>,
-      pendingSignalsRef: React.RefObject<Record<string, unknown[]>>,
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>,
       setSelectedAudioInput: (value: string) => void
     ) => {
       try {
-        const { switchAudioDevice } = await import('../utils/media');
+        const { switchAudioDevice } = await import("../utils/media");
         const success = await switchAudioDevice(
           deviceId,
           streamRef,
@@ -189,6 +214,6 @@ export const useWebcamStream = ({
     handleToggleSpeaker,
     handleRotateCamera,
     handleVideoDeviceSwitch,
-    handleAudioDeviceSwitch
+    handleAudioDeviceSwitch,
   };
 };

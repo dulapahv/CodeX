@@ -9,9 +9,9 @@
  */
 
 interface StorageData {
+  followUserId: string | null;
   roomId: string | null;
   userId: string | null;
-  followUserId: string | null;
 }
 
 export class Storage {
@@ -21,7 +21,7 @@ export class Storage {
     this.data = {
       roomId: null,
       userId: null,
-      followUserId: null
+      followUserId: null,
     };
   }
 
@@ -60,7 +60,7 @@ export class Storage {
     this.data = {
       roomId: null,
       userId: null,
-      followUserId: null
+      followUserId: null,
     };
   }
 }

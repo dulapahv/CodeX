@@ -9,12 +9,12 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from "react";
 
-import { parseError } from '@/lib/utils';
+import { parseError } from "@/lib/utils";
 
-import type { ExtendedTreeDataItem } from '../types/tree';
-import { transformReposToTreeData } from '../utils/transform-repos-to-tree';
+import type { ExtendedTreeDataItem } from "../types/tree";
+import { transformReposToTreeData } from "../utils/transform-repos-to-tree";
 
 export const fetchRepos = async (
   setLoading: Dispatch<SetStateAction<boolean>>,
@@ -22,16 +22,16 @@ export const fetchRepos = async (
   setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
   query?: string
 ) => {
-  if (query?.trim() === '') {
-    query = undefined;
-  }
+  const sanitizedQuery = query?.trim() === "" ? undefined : query;
 
   setLoading(true);
-  setError('');
+  setError("");
   try {
-    const endpoint = '/api/github/repos' + (query ? `?q=${encodeURIComponent(query)}` : '');
+    const endpoint = `/api/github/repos${sanitizedQuery ? `?q=${encodeURIComponent(sanitizedQuery)}` : ""}`;
     const response = await fetch(endpoint);
-    if (!response.ok) throw new Error('Failed to fetch repositories');
+    if (!response.ok) {
+      throw new Error("Failed to fetch repositories");
+    }
     const data = await response.json();
     setTreeData(transformReposToTreeData(data.repositories));
   } catch (err) {

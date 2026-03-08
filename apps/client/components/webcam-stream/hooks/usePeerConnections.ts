@@ -5,17 +5,23 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useRef, useState } from 'react';
+import { useRef, useState } from "react";
 
-import type Peer from 'simple-peer';
+import type Peer from "simple-peer";
 
 export const usePeerConnections = () => {
-  const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream | null>>({});
-  const [remoteMicStates, setRemoteMicStates] = useState<Record<string, boolean>>({});
-  const [remoteSpeakerStates, setRemoteSpeakerStates] = useState<Record<string, boolean>>({});
+  const [remoteStreams, setRemoteStreams] = useState<
+    Record<string, MediaStream | null>
+  >({});
+  const [remoteMicStates, setRemoteMicStates] = useState<
+    Record<string, boolean>
+  >({});
+  const [remoteSpeakerStates, setRemoteSpeakerStates] = useState<
+    Record<string, boolean>
+  >({});
 
   const peersRef = useRef<Record<string, Peer.Instance>>({});
-  const pendingSignalsRef = useRef<Record<string, unknown[]>>({});
+  const pendingSignalsRef = useRef<Record<string, Peer.SignalData[]>>({});
 
   return {
     remoteStreams,
@@ -25,6 +31,6 @@ export const usePeerConnections = () => {
     pendingSignalsRef,
     setRemoteStreams,
     setRemoteMicStates,
-    setRemoteSpeakerStates
+    setRemoteSpeakerStates,
   };
 };

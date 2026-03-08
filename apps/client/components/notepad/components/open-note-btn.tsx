@@ -8,14 +8,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { RefObject } from 'react';
+import { RoomServiceMsg } from "@codex/types/message";
 
-import { ButtonWithTooltip, type MDXEditorMethods } from '@mdxeditor/editor';
-import { Folder } from 'lucide-react';
+import { ButtonWithTooltip, type MDXEditorMethods } from "@mdxeditor/editor";
+import { Folder } from "lucide-react";
+import type { RefObject } from "react";
 
-import { RoomServiceMsg } from '@codex/types/message';
-
-import { getSocket } from '@/lib/socket';
+import { getSocket } from "@/lib/socket";
 
 interface MarkdownEditorProps {
   markdownEditorRef: RefObject<MDXEditorMethods | null>;
@@ -26,15 +25,17 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
 
   return (
     <ButtonWithTooltip
-      title="Open note"
       aria-label="Open note"
+      className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
       onClick={() => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.md,.mdx,text/*';
-        input.onchange = e => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".md,.mdx,text/*";
+        input.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
-          if (!file) return;
+          if (!file) {
+            return;
+          }
           const reader = new FileReader();
           reader.onload = () => {
             const markdown = reader.result as string;
@@ -45,7 +46,7 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
         };
         input.click();
       }}
-      className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
+      title="Open note"
     >
       <Folder className="size-[18px]" />
     </ButtonWithTooltip>

@@ -9,29 +9,32 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-import { GITHUB_API_URL } from '@/lib/constants';
+import { GITHUB_API_URL } from "@/lib/constants";
 
 // export const runtime = 'edge';
 
 interface CommitRequest {
-  repo: string;
   branch: string;
-  path: string;
-  filename: string;
   commitMessage: string;
   content: string; // Base64 encoded content
+  filename: string;
+  path: string;
+  repo: string;
 }
 
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get('access_token')?.value;
+    const accessToken = cookieStore.get("access_token")?.value;
 
     if (!accessToken) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
     }
 
     const body: CommitRequest = await request.json();
@@ -48,8 +51,8 @@ export async function POST(request: Request) {
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              'X-GitHub-Api-Version': '2022-11-28'
-            }
+              "X-GitHub-Api-Version": "2022-11-28",
+            },
           }
         );
 
@@ -60,7 +63,7 @@ export async function POST(request: Request) {
         const data = await response.json();
         return data.sha;
       } catch (error) {
-        console.error('Error fetching current file:', error);
+        console.error("Error fetching current file:", error);
         return null;
       }
     };
@@ -73,24 +76,27 @@ export async function POST(request: Request) {
       message: commitMessage,
       content,
       branch,
-      ...(currentSha && { sha: currentSha })
+      ...(currentSha && { sha: currentSha }),
     };
 
     // Create or update the file
-    const response = await fetch(`${GITHUB_API_URL}/repos/${repo}/contents/${filePath}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-      body: JSON.stringify(commitBody)
-    });
+    const response = await fetch(
+      `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        body: JSON.stringify(commitBody),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
-        { error: 'Failed to commit file', details: error },
+        { error: "Failed to commit file", details: error },
         { status: response.status }
       );
     }
@@ -98,7 +104,10 @@ export async function POST(request: Request) {
     const result = await response.json();
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error in commit route:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in commit route:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

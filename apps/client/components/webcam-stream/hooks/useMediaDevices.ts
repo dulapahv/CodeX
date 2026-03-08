@@ -5,22 +5,28 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { parseError } from '@/lib/utils';
+import { parseError } from "@/lib/utils";
 
-import type { MediaDevice } from '../types';
-import { enumerateDevices, handleDevicePermissionGranted, initDevices } from '../utils/device';
+import type { MediaDevice } from "../types";
+import {
+  enumerateDevices,
+  handleDevicePermissionGranted,
+  initDevices,
+} from "../utils/device";
 
 export const useMediaDevices = () => {
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
   const [audioInputDevices, setAudioInputDevices] = useState<MediaDevice[]>([]);
-  const [audioOutputDevices, setAudioOutputDevices] = useState<MediaDevice[]>([]);
-  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>('');
-  const [selectedAudioInput, setSelectedAudioInput] = useState<string>('');
-  const [selectedAudioOutput, setSelectedAudioOutput] = useState<string>('');
+  const [audioOutputDevices, setAudioOutputDevices] = useState<MediaDevice[]>(
+    []
+  );
+  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>("");
+  const [selectedAudioInput, setSelectedAudioInput] = useState<string>("");
+  const [selectedAudioOutput, setSelectedAudioOutput] = useState<string>("");
   const [hasRequestedPermissions, setHasRequestedPermissions] = useState(false);
 
   // Initialize device enumeration
@@ -41,25 +47,32 @@ export const useMediaDevices = () => {
 
     initDevices(handleDeviceChange);
     return () => {
-      navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+      navigator.mediaDevices.removeEventListener(
+        "devicechange",
+        handleDeviceChange
+      );
     };
   }, [selectedVideoDevice, selectedAudioInput, selectedAudioOutput]);
 
   // Request permissions on mount
   useEffect(() => {
     const requestInitialPermissions = async () => {
-      if (hasRequestedPermissions) return;
+      if (hasRequestedPermissions) {
+        return;
+      }
 
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasLabels = devices.some(device => device.label !== '');
+        const hasLabels = devices.some((device) => device.label !== "");
 
         if (!hasLabels) {
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' },
-            audio: true
+            video: { facingMode: "user" },
+            audio: true,
           });
-          stream.getTracks().forEach(track => track.stop());
+          for (const track of stream.getTracks()) {
+            track.stop();
+          }
         }
 
         await enumerateDevices(
@@ -76,15 +89,20 @@ export const useMediaDevices = () => {
 
         setHasRequestedPermissions(true);
       } catch (error) {
-        console.warn('Initial permission request failed:', error);
+        console.warn("Initial permission request failed:", error);
       }
     };
 
     requestInitialPermissions();
-  }, [hasRequestedPermissions, selectedAudioInput, selectedAudioOutput, selectedVideoDevice]);
+  }, [
+    hasRequestedPermissions,
+    selectedAudioInput,
+    selectedAudioOutput,
+    selectedVideoDevice,
+  ]);
 
   const handleDevicePermission = useCallback(
-    async (kind: 'videoinput' | 'audioinput' | 'audiooutput') => {
+    async (kind: "videoinput" | "audioinput" | "audiooutput") => {
       await handleDevicePermissionGranted(
         kind,
         setVideoDevices,
@@ -96,12 +114,18 @@ export const useMediaDevices = () => {
   );
 
   const handleAudioOutputSelect = useCallback(
-    async (deviceId: string, videoRef: React.RefObject<HTMLVideoElement | null>) => {
+    async (
+      deviceId: string,
+      videoRef: React.RefObject<HTMLVideoElement | null>
+    ) => {
       setSelectedAudioOutput(deviceId);
-      if (videoRef.current && 'setSinkId' in videoRef.current) {
+      if (videoRef.current && "setSinkId" in videoRef.current) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (videoRef.current as any).setSinkId(deviceId);
+          await (
+            videoRef.current as unknown as {
+              setSinkId: (id: string) => Promise<void>;
+            }
+          ).setSinkId(deviceId);
         } catch (error) {
           toast.error(`Error setting audio output: ${parseError(error)}`);
         }
@@ -121,6 +145,6 @@ export const useMediaDevices = () => {
     setSelectedVideoDevice,
     setSelectedAudioInput,
     handleDevicePermission,
-    handleAudioOutputSelect
+    handleAudioOutputSelect,
   };
 };

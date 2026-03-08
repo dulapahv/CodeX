@@ -9,24 +9,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ArrowRight } from 'lucide-react';
-import type { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
+import { ArrowRight } from "lucide-react";
+import type {
+  FieldErrors,
+  UseFormHandleSubmit,
+  UseFormRegister,
+} from "react-hook-form";
+import { Spinner } from "@/components/spinner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/spinner';
-
-import type { JoinRoomForm } from '../types';
+import type { JoinRoomForm } from "../types";
 
 interface InvitedSectionProps {
-  register: UseFormRegister<JoinRoomForm>;
-  handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
-  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
-  onError: () => void;
   errors: FieldErrors<JoinRoomForm>;
-  isSubmitting: boolean;
+  handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
   isCreating: boolean;
+  isSubmitting: boolean;
+  onError: () => void;
+  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
+  register: UseFormRegister<JoinRoomForm>;
 }
 
 export const InvitedSection = ({
@@ -36,47 +39,52 @@ export const InvitedSection = ({
   onError,
   errors,
   isSubmitting,
-  isCreating
+  isCreating,
 }: InvitedSectionProps) => {
   const isDisabled = isCreating || isSubmitting;
-  const nameErrorId = 'invited-name-error';
+  const nameErrorId = "invited-name-error";
 
   return (
     <section aria-label="Join Room Form">
       <form
-        onSubmit={handleSubmit(data => onSubmit(data), onError)}
         className="flex flex-col gap-y-4"
         noValidate
+        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
       >
-        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby="name-join">
-          <Label htmlFor="name-join" className="text-sm sm:text-base">
+        <fieldset
+          aria-labelledby="name-join"
+          className="flex flex-col space-y-1.5"
+        >
+          <Label className="text-sm sm:text-base" htmlFor="name-join">
             Name
           </Label>
           <Input
-            id="name-join"
-            placeholder="Enter your name"
+            aria-describedby={errors.name ? nameErrorId : undefined}
+            aria-invalid={errors.name ? "true" : "false"}
+            aria-required="true"
             className="text-sm sm:text-base"
             disabled={isDisabled}
-            aria-required="true"
-            aria-invalid={errors.name ? 'true' : 'false'}
-            aria-describedby={errors.name ? nameErrorId : undefined}
-            {...register('name')}
+            id="name-join"
+            placeholder="Enter your name"
+            {...register("name")}
           />
           {errors.name && (
-            <p id={nameErrorId} className="text-sm text-red-500" role="alert">
+            <p className="text-red-500 text-sm" id={nameErrorId} role="alert">
               {errors.name.message}
             </p>
           )}
-        </div>
+        </fieldset>
         <Button
-          type="submit"
+          aria-busy={isSubmitting}
           className="bg-primary text-sm sm:text-base"
           disabled={isDisabled}
-          aria-busy={isSubmitting}
+          type="submit"
         >
           {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
-          {isSubmitting ? 'Joining...' : 'Join Room'}
-          {!isSubmitting && <ArrowRight className="ml-2 size-4 sm:size-5" aria-hidden="true" />}
+          {isSubmitting ? "Joining..." : "Join Room"}
+          {!isSubmitting && (
+            <ArrowRight aria-hidden="true" className="ml-2 size-4 sm:size-5" />
+          )}
         </Button>
       </form>
     </section>

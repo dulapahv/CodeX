@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/next"],
+  "linter": {
+    "rules": {
+      "style": {
+        // Project uses TypeScript enums for socket message types - too disruptive to change
+        "noEnum": "off",
+        // React hooks follow useCamelCase naming convention
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case", "camelCase", "PascalCase"]
+          }
+        }
+      },
+      "suspicious": {
+        // @tailwind is a valid Tailwind CSS v3 directive
+        "noUnknownAtRules": "off"
+      },
+      "performance": {
+        // Some libraries (monaco-editor, Sentry) genuinely need namespace imports
+        "noNamespaceImport": "off"
+      }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    }
+  }
+}

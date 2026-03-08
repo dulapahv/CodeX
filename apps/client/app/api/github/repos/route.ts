@@ -9,24 +9,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-import { GITHUB_API_URL } from '@/lib/constants';
+import { GITHUB_API_URL } from "@/lib/constants";
 
 // export const runtime = 'edge';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q');
+    const query = searchParams.get("q");
 
     // Get access token from cookies
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get('access_token');
+    const accessToken = cookieStore.get("access_token");
 
     if (!accessToken) {
-      return NextResponse.json({ error: 'Unauthorized - No access token found' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized - No access token found" },
+        { status: 401 }
+      );
     }
 
     // Construct the GitHub API URL with search query and sort parameters
@@ -38,14 +41,14 @@ export async function GET(request: Request) {
     const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
-        Accept: 'application/vnd.github.v3+json'
-      }
+        Accept: "application/vnd.github.v3+json",
+      },
     });
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
-        { error: error.message || 'Failed to fetch repositories' },
+        { error: error.message || "Failed to fetch repositories" },
         { status: response.status }
       );
     }
@@ -56,10 +59,13 @@ export async function GET(request: Request) {
     // Return the repositories data
     return NextResponse.json({
       repositories,
-      total: repositories.length
+      total: repositories.length,
     });
   } catch (error) {
-    console.error('Error fetching repositories:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error("Error fetching repositories:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

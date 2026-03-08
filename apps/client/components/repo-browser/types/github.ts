@@ -9,27 +9,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { itemType } from './tree';
+import type { itemType } from "./tree";
 
-export type GithubRepo = {
+export interface GithubRepo {
+  full_name: string;
   id: number;
   name: string;
-  full_name: string;
-};
+}
 
-export type GithubBranch = {
+export interface GithubBranch {
   name: string;
-};
+}
 
-export type GithubContent = {
+export interface GithubContent {
   name: string;
   path: string;
   type: itemType.DIR | itemType.FILE;
-};
+}
 
-export type CommitResponse = {
+export interface CommitResponse {
   content: {
     html_url: string;
     sha: string;
   };
-};
+}

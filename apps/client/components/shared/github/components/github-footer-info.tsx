@@ -5,30 +5,32 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Settings } from 'lucide-react';
+import { Settings } from "lucide-react";
 
 interface GithubFooterInfoProps {
-  githubUser: string | null;
-  displayPath: string;
   actionLabel?: string;
+  displayPath: string;
+  githubUser: string | null;
 }
 
 export const GithubFooterInfo = ({
   githubUser,
   displayPath,
-  actionLabel = 'File'
+  actionLabel = "File",
 }: GithubFooterInfoProps) => {
-  if (!githubUser) return null;
+  if (!githubUser) {
+    return null;
+  }
 
   return (
     <div className="w-full">
-      <p className="text-muted-foreground break-all text-xs">
+      <p className="break-all text-muted-foreground text-xs">
         {actionLabel} <span className="font-semibold">{displayPath}</span>
       </p>
-      <div className="text-muted-foreground flex flex-wrap items-center text-xs">
+      <div className="flex flex-wrap items-center text-muted-foreground text-xs">
         <span>To disconnect GitHub, go to</span>
         <span className="flex items-center font-semibold">
-          <Settings className="mx-1 inline size-3" aria-hidden="true" />
+          <Settings aria-hidden="true" className="mx-1 inline size-3" />
           Settings
         </span>
         .

@@ -5,45 +5,57 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { useTheme } from 'next-themes';
-
-import { loginWithGithub } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/spinner';
+import { useTheme } from "next-themes";
+import { Spinner } from "@/components/spinner";
+import { Button } from "@/components/ui/button";
+import { loginWithGithub } from "@/lib/utils";
 
 interface GithubAuthPromptProps {
-  isLoading: boolean;
   githubUser: string | null;
+  isLoading: boolean;
   promptText?: string;
 }
 
 export const GithubAuthPrompt = ({
   isLoading,
   githubUser,
-  promptText = 'Please connect to GitHub to continue.'
+  promptText = "Please connect to GitHub to continue.",
 }: GithubAuthPromptProps) => {
   const { resolvedTheme } = useTheme();
 
-  if (githubUser) return null;
+  if (githubUser) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4" role="status">
+    // biome-ignore lint/a11y/useSemanticElements: status div for auth loading/prompt state
+    <div
+      className="flex flex-1 flex-col items-center justify-center gap-4"
+      role="status"
+    >
       {isLoading ? (
         <Spinner size="lg" />
       ) : (
         <>
-          <p className="text-muted-foreground text-center text-sm" id="login-prompt">
+          <p
+            className="text-center text-muted-foreground text-sm"
+            id="login-prompt"
+          >
             {promptText}
           </p>
-          <Button onClick={loginWithGithub} variant="outline" aria-describedby="login-prompt">
+          <Button
+            aria-describedby="login-prompt"
+            onClick={loginWithGithub}
+            variant="outline"
+          >
             <Image
-              src={`/images/${resolvedTheme === 'light' ? 'octocat' : 'octocat-white'}.svg`}
               alt="GitHub logo"
               className="mr-2"
-              width={16}
               height={16}
+              src={`/images/${resolvedTheme === "light" ? "octocat" : "octocat-white"}.svg`}
+              width={16}
             />
             Connect to GitHub
           </Button>

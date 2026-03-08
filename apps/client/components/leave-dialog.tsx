@@ -8,11 +8,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
-
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { useRoomActions } from '@/hooks/use-room-actions';
-import { Button } from '@/components/ui/button';
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -20,8 +17,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -29,22 +26,24 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle
-} from '@/components/ui/drawer';
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useRoomActions } from "@/hooks/use-room-actions";
 
-const DEFAULT_TITLE = 'Are you sure you want to leave this room?';
+const DEFAULT_TITLE = "Are you sure you want to leave this room?";
 const DEFAULT_DESCRIPTION =
-  'You can always rejoin this room using the same Room ID. This room will be deleted if you are the last participant.';
+  "You can always rejoin this room using the same Room ID. This room will be deleted if you are the last participant.";
 
 interface LeaveDialogRef {
-  openDialog: () => void;
   closeDialog: () => void;
+  openDialog: () => void;
 }
 
-const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
+const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const { handleLeaveRoom } = useRoomActions();
 
   const openDialog = useCallback(() => setIsOpen(true), []);
@@ -53,12 +52,16 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
   // Expose openDialog and closeDialog to the parent component
   useImperativeHandle(ref, () => ({
     openDialog,
-    closeDialog
+    closeDialog,
   }));
 
   if (isDesktop) {
     return (
-      <Dialog open={isOpen} onOpenChange={setIsOpen} aria-label="Leave room dialog">
+      <Dialog
+        aria-label="Leave room dialog"
+        onOpenChange={setIsOpen}
+        open={isOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
@@ -66,14 +69,14 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="secondary" aria-label="Cancel leaving room">
+              <Button aria-label="Cancel leaving room" variant="secondary">
                 Close
               </Button>
             </DialogClose>
             <Button
-              variant="destructive"
-              onClick={handleLeaveRoom}
               aria-label="Confirm leaving room"
+              onClick={handleLeaveRoom}
+              variant="destructive"
             >
               Leave
             </Button>
@@ -84,18 +87,26 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerContent role="alertdialog" aria-label="Leave room drawer">
+    <Drawer onOpenChange={setIsOpen} open={isOpen}>
+      <DrawerContent aria-label="Leave room drawer" role="alertdialog">
         <DrawerHeader>
           <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
           <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Button variant="destructive" onClick={handleLeaveRoom} aria-label="Confirm leaving room">
+          <Button
+            aria-label="Confirm leaving room"
+            onClick={handleLeaveRoom}
+            variant="destructive"
+          >
             Leave
           </Button>
           <DrawerClose asChild>
-            <Button variant="secondary" onClick={closeDialog} aria-label="Cancel leaving room">
+            <Button
+              aria-label="Cancel leaving room"
+              onClick={closeDialog}
+              variant="secondary"
+            >
               Cancel
             </Button>
           </DrawerClose>
@@ -105,6 +116,6 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((props, ref) => {
   );
 });
 
-LeaveDialog.displayName = 'LeaveDialog';
+LeaveDialog.displayName = "LeaveDialog";
 
 export { LeaveDialog, type LeaveDialogRef };

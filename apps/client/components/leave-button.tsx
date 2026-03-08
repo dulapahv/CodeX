@@ -8,14 +8,16 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { FocusEvent, useRef } from 'react';
-
-import { LogOut } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { LeaveDialog, type LeaveDialogRef } from '@/components/leave-dialog';
+import { LogOut } from "lucide-react";
+import { type FocusEvent, useRef } from "react";
+import { LeaveDialog, type LeaveDialogRef } from "@/components/leave-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface LeaveButtonProps {
   readonly className?: string;
@@ -35,24 +37,36 @@ const LeaveButton = ({ className }: LeaveButtonProps) => {
   return (
     <>
       <Tooltip>
-        <TooltipTrigger onFocus={handleTooltipFocus} asChild>
+        <TooltipTrigger asChild onFocus={handleTooltipFocus}>
           <Button
-            aria-label="Leave room"
-            aria-haspopup="dialog"
             aria-expanded="false"
+            aria-haspopup="dialog"
+            aria-label="Leave room"
+            className={cn(
+              "size-7 animate-fade-in-top rounded-sm p-0",
+              className
+            )}
+            onClick={handleButtonClick}
             size="icon"
             variant="ghost"
-            className={cn('animate-fade-in-top size-7 rounded-sm p-0', className)}
-            onClick={handleButtonClick}
           >
-            <LogOut className="size-4 text-red-600" strokeWidth={2.5} aria-hidden="true" />
+            <LogOut
+              aria-hidden="true"
+              className="size-4 text-red-600"
+              strokeWidth={2.5}
+            />
           </Button>
         </TooltipTrigger>
-        <TooltipContent role="tooltip" aria-label="Leave Room" sideOffset={8} className="mr-1">
+        <TooltipContent
+          aria-label="Leave Room"
+          className="mr-1"
+          role="tooltip"
+          sideOffset={8}
+        >
           <p>Leave Room</p>
         </TooltipContent>
       </Tooltip>
-      <LeaveDialog ref={leaveDialogRef} aria-label="Confirm leaving room" />
+      <LeaveDialog aria-label="Confirm leaving room" ref={leaveDialogRef} />
     </>
   );
 };

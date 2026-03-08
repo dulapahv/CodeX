@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export const useMediaQuery = (query: string) => {
   const [value, setValue] = useState(false);
@@ -19,10 +19,10 @@ export const useMediaQuery = (query: string) => {
     }
 
     const result = matchMedia(query);
-    result.addEventListener('change', onChange);
+    result.addEventListener("change", onChange);
     setValue(result.matches);
 
-    return () => result.removeEventListener('change', onChange);
+    return () => result.removeEventListener("change", onChange);
   }, [query]);
 
   return value;

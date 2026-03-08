@@ -7,17 +7,17 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-export type TestResult = {
-  id: number;
+export interface TestResult {
   http: number;
+  id: number;
   socket: number;
   timestamp: string;
-};
+}
 
-export type Stats = {
-  min: number;
-  max: number;
+export interface Stats {
   avg: number;
+  max: number;
   median: number;
+  min: number;
   stdDev: number;
-};
+}

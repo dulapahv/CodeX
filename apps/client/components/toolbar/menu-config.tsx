@@ -52,24 +52,24 @@ import {
   UnfoldVertical,
   Video,
   ZoomIn,
-  ZoomOut
-} from 'lucide-react';
+  ZoomOut,
+} from "lucide-react";
 
-import type { ToolbarActions } from './types';
+import type { ToolbarActions } from "./types";
 
 export interface MenuItem {
-  label: string;
-  icon?: React.ReactNode;
-  shortcut?: string;
   action: keyof ToolbarActions;
-  items?: MenuItem[];
-  type?: 'checkbox';
   checked?: boolean;
+  icon?: React.ReactNode;
+  items?: MenuItem[];
+  label: string;
+  shortcut?: string;
+  type?: "checkbox";
 }
 
 export interface MenuGroup {
+  items: (MenuItem | "separator")[];
   label: string;
-  items: (MenuItem | 'separator')[];
 }
 
 export const createMenuConfig = (
@@ -81,296 +81,296 @@ export const createMenuConfig = (
 ) => {
   const menuConfig: MenuGroup[] = [
     {
-      label: 'File',
+      label: "File",
       items: [
         {
-          label: 'Open from Local',
+          label: "Open from Local",
           icon: <Folder className="mr-2 size-4" />,
           shortcut: `${modKey}+O`,
-          action: 'openLocal'
+          action: "openLocal",
         },
         {
-          label: 'Open from GitHub',
+          label: "Open from GitHub",
           icon: <FolderGit2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Shift+O`,
-          action: 'openGitHub'
+          action: "openGitHub",
         },
         {
-          label: 'Save to Local',
+          label: "Save to Local",
           icon: <Download className="mr-2 size-4" />,
           shortcut: `${modKey}+S`,
-          action: 'saveLocal'
+          action: "saveLocal",
         },
         {
-          label: 'Save to GitHub',
+          label: "Save to GitHub",
           icon: <CloudUpload className="mr-2 size-4" />,
           shortcut: `${modKey}+Shift+S`,
-          action: 'saveGitHub'
+          action: "saveGitHub",
         },
-        'separator',
+        "separator",
         {
-          label: 'Settings',
+          label: "Settings",
           icon: <Settings className="mr-2 size-4" />,
           shortcut: `${modKey}+,`,
-          action: 'settings'
+          action: "settings",
         },
-        'separator',
+        "separator",
         {
-          label: 'Leave Room',
+          label: "Leave Room",
           icon: <LogOut className="mr-2 size-4" />,
           shortcut: `${modKey}+Q`,
-          action: 'leaveRoom'
-        }
-      ]
+          action: "leaveRoom",
+        },
+      ],
     },
     {
-      label: 'Edit',
+      label: "Edit",
       items: [
         {
-          label: 'Undo',
+          label: "Undo",
           icon: <Undo2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Z`,
-          action: 'undo'
+          action: "undo",
         },
         {
-          label: 'Redo',
+          label: "Redo",
           icon: <Redo2 className="mr-2 size-4" />,
           shortcut: `${modKey}+Y`,
-          action: 'redo'
+          action: "redo",
         },
-        'separator',
+        "separator",
         {
-          label: 'Cut',
+          label: "Cut",
           icon: <Scissors className="mr-2 size-4" />,
           shortcut: `${modKey}+X`,
-          action: 'cut'
+          action: "cut",
         },
         {
-          label: 'Copy',
+          label: "Copy",
           icon: <Copy className="mr-2 size-4" />,
           shortcut: `${modKey}+C`,
-          action: 'copy'
+          action: "copy",
         },
         {
-          label: 'Paste',
+          label: "Paste",
           icon: <Clipboard className="mr-2 size-4" />,
           shortcut: `${modKey}+V`,
-          action: 'paste'
+          action: "paste",
         },
-        'separator',
+        "separator",
         {
-          label: 'Find',
+          label: "Find",
           icon: <Search className="mr-2 size-4" />,
           shortcut: `${modKey}+F`,
-          action: 'find'
+          action: "find",
         },
         {
-          label: 'Replace',
+          label: "Replace",
           icon: <Replace className="mr-2 size-4" />,
           shortcut: `${modKey}+H`,
-          action: 'replace'
+          action: "replace",
         },
-        'separator',
+        "separator",
         {
-          label: 'Toggle Line Comment',
+          label: "Toggle Line Comment",
           icon: <MessageSquare className="mr-2 size-4" />,
           shortcut: `${modKey}+/`,
-          action: 'toggleLineComment'
+          action: "toggleLineComment",
         },
         {
-          label: 'Toggle Block Comment',
+          label: "Toggle Block Comment",
           icon: <MessageSquareText className="mr-2 size-4" />,
-          shortcut: `Shift+Alt+A`,
-          action: 'toggleBlockComment'
+          shortcut: "Shift+Alt+A",
+          action: "toggleBlockComment",
         },
-        'separator',
+        "separator",
         {
-          label: 'UPPERCASE',
+          label: "UPPERCASE",
           icon: <CaseUpper className="mr-2 size-4" />,
-          action: 'uppercase'
+          action: "uppercase",
         },
         {
-          label: 'lowercase',
+          label: "lowercase",
           icon: <CaseLower className="mr-2 size-4" />,
-          action: 'lowercase'
+          action: "lowercase",
         },
         {
-          label: 'Title Case',
+          label: "Title Case",
           icon: <CaseSensitive className="mr-2 size-4" />,
-          action: 'titleCase'
+          action: "titleCase",
         },
-        'separator',
+        "separator",
         {
-          label: 'Sort Lines Ascending',
+          label: "Sort Lines Ascending",
           icon: <ArrowUpNarrowWide className="mr-2 size-4" />,
-          action: 'sortLinesAscending'
+          action: "sortLinesAscending",
         },
         {
-          label: 'Sort Lines Descending',
+          label: "Sort Lines Descending",
           icon: <ArrowDownWideNarrow className="mr-2 size-4" />,
-          action: 'sortLinesDescending'
-        }
-      ]
+          action: "sortLinesDescending",
+        },
+      ],
     },
     {
-      label: 'Selection',
+      label: "Selection",
       items: [
         {
-          label: 'Select All',
+          label: "Select All",
           icon: <MousePointerClick className="mr-2 size-4" />,
           shortcut: `${modKey}+A`,
-          action: 'selectAll'
+          action: "selectAll",
         },
         {
-          label: 'Select to Bracket',
+          label: "Select to Bracket",
           icon: <SquareDashedMousePointer className="mr-2 size-4" />,
-          action: 'selectToBracket'
+          action: "selectToBracket",
         },
         {
-          label: 'Select Highlights',
+          label: "Select Highlights",
           icon: <TextSelect className="mr-2 size-4" />,
-          action: 'selectHighlights'
+          action: "selectHighlights",
         },
-        'separator',
+        "separator",
         {
-          label: 'Copy Line Up',
+          label: "Copy Line Up",
           icon: <ChevronsUp className="mr-2 size-4" />,
-          shortcut: 'Shift+Alt+↑',
-          action: 'copyLineUp'
+          shortcut: "Shift+Alt+↑",
+          action: "copyLineUp",
         },
         {
-          label: 'Copy Line Down',
+          label: "Copy Line Down",
           icon: <ChevronsDown className="mr-2 size-4" />,
-          shortcut: 'Shift+Alt+↓',
-          action: 'copyLineDown'
+          shortcut: "Shift+Alt+↓",
+          action: "copyLineDown",
         },
         {
-          label: 'Move Line Up',
+          label: "Move Line Up",
           icon: <ArrowUpToLine className="mr-2 size-4" />,
-          shortcut: 'Alt+↑',
-          action: 'moveLineUp'
+          shortcut: "Alt+↑",
+          action: "moveLineUp",
         },
         {
-          label: 'Move Line Down',
+          label: "Move Line Down",
           icon: <ArrowDownToLine className="mr-2 size-4" />,
-          shortcut: 'Alt+↓',
-          action: 'moveLineDown'
+          shortcut: "Alt+↓",
+          action: "moveLineDown",
         },
         {
-          label: 'Duplicate Selection',
+          label: "Duplicate Selection",
           icon: <CopyPlus className="mr-2 size-4" />,
-          action: 'duplicateSelection'
+          action: "duplicateSelection",
         },
-        'separator',
+        "separator",
         {
-          label: 'Add Cursor Above',
+          label: "Add Cursor Above",
           icon: <ArrowBigUpDash className="mr-2 size-4" />,
           shortcut: `${modKey}+Alt+↑`,
-          action: 'addCursorAbove'
+          action: "addCursorAbove",
         },
         {
-          label: 'Add Cursor Below',
+          label: "Add Cursor Below",
           icon: <ArrowBigDownDash className="mr-2 size-4" />,
           shortcut: `${modKey}+Alt+↓`,
-          action: 'addCursorBelow'
+          action: "addCursorBelow",
         },
-        'separator',
+        "separator",
         {
-          label: 'Expand Selection',
+          label: "Expand Selection",
           icon: <Maximize2 className="mr-2 size-4" />,
-          action: 'expandSelection'
+          action: "expandSelection",
         },
         {
-          label: 'Shrink Selection',
+          label: "Shrink Selection",
           icon: <Minimize2 className="mr-2 size-4" />,
-          action: 'shrinkSelection'
-        }
-      ]
+          action: "shrinkSelection",
+        },
+      ],
     },
     {
-      label: 'View',
+      label: "View",
       items: [
         {
-          label: 'Command Palette',
+          label: "Command Palette",
           icon: <Command className="mr-2 size-4" />,
-          shortcut: 'F1',
-          action: 'commandPalette'
+          shortcut: "F1",
+          action: "commandPalette",
         },
-        'separator',
+        "separator",
         {
-          label: 'Zoom In',
+          label: "Zoom In",
           icon: <ZoomIn className="mr-2 size-4" />,
           shortcut: `${modKey}+=`,
-          action: 'zoomIn'
+          action: "zoomIn",
         },
         {
-          label: 'Zoom Out',
+          label: "Zoom Out",
           icon: <ZoomOut className="mr-2 size-4" />,
           shortcut: `${modKey}+-`,
-          action: 'zoomOut'
+          action: "zoomOut",
         },
-        'separator',
+        "separator",
         {
-          label: 'Fold All',
+          label: "Fold All",
           icon: <FoldVertical className="mr-2 size-4" />,
-          action: 'foldAll'
+          action: "foldAll",
         },
         {
-          label: 'Unfold All',
+          label: "Unfold All",
           icon: <UnfoldVertical className="mr-2 size-4" />,
-          action: 'unfoldAll'
+          action: "unfoldAll",
         },
         {
-          label: 'Toggle Fold',
+          label: "Toggle Fold",
           icon: <FlipVertical className="mr-2 size-4" />,
-          action: 'toggleFold'
+          action: "toggleFold",
         },
-        'separator',
+        "separator",
         {
-          label: 'Notepad',
+          label: "Notepad",
           icon: <NotebookPen className="mr-2 size-4" />,
-          type: 'checkbox',
+          type: "checkbox",
           checked: notepad,
-          action: 'toggleNotepadPanel'
+          action: "toggleNotepadPanel",
         },
         {
-          label: 'Terminal',
+          label: "Terminal",
           icon: <Terminal className="mr-2 size-4" />,
-          type: 'checkbox',
+          type: "checkbox",
           checked: terminal,
-          action: 'toggleTerminalPanel'
+          action: "toggleTerminalPanel",
         },
         {
-          label: 'Webcam Stream',
+          label: "Webcam Stream",
           icon: <Video className="mr-2 size-4" />,
-          type: 'checkbox',
+          type: "checkbox",
           checked: webcam,
-          action: 'toggleWebcamPanel'
+          action: "toggleWebcamPanel",
         },
         {
-          label: 'Live Preview',
+          label: "Live Preview",
           icon: <LayoutTemplate className="mr-2 size-4" />,
-          type: 'checkbox',
+          type: "checkbox",
           checked: livePreview,
-          action: 'toggleSandpackPanel'
-        }
-      ]
+          action: "toggleSandpackPanel",
+        },
+      ],
     },
     {
-      label: 'Help',
+      label: "Help",
       items: [
         {
-          label: 'Manual',
+          label: "Manual",
           icon: <HelpCircle className="mr-2 size-4" />,
-          action: 'manual'
+          action: "manual",
         },
         {
-          label: 'About',
+          label: "About",
           icon: <Info className="mr-2 size-4" />,
-          action: 'about'
-        }
-      ]
-    }
+          action: "about",
+        },
+      ],
+    },
   ];
 
   return menuConfig;

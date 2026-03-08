@@ -241,10 +241,8 @@ pnpm test:server:remote     # Run backend tests against remote server
 pnpm test:server:watch      # Run backend tests in watch mode (local server)
 
 # Linting and Formatting
-pnpm lint                   # Run ESLint checks (frontend only)
-pnpm lint:fix               # Fix ESLint issues (frontend only)
-pnpm format                 # Check formatting
-pnpm format:fix             # Fix formatting issues
+pnpm check                  # Check for linting and formatting issues
+pnpm fix                    # Fix linting and formatting issues
 ```
 
 You can also run scripts in the specific workspaces
@@ -285,8 +283,7 @@ pnpm --filter server test:socket
   - [Jest](https://jestjs.io) (unit testing for backend)
   - [CodeQL](https://codeql.github.com/) (security analysis)
 - **Code Quality:**
-  - [ESLint](https://eslint.org) (static code analysis)
-  - [Prettier](https://prettier.io) (code formatting)
+  - [Ultracite](https://ultracite.js.org/) + [Biome](https://biomejs.dev/) (linting and formatting)
   - [Husky](https://typicode.github.io/husky/) (git hooks)
   - [commitlint](https://commitlint.js.org/) (commit message linting)
 - **Build & DevOps:**
@@ -307,11 +304,7 @@ pnpm --filter server test:socket
 
 We use several tools to maintain code quality:
 
-- [ESLint](https://eslint.org/) for static code analysis (frontend only)
-- [Prettier](https://prettier.io/) for code formatting
-- [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) for import statement organization
-- [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) for Tailwind CSS class sorting (frontend only)
-- [prettier-plugin-classnames](https://github.com/ony3000/prettier-plugin-classnames) for wrapping long Tailwind CSS class names (frontend only)
+- [Ultracite](https://ultracite.js.org/) + [Biome](https://biomejs.dev/) for linting and formatting
 - [Husky](https://typicode.github.io/husky/) for Git hooks
 - [lint-staged](https://github.com/okonet/lint-staged) for running checks on staged files
 - [commitlint](https://commitlint.js.org/) for commit message linting
@@ -319,10 +312,8 @@ We use several tools to maintain code quality:
 Check and fix code style:
 
 ```bash
-pnpm lint                   # Check ESLint issues
-pnpm lint:fix               # Fix ESLint issues
-pnpm format                 # Check formatting issues
-pnpm format:fix             # Fix formatting issues
+pnpm check                  # Check for linting and formatting issues
+pnpm fix                    # Fix linting and formatting issues
 ```
 
 ## Contributing

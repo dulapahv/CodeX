@@ -9,15 +9,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { StreamServiceMsg } from "@codex/types/message";
+import type { Dispatch, RefObject, SetStateAction } from "react";
+import { isMobile } from "react-device-detect";
+import { toast } from "sonner";
 
-import { isMobile } from 'react-device-detect';
-import { toast } from 'sonner';
-
-import { StreamServiceMsg } from '@codex/types/message';
-
-import { getSocket } from '@/lib/socket';
-import { parseError } from '@/lib/utils';
+import { getSocket } from "@/lib/socket";
+import { parseError } from "@/lib/utils";
 
 // Toggle camera
 export const toggleCamera = async (
@@ -31,17 +29,12 @@ export const toggleCamera = async (
   const socket = getSocket();
 
   try {
-    if (!cameraOn) {
-      // Get the media stream directly with selected devices
-      // No need for separate permission check since we already did it on mount
-      const mediaStarted = await getMedia();
-      if (mediaStarted) {
-        setCameraOn(true);
-      }
-    } else {
+    if (cameraOn) {
       // Turning off camera
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+        for (const track of streamRef.current.getTracks()) {
+          track.stop();
+        }
       }
 
       if (videoRef.current) {
@@ -52,6 +45,13 @@ export const toggleCamera = async (
       streamRef.current = null;
       setCameraOn(false);
       setMicOn(false);
+    } else {
+      // Get the media stream directly with selected devices
+      // No need for separate permission check since we already did it on mount
+      const mediaStarted = await getMedia();
+      if (mediaStarted) {
+        setCameraOn(true);
+      }
     }
   } catch (error) {
     toast.error(`Error toggling camera: ${parseError(error)}`);
@@ -62,19 +62,23 @@ export const toggleCamera = async (
 export const rotateCamera = async (
   cameraOn: boolean,
   cameraFacingMode: string,
-  setCameraFacingMode: Dispatch<SetStateAction<'user' | 'environment'>>,
+  setCameraFacingMode: Dispatch<SetStateAction<"user" | "environment">>,
   streamRef: RefObject<MediaStream | null>,
   getMedia: () => Promise<boolean>
 ) => {
-  if (!isMobile) return;
+  if (!isMobile) {
+    return;
+  }
 
-  const newFacingMode = cameraFacingMode === 'user' ? 'environment' : 'user';
+  const newFacingMode = cameraFacingMode === "user" ? "environment" : "user";
   setCameraFacingMode(newFacingMode);
 
   if (cameraOn) {
     // Stop current stream
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      for (const track of streamRef.current.getTracks()) {
+        track.stop();
+      }
     }
     // Get new stream with rotated camera
     await getMedia();
@@ -91,20 +95,20 @@ export const toggleMic = (
 
   try {
     if (!streamRef.current) {
-      toast.error('No active media stream');
+      toast.error("No active media stream");
       return;
     }
 
     const audioTracks = streamRef.current.getAudioTracks();
     if (audioTracks.length === 0) {
-      toast.error('No audio track found');
+      toast.error("No audio track found");
       return;
     }
 
     const newMicState = !micOn;
-    audioTracks.forEach(track => {
+    for (const track of audioTracks) {
       track.enabled = newMicState;
-    });
+    }
 
     setMicOn(newMicState);
     socket.emit(StreamServiceMsg.MIC_STATE, newMicState);

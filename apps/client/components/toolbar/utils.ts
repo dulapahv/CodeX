@@ -8,32 +8,57 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { type Monaco } from '@monaco-editor/react';
-import type * as monaco from 'monaco-editor';
-import { toast } from 'sonner';
+import type { Monaco } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor";
+import { toast } from "sonner";
 
-import { parseError } from '@/lib/utils';
+import { parseError } from "@/lib/utils";
+
+const IOS_DEVICE_PATTERN = /iPad|iPhone|iPod/;
+const ANDROID_PATTERN = /Android/;
+const WINDOWS_PATTERN = /Win/;
+const MAC_PATTERN = /Mac/;
+const LINUX_PATTERN = /Linux/;
+const LEADING_DOT_PATTERN = /^\./;
 
 /**
  * Get the current operating system
  * @returns The current operating system
  */
-export const getOS = (): 'iOS' | 'Android' | 'Windows' | 'Mac OS' | 'Linux' | 'Unknown' => {
+export const getOS = ():
+  | "iOS"
+  | "Android"
+  | "Windows"
+  | "Mac OS"
+  | "Linux"
+  | "Unknown" => {
   const userAgent = navigator.userAgent;
   const platform = navigator.platform;
   // Detect iOS devices (iPhone, iPad, iPod)
-  if (/iPad|iPhone|iPod/.test(userAgent)) return 'iOS';
+  if (IOS_DEVICE_PATTERN.test(userAgent)) {
+    return "iOS";
+  }
   // Detect Android
-  if (/Android/.test(userAgent)) return 'Android';
+  if (ANDROID_PATTERN.test(userAgent)) {
+    return "Android";
+  }
   // Detect Windows
-  if (/Win/.test(platform)) return 'Windows';
+  if (WINDOWS_PATTERN.test(platform)) {
+    return "Windows";
+  }
   // Detect macOS
-  if (/Mac/.test(platform)) return 'Mac OS';
+  if (MAC_PATTERN.test(platform)) {
+    return "Mac OS";
+  }
   // Detect Linux (includes Linux-based OS but not Android)
-  if (/Linux/.test(platform)) return 'Linux';
+  if (LINUX_PATTERN.test(platform)) {
+    return "Linux";
+  }
   // Fallback for older iOS devices that might not have the userAgent string
-  if (['iPhone', 'iPad', 'iPod'].includes(platform)) return 'iOS';
-  return 'Unknown';
+  if (["iPhone", "iPad", "iPod"].includes(platform)) {
+    return "iOS";
+  }
+  return "Unknown";
 };
 
 interface Language {
@@ -56,15 +81,17 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
   if (!languagesCache) {
     languagesCache = monaco.languages.getLanguages().map(
       (language): Language => ({
-        alias: language.aliases?.[0] ?? 'Unknown',
+        alias: language.aliases?.[0] ?? "Unknown",
         extensions: language.extensions ?? [],
-        id: language.id
+        id: language.id,
       })
     );
   }
 
-  const language = languagesCache.find(lang => lang.id === languageId);
-  return language?.extensions[0] ? `.${language.extensions[0].replace(/^\./, '')}` : '.txt';
+  const language = languagesCache.find((lang) => lang.id === languageId);
+  return language?.extensions[0]
+    ? `.${language.extensions[0].replace(LEADING_DOT_PATTERN, "")}`
+    : ".txt";
 }
 
 /**
@@ -78,39 +105,41 @@ export const openLocal = (
   editor: monaco.editor.IStandaloneCodeEditor | null
 ): void => {
   // Create input element
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '*.*';
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "*.*";
 
   // Handle file selection
   input.onchange = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file || !editor) return;
+    if (!(file && editor)) {
+      return;
+    }
 
     // Create file reader
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = (event) => {
       const content = event.target?.result as string;
 
       // Try to detect language from file extension
-      const extension = file.name.split('.').pop() || '';
+      const extension = file.name.split(".").pop() || "";
       const languages = monaco.languages.getLanguages();
-      const language = languages.find(lang =>
-        lang.extensions?.some(ext => ext.replace('.', '') === extension)
+      const language = languages.find((lang) =>
+        lang.extensions?.some((ext) => ext.replace(".", "") === extension)
       );
 
       // Set content and language (default to plaintext)
       editor.setValue(content);
       const model = editor.getModel();
       if (model) {
-        monaco.editor.setModelLanguage(model, language?.id || 'plaintext');
+        monaco.editor.setModelLanguage(model, language?.id || "plaintext");
       }
-      toast.success('File opened successfully');
+      toast.success("File opened successfully");
     };
 
     reader.onerror = () => {
-      toast.error('Failed to read file');
-      throw new Error('Failed to read file');
+      toast.error("Failed to read file");
+      throw new Error("Failed to read file");
     };
 
     reader.readAsText(file);
@@ -129,10 +158,10 @@ export const openLocal = (
 export const saveLocal = (
   monaco: Monaco,
   editor: monaco.editor.IStandaloneCodeEditor | null,
-  filename = `codex-${new Date().toLocaleString('en-GB').replace(/[/:, ]/g, '-')}`
+  filename = `codex-${new Date().toLocaleString("en-GB").replace(/[/:, ]/g, "-")}`
 ): void => {
   if (!editor) {
-    throw new Error('Editor instance is required');
+    throw new Error("Editor instance is required");
   }
 
   try {
@@ -140,17 +169,17 @@ export const saveLocal = (
     const model = editor.getModel();
 
     if (!model) {
-      throw new Error('Editor model not found');
+      throw new Error("Editor model not found");
     }
 
     const extension = getFileExtension(model.getLanguageId(), monaco);
     const fullFilename = `${filename}${extension}`;
 
     // Create blob and download
-    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = fullFilename;
 

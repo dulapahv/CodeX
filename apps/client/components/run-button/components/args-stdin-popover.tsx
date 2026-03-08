@@ -8,31 +8,41 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useState } from 'react';
-
-import { ChevronDown, X } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ChevronDown, X } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface ExecutionArgsProps {
+  disabled?: boolean;
   onArgsChange: (args: string[]) => void;
   onStdinChange: (stdin: string) => void;
-  disabled?: boolean;
 }
 
-const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionArgsProps) => {
-  const [argsStr, setArgsStr] = useState('');
-  const [stdin, setStdin] = useState('');
+const ArgsInputPopover = ({
+  onArgsChange,
+  onStdinChange,
+  disabled,
+}: ExecutionArgsProps) => {
+  const [argsStr, setArgsStr] = useState("");
+  const [stdin, setStdin] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleArgsChange = (value: string) => {
     setArgsStr(value);
-    const args = value.split('\n').filter(arg => arg.trim());
+    const args = value.split("\n").filter((arg) => arg.trim());
     onArgsChange(args);
   };
 
@@ -42,38 +52,35 @@ const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionAr
   };
 
   const clearArgs = () => {
-    handleArgsChange('');
+    handleArgsChange("");
   };
 
   const clearStdin = () => {
-    handleStdinChange('');
+    handleStdinChange("");
   };
 
   const hasInput = argsStr || stdin;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
+              aria-label="Program arguments and input"
               className={cn(
-                `relative size-7 rounded-l-none border-l border-l-[color:var(--panel-text-accent)]
-                bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] transition-opacity
-                hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)] hover:!opacity-80
-                disabled:!opacity-50`,
-                disabled && 'bg-red-600'
+                "hover:!opacity-80 disabled:!opacity-50 relative size-7 rounded-l-none border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)]",
+                disabled && "bg-red-600"
               )}
               disabled={disabled}
-              aria-label="Program arguments and input"
+              size="icon"
+              variant="ghost"
             >
               <ChevronDown className="size-4" />
               {hasInput && (
                 <span
-                  className="animate-scale-up-center absolute -right-0.5 -top-0.5 size-2 rounded-full bg-red-500"
                   aria-hidden="true"
+                  className="absolute -top-0.5 -right-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
                 />
               )}
             </Button>
@@ -86,7 +93,7 @@ const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionAr
               {stdin && <div>Has program input</div>}
             </div>
           ) : (
-            'Add program arguments and input'
+            "Add program arguments and input"
           )}
         </TooltipContent>
       </Tooltip>
@@ -97,19 +104,19 @@ const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionAr
             <Label htmlFor="args-input">Program Arguments</Label>
             <div className="relative">
               <Textarea
+                className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
                 id="args-input"
+                onChange={(e) => handleArgsChange(e.target.value)}
                 placeholder="Enter each argument on a new line..."
                 value={argsStr}
-                onChange={e => handleArgsChange(e.target.value)}
-                className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
               />
               {argsStr && (
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6 rounded-full"
-                  onClick={clearArgs}
                   aria-label="Clear arguments"
+                  className="absolute top-1 right-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  onClick={clearArgs}
+                  size="icon"
+                  variant="ghost"
                 >
                   <X className="size-4" />
                 </Button>
@@ -121,19 +128,19 @@ const ArgsInputPopover = ({ onArgsChange, onStdinChange, disabled }: ExecutionAr
             <Label htmlFor="stdin-input">Program Input (stdin)</Label>
             <div className="relative">
               <Textarea
+                className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
                 id="stdin-input"
+                onChange={(e) => handleStdinChange(e.target.value)}
                 placeholder="Enter each input on a new line..."
                 value={stdin}
-                onChange={e => handleStdinChange(e.target.value)}
-                className="max-h-[30vh] min-h-[10vh] resize-y pr-8 text-sm"
               />
               {stdin && (
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground absolute right-1 top-1 size-6 rounded-full"
-                  onClick={clearStdin}
                   aria-label="Clear program input"
+                  className="absolute top-1 right-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  onClick={clearStdin}
+                  size="icon"
+                  variant="ghost"
                 >
                   <X className="size-4" />
                 </Button>

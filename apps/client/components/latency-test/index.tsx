@@ -9,32 +9,30 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState, type ChangeEvent } from 'react';
-import Link from 'next/link';
-
-import { ArrowLeft } from 'lucide-react';
-import { Socket } from 'socket.io-client';
-
-import { BASE_CLIENT_URL, BASE_SERVER_URL } from '@/lib/constants';
-import { getSocket } from '@/lib/socket';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { type ChangeEvent, useEffect, useState } from "react";
+import type { Socket } from "socket.io-client";
+import { Spinner } from "@/components/spinner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { Spinner } from '@/components/spinner';
+  TableRow,
+} from "@/components/ui/table";
+import { BASE_CLIENT_URL, BASE_SERVER_URL } from "@/lib/constants";
+import { getSocket } from "@/lib/socket";
 
-import type { TestResult } from './types';
-import { calculateStats } from './utils';
+import type { TestResult } from "./types";
+import { calculateStats } from "./utils";
 
 const DEFAULT_ITERATIONS = 10;
 const MIN_ITERATIONS = 1;
@@ -54,7 +52,7 @@ const LatencyTest = () => {
     const newSocket = getSocket();
     setSocket(newSocket);
 
-    newSocket.on('connect', () => {
+    newSocket.on("connect", () => {
       setIsConnecting(false);
     });
 
@@ -64,22 +62,22 @@ const LatencyTest = () => {
   }, []);
 
   const handleIterationChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
+    const value = Number.parseInt(e.target.value, 10);
+    if (!Number.isNaN(value)) {
       setIterations(Math.min(Math.max(value, MIN_ITERATIONS), MAX_ITERATIONS));
     }
   };
 
   const singleTest = async (): Promise<{ http: number; socket: number }> => {
     if (!socket) {
-      throw new Error('Socket not initialized');
+      throw new Error("Socket not initialized");
     }
 
     const httpStart = performance.now();
     const response = await fetch(BASE_SERVER_URL);
 
     if (!response.ok) {
-      throw new Error('HTTP request failed');
+      throw new Error("HTTP request failed");
     }
 
     const httpLatency = Math.round(performance.now() - httpStart);
@@ -87,11 +85,11 @@ const LatencyTest = () => {
     const socketLatency = await new Promise<number>((resolve, reject) => {
       const start = performance.now();
       const timeout = setTimeout(() => {
-        reject(new Error('Socket ping timeout'));
+        reject(new Error("Socket ping timeout"));
       }, 5000);
 
-      socket.emit('ping');
-      socket.once('pong', () => {
+      socket.emit("ping");
+      socket.once("pong", () => {
         clearTimeout(timeout);
         resolve(Math.round(performance.now() - start));
       });
@@ -102,7 +100,7 @@ const LatencyTest = () => {
 
   const measureLatency = async () => {
     if (!socket?.connected) {
-      setError('Socket not connected');
+      setError("Socket not connected");
       return;
     }
 
@@ -114,35 +112,39 @@ const LatencyTest = () => {
     try {
       for (let i = 0; i < iterations; i++) {
         if (i > 0) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
         const result = await singleTest();
-        setResults(prev => [
+        setResults((prev) => [
           ...prev,
           {
             id: i + 1,
             http: result.http,
             socket: result.socket,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         ]);
         setTestCount(i + 1);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('Latency test error:', err);
+      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Latency test error:", err);
     } finally {
       setIsTesting(false);
     }
   };
 
-  const httpStats = results.length ? calculateStats(results.map(r => r.http)) : null;
-  const socketStats = results.length ? calculateStats(results.map(r => r.socket)) : null;
+  const httpStats = results.length
+    ? calculateStats(results.map((r) => r.http))
+    : null;
+  const socketStats = results.length
+    ? calculateStats(results.map((r) => r.socket))
+    : null;
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
-      <Button variant="link" className="text-foreground mt-4 px-6" asChild>
+      <Button asChild className="mt-4 px-6 text-foreground" variant="link">
         <Link href={BASE_CLIENT_URL}>
           <ArrowLeft className="mr-2 size-4" />
           Go back
@@ -157,39 +159,47 @@ const LatencyTest = () => {
             <div className="space-y-2">
               <Label htmlFor="iterations">Number of Tests</Label>
               <Input
-                id="iterations"
-                type="number"
-                pattern="[0-9]*"
-                min={MIN_ITERATIONS}
-                max={MAX_ITERATIONS}
-                value={iterations}
-                onChange={handleIterationChange}
                 className="w-32"
                 disabled={isTesting}
+                id="iterations"
+                max={MAX_ITERATIONS}
+                min={MIN_ITERATIONS}
+                onChange={handleIterationChange}
+                pattern="[0-9]*"
+                type="number"
+                value={iterations}
               />
             </div>
             <Button
-              onClick={measureLatency}
-              disabled={isTesting || isConnecting}
               className="flex-1"
+              disabled={isTesting || isConnecting}
+              onClick={measureLatency}
             >
-              {isConnecting ? (
-                <>
-                  <Spinner className="mr-2" />
-                  Connecting...
-                </>
-              ) : isTesting ? (
-                <>
-                  <Spinner className="mr-2" />
-                  Testing ({testCount}/{iterations})
-                </>
-              ) : (
-                'Start Tests'
-              )}
+              {(() => {
+                if (isConnecting) {
+                  return (
+                    <>
+                      <Spinner className="mr-2" />
+                      Connecting...
+                    </>
+                  );
+                }
+                if (isTesting) {
+                  return (
+                    <>
+                      <Spinner className="mr-2" />
+                      Testing ({testCount}/{iterations})
+                    </>
+                  );
+                }
+                return "Start Tests";
+              })()}
             </Button>
           </div>
 
-          {error && <div className="text-destructive mt-2 text-sm">Error: {error}</div>}
+          {error && (
+            <div className="mt-2 text-destructive text-sm">Error: {error}</div>
+          )}
 
           {results.length > 0 && (
             <>
@@ -202,7 +212,7 @@ const LatencyTest = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {results.map(result => (
+                  {results.map((result) => (
                     <TableRow key={result.id}>
                       <TableCell>{result.id}</TableCell>
                       <TableCell>{result.http}</TableCell>

@@ -8,7 +8,10 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { itemType, type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
+import {
+  type ExtendedTreeDataItem,
+  itemType,
+} from "@/components/repo-browser/types/tree";
 
 export const getDisplayPath = (
   repo: string,
@@ -18,10 +21,10 @@ export const getDisplayPath = (
   fileName: string
 ) => {
   // Start with repo or githubUser
-  let path = repo || githubUser || '';
+  let path = repo || githubUser || "";
 
   if (path) {
-    path += '/';
+    path += "/";
   }
 
   // Add branch if it exists
@@ -34,7 +37,7 @@ export const getDisplayPath = (
     if (selectedItem.type === itemType.DIR) {
       path += `${selectedItem.path}/`;
     } else {
-      const dirPath = selectedItem.path?.split('/').slice(0, -1).join('/');
+      const dirPath = selectedItem.path?.split("/").slice(0, -1).join("/");
       if (dirPath) {
         path += `${dirPath}/`;
       }
@@ -44,5 +47,5 @@ export const getDisplayPath = (
   // Add filename
   path += selectedItem?.name === fileName ? selectedItem.name : fileName;
 
-  return path || 'No path selected';
+  return path || "No path selected";
 };

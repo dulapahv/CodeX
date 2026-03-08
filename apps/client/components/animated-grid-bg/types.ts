@@ -9,33 +9,33 @@
  */
 
 export interface GridConfig {
-  rows: number;
-  cols: number;
   cellSize: number;
+  cols: number;
+  rows: number;
 }
 
 export interface Light {
-  type: 'horizontal' | 'vertical';
-  position: number;
-  key: number;
   duration: number;
+  key: number;
+  position: number;
+  type: "horizontal" | "vertical";
 }
 
 interface LightStyle {
-  trail: {
-    width?: string;
-    height?: string;
-    background: string;
-    position?: 'relative';
-  };
   glow: {
-    position: 'absolute';
+    position: "absolute";
     right?: string;
     bottom?: string;
     width: string;
     height: string;
     background: string;
     boxShadow: string;
+  };
+  trail: {
+    width?: string;
+    height?: string;
+    background: string;
+    position?: "relative";
   };
 }
 

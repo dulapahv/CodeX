@@ -6,7 +6,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { User } from '@codex/types/user';
+import type { User } from "@codex/types/user";
+
+const WHITESPACE_PATTERN = /\s+/;
 
 /**
  * Generates initials from a name
@@ -21,9 +23,9 @@ import type { User } from '@codex/types/user';
  * ```
  */
 export const getInitials = (name: string): string => {
-  const [firstName, secondName = ''] = name.trim().split(/\s+/);
-  const firstInitial = firstName?.[0] ?? '';
-  const secondInitial = secondName?.[0] ?? firstName?.[1] ?? '';
+  const [firstName, secondName = ""] = name.trim().split(WHITESPACE_PATTERN);
+  const firstInitial = firstName?.[0] ?? "";
+  const secondInitial = secondName?.[0] ?? firstName?.[1] ?? "";
   return (firstInitial + secondInitial).toUpperCase();
 };
 

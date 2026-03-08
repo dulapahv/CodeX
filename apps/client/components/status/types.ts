@@ -8,13 +8,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-export type ServiceStatus = {
+export interface ServiceStatus {
   color: string;
-  label: string;
   description: string;
-};
+  label: string;
+}
 
-export type BetterStackResponse = {
+export interface BetterStackResponse {
   data: {
     id: string;
     type: string;
@@ -26,7 +26,13 @@ export type BetterStackResponse = {
       monitor_type: string;
       monitor_group_id: unknown;
       last_checked_at: string;
-      status: 'down' | 'maintenance' | 'paused' | 'pending' | 'up' | 'validating';
+      status:
+        | "down"
+        | "maintenance"
+        | "paused"
+        | "pending"
+        | "up"
+        | "validating";
       policy_id: unknown;
       required_keyword: unknown;
       verify_ssl: boolean;
@@ -63,9 +69,9 @@ export type BetterStackResponse = {
       };
     };
   };
-};
+}
 
-export type ResponseTimeData = {
+export interface ResponseTimeData {
   data: {
     id: string;
     type: string;
@@ -79,4 +85,4 @@ export type ResponseTimeData = {
       }>;
     };
   };
-};
+}

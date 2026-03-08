@@ -5,16 +5,21 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useCallback, useImperativeHandle, useState, type ForwardedRef } from 'react';
+import {
+  type ForwardedRef,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
 
 export interface DialogRef {
-  openDialog: () => void;
   closeDialog: () => void;
+  openDialog: () => void;
 }
 
 interface UseDialogStateOptions {
-  onClose?: () => void;
   canClose?: () => boolean;
+  onClose?: () => void;
 }
 
 export const useDialogState = (
@@ -35,7 +40,7 @@ export const useDialogState = (
 
   useImperativeHandle(ref, () => ({
     openDialog,
-    closeDialog
+    closeDialog,
   }));
 
   return { isOpen, setIsOpen, openDialog, closeDialog };

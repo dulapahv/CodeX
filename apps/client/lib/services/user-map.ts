@@ -8,18 +8,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { User } from '@codex/types/user';
+import type { User } from "@codex/types/user";
 
-import { getBackgroundColor, getTextColor } from '@/lib/utils';
+import { getBackgroundColor, getTextColor } from "@/lib/utils";
 
 interface UserData {
-  username: string;
   backgroundColor: string;
   textColor: string;
+  username: string;
 }
 
 export class UserMap {
-  private users: Map<string, UserData>;
+  private readonly users: Map<string, UserData>;
 
   constructor() {
     this.users = new Map();
@@ -30,7 +30,7 @@ export class UserMap {
     return {
       username,
       backgroundColor: getBackgroundColor(username),
-      textColor: getTextColor(getBackgroundColor(username))
+      textColor: getTextColor(getBackgroundColor(username)),
     };
   }
 
@@ -41,9 +41,9 @@ export class UserMap {
 
   // Add multiple users at once
   addBulk(usersDict: Record<string, string>): void {
-    Object.entries(usersDict).forEach(([id, username]) => {
+    for (const [id, username] of Object.entries(usersDict)) {
       this.add(id, username);
-    });
+    }
   }
 
   // Get username by ID
@@ -63,20 +63,20 @@ export class UserMap {
 
   // Get cached background color by ID
   getBackgroundColor(id: string): string {
-    return this.users.get(id)?.backgroundColor ?? getBackgroundColor('');
+    return this.users.get(id)?.backgroundColor ?? getBackgroundColor("");
   }
 
   // Get cached text color by ID
   getTextColor(id: string): string {
-    return this.users.get(id)?.textColor ?? getTextColor('');
+    return this.users.get(id)?.textColor ?? getTextColor("");
   }
 
   // Get all colors for a user
   getColors(id: string): { backgroundColor: string; color: string } {
     const userData = this.users.get(id);
     return {
-      backgroundColor: userData?.backgroundColor ?? getBackgroundColor(''),
-      color: userData?.textColor ?? getTextColor('')
+      backgroundColor: userData?.backgroundColor ?? getBackgroundColor(""),
+      color: userData?.textColor ?? getTextColor(""),
     };
   }
 
@@ -84,7 +84,7 @@ export class UserMap {
   getAll(): User[] {
     return Array.from(this.users.entries()).map(([id, data]) => ({
       id,
-      username: data.username
+      username: data.username,
     }));
   }
 }

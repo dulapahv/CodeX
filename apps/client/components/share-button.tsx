@@ -8,14 +8,16 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useRef } from 'react';
-
-import { Share } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ShareDialog, ShareDialogRef } from '@/components/share-dialog';
+import { Share } from "lucide-react";
+import { useRef } from "react";
+import { ShareDialog, type ShareDialogRef } from "@/components/share-dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface RoomProps {
   roomId: string;
@@ -34,16 +36,15 @@ const ShareButton = ({ roomId }: RoomProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="sm"
-              className="animate-fade-in-top hover:!text-foreground aspect-square h-7 rounded-sm p-1
-                text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
-              aria-label="Share this coding room"
-              aria-haspopup="dialog"
               aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-label="Share this coding room"
+              className="hover:!text-foreground aspect-square h-7 animate-fade-in-top rounded-sm p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
               onClick={handleButtonClick}
+              size="sm"
+              variant="ghost"
             >
-              <Share className="mr-0 size-4 sm:mr-2" aria-hidden="true" />
+              <Share aria-hidden="true" className="mr-0 size-4 sm:mr-2" />
               <span className="hidden sm:flex">Share</span>
             </Button>
           </TooltipTrigger>
@@ -52,7 +53,11 @@ const ShareButton = ({ roomId }: RoomProps) => {
           </TooltipContent>
         </Tooltip>
       </Dialog>
-      <ShareDialog ref={shareDialogRef} roomId={roomId} aria-label="Share room options" />
+      <ShareDialog
+        aria-label="Share room options"
+        ref={shareDialogRef}
+        roomId={roomId}
+      />
     </>
   );
 };

@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EditorSkeleton = () => (
   <div className="flex size-full flex-col bg-[color:var(--panel-background)]">

@@ -9,25 +9,24 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Server, Socket } from 'socket.io';
+import { CodeServiceMsg } from "@codex/types/message";
+import type { EditOp } from "@codex/types/operation";
+import type { Server, Socket } from "socket.io";
 
-import { CodeServiceMsg } from '@codex/types/message';
-import type { EditOp } from '@codex/types/operation';
-
-import { getUserRoom } from './room-service';
-import { getCustomId } from './user-service';
+import { getUserRoom } from "./room-service";
+import { getCustomId } from "./user-service";
 
 // Use a single Map for all room data to reduce memory overhead
-type RoomData = {
+interface RoomData {
   code: string;
   langId: string;
-};
+}
 
 // Core data structure for room management
 const roomData = new Map<string, RoomData>();
 
 // Default language ID for HTML
-const DEFAULT_LANG_ID = 'html';
+const DEFAULT_LANG_ID = "html";
 
 /**
  * Room existence check - O(1) operation
@@ -42,7 +41,7 @@ export const roomExists = (roomID: string): boolean => {
 function initializeRoom(roomID: string): RoomData {
   let data = roomData.get(roomID);
   if (!data) {
-    data = { code: '', langId: DEFAULT_LANG_ID };
+    data = { code: "", langId: DEFAULT_LANG_ID };
     roomData.set(roomID, data);
   }
   return data;
@@ -52,7 +51,7 @@ function initializeRoom(roomID: string): RoomData {
  * Get code with O(1) lookup
  */
 export const getCode = (roomID: string): string => {
-  return roomData.get(roomID)?.code || '';
+  return roomData.get(roomID)?.code || "";
 };
 
 /**
@@ -75,8 +74,9 @@ export const setLang = (roomID: string, langId: string): void => {
  */
 export const syncCode = (socket: Socket, io: Server): void => {
   const customId = getCustomId(socket.id);
-  if (customId) {
-    const code = getCode(getUserRoom(socket));
+  const roomId = getUserRoom(socket);
+  if (customId && roomId) {
+    const code = getCode(roomId);
     io.to(socket.id).emit(CodeServiceMsg.SYNC_CODE, code);
   }
 };
@@ -86,7 +86,9 @@ export const syncCode = (socket: Socket, io: Server): void => {
  */
 export const syncLang = (socket: Socket, io: Server): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
   const customId = getCustomId(socket.id);
   if (customId) {
@@ -100,7 +102,9 @@ export const syncLang = (socket: Socket, io: Server): void => {
  */
 export const updateLang = (socket: Socket, langId: string): void => {
   const roomID = getUserRoom(socket);
-  if (!roomID) return;
+  if (!roomID) {
+    return;
+  }
 
   const customId = getCustomId(socket.id);
   if (customId) {
@@ -112,9 +116,18 @@ export const updateLang = (socket: Socket, langId: string): void => {
 /**
  * Original optimized string splicing function
  */
-const spliceString = (original: string, start: number, end: number, insert: string): string => {
-  if (start === end && !insert) return original;
-  if (start === 0 && end === original.length) return insert;
+const spliceString = (
+  original: string,
+  start: number,
+  end: number,
+  insert: string
+): string => {
+  if (start === end && !insert) {
+    return original;
+  }
+  if (start === 0 && end === original.length) {
+    return insert;
+  }
   return original.substring(0, start) + insert + original.substring(end);
 };
 
@@ -125,7 +138,9 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
   const customId = getCustomId(socket.id);
 
-  if (!customId || !roomID) return;
+  if (!(customId && roomID)) {
+    return;
+  }
 
   // Emit update with custom ID
   socket.to(roomID).emit(CodeServiceMsg.UPDATE_CODE, operation);
@@ -134,17 +149,18 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
 
   // Split lines only once and reuse the array
-  const lines = currentCode.split('\n');
+  const lines = currentCode.split("\n");
   const maxLine = Math.max(lines.length, startLnNum);
 
   // Preallocate array size if needed
   if (maxLine > lines.length) {
     lines.length = maxLine;
-    lines.fill('', lines.length, maxLine);
+    lines.fill("", lines.length, maxLine);
   }
 
   // Handle empty line deletion specifically
-  const isEmptyLineDeletion = txt === '' && startLnNum < endLnNum && startCol === 1 && endCol === 1;
+  const isEmptyLineDeletion =
+    txt === "" && startLnNum < endLnNum && startCol === 1 && endCol === 1;
 
   if (isEmptyLineDeletion) {
     // Remove the empty lines
@@ -152,7 +168,7 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   } else if (startLnNum === endLnNum) {
     // Single line change
     const lineIndex = startLnNum - 1;
-    const line = lines[lineIndex] || '';
+    const line = lines[lineIndex] || "";
 
     // Boundary check with bitwise operations for performance
     const safeStartCol = Math.max(0, Math.min(startCol - 1, line.length));
@@ -162,21 +178,31 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     lines[lineIndex] = spliceString(line, safeStartCol, safeEndCol, txt);
   } else {
     // Multi-line change
-    const textLines = txt.split('\n');
+    const textLines = txt.split("\n");
     const startLineIndex = startLnNum - 1;
     const endLineIndex = endLnNum - 1;
 
     // Get start and end lines
-    const startLine = lines[startLineIndex] || '';
-    const endLine = lines[endLineIndex] || '';
+    const startLine = lines[startLineIndex] || "";
+    const endLine = lines[endLineIndex] || "";
 
     // Calculate safe column positions
     const safeStartCol = Math.min(Math.max(0, startCol - 1), startLine.length);
     const safeEndCol = Math.min(Math.max(0, endCol - 1), endLine.length);
 
     // Create new start and end lines efficiently
-    const newStartLine = spliceString(startLine, safeStartCol, startLine.length, textLines[0]);
-    const newEndLine = spliceString(endLine, 0, safeEndCol, textLines[textLines.length - 1]);
+    const newStartLine = spliceString(
+      startLine,
+      safeStartCol,
+      startLine.length,
+      textLines[0]
+    );
+    const newEndLine = spliceString(
+      endLine,
+      0,
+      safeEndCol,
+      textLines.at(-1) ?? ""
+    );
 
     // Optimize array operations by calculating exact size needed
     const newLinesCount = textLines.length;
@@ -204,7 +230,7 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
   }
 
   // Join lines and update storage
-  const updatedCode = lines.join('\n');
+  const updatedCode = lines.join("\n");
   const data = initializeRoom(roomID);
   data.code = updatedCode;
 };

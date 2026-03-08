@@ -4,21 +4,28 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useState } from 'react';
+import type { User } from "@codex/types/user";
 
-import { Mic, MicOff, RefreshCw, Video, VideoOff, Volume2, VolumeOff } from 'lucide-react';
-import { isMobile } from 'react-device-detect';
+import {
+  Mic,
+  MicOff,
+  RefreshCw,
+  Video,
+  VideoOff,
+  Volume2,
+  VolumeOff,
+} from "lucide-react";
+import { useState } from "react";
+import { isMobile } from "react-device-detect";
 
-import type { User } from '@codex/types/user';
+import { Button } from "@/components/ui/button";
 
-import { Button } from '@/components/ui/button';
-
-import { DeviceControls } from './components/device-controls';
-import { VideoGrid } from './components/video-grid';
-import { useMediaDevices } from './hooks/useMediaDevices';
-import { usePeerConnections } from './hooks/usePeerConnections';
-import { useSocketEvents } from './hooks/useSocketEvents';
-import { useWebcamStream } from './hooks/useWebcamStream';
+import { DeviceControls } from "./components/device-controls";
+import { VideoGrid } from "./components/video-grid";
+import { useMediaDevices } from "./hooks/useMediaDevices";
+import { usePeerConnections } from "./hooks/usePeerConnections";
+import { useSocketEvents } from "./hooks/useSocketEvents";
+import { useWebcamStream } from "./hooks/useWebcamStream";
 
 interface WebcamStreamProps {
   users: User[];
@@ -39,7 +46,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     setSelectedVideoDevice,
     setSelectedAudioInput,
     handleDevicePermission,
-    handleAudioOutputSelect
+    handleAudioOutputSelect,
   } = useMediaDevices();
 
   const {
@@ -50,7 +57,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     pendingSignalsRef,
     setRemoteStreams,
     setRemoteMicStates,
-    setRemoteSpeakerStates
+    setRemoteSpeakerStates,
   } = usePeerConnections();
 
   const {
@@ -63,13 +70,13 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     handleToggleSpeaker,
     handleRotateCamera,
     handleVideoDeviceSwitch,
-    handleAudioDeviceSwitch
+    handleAudioDeviceSwitch,
   } = useWebcamStream({
     selectedVideoDevice,
     selectedAudioInput,
     selectedAudioOutput,
     micOn,
-    setMicOn
+    setMicOn,
   });
 
   // Socket events management
@@ -81,31 +88,32 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     pendingSignalsRef,
     setRemoteStreams,
     setRemoteMicStates,
-    setRemoteSpeakerStates
+    setRemoteSpeakerStates,
   });
 
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
       <VideoGrid
-        users={users}
         cameraOn={cameraOn}
         micOn={micOn}
-        speakerOn={speakerOn}
-        videoRef={videoRef}
-        remoteStreams={remoteStreams}
         remoteMicStates={remoteMicStates}
         remoteSpeakerStates={remoteSpeakerStates}
+        remoteStreams={remoteStreams}
+        speakerOn={speakerOn}
+        users={users}
+        videoRef={videoRef}
       />
 
       {/* Controls */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-4">
         <div className="flex items-center gap-2">
           <DeviceControls
-            icon={cameraOn ? Video : VideoOff}
-            label="camera"
             devices={videoDevices}
-            selectedDevice={selectedVideoDevice}
-            onDeviceSelect={deviceId =>
+            icon={cameraOn ? Video : VideoOff}
+            isEnabled={cameraOn}
+            label="camera"
+            onDevicePermissionGranted={handleDevicePermission}
+            onDeviceSelect={(deviceId) =>
               handleVideoDeviceSwitch(
                 deviceId,
                 peersRef,
@@ -114,18 +122,25 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 setSelectedVideoDevice
               )
             }
-            onToggle={() => handleToggleCamera(peersRef, setRemoteStreams, pendingSignalsRef)}
-            isEnabled={cameraOn}
-            onDevicePermissionGranted={handleDevicePermission}
+            onToggle={() =>
+              handleToggleCamera(peersRef, setRemoteStreams, pendingSignalsRef)
+            }
+            selectedDevice={selectedVideoDevice}
           />
 
           {isMobile && cameraOn && (
             <Button
-              onClick={() => handleRotateCamera(peersRef, setRemoteStreams, pendingSignalsRef)}
-              variant="ghost"
-              size="icon"
-              className="bg-foreground/10 hover:bg-foreground/20"
               aria-label="Rotate camera"
+              className="bg-foreground/10 hover:bg-foreground/20"
+              onClick={() =>
+                handleRotateCamera(
+                  peersRef,
+                  setRemoteStreams,
+                  pendingSignalsRef
+                )
+              }
+              size="icon"
+              variant="ghost"
             >
               <RefreshCw className="size-5" />
             </Button>
@@ -133,11 +148,13 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         </div>
 
         <DeviceControls
-          icon={micOn ? Mic : MicOff}
-          label="microphone"
           devices={audioInputDevices}
-          selectedDevice={selectedAudioInput}
-          onDeviceSelect={deviceId =>
+          disableToggle={!cameraOn}
+          icon={micOn ? Mic : MicOff}
+          isEnabled={micOn}
+          label="microphone"
+          onDevicePermissionGranted={handleDevicePermission}
+          onDeviceSelect={(deviceId) =>
             handleAudioDeviceSwitch(
               deviceId,
               peersRef,
@@ -147,20 +164,20 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             )
           }
           onToggle={handleToggleMic}
-          isEnabled={micOn}
-          disableToggle={!cameraOn}
-          onDevicePermissionGranted={handleDevicePermission}
+          selectedDevice={selectedAudioInput}
         />
 
         <DeviceControls
-          icon={speakerOn ? Volume2 : VolumeOff}
-          label="speaker"
           devices={audioOutputDevices}
-          selectedDevice={selectedAudioOutput}
-          onDeviceSelect={deviceId => handleAudioOutputSelect(deviceId, videoRef)}
-          onToggle={() => handleToggleSpeaker(!speakerOn)}
+          icon={speakerOn ? Volume2 : VolumeOff}
           isEnabled={speakerOn}
+          label="speaker"
           onDevicePermissionGranted={handleDevicePermission}
+          onDeviceSelect={(deviceId) =>
+            handleAudioOutputSelect(deviceId, videoRef)
+          }
+          onToggle={() => handleToggleSpeaker(!speakerOn)}
+          selectedDevice={selectedAudioOutput}
         />
       </div>
     </div>

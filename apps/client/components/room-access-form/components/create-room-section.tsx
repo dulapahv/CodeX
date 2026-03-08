@@ -9,24 +9,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CirclePlus } from 'lucide-react';
-import type { FieldErrors, UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
+import { CirclePlus } from "lucide-react";
+import type {
+  FieldErrors,
+  UseFormHandleSubmit,
+  UseFormRegister,
+} from "react-hook-form";
+import { Spinner } from "@/components/spinner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/spinner';
-
-import type { CreateRoomForm } from '../types';
+import type { CreateRoomForm } from "../types";
 
 interface CreateRoomSectionProps {
-  register: UseFormRegister<CreateRoomForm>;
-  handleSubmit: UseFormHandleSubmit<CreateRoomForm>;
-  onSubmit: (data: CreateRoomForm) => Promise<string> | undefined;
-  onError: () => void;
   errors: FieldErrors<CreateRoomForm>;
-  isSubmitting: boolean;
+  handleSubmit: UseFormHandleSubmit<CreateRoomForm>;
   isJoining: boolean;
+  isSubmitting: boolean;
+  onError: () => void;
+  onSubmit: (data: CreateRoomForm) => Promise<string> | undefined;
+  register: UseFormRegister<CreateRoomForm>;
 }
 
 export const CreateRoomSection = ({
@@ -36,54 +39,57 @@ export const CreateRoomSection = ({
   onError,
   errors,
   isSubmitting,
-  isJoining
+  isJoining,
 }: CreateRoomSectionProps) => {
   const isDisabled = isSubmitting || isJoining;
-  const inputId = 'name-create';
-  const errorId = 'name-error';
+  const inputId = "name-create";
+  const errorId = "name-error";
 
   return (
     <section aria-labelledby="create-room-heading">
       <form
-        onSubmit={handleSubmit(data => onSubmit(data), onError)}
         className="flex flex-col space-y-2 sm:space-y-4"
         noValidate
+        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
       >
-        <h1 id="create-room-heading" className="text-lg font-medium sm:text-xl">
+        <h1 className="font-medium text-lg sm:text-xl" id="create-room-heading">
           Create a Room
         </h1>
-        <div className="flex flex-col space-y-1.5" role="group" aria-labelledby={inputId}>
-          <Label htmlFor={inputId} className="text-sm font-medium sm:text-base">
+        <fieldset
+          aria-labelledby={inputId}
+          className="flex flex-col space-y-1.5"
+        >
+          <Label className="font-medium text-sm sm:text-base" htmlFor={inputId}>
             Name
           </Label>
           <Input
-            id={inputId}
-            placeholder="Enter your name"
+            aria-describedby={errors.name ? errorId : undefined}
+            aria-invalid={errors.name ? "true" : "false"}
+            aria-required="true"
             className="text-sm sm:text-base"
             disabled={isDisabled}
-            aria-required="true"
-            aria-invalid={errors.name ? 'true' : 'false'}
-            aria-describedby={errors.name ? errorId : undefined}
-            {...register('name')}
+            id={inputId}
+            placeholder="Enter your name"
+            {...register("name")}
           />
           {errors.name && (
-            <p id={errorId} className="text-sm text-red-500" role="alert">
+            <p className="text-red-500 text-sm" id={errorId} role="alert">
               {errors.name.message}
             </p>
           )}
-        </div>
+        </fieldset>
         <Button
-          type="submit"
+          aria-busy={isSubmitting}
           className="bg-primary text-sm sm:text-base"
           disabled={isDisabled}
-          aria-busy={isSubmitting}
+          type="submit"
         >
           {isSubmitting ? (
             <Spinner className="mr-2 size-4 sm:size-5" />
           ) : (
-            <CirclePlus className="mr-2 size-4 sm:size-5" aria-hidden="true" />
+            <CirclePlus aria-hidden="true" className="mr-2 size-4 sm:size-5" />
           )}
-          {isSubmitting ? 'Creating...' : 'Create Room'}
+          {isSubmitting ? "Creating..." : "Create Room"}
         </Button>
       </form>
     </section>

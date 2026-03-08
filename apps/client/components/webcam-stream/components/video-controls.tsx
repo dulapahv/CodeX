@@ -8,17 +8,17 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Mic, MicOff, Volume2, VolumeOff } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeOff } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface VideoControlsProps {
   isLocal: boolean;
-  userId: string;
   micOn: boolean;
-  speakersOn: boolean;
   remoteMicStates: Record<string, boolean>;
   remoteSpeakerStates: Record<string, boolean>;
+  speakersOn: boolean;
+  userId: string;
 }
 
 const VideoControls = ({
@@ -27,14 +27,19 @@ const VideoControls = ({
   micOn,
   speakersOn,
   remoteMicStates,
-  remoteSpeakerStates
+  remoteSpeakerStates,
 }: VideoControlsProps) => {
   const micState = isLocal ? micOn : remoteMicStates[userId];
   const speakerState = isLocal ? speakersOn : remoteSpeakerStates[userId];
 
   return (
-    <div className="absolute right-2 top-2 flex gap-1">
-      <div className={cn('rounded px-1.5 py-0.5', micState ? 'bg-green-500/70' : 'bg-red-500/70')}>
+    <div className="absolute top-2 right-2 flex gap-1">
+      <div
+        className={cn(
+          "rounded px-1.5 py-0.5",
+          micState ? "bg-green-500/70" : "bg-red-500/70"
+        )}
+      >
         {micState ? (
           <Mic className="size-4 text-white" />
         ) : (
@@ -42,7 +47,10 @@ const VideoControls = ({
         )}
       </div>
       <div
-        className={cn('rounded px-1.5 py-0.5', speakerState ? 'bg-green-500/70' : 'bg-red-500/70')}
+        className={cn(
+          "rounded px-1.5 py-0.5",
+          speakerState ? "bg-green-500/70" : "bg-red-500/70"
+        )}
       >
         {speakerState ? (
           <Volume2 className="size-4 text-white" />

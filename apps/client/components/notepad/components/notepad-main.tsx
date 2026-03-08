@@ -9,34 +9,35 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { RoomServiceMsg } from "@codex/types/message";
 
 import {
   AdmonitionDirectiveDescriptor,
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
-  codeBlockPlugin,
-  codeMirrorPlugin,
   CodeToggle,
   CreateLink,
-  diffSourcePlugin,
+  codeBlockPlugin,
+  codeMirrorPlugin,
   DiffSourceToggleWrapper,
+  diffSourcePlugin,
   directivesPlugin,
   headingsPlugin,
-  imagePlugin,
   InsertAdmonition,
   InsertCodeBlock,
   InsertImage,
   InsertTable,
   InsertThematicBreak,
+  imagePlugin,
+  ListsToggle,
   linkDialogPlugin,
   linkPlugin,
   listsPlugin,
-  ListsToggle,
-  markdownShortcutPlugin,
   MDXEditor,
+  type MDXEditorMethods,
+  markdownShortcutPlugin,
   quotePlugin,
   Separator,
   StrikeThroughSupSubToggles,
@@ -44,22 +45,20 @@ import {
   thematicBreakPlugin,
   toolbarPlugin,
   UndoRedo,
-  type MDXEditorMethods
-} from '@mdxeditor/editor';
-import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
-import { useTheme } from 'next-themes';
+} from "@mdxeditor/editor";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import { useTheme } from "next-themes";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { RoomServiceMsg } from '@codex/types/message';
+import { getSocket } from "@/lib/socket";
+import { cn } from "@/lib/utils";
 
-import { getSocket } from '@/lib/socket';
-import { cn } from '@/lib/utils';
+import { codeBlockLanguages } from "../constants";
+import { OpenNoteBtn } from "./open-note-btn";
+import { SaveNoteBtn } from "./save-note-btn";
 
-import { codeBlockLanguages } from '../constants';
-import { OpenNoteBtn } from './open-note-btn';
-import { SaveNoteBtn } from './save-note-btn';
-
-import '@mdxeditor/editor/style.css';
-import '@radix-ui/colors/mauve-dark.css';
+import "@mdxeditor/editor/style.css";
+import "@radix-ui/colors/mauve-dark.css";
 
 interface MarkdownEditorProps {
   markdown: string;
@@ -83,24 +82,26 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
       linkDialogPlugin(),
       tablePlugin(),
       thematicBreakPlugin(),
-      codeBlockPlugin({ defaultCodeBlockLanguage: '' }),
+      codeBlockPlugin({ defaultCodeBlockLanguage: "" }),
       markdownShortcutPlugin(),
       directivesPlugin({
-        directiveDescriptors: [AdmonitionDirectiveDescriptor]
+        directiveDescriptors: [AdmonitionDirectiveDescriptor],
       }),
       diffSourcePlugin({
         diffMarkdown: markdown,
-        viewMode: 'rich-text'
+        viewMode: "rich-text",
       }),
       imagePlugin(),
       codeMirrorPlugin({
-        codeMirrorExtensions: [resolvedTheme === 'dark' ? githubDark : githubLight],
+        codeMirrorExtensions: [
+          resolvedTheme === "dark" ? githubDark : githubLight,
+        ],
         codeBlockLanguages,
-        autoLoadLanguageSupport: true
+        autoLoadLanguageSupport: true,
       }),
       toolbarPlugin({
         toolbarContents: () => (
-          <DiffSourceToggleWrapper options={['rich-text', 'source']}>
+          <DiffSourceToggleWrapper options={["rich-text", "source"]}>
             <OpenNoteBtn markdownEditorRef={markdownEditorRef} />
             <SaveNoteBtn markdownEditorRef={markdownEditorRef} />
             <Separator />
@@ -125,8 +126,8 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
             <InsertAdmonition />
             <Separator />
           </DiffSourceToggleWrapper>
-        )
-      })
+        ),
+      }),
     ],
     [resolvedTheme, markdown]
   );
@@ -146,9 +147,9 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
     const editor = markdownEditorRef.current;
     if (editor) {
       contentRef.current = editor.getMarkdown();
-      setKey(prev => prev + 1);
+      setKey((prev) => prev + 1);
     }
-  }, [resolvedTheme]);
+  }, []);
 
   const onChange = (value: string) => {
     contentRef.current = value;
@@ -157,25 +158,10 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
 
   return (
     <MDXEditor
-      key={key}
-      ref={markdownEditorRef}
-      onChange={onChange}
-      markdown={contentRef.current}
       autoFocus={false}
-      trim={false}
-      placeholder="All participants can edit this note..."
-      plugins={plugins}
       className={cn(
-        `flex w-full flex-col !bg-[color:var(--panel-background)] !font-sans
-        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full
-        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full
-        [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full
-        [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto
-        [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0
-        [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)]
-        [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:flex
-        first:[&>div]:min-h-fit first:[&>div]:flex-wrap first:[&>div]:!rounded-none`,
-        resolvedTheme === 'dark' && '!dark-editor !dark-theme'
+        `!bg-[color:var(--panel-background)] !font-sans [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:!rounded-none flex w-full flex-col [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap`,
+        resolvedTheme === "dark" && "!dark-editor !dark-theme"
       )}
       contentEditableClassName={cn(
         `prose h-full max-w-none dark:prose-invert
@@ -201,6 +187,13 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         prose-th:!py-0
         prose-td:!py-0 prose-td:align-middle`
       )}
+      key={key}
+      markdown={contentRef.current}
+      onChange={onChange}
+      placeholder="All participants can edit this note..."
+      plugins={plugins}
+      ref={markdownEditorRef}
+      trim={false}
     />
   );
 };

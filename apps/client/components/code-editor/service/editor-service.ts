@@ -9,30 +9,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, RefObject, SetStateAction } from 'react';
-
-import type { Monaco } from '@monaco-editor/react';
-import type * as monaco from 'monaco-editor';
-import themeList from 'monaco-themes/themes/themelist.json';
-
-import { CodeServiceMsg, ScrollServiceMsg } from '@codex/types/message';
-import type { Cursor, EditOp } from '@codex/types/operation';
-
-import { EDITOR_SETTINGS_KEY } from '@/lib/constants';
-import { storage } from '@/lib/services/storage';
-import { getSocket } from '@/lib/socket';
-import type { StatusBarCursorPosition } from '@/components/status-bar';
+import { CodeServiceMsg, ScrollServiceMsg } from "@codex/types/message";
+import type { Cursor, EditOp } from "@codex/types/operation";
+import type { Monaco } from "@monaco-editor/react";
+import type * as monaco from "monaco-editor";
+import themeList from "monaco-themes/themes/themelist.json";
+import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { StatusBarCursorPosition } from "@/components/status-bar";
+import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
+import { storage } from "@/lib/services/storage";
+import { getSocket } from "@/lib/socket";
 
 /**
  * Handle the Monaco editor before mounting.
  * @param monaco Monaco instance.
  */
 export const handleBeforeMount = (monaco: Monaco): void => {
-  Object.entries(themeList).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(themeList)) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const themeData = require(`monaco-themes/themes/${value}.json`);
     monaco.editor.defineTheme(key, themeData);
-  });
+  }
 };
 
 /**
@@ -58,8 +55,8 @@ export const handleOnMount = (
   editor.focus();
 
   editor.updateOptions({
-    cursorSmoothCaretAnimation: 'on',
-    fontFamily: "GeistMono, Consolas, 'Courier New', monospace"
+    cursorSmoothCaretAnimation: "on",
+    fontFamily: "GeistMono, Consolas, 'Courier New', monospace",
   });
 
   const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
@@ -69,7 +66,7 @@ export const handleOnMount = (
       const parsed = JSON.parse(savedSettings) as Record<string, unknown>;
       editor.updateOptions(parsed);
     } catch (error) {
-      console.error('Failed to load saved settings:', error);
+      console.error("Failed to load saved settings:", error);
     }
   }
 
@@ -80,15 +77,15 @@ export const handleOnMount = (
     diagnosticCodesToIgnore: [
       // 2304, // Ignore "Cannot find name" error
       // 2339, // Ignore "Property does not exist" error
-      2792 // Ignore "Cannot find module" error
-    ]
+      2792, // Ignore "Cannot find module" error
+    ],
   });
 
-  const cursorSelectionDisposable = editor.onDidChangeCursorSelection(e => {
+  const cursorSelectionDisposable = editor.onDidChangeCursorSelection((e) => {
     setCursorPosition({
       line: e.selection.positionLineNumber,
       column: e.selection.positionColumn,
-      selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0
+      selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0,
     });
 
     // If the selection is empty, send only the cursor position
@@ -98,7 +95,7 @@ export const handleOnMount = (
     ) {
       socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
         e.selection.positionLineNumber,
-        e.selection.positionColumn
+        e.selection.positionColumn,
       ] as Cursor);
     } else {
       socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
@@ -107,13 +104,15 @@ export const handleOnMount = (
         e.selection.startLineNumber,
         e.selection.startColumn,
         e.selection.endLineNumber,
-        e.selection.endColumn
+        e.selection.endColumn,
       ] as Cursor);
     }
   });
 
-  const scrollDisposable = editor.onDidScrollChange(e => {
-    if (storage.getFollowUserId()) return; // If following another user, do not emit scroll events
+  const scrollDisposable = editor.onDidScrollChange((e) => {
+    if (storage.getFollowUserId()) {
+      return; // If following another user, do not emit scroll events
+    }
     socket.emit(ScrollServiceMsg.UPDATE_SCROLL, [e.scrollLeft, e.scrollTop]);
   });
 
@@ -128,20 +127,22 @@ export const handleOnMount = (
  * @param skipUpdateRef Skip update reference.
  */
 export const handleOnChange = (
-  value: string | undefined,
+  _value: string | undefined,
   ev: monaco.editor.IModelContentChangedEvent,
   skipUpdateRef: RefObject<boolean>
 ): void => {
-  if (skipUpdateRef.current) return;
+  if (skipUpdateRef.current) {
+    return;
+  }
   const socket = getSocket();
 
-  ev.changes.forEach(change => {
+  for (const change of ev.changes) {
     socket.emit(CodeServiceMsg.UPDATE_CODE, [
       change.text,
       change.range.startLineNumber,
       change.range.startColumn,
       change.range.endLineNumber,
-      change.range.endColumn
+      change.range.endColumn,
     ] as EditOp);
-  });
+  }
 };

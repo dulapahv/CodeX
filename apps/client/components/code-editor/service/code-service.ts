@@ -8,11 +8,10 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { RefObject } from 'react';
+import type { EditOp } from "@codex/types/operation";
 
-import type * as monaco from 'monaco-editor';
-
-import type { EditOp } from '@codex/types/operation';
+import type * as monaco from "monaco-editor";
+import type { RefObject } from "react";
 
 /**
  * Update the code in the editor.
@@ -38,7 +37,9 @@ export const updateCode = (
   skipUpdateRef: RefObject<boolean>
 ): void => {
   const editor = editorInstanceRef.current;
-  if (!editor) return;
+  if (!editor) {
+    return;
+  }
 
   skipUpdateRef.current = true;
   const model = editor.getModel();
@@ -53,9 +54,9 @@ export const updateCode = (
             startLineNumber: op[1],
             startColumn: op[2],
             endLineNumber: op[3],
-            endColumn: op[4]
-          }
-        }
+            endColumn: op[4],
+          },
+        },
       ],
       () => []
     );

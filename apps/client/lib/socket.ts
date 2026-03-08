@@ -8,9 +8,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { io, type Socket } from 'socket.io-client';
+import { io, type Socket } from "socket.io-client";
 
-import { BASE_SERVER_URL } from './constants';
+import { BASE_SERVER_URL } from "./constants";
 
 let socketInstance: Socket | null = null;
 
@@ -19,11 +19,11 @@ let socketInstance: Socket | null = null;
  * @returns {Socket}
  */
 export const getSocket = (): Socket => {
-  if (!socketInstance || !socketInstance.connected) {
+  if (!socketInstance?.connected) {
     socketInstance = io(BASE_SERVER_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
       autoConnect: false,
-      timestampRequests: false
+      timestampRequests: false,
     });
   }
 

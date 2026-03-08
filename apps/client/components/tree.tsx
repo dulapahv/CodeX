@@ -11,34 +11,32 @@
  * Reference: https://github.com/shadcn-ui/ui/issues/355#issuecomment-1703767574
  */
 
-'use client';
+"use client";
 
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { ChevronRight, FileCode, Folder, type LucideIcon } from "lucide-react";
 import {
-  ComponentPropsWithoutRef,
-  ComponentRef,
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
   forwardRef,
-  HTMLAttributes,
+  type HTMLAttributes,
   useCallback,
-  useState
-} from 'react';
-
-import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronRight, FileCode, Folder, type LucideIcon } from 'lucide-react';
-import useResizeObserver from 'use-resize-observer';
-
-import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { itemType } from '@/components/repo-browser/types/tree';
-import { Spinner } from '@/components/spinner';
+  useState,
+} from "react";
+import useResizeObserver from "use-resize-observer";
+import { itemType } from "@/components/repo-browser/types/tree";
+import { Spinner } from "@/components/spinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 // Base interface for tree items
 interface TreeDataItem {
-  id: string;
-  name: string;
-  icon?: LucideIcon;
   children?: TreeDataItem[];
-  type?: string;
+  icon?: LucideIcon;
+  id: string;
   isLoading?: boolean;
+  name: string;
+  type?: string;
 }
 
 interface TreeProps extends HTMLAttributes<HTMLDivElement> {
@@ -48,8 +46,13 @@ interface TreeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Tree = forwardRef<HTMLDivElement, TreeProps>(
-  ({ data, initialSelectedItemId, onSelectChange, className, ...props }, ref) => {
-    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(initialSelectedItemId);
+  (
+    { data, initialSelectedItemId, onSelectChange, className, ...props },
+    ref
+  ) => {
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
+      initialSelectedItemId
+    );
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
     const handleSelectChange = useCallback(
@@ -63,9 +66,9 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
     );
 
     const handleExpand = useCallback((itemId: string) => {
-      setExpandedIds(prev => {
+      setExpandedIds((prev) => {
         if (prev.includes(itemId)) {
-          return prev.filter(id => id !== itemId);
+          return prev.filter((id) => id !== itemId);
         }
         return [...prev, itemId];
       });
@@ -74,18 +77,18 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
     const { ref: refRoot, width, height } = useResizeObserver();
 
     return (
-      <div ref={refRoot} className={cn('overflow-hidden', className)}>
+      <div className={cn("overflow-hidden", className)} ref={refRoot}>
         <ScrollArea style={{ width, height }}>
           <div className="relative p-2">
             <TreeItem
               data={data}
+              expandedIds={expandedIds}
+              FolderIcon={Folder}
+              handleSelectChange={handleSelectChange}
+              ItemIcon={FileCode}
+              onExpand={handleExpand}
               ref={ref}
               selectedItemId={selectedItemId}
-              handleSelectChange={handleSelectChange}
-              expandedIds={expandedIds}
-              onExpand={handleExpand}
-              FolderIcon={Folder}
-              ItemIcon={FileCode}
               {...props}
             />
           </div>
@@ -94,7 +97,7 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
     );
   }
 );
-Tree.displayName = 'Tree';
+Tree.displayName = "Tree";
 
 type TreeItemProps = TreeProps & {
   selectedItemId?: string;
@@ -121,59 +124,58 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
     ref
   ) => {
     return (
-      <div ref={ref} role="tree" className={className} {...props}>
+      <div className={className} ref={ref} role="tree" {...props}>
         <ul>
-          {data instanceof Array ? (
-            data.map(item => (
+          {Array.isArray(data) ? (
+            data.map((item) => (
               <li key={item.id}>
                 {item.children ||
                 item.type === itemType.REPO ||
                 item.type === itemType.BRANCH ||
                 item.type === itemType.DIR ? (
                   <AccordionPrimitive.Root
-                    type="multiple"
                     defaultValue={expandedIds}
                     onValueChange={() => {
                       onExpand(item.id);
                     }}
+                    type="multiple"
                   >
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          `before:bg-secondary px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem]
-                            before:w-[calc(100%-8px)] before:rounded before:opacity-0 before:transition-opacity
-                            hover:before:opacity-50`,
+                          "px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
                           selectedItemId === item.id &&
-                            `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent before:border-l-4
-                              before:opacity-50`
+                            "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
                         )}
                         onClick={() => handleSelectChange(item)}
                       >
                         {item.icon && (
                           <item.icon
-                            className="text-accent-foreground/50 mr-2 size-4 shrink-0"
                             aria-hidden="true"
+                            className="mr-2 size-4 shrink-0 text-accent-foreground/50"
                           />
                         )}
                         {!item.icon && FolderIcon && (
                           <FolderIcon
-                            className="text-accent-foreground/50 mr-2 size-4 shrink-0"
                             aria-hidden="true"
+                            className="mr-2 size-4 shrink-0 text-accent-foreground/50"
                           />
                         )}
                         <span className="truncate text-sm">{item.name}</span>
-                        {item.isLoading && <Spinner size="sm" className="ml-2" />}
+                        {item.isLoading && (
+                          <Spinner className="ml-2" size="sm" />
+                        )}
                       </AccordionTrigger>
                       <AccordionContent className="ml-4 pl-2">
                         {item.children && (
                           <TreeItem
                             data={item.children}
-                            selectedItemId={selectedItemId}
-                            handleSelectChange={handleSelectChange}
                             expandedIds={expandedIds}
-                            onExpand={onExpand}
                             FolderIcon={FolderIcon}
+                            handleSelectChange={handleSelectChange}
                             ItemIcon={ItemIcon}
+                            onExpand={onExpand}
+                            selectedItemId={selectedItemId}
                           />
                         )}
                       </AccordionContent>
@@ -181,10 +183,10 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                   </AccordionPrimitive.Root>
                 ) : (
                   <Leaf
-                    item={item}
-                    isSelected={selectedItemId === item.id}
-                    onClick={() => handleSelectChange(item)}
                     Icon={ItemIcon}
+                    isSelected={selectedItemId === item.id}
+                    item={item}
+                    onClick={() => handleSelectChange(item)}
                   />
                 )}
               </li>
@@ -192,10 +194,10 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
           ) : (
             <li>
               <Leaf
-                item={data}
-                isSelected={selectedItemId === data.id}
-                onClick={() => handleSelectChange(data)}
                 Icon={ItemIcon}
+                isSelected={selectedItemId === data.id}
+                item={data}
+                onClick={() => handleSelectChange(data)}
               />
             </li>
           )}
@@ -204,7 +206,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
     );
   }
 );
-TreeItem.displayName = 'TreeItem';
+TreeItem.displayName = "TreeItem";
 
 const Leaf = forwardRef<
   HTMLDivElement,
@@ -215,28 +217,31 @@ const Leaf = forwardRef<
   }
 >(({ className, item, isSelected, Icon, ...props }, ref) => (
   <div
-    ref={ref}
     className={cn(
-      `before:bg-secondary flex cursor-pointer items-center px-2 py-2 before:absolute before:left-1
-      before:right-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded
-      before:opacity-0 before:transition-opacity hover:before:opacity-50`,
+      "flex cursor-pointer items-center px-2 py-2 before:absolute before:right-1 before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
       className,
       isSelected &&
-        `text-accent-foreground before:border-l-accent-foreground/50 before:bg-accent before:border-l-4
-        before:opacity-50`
+        "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
     )}
+    ref={ref}
     {...props}
   >
     {item.icon && (
-      <item.icon className="text-accent-foreground/50 mr-2 size-4 shrink-0" aria-hidden="true" />
+      <item.icon
+        aria-hidden="true"
+        className="mr-2 size-4 shrink-0 text-accent-foreground/50"
+      />
     )}
     {!item.icon && Icon && (
-      <Icon className="text-accent-foreground/50 mr-2 size-4 shrink-0" aria-hidden="true" />
+      <Icon
+        aria-hidden="true"
+        className="mr-2 size-4 shrink-0 text-accent-foreground/50"
+      />
     )}
     <span className="flex-grow truncate text-sm">{item.name}</span>
   </div>
 ));
-Leaf.displayName = 'Leaf';
+Leaf.displayName = "Leaf";
 
 const AccordionTrigger = forwardRef<
   ComponentRef<typeof AccordionPrimitive.Trigger>,
@@ -244,15 +249,15 @@ const AccordionTrigger = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header>
     <AccordionPrimitive.Trigger
-      ref={ref}
       className={cn(
-        'flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90',
+        "flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90",
         className
       )}
+      ref={ref}
       {...props}
     >
       {children}
-      <ChevronRight className="text-accent-foreground/50 ml-auto size-4 shrink-0 transition-transform duration-200" />
+      <ChevronRight className="ml-auto size-4 shrink-0 text-accent-foreground/50 transition-transform duration-200" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -263,15 +268,14 @@ const AccordionContent = forwardRef<
   ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
-    ref={ref}
     className={cn(
-      `data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down
-      border-foreground/10 left-3 overflow-hidden border-l text-sm transition-all`,
+      "left-3 overflow-hidden border-foreground/10 border-l text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
       className
     )}
+    ref={ref}
     {...props}
   >
-    <div className="pb-1 pt-0">{children}</div>
+    <div className="pt-0 pb-1">{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;

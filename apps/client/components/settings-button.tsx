@@ -8,19 +8,24 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useRef } from 'react';
-
-import type { Monaco } from '@monaco-editor/react';
-import { Settings } from 'lucide-react';
-import type * as monaco from 'monaco-editor';
-
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { SettingsSheet, type SettingsSheetRef } from '@/components/settings-sheet';
+import type { Monaco } from "@monaco-editor/react";
+import { Settings } from "lucide-react";
+import type * as monaco from "monaco-editor";
+import { useRef } from "react";
+import {
+  SettingsSheet,
+  type SettingsSheetRef,
+} from "@/components/settings-sheet";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SettingsButtonProps {
-  monaco: Monaco;
   editor: monaco.editor.IStandaloneCodeEditor;
+  monaco: Monaco;
 }
 
 const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
@@ -35,16 +40,15 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            aria-label="Open Settings"
-            aria-haspopup="dialog"
             aria-expanded="false"
-            variant="ghost"
-            size="icon"
-            className="animate-fade-in-top hover:!text-foreground size-7 rounded-sm p-0
-              text-[color:var(--toolbar-foreground)]"
+            aria-haspopup="dialog"
+            aria-label="Open Settings"
+            className="hover:!text-foreground size-7 animate-fade-in-top rounded-sm p-0 text-[color:var(--toolbar-foreground)]"
             onClick={handleButtonClick}
+            size="icon"
+            variant="ghost"
           >
-            <Settings className="size-4" aria-hidden="true" />
+            <Settings aria-hidden="true" className="size-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent role="tooltip" sideOffset={8}>
@@ -52,10 +56,10 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
         </TooltipContent>
       </Tooltip>
       <SettingsSheet
-        ref={settingsSheetRef}
-        monaco={monaco}
-        editor={editor}
         aria-label="Editor Settings"
+        editor={editor}
+        monaco={monaco}
+        ref={settingsSheetRef}
       />
     </>
   );

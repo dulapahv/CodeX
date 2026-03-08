@@ -8,9 +8,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
-import { leaveRoom } from '@/lib/utils';
+import { leaveRoom } from "@/lib/utils";
 
 export const useRoomActions = () => {
   const router = useRouter();
@@ -18,13 +18,13 @@ export const useRoomActions = () => {
   const handleLeaveRoom = () => {
     try {
       leaveRoom();
-      router.push('/');
+      router.push("/");
     } catch (error) {
-      console.error('Failed to leave room:', error);
+      console.error("Failed to leave room:", error);
     }
   };
 
   return {
-    handleLeaveRoom
+    handleLeaveRoom,
   };
 };

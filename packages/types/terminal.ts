@@ -9,8 +9,8 @@
  */
 
 export interface ExecutionResult {
+  executionTime?: number;
   language: string;
-  version: string;
   run: {
     stdout: string;
     stderr: string;
@@ -19,13 +19,13 @@ export interface ExecutionResult {
     output: string;
   };
   timestamp?: Date;
-  executionTime?: number;
   type?: ExecutionResultType;
+  version: string;
 }
 
 export enum ExecutionResultType {
-  INFO = 'info',
-  WARNING = 'warning',
-  ERROR = 'error',
-  OUTPUT = 'output'
+  INFO = "info",
+  WARNING = "warning",
+  ERROR = "error",
+  OUTPUT = "output",
 }

@@ -5,7 +5,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from "react";
 
 export const useGithubAuth = (isOpen: boolean) => {
   const [githubUser, setGithubUser] = useState<string | null>(null);
@@ -13,11 +13,11 @@ export const useGithubAuth = (isOpen: boolean) => {
 
   useLayoutEffect(() => {
     if (isOpen) {
-      fetch('/api/github/auth', {
-        credentials: 'include'
+      fetch("/api/github/auth", {
+        credentials: "include",
       })
-        .then(res => (res.ok ? res.json() : null))
-        .then(data => setGithubUser(data?.username ?? null))
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => setGithubUser(data?.username ?? null))
         .catch(console.error)
         .finally(() => setIsLoading(false));
     }
@@ -25,9 +25,9 @@ export const useGithubAuth = (isOpen: boolean) => {
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.data.type === 'github-oauth' && event.data.success) {
-        const response = await fetch('/api/github/auth', {
-          credentials: 'include'
+      if (event.data.type === "github-oauth" && event.data.success) {
+        const response = await fetch("/api/github/auth", {
+          credentials: "include",
         });
         if (response.ok) {
           const data = await response.json();
@@ -37,8 +37,8 @@ export const useGithubAuth = (isOpen: boolean) => {
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   return { githubUser, isLoading };

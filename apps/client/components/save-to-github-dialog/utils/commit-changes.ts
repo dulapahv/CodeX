@@ -9,10 +9,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CommitResponse } from '@/components/repo-browser/types/github';
-import { itemType, type ExtendedTreeDataItem } from '@/components/repo-browser/types/tree';
+import type { CommitResponse } from "@/components/repo-browser/types/github";
+import {
+  type ExtendedTreeDataItem,
+  itemType,
+} from "@/components/repo-browser/types/tree";
 
-import { CommitForm } from '../types';
+import type { CommitForm } from "../types";
 
 export const commitChanges = async (
   data: CommitForm,
@@ -23,36 +26,36 @@ export const commitChanges = async (
 ): Promise<CommitResponse> => {
   try {
     if (!selectedItem) {
-      throw new Error('Please select a branch, directory, or file to save to.');
+      throw new Error("Please select a branch, directory, or file to save to.");
     }
 
     if (selectedItem.type === itemType.REPO) {
-      throw new Error('Please select a branch, directory, or file to save to.');
+      throw new Error("Please select a branch, directory, or file to save to.");
     }
 
     const commitData = {
-      repo: repo,
-      branch: branch,
+      repo,
+      branch,
       path:
         selectedItem.type === itemType.DIR
           ? selectedItem.path
-          : selectedItem.path?.split('/').slice(0, -1).join('/'),
+          : selectedItem.path?.split("/").slice(0, -1).join("/"),
       filename: data.fileName,
       commitMessage: data.commitSummary,
-      content: btoa(unescape(encodeURIComponent(content)))
+      content: btoa(unescape(encodeURIComponent(content))),
     };
 
-    const response = await fetch('/api/github/commit', {
-      method: 'POST',
+    const response = await fetch("/api/github/commit", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(commitData)
+      body: JSON.stringify(commitData),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to commit changes');
+      throw new Error(errorData.error || "Failed to commit changes");
     }
 
     return (await response.json()) as CommitResponse;

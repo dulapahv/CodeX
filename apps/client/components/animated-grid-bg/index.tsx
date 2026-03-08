@@ -9,30 +9,29 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
+"use client";
 
 import {
   AnimatePresence,
+  type MotionValue,
   motion,
-  MotionValue,
   useMotionValue,
   useSpring,
-  useTransform
-} from 'motion/react';
+  useTransform,
+} from "motion/react";
+import { useCallback, useEffect, useState } from "react";
 
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { useMediaQuery } from "@/hooks/use-media-query";
 
-import type { GridConfig, Light, LightStyles } from './types';
+import type { GridConfig, Light, LightStyles } from "./types";
 
 const AnimatedGridBackground = () => {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const [gridConfig, setGridConfig] = useState<GridConfig>({
     rows: isDesktop ? 20 : 10,
     cols: isDesktop ? 24 : 8,
-    cellSize: isDesktop ? 50 : 40
+    cellSize: isDesktop ? 50 : 40,
   });
 
   const [lights, setLights] = useState<Light[]>([]);
@@ -73,27 +72,28 @@ const AnimatedGridBackground = () => {
 
     if (isHorizontal) {
       return {
-        type: 'horizontal',
+        type: "horizontal",
         position: Math.floor(Math.random() * gridConfig.rows),
         key: Date.now() + Math.random(),
-        duration
-      };
-    } else {
-      return {
-        type: 'vertical',
-        position: Math.floor(Math.random() * gridConfig.cols),
-        key: Date.now() + Math.random(),
-        duration
+        duration,
       };
     }
+    return {
+      type: "vertical",
+      position: Math.floor(Math.random() * gridConfig.cols),
+      key: Date.now() + Math.random(),
+      duration,
+    };
   }, [gridConfig.rows, gridConfig.cols, isDesktop]);
 
   // Spawn new lights periodically
   useEffect(() => {
     const spawnLight = () => {
-      setLights(prevLights => {
+      setLights((prevLights) => {
         const now = Date.now();
-        const filteredLights = prevLights.filter(light => now - light.key < 8000);
+        const filteredLights = prevLights.filter(
+          (light) => now - light.key < 8000
+        );
 
         const maxLights = isDesktop ? 10 : 8;
         if (filteredLights.length < maxLights) {
@@ -123,18 +123,18 @@ const AnimatedGridBackground = () => {
       setGridConfig({
         rows: newRows,
         cols: newCols,
-        cellSize: newCellSize
+        cellSize: newCellSize,
       });
     };
 
     // Enable parallax on all screen sizes
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('resize', updateGridDimensions);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", updateGridDimensions);
     updateGridDimensions();
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', updateGridDimensions);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", updateGridDimensions);
     };
   }, [handleMouseMove, isDesktop]);
 
@@ -143,163 +143,170 @@ const AnimatedGridBackground = () => {
     visible: {
       opacity: 0.1,
       transition: {
-        duration: 1
-      }
-    }
+        duration: 1,
+      },
+    },
   };
 
   // Calculate dimensions for light elements
-  const trailWidth = isDesktop ? '10rem' : '6rem';
-  const trailHeight = isDesktop ? '10rem' : '6rem';
-  const glowSize = isDesktop ? '0.75rem' : '0.5rem';
+  const trailWidth = isDesktop ? "10rem" : "6rem";
+  const trailHeight = isDesktop ? "10rem" : "6rem";
+  const glowSize = isDesktop ? "0.75rem" : "0.5rem";
 
   // Light styles with parallax offset
   const lightStyles: LightStyles = {
     horizontal: {
       trail: {
         width: trailWidth,
-        background: 'linear-gradient(90deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)'
+        background:
+          "linear-gradient(90deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
       },
       glow: {
-        position: 'absolute',
-        right: '-2px',
+        position: "absolute",
+        right: "-2px",
         width: glowSize,
-        height: '1px',
-        background: 'rgba(103, 172, 245, 1)',
+        height: "1px",
+        background: "rgba(103, 172, 245, 1)",
         boxShadow: `
           0 0 8px 1px rgba(103, 172, 245, 0.6),
           0 0 16px 2px rgba(103, 172, 245, 0.4),
           0 0 24px 3px rgba(103, 172, 245, 0.2)
-        `
-      }
+        `,
+      },
     },
     vertical: {
       trail: {
         height: trailHeight,
-        background: 'linear-gradient(180deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)'
+        background:
+          "linear-gradient(180deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
       },
       glow: {
-        position: 'absolute',
-        bottom: '-2px',
-        width: '1px',
+        position: "absolute",
+        bottom: "-2px",
+        width: "1px",
         height: glowSize,
-        background: 'rgba(103, 172, 245, 1)',
+        background: "rgba(103, 172, 245, 1)",
         boxShadow: `
           0 0 8px 1px rgba(103, 172, 245, 0.6),
           0 0 16px 2px rgba(103, 172, 245, 0.4),
           0 0 24px 3px rgba(103, 172, 245, 0.2)
-        `
-      }
-    }
+        `,
+      },
+    },
   };
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true" role="presentation">
+    <div
+      aria-hidden="true"
+      className="fixed inset-0 -z-10 overflow-hidden"
+      role="presentation"
+    >
       <motion.div
         className="absolute"
         style={{
           inset: -40,
           x: gridX,
-          y: gridY
+          y: gridY,
         }}
       >
         {/* Grid lines */}
         {Array.from({ length: gridConfig.cols + 1 }).map((_, i) => (
           <motion.div
-            key={`v-${i}`}
+            animate="visible"
             className="absolute top-0 h-full w-px bg-white/80 dark:bg-gray-300/40"
+            initial="hidden"
+            // biome-ignore lint/suspicious/noArrayIndexKey: static grid lines never reorder
+            key={`v-${i}`}
             style={{
               left: `${(i * 100) / gridConfig.cols}%`,
-              transform: 'translateX(-50%)'
+              transform: "translateX(-50%)",
             }}
-            initial="hidden"
-            animate="visible"
             variants={gridLineVariants}
           />
         ))}
 
         {Array.from({ length: gridConfig.rows + 1 }).map((_, i) => (
           <motion.div
-            key={`h-${i}`}
+            animate="visible"
             className="absolute left-0 h-px w-full bg-white/80 dark:bg-gray-300/40"
+            initial="hidden"
+            // biome-ignore lint/suspicious/noArrayIndexKey: static grid lines never reorder
+            key={`h-${i}`}
             style={{
               top: `${(i * 100) / gridConfig.rows}%`,
-              transform: 'translateY(-50%)'
+              transform: "translateY(-50%)",
             }}
-            initial="hidden"
-            animate="visible"
             variants={gridLineVariants}
           />
         ))}
 
         {/* Lights with parallax effect */}
         <AnimatePresence>
-          {lights.map(light => {
-            if (light.type === 'horizontal') {
+          {lights.map((light) => {
+            if (light.type === "horizontal") {
               return (
                 <motion.div
-                  key={light.key}
+                  animate={{ opacity: 1 }}
                   className="absolute h-px w-full"
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key={light.key}
                   style={{
                     top: `${(light.position * 100) / gridConfig.rows}%`,
-                    transform: 'translateY(-50%)'
+                    transform: "translateY(-50%)",
                   }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <motion.div
+                    animate={{
+                      left: ["-20%", "120%"],
+                    }}
                     className="absolute h-full rounded-full"
                     style={{
                       ...lightStyles.horizontal.trail,
-                      position: 'relative'
-                    }}
-                    animate={{
-                      left: ['-20%', '120%']
+                      position: "relative",
                     }}
                     transition={{
                       duration: light.duration,
-                      ease: 'linear'
+                      ease: "linear",
                     }}
                   >
                     <div style={lightStyles.horizontal.glow} />
                   </motion.div>
                 </motion.div>
               );
-            } else {
-              return (
-                <motion.div
-                  key={light.key}
-                  className="absolute h-full w-px"
-                  style={{
-                    left: `${(light.position * 100) / gridConfig.cols}%`,
-                    transform: 'translateX(-50%)'
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <motion.div
-                    className="absolute w-full"
-                    style={{
-                      ...lightStyles.vertical.trail,
-                      position: 'relative'
-                    }}
-                    animate={{
-                      top: ['-20%', '120%']
-                    }}
-                    transition={{
-                      duration: light.duration,
-                      ease: 'linear'
-                    }}
-                  >
-                    <div style={lightStyles.vertical.glow} />
-                  </motion.div>
-                </motion.div>
-              );
             }
+            return (
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="absolute h-full w-px"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key={light.key}
+                style={{
+                  left: `${(light.position * 100) / gridConfig.cols}%`,
+                  transform: "translateX(-50%)",
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  animate={{
+                    top: ["-20%", "120%"],
+                  }}
+                  className="absolute w-full"
+                  style={{
+                    ...lightStyles.vertical.trail,
+                    position: "relative",
+                  }}
+                  transition={{
+                    duration: light.duration,
+                    ease: "linear",
+                  }}
+                >
+                  <div style={lightStyles.vertical.glow} />
+                </motion.div>
+              </motion.div>
+            );
           })}
         </AnimatePresence>
       </motion.div>

@@ -8,14 +8,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
+import { Gauge } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Gauge } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const LatencyTestButton = () => {
   const router = useRouter();
@@ -25,16 +29,16 @@ const LatencyTestButton = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+            onClick={() => router.push("/test/latency")}
             size="icon"
-            className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
-            onClick={() => router.push('/test/latency')}
+            variant="ghost"
           >
             <Gauge className="size-5" />
             <span className="sr-only">Test Latency</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="mr-1">
+        <TooltipContent className="mr-1" side="top">
           <p>Test Latency</p>
         </TooltipContent>
       </Tooltip>

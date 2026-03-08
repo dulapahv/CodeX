@@ -9,18 +9,19 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-import { EditorSkeleton } from './components/editor-skeleton';
+import { EditorSkeleton } from "./components/editor-skeleton";
 
 const DynamicNotepadMain = dynamic(
-  () => import('./components/notepad-main').then(mod => mod.MarkdownEditorMain),
+  () =>
+    import("./components/notepad-main").then((mod) => mod.MarkdownEditorMain),
   {
     ssr: false,
-    loading: () => <EditorSkeleton />
+    loading: () => <EditorSkeleton />,
   }
 );
 

@@ -9,35 +9,35 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Config } from 'jest';
+import type { Config } from "jest";
 
 const config: Config = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  testMatch: ['**/*.test.ts'],
-  setupFiles: ['./jest.setup.ts'],
+  preset: "ts-jest",
+  testEnvironment: "node",
+  testMatch: ["**/*.test.ts"],
+  setupFiles: ["./jest.setup.ts"],
   verbose: true,
   forceExit: true,
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
   detectOpenHandles: true,
-  testTimeout: 300000,
+  testTimeout: 300_000,
   reporters: [
-    'default',
+    "default",
     [
-      'jest-junit',
+      "jest-junit",
       {
-        outputDirectory: './test-results',
-        outputName: 'junit.xml',
-        ancestorSeparator: ' › ',
+        outputDirectory: "./test-results",
+        outputName: "junit.xml",
+        ancestorSeparator: " › ",
         uniqueOutputName: false,
-        suiteNameTemplate: '{filepath}',
-        classNameTemplate: '{classname}',
-        titleTemplate: '{title}'
-      }
-    ]
-  ]
+        suiteNameTemplate: "{filepath}",
+        classNameTemplate: "{classname}",
+        titleTemplate: "{title}",
+      },
+    ],
+  ],
 };
 
 export default config;

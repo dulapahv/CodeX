@@ -9,13 +9,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from "react";
 
-import type { TreeDataItem } from '@/components/tree';
+import type { TreeDataItem } from "@/components/tree";
 
-import { itemType, type ExtendedTreeDataItem } from '../types/tree';
-import { fetchBranches } from './fetch-branches';
-import { fetchContents } from './fetch-contents';
+import { type ExtendedTreeDataItem, itemType } from "../types/tree";
+import { fetchBranches } from "./fetch-branches";
+import { fetchContents } from "./fetch-contents";
 
 // Helper function to find item's parent repo and branch
 const findParents = (
@@ -26,14 +26,20 @@ const findParents = (
   parentBranch: ExtendedTreeDataItem | undefined;
 } => {
   for (const repo of treeData) {
-    if (!repo.children) continue;
+    if (!repo.children) {
+      continue;
+    }
 
     for (const branch of repo.children) {
       // Helper function to recursively search through folder contents
       const findInContents = (items: ExtendedTreeDataItem[]): boolean => {
         for (const item of items) {
-          if (item.id === itemId) return true;
-          if (item.children && findInContents(item.children)) return true;
+          if (item.id === itemId) {
+            return true;
+          }
+          if (item.children && findInContents(item.children)) {
+            return true;
+          }
         }
         return false;
       };
@@ -67,8 +73,8 @@ export const handleSelectItem = async (
 
   // Reset branch and path when selecting a new repository
   if (extendedItem.type === itemType.REPO) {
-    setRepo(extendedItem.full_name || '');
-    setBranch('');
+    setRepo(extendedItem.full_name || "");
+    setBranch("");
 
     if (!item.children) {
       await fetchBranches(extendedItem, setTreeData, setItemLoading, setError);
@@ -79,32 +85,40 @@ export const handleSelectItem = async (
     setBranch(extendedItem.name);
 
     if (!item.children) {
-      const parentRepo = treeData.find(repo =>
-        repo.children?.some(branch => branch.id === item.id)
+      const parentRepo = treeData.find((repo) =>
+        repo.children?.some((branch) => branch.id === item.id)
       );
       if (parentRepo) {
-        await fetchContents(parentRepo, extendedItem, '', setTreeData, setItemLoading, setError);
-      }
-    }
-  }
-  // Update path when selecting a directory or file
-  else if (
-    (extendedItem.type === itemType.DIR || extendedItem.type === itemType.FILE) &&
-    extendedItem.path
-  ) {
-    if (extendedItem.type === itemType.DIR && !item.children) {
-      const { parentRepo, parentBranch } = findParents(treeData, item.id);
-
-      if (parentRepo && parentBranch && extendedItem.path) {
         await fetchContents(
           parentRepo,
-          parentBranch,
-          extendedItem.path,
+          extendedItem,
+          "",
           setTreeData,
           setItemLoading,
           setError
         );
       }
+    }
+  }
+  // Update path when selecting a directory or file
+  else if (
+    (extendedItem.type === itemType.DIR ||
+      extendedItem.type === itemType.FILE) &&
+    extendedItem.path &&
+    extendedItem.type === itemType.DIR &&
+    !item.children
+  ) {
+    const { parentRepo, parentBranch } = findParents(treeData, item.id);
+
+    if (parentRepo && parentBranch && extendedItem.path) {
+      await fetchContents(
+        parentRepo,
+        parentBranch,
+        extendedItem.path,
+        setTreeData,
+        setItemLoading,
+        setError
+      );
     }
   }
 };

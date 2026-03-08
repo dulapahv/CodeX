@@ -8,15 +8,17 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-'use client';
+"use client";
 
-import { useRef } from 'react';
-
-import { Info } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { AboutDialog, type AboutDialogRef } from '@/components/about-dialog';
+import { Info } from "lucide-react";
+import { useRef } from "react";
+import { AboutDialog, type AboutDialogRef } from "@/components/about-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const AboutButton = () => {
   const aboutDialogRef = useRef<AboutDialogRef>(null);
@@ -26,22 +28,22 @@ const AboutButton = () => {
       <Tooltip>
         <TooltipTrigger asChild className="dark">
           <Button
-            variant="ghost"
-            size="icon"
-            className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
-            aria-label="About"
-            type="button"
             aria-haspopup="dialog"
+            aria-label="About"
+            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
             onClick={() => aboutDialogRef.current?.openDialog()}
+            size="icon"
+            type="button"
+            variant="ghost"
           >
             <Info className="size-5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="mr-1">
+        <TooltipContent className="mr-1" side="top">
           About
         </TooltipContent>
       </Tooltip>
-      <AboutDialog ref={aboutDialogRef} forceDark />
+      <AboutDialog forceDark ref={aboutDialogRef} />
     </>
   );
 };
