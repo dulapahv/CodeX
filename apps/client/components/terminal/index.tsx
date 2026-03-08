@@ -34,6 +34,7 @@ interface TerminalProps {
 const Terminal = ({ results, setResults }: TerminalProps) => {
   const terminalRef = useRef<HTMLDivElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to scroll to bottom only when results change
   useEffect(() => {
     const timer = setTimeout(() => {
       if (terminalRef.current) {
@@ -41,7 +42,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [results]);
 
   return (
     <div className="relative h-full bg-[color:var(--panel-background)]">
