@@ -290,7 +290,7 @@ describe("Terminal Output Synchronization Tests", () => {
       samples: latencies,
       description,
       outputSize: Buffer.from(output.run.output).length,
-      type: output.type ?? "output",
+      type: output.type ?? ExecutionResultType.OUTPUT,
       ...stats,
     });
   });
