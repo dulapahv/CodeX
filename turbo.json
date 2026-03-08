@@ -29,11 +29,11 @@
     "client#test:e2e": {
       "cache": false,
       "outputs": ["playwright-report/**", "test-results/**"],
-      "env": ["BETTERSTACK_API_KEY"]
+      "env": ["BETTERSTACK_API_KEY", "PISTON_API_KEY"]
     },
     "client#test:e2e:ui": {
       "cache": false,
-      "env": ["BETTERSTACK_API_KEY"]
+      "env": ["BETTERSTACK_API_KEY", "PISTON_API_KEY"]
     },
     "server#test:socket": {
       "cache": true,
