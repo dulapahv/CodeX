@@ -148,6 +148,14 @@ const OpenFromGithubDialog = forwardRef<
         githubUser={githubUser}
       />
       <div className="ml-auto flex gap-2">
+        <Button
+          disabled={isFetchingContent}
+          onClick={closeDialog}
+          type="button"
+          variant="secondary"
+        >
+          Cancel
+        </Button>
         {githubUser && (
           <Button
             aria-busy={isFetchingContent}
@@ -168,14 +176,6 @@ const OpenFromGithubDialog = forwardRef<
             )}
           </Button>
         )}
-        <Button
-          disabled={isFetchingContent}
-          onClick={closeDialog}
-          type="button"
-          variant="secondary"
-        >
-          Cancel
-        </Button>
       </div>
     </>
   );
