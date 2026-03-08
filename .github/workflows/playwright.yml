@@ -30,6 +30,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
+      PISTON_API_KEY: ${{ secrets.PISTON_API_KEY }}
 
     steps:
       # Checkout code
