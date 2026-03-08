@@ -24,15 +24,8 @@ export interface ClientToServerEvents {
   ping: () => void;
 
   // Room
-  [RoomServiceMsg.CREATE]: (
-    name: string,
-    callback: (roomID: string, customId: string) => void
-  ) => void;
-  [RoomServiceMsg.JOIN]: (
-    roomID: string,
-    name: string,
-    callback: (response: { userId?: string; error?: string }) => void
-  ) => void;
+  [RoomServiceMsg.CREATE]: (name: string) => void;
+  [RoomServiceMsg.JOIN]: (roomID: string, name: string) => void;
   [RoomServiceMsg.LEAVE]: () => void;
   [RoomServiceMsg.SYNC_USERS]: () => void;
   [RoomServiceMsg.SYNC_MD]: () => void;
@@ -68,6 +61,9 @@ export interface ServerToClientEvents {
   pong: () => void;
 
   // Room
+  [RoomServiceMsg.CREATE]: (roomID: string, customId: string) => void;
+  [RoomServiceMsg.JOIN]: (customId: string) => void;
+  [RoomServiceMsg.NOT_FOUND]: (roomID: string) => void;
   [RoomServiceMsg.LEAVE]: (customId: string) => void;
   [RoomServiceMsg.SYNC_USERS]: (users: Record<string, string>) => void;
   [RoomServiceMsg.UPDATE_MD]: (note: string) => void;

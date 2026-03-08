@@ -13,6 +13,7 @@ export enum RoomServiceMsg {
   CREATE = "A",
   JOIN = "B",
   LEAVE = "C",
+  NOT_FOUND = "D",
   SYNC_USERS = "E",
   SYNC_MD = "F",
   UPDATE_MD = "G",

@@ -89,17 +89,16 @@ export const handleOnMount = (
     });
 
     // If the selection is empty, send only the cursor position
-    // Use volatile to avoid buffering stale cursor data during disconnects
     if (
       e.selection.startLineNumber === e.selection.endLineNumber &&
       e.selection.startColumn === e.selection.endColumn
     ) {
-      socket.volatile.emit(CodeServiceMsg.UPDATE_CURSOR, [
+      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
         e.selection.positionLineNumber,
         e.selection.positionColumn,
       ] as Cursor);
     } else {
-      socket.volatile.emit(CodeServiceMsg.UPDATE_CURSOR, [
+      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
         e.selection.positionLineNumber,
         e.selection.positionColumn,
         e.selection.startLineNumber,
@@ -110,15 +109,11 @@ export const handleOnMount = (
     }
   });
 
-  // Use volatile to avoid buffering stale scroll data during disconnects
   const scrollDisposable = editor.onDidScrollChange((e) => {
     if (storage.getFollowUserId()) {
       return; // If following another user, do not emit scroll events
     }
-    socket.volatile.emit(ScrollServiceMsg.UPDATE_SCROLL, [
-      e.scrollLeft,
-      e.scrollTop,
-    ]);
+    socket.emit(ScrollServiceMsg.UPDATE_SCROLL, [e.scrollLeft, e.scrollTop]);
   });
 
   disposablesRef.current.push(cursorSelectionDisposable);

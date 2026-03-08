@@ -41,11 +41,7 @@ export const getUserRoom = (socket: Socket): string | undefined => {
 /**
  * Creates a new room and joins the socket to it.
  */
-export const create = async (
-  socket: Socket,
-  name: string,
-  callback: (roomID: string, customId: string) => void
-): Promise<void> => {
+export const create = async (socket: Socket, name: string): Promise<void> => {
   const customId = userService.connect(socket, name);
 
   // Generate unique room ID
@@ -59,7 +55,7 @@ export const create = async (
   // Initialize room cache
   roomUsersCache.set(roomID, { [customId]: name });
 
-  callback(roomID, customId);
+  socket.emit(RoomServiceMsg.CREATE, roomID, customId);
 };
 
 /**
@@ -69,13 +65,12 @@ export const join = async (
   socket: Socket,
   io: Server,
   roomID: string,
-  name: string,
-  callback: (response: { userId?: string; error?: string }) => void
+  name: string
 ): Promise<void> => {
   const normalizedRoomID = normalizeRoomId(roomID);
 
   if (!io.sockets.adapter.rooms.has(normalizedRoomID)) {
-    callback({ error: "not_found" });
+    socket.emit(RoomServiceMsg.NOT_FOUND, normalizedRoomID);
     return;
   }
 
@@ -87,8 +82,7 @@ export const join = async (
   users[customId] = name;
   roomUsersCache.set(normalizedRoomID, users);
 
-  // Acknowledge success and broadcast to other users
-  callback({ userId: customId });
+  socket.emit(RoomServiceMsg.JOIN, customId);
   socket.to(normalizedRoomID).emit(RoomServiceMsg.SYNC_USERS, users);
 };
 

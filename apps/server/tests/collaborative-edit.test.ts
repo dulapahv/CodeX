@@ -193,14 +193,11 @@ describe("Socket.IO Latency Tests", () => {
 
     // Create room
     await new Promise<void>((resolve) => {
-      senderSocket.emit(
-        RoomServiceMsg.CREATE,
-        "Sender",
-        (receivedRoomId: string) => {
-          roomId = receivedRoomId;
-          resolve();
-        }
-      );
+      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
+        roomId = receivedRoomId;
+        resolve();
+      });
+      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
     });
 
     // Setup receiver
@@ -214,9 +211,10 @@ describe("Socket.IO Latency Tests", () => {
 
     // Join room
     await new Promise<void>((resolve) => {
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver", () => {
+      receiverSocket.once(RoomServiceMsg.JOIN, () => {
         resolve();
       });
+      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
     });
 
     // Warmup connection

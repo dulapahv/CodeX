@@ -23,8 +23,6 @@ export const updatePointer = (socket: Socket, pointer: Pointer) => {
 
   const customId = getCustomId(socket.id);
   if (customId) {
-    socket.volatile
-      .to(roomID)
-      .emit(PointerServiceMsg.POINTER, customId, pointer);
+    socket.to(roomID).emit(PointerServiceMsg.POINTER, customId, pointer);
   }
 };

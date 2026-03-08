@@ -103,20 +103,11 @@ app.get("/", (res, req) => {
 
 io.on("connection", (socket) => {
   socket.on("ping", () => socket.emit("pong"));
-  socket.on(
-    RoomServiceMsg.CREATE,
-    async (
-      name: string,
-      callback: (roomID: string, customId: string) => void
-    ) => roomService.create(socket, name, callback)
+  socket.on(RoomServiceMsg.CREATE, async (name: string) =>
+    roomService.create(socket, name)
   );
-  socket.on(
-    RoomServiceMsg.JOIN,
-    async (
-      roomID: string,
-      name: string,
-      callback: (response: { userId?: string; error?: string }) => void
-    ) => roomService.join(socket, io, roomID, name, callback)
+  socket.on(RoomServiceMsg.JOIN, async (roomID: string, name: string) =>
+    roomService.join(socket, io, roomID, name)
   );
   socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
   socket.on(RoomServiceMsg.SYNC_USERS, async () =>

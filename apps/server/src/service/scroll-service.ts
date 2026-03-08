@@ -23,8 +23,6 @@ export const updateScroll = (socket: Socket, scroll: Scroll) => {
 
   const customId = getCustomId(socket.id);
   if (customId) {
-    socket.volatile
-      .to(roomID)
-      .emit(ScrollServiceMsg.UPDATE_SCROLL, customId, scroll);
+    socket.to(roomID).emit(ScrollServiceMsg.UPDATE_SCROLL, customId, scroll);
   }
 };

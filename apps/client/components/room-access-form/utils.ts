@@ -26,18 +26,15 @@ export const createRoom = (name: string): Promise<string> => {
   return new Promise((resolve) => {
     const socket = getSocket();
 
-    socket.emit(
-      RoomServiceMsg.CREATE,
-      name,
-      (roomId: string, userID: string) => {
-        const formattedRoomId = formatRoomId(roomId);
+    socket.once(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
+      const formattedRoomId = formatRoomId(roomId);
 
-        storage.setRoomId(formattedRoomId);
-        storage.setUserId(userID);
+      storage.setRoomId(formattedRoomId);
+      storage.setUserId(userID);
 
-        resolve(formattedRoomId);
-      }
-    );
+      resolve(formattedRoomId);
+    });
+    socket.emit(RoomServiceMsg.CREATE, name);
   });
 };
 
@@ -47,23 +44,20 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
 
     const cleanedRoomId = roomId.replace(DASH_PATTERN, "");
 
-    socket.emit(
-      RoomServiceMsg.JOIN,
-      cleanedRoomId,
-      name,
-      (response: { userId?: string; error?: string }) => {
-        if (response.error) {
-          reject(
-            "Room does not exist. Please check the room ID and try again."
-          );
-          return;
-        }
+    const handleNotFound = () => {
+      socket.off(RoomServiceMsg.JOIN, handleJoin);
+      reject("Room does not exist. Please check the room ID and try again.");
+    };
+    const handleJoin = (userID: string) => {
+      socket.off(RoomServiceMsg.NOT_FOUND, handleNotFound);
+      storage.setRoomId(cleanedRoomId);
+      storage.setUserId(userID);
+      resolve(true);
+    };
 
-        storage.setRoomId(cleanedRoomId);
-        storage.setUserId(response.userId ?? "");
-        resolve(true);
-      }
-    );
+    socket.once(RoomServiceMsg.NOT_FOUND, handleNotFound);
+    socket.once(RoomServiceMsg.JOIN, handleJoin);
+    socket.emit(RoomServiceMsg.JOIN, cleanedRoomId, name);
   });
 };
 
