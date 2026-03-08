@@ -39,7 +39,39 @@ export async function executeCode(input: ExecuteInput) {
 
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`Piston API error: ${response.status}. ${body}`);
+
+    let detail = body;
+    try {
+      const parsed = JSON.parse(body);
+      detail = parsed.message || JSON.stringify(parsed, null, 2);
+    } catch {
+      // body is not JSON, use as-is
+    }
+
+    const message = [
+      response.status,
+      detail,
+      "",
+      "This language is not supported or the execution server is down.",
+      "To change language, click on the Language selection at the bottom right of the status bar.",
+    ].join("\n");
+
+    return {
+      language: input.language,
+      version: "*",
+      run: {
+        stdout: "",
+        stderr: message,
+        code: 1,
+        signal: null,
+        output: message,
+      },
+      metadata: {
+        args: input.args || [],
+        stdin: input.stdin || "",
+        timestamp: new Date().toISOString(),
+      },
+    };
   }
 
   const data = await response.json();

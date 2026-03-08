@@ -52,7 +52,7 @@
     - [Live Preview not Updating or Displaying Error](#live-preview-not-updating-or-displaying-error)
     - [Follow Mode not working](#follow-mode-not-working)
     - [Code is not Syncing Between Users](#code-is-not-syncing-between-users)
-    - [This language may not be supported or the server is down](#this-language-may-not-be-supported-or-the-server-is-down)
+    - [This language is not supported or the execution server is down](#this-language-is-not-supported-or-the-execution-server-is-down)
     - [No code to execute](#no-code-to-execute)
     - [Error parsing markdown](#error-parsing-markdown)
     - [Please check the information and try again](#please-check-the-information-and-try-again)
@@ -769,7 +769,7 @@ This issue cannot be caused by idling for an extended period as Socket.IO mainta
 1. Save your work, either by saving to local or GitHub
 2. Leave the room and create a new room
 
-### This language may not be supported or the server is down
+### This language is not supported or the execution server is down
 
 **This issue can be caused by:**
 
