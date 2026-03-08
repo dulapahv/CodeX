@@ -17,13 +17,11 @@ import { getSocket } from "@/lib/socket";
 
 import { storage } from "./services/storage";
 
-export const leaveRoom = (): Promise<void> => {
-  return new Promise(() => {
-    const socket = getSocket();
+export const leaveRoom = (): void => {
+  const socket = getSocket();
 
-    socket.emit(RoomServiceMsg.LEAVE);
-    storage.clear();
-  });
+  socket.emit(RoomServiceMsg.LEAVE);
+  storage.clear();
 };
 
 export const cn = (...inputs: ClassValue[]) => {

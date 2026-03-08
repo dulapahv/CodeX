@@ -11,7 +11,7 @@
 
 import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
 import type { ExecutionResult } from "@codex/types/terminal";
-import type { Server, Socket } from "socket.io";
+import type { Server, Socket } from "@/types";
 
 import { generateRoomID } from "@/utils/generate-room-id";
 import { normalizeRoomId } from "@/utils/normalize-room-id";
@@ -39,9 +39,13 @@ export const getUserRoom = (socket: Socket): string | undefined => {
 };
 
 /**
- * Creates a new room and joins the socket to it
+ * Creates a new room and joins the socket to it.
  */
-export const create = async (socket: Socket, name: string): Promise<void> => {
+export const create = async (
+  socket: Socket,
+  name: string,
+  callback: (roomID: string, customId: string) => void
+): Promise<void> => {
   const customId = userService.connect(socket, name);
 
   // Generate unique room ID
@@ -55,22 +59,23 @@ export const create = async (socket: Socket, name: string): Promise<void> => {
   // Initialize room cache
   roomUsersCache.set(roomID, { [customId]: name });
 
-  socket.emit(RoomServiceMsg.CREATE, roomID, customId);
+  callback(roomID, customId);
 };
 
 /**
- * Joins an existing room with optimized user management
+ * Joins an existing room with optimized user management.
  */
 export const join = async (
   socket: Socket,
   io: Server,
   roomID: string,
-  name: string
+  name: string,
+  callback: (response: { userId?: string; error?: string }) => void
 ): Promise<void> => {
   const normalizedRoomID = normalizeRoomId(roomID);
 
   if (!io.sockets.adapter.rooms.has(normalizedRoomID)) {
-    socket.emit(RoomServiceMsg.NOT_FOUND, normalizedRoomID);
+    callback({ error: "not_found" });
     return;
   }
 
@@ -82,8 +87,8 @@ export const join = async (
   users[customId] = name;
   roomUsersCache.set(normalizedRoomID, users);
 
-  // Emit events
-  socket.emit(RoomServiceMsg.JOIN, customId);
+  // Acknowledge success and broadcast to other users
+  callback({ userId: customId });
   socket.to(normalizedRoomID).emit(RoomServiceMsg.SYNC_USERS, users);
 };
 

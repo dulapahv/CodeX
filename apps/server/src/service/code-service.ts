@@ -11,7 +11,7 @@
 
 import { CodeServiceMsg } from "@codex/types/message";
 import type { EditOp } from "@codex/types/operation";
-import type { Server, Socket } from "socket.io";
+import type { Server, Socket } from "@/types";
 
 import { getUserRoom } from "./room-service";
 import { getCustomId } from "./user-service";

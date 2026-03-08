@@ -139,12 +139,15 @@ describe("Cursor Synchronization Latency Tests", () => {
     });
 
     // Create room
-    await new Promise<void>((resolve, _reject) => {
-      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
-      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
-        roomId = receivedRoomId;
-        resolve();
-      });
+    await new Promise<void>((resolve) => {
+      senderSocket.emit(
+        RoomServiceMsg.CREATE,
+        "Sender",
+        (receivedRoomId: string) => {
+          roomId = receivedRoomId;
+          resolve();
+        }
+      );
     });
 
     // Setup receiver
@@ -157,9 +160,8 @@ describe("Cursor Synchronization Latency Tests", () => {
     });
 
     // Join room
-    await new Promise<void>((resolve, _reject) => {
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
-      receiverSocket.once(RoomServiceMsg.JOIN, () => {
+    await new Promise<void>((resolve) => {
+      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver", () => {
         resolve();
       });
     });

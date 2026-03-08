@@ -10,7 +10,7 @@
 
 import { PointerServiceMsg } from "@codex/types/message";
 import type { Pointer } from "@codex/types/pointer";
-import type { Socket } from "socket.io";
+import type { Socket } from "@/types";
 
 import { getUserRoom } from "./room-service";
 import { getCustomId } from "./user-service";
@@ -23,6 +23,8 @@ export const updatePointer = (socket: Socket, pointer: Pointer) => {
 
   const customId = getCustomId(socket.id);
   if (customId) {
-    socket.to(roomID).emit(PointerServiceMsg.POINTER, customId, pointer);
+    socket.volatile
+      .to(roomID)
+      .emit(PointerServiceMsg.POINTER, customId, pointer);
   }
 };

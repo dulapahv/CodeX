@@ -10,7 +10,7 @@
 
 import { ScrollServiceMsg } from "@codex/types/message";
 import type { Scroll } from "@codex/types/scroll";
-import type { Socket } from "socket.io";
+import type { Socket } from "@/types";
 
 import { getUserRoom } from "./room-service";
 import { getCustomId } from "./user-service";
@@ -23,6 +23,8 @@ export const updateScroll = (socket: Socket, scroll: Scroll) => {
 
   const customId = getCustomId(socket.id);
   if (customId) {
-    socket.to(roomID).emit(ScrollServiceMsg.UPDATE_SCROLL, customId, scroll);
+    socket.volatile
+      .to(roomID)
+      .emit(ScrollServiceMsg.UPDATE_SCROLL, customId, scroll);
   }
 };

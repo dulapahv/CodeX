@@ -20,6 +20,10 @@ import {
 import type { Cursor, EditOp } from "@codex/types/operation";
 import type { Pointer } from "@codex/types/pointer";
 import type { Scroll } from "@codex/types/scroll";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "@codex/types/socket-events";
 import type { ExecutionResult } from "@codex/types/terminal";
 import type { SignalData } from "simple-peer";
 import { Server } from "socket.io";
@@ -41,7 +45,7 @@ const PORT = 3001;
 
 const app = App();
 
-const io = new Server({
+const io = new Server<ClientToServerEvents, ServerToClientEvents>({
   cors: {
     origin: (origin, callback) => {
       if (process.env.NODE_ENV === "development") {
@@ -63,6 +67,13 @@ const io = new Server({
     credentials: true,
   },
   transports: ["websocket", "polling"],
+  // Allow larger payloads for pasting large code blocks (default is 1MB)
+  maxHttpBufferSize: 5e6, // 5MB
+  // Recover socket state (rooms, missed packets) after brief disconnects
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+    skipMiddlewares: true,
+  },
 });
 io.attachApp(app);
 io.engine.on("connection", (rawSocket) => {
@@ -92,11 +103,20 @@ app.get("/", (res, req) => {
 
 io.on("connection", (socket) => {
   socket.on("ping", () => socket.emit("pong"));
-  socket.on(RoomServiceMsg.CREATE, async (name: string) =>
-    roomService.create(socket, name)
+  socket.on(
+    RoomServiceMsg.CREATE,
+    async (
+      name: string,
+      callback: (roomID: string, customId: string) => void
+    ) => roomService.create(socket, name, callback)
   );
-  socket.on(RoomServiceMsg.JOIN, async (roomID: string, name: string) =>
-    roomService.join(socket, io, roomID, name)
+  socket.on(
+    RoomServiceMsg.JOIN,
+    async (
+      roomID: string,
+      name: string,
+      callback: (response: { userId?: string; error?: string }) => void
+    ) => roomService.join(socket, io, roomID, name, callback)
   );
   socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
   socket.on(RoomServiceMsg.SYNC_USERS, async () =>

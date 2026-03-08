@@ -229,9 +229,22 @@ export default function Room() {
       router.replace(`/?room=${roomId}`);
     }
 
+    // Full state sync on initial page load
     socket.emit(RoomServiceMsg.SYNC_USERS);
     socket.emit(CodeServiceMsg.SYNC_CODE);
     socket.emit(RoomServiceMsg.SYNC_MD);
+
+    // Re-sync on reconnection only if connection state recovery fails.
+    // When socket.recovered is true, rooms and missed packets are restored
+    // automatically by the server, so no manual sync is needed.
+    const handleReconnect = () => {
+      if (!socket.recovered) {
+        socket.emit(RoomServiceMsg.SYNC_USERS);
+        socket.emit(CodeServiceMsg.SYNC_CODE);
+        socket.emit(RoomServiceMsg.SYNC_MD);
+      }
+    };
+    socket.on("connect", handleReconnect);
 
     socket.on(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
     socket.on(CodeServiceMsg.SYNC_CODE, handleCodeReceive);
@@ -244,6 +257,7 @@ export default function Room() {
 
     return () => {
       window.removeEventListener("popstate", disconnect);
+      socket.off("connect", handleReconnect);
       socket.off(RoomServiceMsg.SYNC_USERS);
       socket.off(CodeServiceMsg.SYNC_CODE);
       socket.off(CodeServiceMsg.UPDATE_LANG);

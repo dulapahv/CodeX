@@ -8,23 +8,28 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "@codex/types/socket-events";
 import { io, type Socket } from "socket.io-client";
 
 import { BASE_SERVER_URL } from "./constants";
 
-let socketInstance: Socket | null = null;
+type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
+let socketInstance: TypedSocket | null = null;
 
 /**
- * Returns a singleton socket instance
- * @returns {Socket}
+ * Returns a singleton typed socket instance
  */
-export const getSocket = (): Socket => {
+export const getSocket = (): TypedSocket => {
   if (!socketInstance?.connected) {
     socketInstance = io(BASE_SERVER_URL, {
       transports: ["websocket", "polling"],
       autoConnect: false,
       timestampRequests: false,
-    });
+    }) as TypedSocket;
   }
 
   if (!socketInstance.connected) {

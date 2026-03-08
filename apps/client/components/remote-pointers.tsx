@@ -70,7 +70,8 @@ const RemotePointers = () => {
 
       const pointer: Pointer = [relativeX, relativeY];
 
-      socket.emit(PointerServiceMsg.POINTER, pointer);
+      // Use volatile to avoid buffering stale pointer data during disconnects
+      socket.volatile.emit(PointerServiceMsg.POINTER, pointer);
       setLastEmit(now);
     },
     [socket, lastEmit]

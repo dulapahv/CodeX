@@ -78,21 +78,18 @@ export const useSocketEvents = ({
       }
     );
 
-    socket.on(
-      StreamServiceMsg.SIGNAL,
-      ({ userID, signal }: { userID: string; signal: Peer.SignalData }) => {
-        if (hasRequestedPermissions) {
-          handleSignal(
-            signal,
-            userID,
-            streamRef,
-            peersRef,
-            setRemoteStreams,
-            pendingSignalsRef
-          );
-        }
+    socket.on(StreamServiceMsg.SIGNAL, ({ userID, signal }) => {
+      if (hasRequestedPermissions) {
+        handleSignal(
+          signal as Peer.SignalData,
+          userID,
+          streamRef,
+          peersRef,
+          setRemoteStreams,
+          pendingSignalsRef
+        );
       }
-    );
+    });
 
     socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
       if (userID !== storage.getUserId()) {
@@ -105,10 +102,8 @@ export const useSocketEvents = ({
     });
 
     return () => {
-      socket.off(StreamServiceMsg.STREAM_READY);
       socket.off(StreamServiceMsg.USER_READY);
       socket.off(StreamServiceMsg.SIGNAL);
-      socket.off(StreamServiceMsg.USER_DISCONNECTED);
       socket.off(StreamServiceMsg.MIC_STATE);
       socket.off(StreamServiceMsg.SPEAKER_STATE);
       socket.off(StreamServiceMsg.CAMERA_OFF);

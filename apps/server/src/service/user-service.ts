@@ -10,7 +10,7 @@
 
 import { CodeServiceMsg } from "@codex/types/message";
 import type { Cursor } from "@codex/types/operation";
-import type { Socket } from "socket.io";
+import type { Socket } from "@/types";
 
 import { getUserRoom } from "./room-service";
 
@@ -92,7 +92,7 @@ export const updateCursor = (socket: Socket, cursor: Cursor): void => {
   const userData = socketToUserData.get(socket.id);
 
   if (userData && roomId) {
-    socket
+    socket.volatile
       .to(roomId)
       .emit(CodeServiceMsg.UPDATE_CURSOR, userData.customId, cursor);
   }
