@@ -86,7 +86,7 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   setShowLivePreview: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
-    <div className="fixed flex w-full items-center justify-between gap-x-2 bg-(--toolbar-bg-secondary) p-1">
+    <div className="fixed flex w-full items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
       {/* biome-ignore lint/a11y/useSemanticElements: grouping toolbar controls without form semantics */}
       <div
         aria-label="Editor Toolbar"
@@ -301,7 +301,11 @@ export default function Room() {
       className="flex h-full min-w-[821px] flex-col"
     >
       <RemotePointers />
-      <div aria-label="Editor Controls" className="h-9 shrink-0" role="toolbar">
+      <div
+        aria-label="Editor Controls"
+        className="h-9 flex-shrink-0"
+        role="toolbar"
+      >
         {monaco && editor && (
           <MemoizedToolbar
             editor={editor}
@@ -322,7 +326,7 @@ export default function Room() {
       </div>
       {defaultCode !== null && mdContent !== null ? (
         <ResizablePanelGroup
-          className="h-[calc(100%-54px)]!"
+          className="!h-[calc(100%-54px)]"
           direction="horizontal"
         >
           <ResizablePanel
@@ -353,7 +357,7 @@ export default function Room() {
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel
                 aria-label="Code Editor"
-                className="z-1 animate-fade-in"
+                className="z-[1] animate-fade-in"
                 defaultSize={75}
                 minSize={10}
                 role="region"
@@ -452,7 +456,7 @@ export default function Room() {
           className="fixed top-0 left-0 flex size-full items-center justify-center p-2"
           role="status"
         >
-          <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur-sm">
+          <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
             <Spinner className="size-6" />
             <div>
               <AlertTitle>Loading session</AlertTitle>
