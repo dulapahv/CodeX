@@ -33,7 +33,7 @@ import { useRoomActions } from "@/hooks/use-room-actions";
 
 const DEFAULT_TITLE = "Are you sure you want to leave this room?";
 const DEFAULT_DESCRIPTION =
-  "You can always rejoin this room using the same Room ID. This room will be deleted if you are the last participant.";
+  "You can rejoin this room using the same Room ID. If all participants leave, the room will be kept for 5 minutes before being deleted.";
 
 interface LeaveDialogRef {
   closeDialog: () => void;

@@ -25,6 +25,45 @@ const roomUsersCache = new Map<string, Record<string, string>>();
 // Maps note to room
 const roomNotes = new Map<string, string>();
 
+// Grace period timers for empty rooms - keeps room data alive after last user leaves
+const roomGraceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+// How long to keep an empty room alive before deleting its data (5 minutes)
+const ROOM_GRACE_PERIOD_MS = 5 * 60 * 1000;
+
+/**
+ * Start a grace period for an empty room.
+ * Room data (code, notes) is preserved during the grace period.
+ * If no one rejoins, the room is deleted when the timer expires.
+ */
+const startGracePeriod = (roomID: string): void => {
+  // Clear any existing timer for this room
+  const existing = roomGraceTimers.get(roomID);
+  if (existing) {
+    clearTimeout(existing);
+  }
+
+  const timer = setTimeout(() => {
+    roomUsersCache.delete(roomID);
+    codeService.deleteRoom(roomID);
+    roomNotes.delete(roomID);
+    roomGraceTimers.delete(roomID);
+  }, ROOM_GRACE_PERIOD_MS);
+
+  roomGraceTimers.set(roomID, timer);
+};
+
+/**
+ * Cancel the grace period for a room (e.g. when a user rejoins).
+ */
+const cancelGracePeriod = (roomID: string): void => {
+  const timer = roomGraceTimers.get(roomID);
+  if (timer) {
+    clearTimeout(timer);
+    roomGraceTimers.delete(roomID);
+  }
+};
+
 /**
  * Get the room ID that a user is currently in - O(1) operation
  */
@@ -69,9 +108,17 @@ export const join = async (
 ): Promise<void> => {
   const normalizedRoomID = normalizeRoomId(roomID);
 
-  if (!io.sockets.adapter.rooms.has(normalizedRoomID)) {
+  const isActiveRoom = io.sockets.adapter.rooms.has(normalizedRoomID);
+  const isGracePeriodRoom = roomGraceTimers.has(normalizedRoomID);
+
+  if (!(isActiveRoom || isGracePeriodRoom)) {
     socket.emit(RoomServiceMsg.NOT_FOUND, normalizedRoomID);
     return;
+  }
+
+  // Cancel grace period if a user is rejoining an empty room
+  if (isGracePeriodRoom) {
+    cancelGracePeriod(normalizedRoomID);
   }
 
   const customId = userService.connect(socket, name);
@@ -109,8 +156,10 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
     if (users) {
       delete users[customId];
       if (Object.keys(users).length === 0) {
+        // Room is empty — start grace period instead of immediate deletion.
+        // Room data (code, notes) is preserved so users can rejoin.
         roomUsersCache.delete(roomID);
-        codeService.deleteRoom(roomID);
+        startGracePeriod(roomID);
       } else {
         roomUsersCache.set(roomID, users);
       }
@@ -175,11 +224,13 @@ export const getUsersInRoom = (
 };
 
 /**
- * Clean up room cache when server restarts or room is deleted
- * Should be called when appropriate
+ * Clean up all data for a room including any grace period timer.
  */
 export const cleanupRoomCache = (roomID: string): void => {
   roomUsersCache.delete(roomID);
+  roomNotes.delete(roomID);
+  codeService.deleteRoom(roomID);
+  cancelGracePeriod(roomID);
 };
 
 /**

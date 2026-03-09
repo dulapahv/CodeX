@@ -957,7 +957,7 @@ CodeX does not store any user data on the server except for:
 - Code
 - Notes
 
-All of which are stored temporarily during a session and is cleared once the session ends. The session ends and all data in the room is deleted immediately when all users leave the room.
+All of which are stored temporarily during a session and is cleared once the session ends. When all users leave the room, a 5-minute grace period begins. If someone rejoins within that time, the room and all its data are preserved. If no one rejoins, the room and its data are permanently deleted.
 
 ### User Privacy
 
