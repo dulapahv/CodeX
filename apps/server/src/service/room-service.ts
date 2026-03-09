@@ -179,6 +179,35 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
 };
 
 /**
+ * Terminates a room immediately, cleaning up all data and disconnecting all users.
+ * Unlike leave(), this skips the grace period and deletes room data right away.
+ */
+export const terminate = (socket: Socket, io: Server): void => {
+  const roomID = getUserRoom(socket);
+  if (!roomID) {
+    return;
+  }
+
+  // Notify all other users in the room that it's being terminated
+  socket.to(roomID).emit(RoomServiceMsg.TERMINATE);
+
+  // Disconnect all sockets from the room
+  const room = io.sockets.adapter.rooms.get(roomID);
+  if (room) {
+    for (const socketId of room) {
+      const sock = io.sockets.sockets.get(socketId);
+      if (sock) {
+        userService.disconnect(sock);
+        sock.leave(roomID);
+      }
+    }
+  }
+
+  // Clean up all room data immediately (no grace period)
+  cleanupRoomCache(roomID);
+};
+
+/**
  * Gets users in a room with caching for better performance
  */
 export const getUsersInRoom = (

@@ -17,6 +17,7 @@ export enum RoomServiceMsg {
   SYNC_USERS = "E",
   SYNC_MD = "F",
   UPDATE_MD = "G",
+  TERMINATE = "Y",
 }
 
 export enum CodeServiceMsg {

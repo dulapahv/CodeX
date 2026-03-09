@@ -33,7 +33,7 @@ import { useRoomActions } from "@/hooks/use-room-actions";
 
 const DEFAULT_TITLE = "Are you sure you want to leave this room?";
 const DEFAULT_DESCRIPTION =
-  "You can rejoin this room using the same Room ID. If all participants leave, the room will be kept for 5 minutes before being deleted.";
+  "You can rejoin this room using the same Room ID. If all participants leave, the room will be kept for 5 minutes before being deleted. Use Terminate Room to delete it immediately.";
 
 interface LeaveDialogRef {
   closeDialog: () => void;
@@ -44,7 +44,7 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { handleLeaveRoom } = useRoomActions();
+  const { handleLeaveRoom, handleTerminateRoom } = useRoomActions();
 
   const openDialog = useCallback(() => setIsOpen(true), []);
   const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -68,6 +68,13 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
             <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
+            <Button
+              aria-label="Terminate room immediately"
+              onClick={handleTerminateRoom}
+              variant="outline"
+            >
+              Terminate Room
+            </Button>
             <DialogClose asChild>
               <Button aria-label="Cancel leaving room" variant="secondary">
                 Close
@@ -100,6 +107,13 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
             variant="destructive"
           >
             Leave
+          </Button>
+          <Button
+            aria-label="Terminate room immediately"
+            onClick={handleTerminateRoom}
+            variant="outline"
+          >
+            Terminate Room
           </Button>
           <DrawerClose asChild>
             <Button

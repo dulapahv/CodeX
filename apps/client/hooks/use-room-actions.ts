@@ -10,7 +10,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { leaveRoom } from "@/lib/utils";
+import { leaveRoom, terminateRoom } from "@/lib/utils";
 
 export const useRoomActions = () => {
   const router = useRouter();
@@ -24,7 +24,17 @@ export const useRoomActions = () => {
     }
   };
 
+  const handleTerminateRoom = () => {
+    try {
+      terminateRoom();
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to terminate room:", error);
+    }
+  };
+
   return {
     handleLeaveRoom,
+    handleTerminateRoom,
   };
 };

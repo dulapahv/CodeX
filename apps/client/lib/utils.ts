@@ -24,6 +24,13 @@ export const leaveRoom = (): void => {
   storage.clear();
 };
 
+export const terminateRoom = (): void => {
+  const socket = getSocket();
+
+  socket.emit(RoomServiceMsg.TERMINATE);
+  storage.clear();
+};
+
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };

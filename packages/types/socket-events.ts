@@ -27,6 +27,7 @@ export interface ClientToServerEvents {
   [RoomServiceMsg.CREATE]: (name: string) => void;
   [RoomServiceMsg.JOIN]: (roomID: string, name: string) => void;
   [RoomServiceMsg.LEAVE]: () => void;
+  [RoomServiceMsg.TERMINATE]: () => void;
   [RoomServiceMsg.SYNC_USERS]: () => void;
   [RoomServiceMsg.SYNC_MD]: () => void;
   [RoomServiceMsg.UPDATE_MD]: (note: string) => void;
@@ -65,6 +66,7 @@ export interface ServerToClientEvents {
   [RoomServiceMsg.JOIN]: (customId: string) => void;
   [RoomServiceMsg.NOT_FOUND]: (roomID: string) => void;
   [RoomServiceMsg.LEAVE]: (customId: string) => void;
+  [RoomServiceMsg.TERMINATE]: () => void;
   [RoomServiceMsg.SYNC_USERS]: (users: Record<string, string>) => void;
   [RoomServiceMsg.UPDATE_MD]: (note: string) => void;
 
