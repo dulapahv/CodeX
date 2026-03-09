@@ -67,7 +67,7 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
             <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
             <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex w-full items-center justify-between sm:justify-between">
             <Button
               aria-label="Terminate room immediately"
               onClick={handleTerminateRoom}
@@ -75,18 +75,20 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
             >
               Terminate Room
             </Button>
-            <DialogClose asChild>
-              <Button aria-label="Cancel leaving room" variant="secondary">
-                Close
+            <div className="flex gap-2">
+              <DialogClose asChild>
+                <Button aria-label="Cancel leaving room" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+              <Button
+                aria-label="Confirm leaving room"
+                onClick={handleLeaveRoom}
+                variant="destructive"
+              >
+                Leave
               </Button>
-            </DialogClose>
-            <Button
-              aria-label="Confirm leaving room"
-              onClick={handleLeaveRoom}
-              variant="destructive"
-            >
-              Leave
-            </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
