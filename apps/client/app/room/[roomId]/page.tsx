@@ -25,6 +25,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { toast } from "sonner";
+
 import { CodeEditor } from "@/components/code-editor";
 import { FollowUser } from "@/components/follow-user";
 import { LeaveButton } from "@/components/leave-button";
@@ -248,6 +250,7 @@ export default function Room() {
     socket.on("connect", handleReconnect);
 
     const handleTerminate = () => {
+      toast.error("This room has been terminated by the host.");
       storage.clear();
       router.replace("/");
     };
