@@ -53,7 +53,7 @@ export async function executeCode(input: ExecuteInput) {
       detail,
       "",
       "This language is not supported or the execution server is down.",
-      "To change language, click on the Language selection at the bottom right of the status bar.",
+      "To change language, select language via the dropdown in the bottom right corner.",
     ].join("\n");
 
     return {
