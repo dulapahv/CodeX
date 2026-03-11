@@ -129,14 +129,11 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
                     role="status"
                   >
                     <p className="text-lg sm:text-xl">
-                      You&apos;ve been invited to a coding session!
+                      Enter your name to join the room
                     </p>
                     <p className="text-base sm:text-lg">
                       Room:{" "}
                       <span className="font-bold font-mono">{roomId}</span>
-                    </p>
-                    <p className="text-lg sm:text-xl">
-                      Enter your name to join the room
                     </p>
                   </div>
                   <InvitedSection
