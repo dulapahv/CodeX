@@ -114,25 +114,34 @@ export const updateLang = (socket: Socket, langId: string): void => {
 };
 
 /**
- * Original optimized string splicing function
+ * Convert a 1-indexed (line, column) position to a 0-indexed character offset.
+ * Matches Monaco Editor's coordinate system where lines and columns start at 1.
  */
-const spliceString = (
-  original: string,
-  start: number,
-  end: number,
-  insert: string
-): string => {
-  if (start === end && !insert) {
-    return original;
+const positionToOffset = (
+  code: string,
+  line: number,
+  column: number
+): number => {
+  let offset = 0;
+  let currentLine = 1;
+
+  while (currentLine < line) {
+    const nextNewline = code.indexOf("\n", offset);
+    if (nextNewline === -1) {
+      offset = code.length;
+      break;
+    }
+    offset = nextNewline + 1;
+    currentLine++;
   }
-  if (start === 0 && end === original.length) {
-    return insert;
-  }
-  return original.substring(0, start) + insert + original.substring(end);
+
+  return Math.min(offset + column - 1, code.length);
 };
 
 /**
- * Optimized code update with existing string manipulation logic
+ * Apply an edit operation to the server-side document using offset-based
+ * string replacement. This mirrors exactly what Monaco's pushEditOperations
+ * does internally: replace the text in range [start, end) with new text.
  */
 export const updateCode = (socket: Socket, operation: EditOp): void => {
   const roomID = getUserRoom(socket);
@@ -142,95 +151,19 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     return;
   }
 
-  // Emit update with custom ID
   socket.to(roomID).emit(CodeServiceMsg.UPDATE_CODE, operation);
 
   const currentCode = getCode(roomID);
   const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
 
-  // Split lines only once and reuse the array
-  const lines = currentCode.split("\n");
-  const maxLine = Math.max(lines.length, startLnNum);
+  const startOffset = positionToOffset(currentCode, startLnNum, startCol);
+  const endOffset = positionToOffset(currentCode, endLnNum, endCol);
 
-  // Preallocate array size if needed
-  if (maxLine > lines.length) {
-    lines.length = maxLine;
-    lines.fill("", lines.length, maxLine);
-  }
+  const updatedCode =
+    currentCode.substring(0, startOffset) +
+    txt +
+    currentCode.substring(endOffset);
 
-  // Handle empty line deletion specifically
-  const isEmptyLineDeletion =
-    txt === "" && startLnNum < endLnNum && startCol === 1 && endCol === 1;
-
-  if (isEmptyLineDeletion) {
-    // Remove the empty lines
-    lines.splice(startLnNum - 1, endLnNum - startLnNum);
-  } else if (startLnNum === endLnNum) {
-    // Single line change
-    const lineIndex = startLnNum - 1;
-    const line = lines[lineIndex] || "";
-
-    // Boundary check with bitwise operations for performance
-    const safeStartCol = Math.max(0, Math.min(startCol - 1, line.length));
-    const safeEndCol = Math.max(0, Math.min(endCol - 1, line.length));
-
-    // Optimize string concatenation
-    lines[lineIndex] = spliceString(line, safeStartCol, safeEndCol, txt);
-  } else {
-    // Multi-line change
-    const textLines = txt.split("\n");
-    const startLineIndex = startLnNum - 1;
-    const endLineIndex = endLnNum - 1;
-
-    // Get start and end lines
-    const startLine = lines[startLineIndex] || "";
-    const endLine = lines[endLineIndex] || "";
-
-    // Calculate safe column positions
-    const safeStartCol = Math.min(Math.max(0, startCol - 1), startLine.length);
-    const safeEndCol = Math.min(Math.max(0, endCol - 1), endLine.length);
-
-    // Create new start and end lines efficiently
-    const newStartLine = spliceString(
-      startLine,
-      safeStartCol,
-      startLine.length,
-      textLines[0]
-    );
-    const newEndLine = spliceString(
-      endLine,
-      0,
-      safeEndCol,
-      textLines.at(-1) ?? ""
-    );
-
-    // Optimize array operations by calculating exact size needed
-    const newLinesCount = textLines.length;
-    const removedLinesCount = endLineIndex - startLineIndex + 1;
-    const sizeChange = newLinesCount - removedLinesCount;
-
-    // Pre-allocate array if growing
-    if (sizeChange > 0) {
-      lines.length += sizeChange;
-    }
-
-    // Efficient array manipulation
-    if (newLinesCount === 2) {
-      // Optimize common case of 2-line change
-      lines[startLineIndex] = newStartLine;
-      lines[startLineIndex + 1] = newEndLine;
-      if (removedLinesCount > 2) {
-        lines.splice(startLineIndex + 2, removedLinesCount - 2);
-      }
-    } else {
-      // General case
-      const newLines = [newStartLine, ...textLines.slice(1, -1), newEndLine];
-      lines.splice(startLineIndex, removedLinesCount, ...newLines);
-    }
-  }
-
-  // Join lines and update storage
-  const updatedCode = lines.join("\n");
   const data = initializeRoom(roomID);
   data.code = updatedCode;
 };
