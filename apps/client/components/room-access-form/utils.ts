@@ -11,12 +11,9 @@
 
 import { RoomServiceMsg } from "@codex/types/message";
 import type { ChangeEvent } from "react";
-import type { UseFormSetValue } from "react-hook-form";
 
 import { storage } from "@/lib/services/storage";
 import { getSocket } from "@/lib/socket";
-
-import type { JoinRoomForm } from "./types";
 
 const DASH_PATTERN = /-/g;
 const NON_ALPHANUMERIC_PATTERN = /[^A-Z0-9]/g;
@@ -64,22 +61,10 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
 /**
  * Handles room ID input changes with formatting
  * @param e - Change event from input element
- * @param setValue - React Hook Form setValue function
  */
-export const onRoomIdChange = (
-  e: ChangeEvent<HTMLInputElement>,
-  setValue: UseFormSetValue<JoinRoomForm>
-) => {
+export const onRoomIdChange = (e: ChangeEvent<HTMLInputElement>) => {
   const rawValue = e.target.value.toUpperCase();
-  const formattedValue = formatRoomId(rawValue);
-
-  // Update the input value
-  e.target.value = formattedValue;
-
-  // Update form value
-  setValue("roomId", formattedValue, {
-    shouldValidate: formattedValue.length === 9,
-  });
+  e.target.value = formatRoomId(rawValue);
 };
 
 const formatRoomId = (value: string) => {

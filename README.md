@@ -273,7 +273,7 @@ pnpm --filter server test:socket
   - [Sandpack](https://sandpack.codesandbox.io/) (live preview)
   - [MDXEditor](https://mdxeditor.dev/) (notepad)
   - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
-  - [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev/)
+  - [Radix Form](https://www.radix-ui.com/primitives/docs/components/form) (form validation)
 - **Backend:**
   - [Node.js](https://nodejs.org)
   - [TypeScript](https://www.typescriptlang.org)

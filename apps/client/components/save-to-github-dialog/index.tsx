@@ -4,9 +4,9 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import * as Form from "@radix-ui/react-form";
 import type * as monaco from "monaco-editor";
 import { forwardRef, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { RepoBrowser } from "@/components/repo-browser";
 import {
   type ExtendedTreeDataItem,
@@ -24,9 +24,10 @@ import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { useCommitForm } from "./hooks/useCommitForm";
 import { getDisplayPath } from "./utils/get-display-path";
 import { onSubmit } from "./utils/on-submit";
+
+const COMMIT_FORM_ID = "commit-form";
 
 interface SaveToGithubDialogProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
@@ -38,15 +39,9 @@ const SaveToGithubDialog = forwardRef<
   SaveToGithubDialogRef,
   SaveToGithubDialogProps
 >(({ editor }, ref) => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    clearErrors,
-    reset,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useCommitForm();
+  const [fileName, setFileName] = useState("");
+  const [commitSummary, setCommitSummary] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
     null
@@ -60,23 +55,38 @@ const SaveToGithubDialog = forwardRef<
       setRepo("");
       setBranch("");
       setSelectedItem(null);
-      reset();
+      setFileName("");
+      setCommitSummary("");
     },
   });
 
   const { githubUser, isLoading } = useGithubAuth(isOpen);
 
   useEffect(() => {
-    const fileName =
-      selectedItem?.type === itemType.FILE ? selectedItem.name : "";
-    if (fileName) {
-      setValue("fileName", fileName);
-      clearErrors("fileName");
+    const name = selectedItem?.type === itemType.FILE ? selectedItem.name : "";
+    if (name) {
+      setFileName(name);
     }
-  }, [selectedItem, setValue, clearErrors]);
+  }, [selectedItem]);
 
-  const onError = () => {
-    toast.error("Please check the information and try again.");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await onSubmit(
+        {
+          fileName: fileName.trim(),
+          commitSummary: commitSummary.trim(),
+        },
+        selectedItem,
+        repo,
+        branch,
+        editor?.getModel()?.getValue() || "",
+        closeDialog
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const content =
@@ -90,52 +100,52 @@ const SaveToGithubDialog = forwardRef<
             setSelectedItem={setSelectedItem}
           />
         </div>
-        <div className="mx-4 flex-shrink-0 space-y-3 md:mx-0">
-          <fieldset aria-labelledby="filename-group">
-            <span className="sr-only" id="filename-group">
-              File details
-            </span>
-            <Input
-              aria-describedby={errors.fileName ? "filename-error" : undefined}
-              aria-invalid={errors.fileName ? "true" : "false"}
-              disabled={isSubmitting}
-              placeholder="Filename (e.g., hello.js)"
-              {...register("fileName")}
-            />
-            {errors.fileName && (
-              <p
-                className="text-red-500 text-sm"
-                id="filename-error"
-                role="alert"
-              >
-                {errors.fileName.message}
-              </p>
-            )}
-          </fieldset>
-          <fieldset aria-labelledby="commit-group">
-            <span className="sr-only" id="commit-group">
-              Commit details
-            </span>
-            <Input
-              aria-describedby={
-                errors.commitSummary ? "commit-error" : undefined
-              }
-              aria-invalid={errors.commitSummary ? "true" : "false"}
-              disabled={isSubmitting}
-              placeholder="Commit summary"
-              {...register("commitSummary")}
-            />
-            {errors.commitSummary && (
-              <p
-                className="text-red-500 text-sm"
-                id="commit-error"
-                role="alert"
-              >
-                {errors.commitSummary.message}
-              </p>
-            )}
-          </fieldset>
-        </div>
+        <Form.Root
+          className="mx-4 flex-shrink-0 space-y-3 md:mx-0"
+          id={COMMIT_FORM_ID}
+          onSubmit={handleSubmit}
+        >
+          <Form.Field name="fileName">
+            <Form.Control asChild>
+              <Input
+                disabled={isSubmitting}
+                onChange={(e) => setFileName(e.target.value)}
+                placeholder="Filename (e.g., hello.js)"
+                required
+                value={fileName}
+              />
+            </Form.Control>
+            <Form.Message className="text-red-500 text-sm" match="valueMissing">
+              File name is required
+            </Form.Message>
+            <Form.Message
+              className="text-red-500 text-sm"
+              match={(value) => value.trim().length > 4096}
+            >
+              File name must be less than 4096 characters
+            </Form.Message>
+          </Form.Field>
+          <Form.Field name="commitSummary">
+            <Form.Control asChild>
+              <Input
+                disabled={isSubmitting}
+                onChange={(e) => setCommitSummary(e.target.value)}
+                placeholder="Commit summary"
+                required
+                value={commitSummary}
+              />
+            </Form.Control>
+            <Form.Message className="text-red-500 text-sm" match="valueMissing">
+              Commit summary is required
+            </Form.Message>
+            <Form.Message
+              className="text-red-500 text-sm"
+              match={(value) => value.trim().length > 72}
+            >
+              Commit summary must be less than 72 characters
+            </Form.Message>
+          </Form.Field>
+        </Form.Root>
       </>
     ) : (
       <GithubAuthPrompt
@@ -146,21 +156,7 @@ const SaveToGithubDialog = forwardRef<
     );
 
   const footer = (
-    <form
-      className="flex w-full items-center justify-between gap-2"
-      onSubmit={handleSubmit(
-        (data) =>
-          onSubmit(
-            data,
-            selectedItem,
-            repo,
-            branch,
-            editor?.getModel()?.getValue() || "",
-            closeDialog
-          ),
-        onError
-      )}
-    >
+    <div className="flex w-full items-center justify-between gap-2">
       <GithubFooterInfo
         actionLabel="Save to"
         displayPath={getDisplayPath(
@@ -168,7 +164,7 @@ const SaveToGithubDialog = forwardRef<
           githubUser,
           branch,
           selectedItem,
-          watch("fileName")
+          fileName
         )}
         githubUser={githubUser}
       />
@@ -189,6 +185,7 @@ const SaveToGithubDialog = forwardRef<
               !selectedItem ||
               selectedItem.type === itemType.REPO
             }
+            form={COMMIT_FORM_ID}
             type="submit"
           >
             {isSubmitting ? (
@@ -202,7 +199,7 @@ const SaveToGithubDialog = forwardRef<
           </Button>
         )}
       </div>
-    </form>
+    </div>
   );
 
   return (

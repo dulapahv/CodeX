@@ -12,6 +12,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,8 +24,6 @@ import { CreateRoomSection } from "./components/create-room-section";
 import { InvitedSection } from "./components/invited-section";
 import { JoinRoomSection } from "./components/join-room-section";
 import { RedirectingCard } from "./components/redirecting-card";
-import { useCreateRoomForm } from "./hooks/useCreateRoomForm";
-import { useJoinRoomForm } from "./hooks/useJoinRoomForm";
 import type { CreateRoomForm, JoinRoomForm } from "./types";
 import { createRoom, isRoomIdValid, joinRoom } from "./utils";
 
@@ -34,52 +33,37 @@ interface RoomAccessFormProps {
 
 const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
   const router = useRouter();
+  const [isCreating, setIsCreating] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const {
-    register: registerCreate,
-    handleSubmit: handleSubmitCreate,
-    formState: {
-      errors: createErrors,
-      isSubmitting: isCreating,
-      isSubmitSuccessful: createSuccessful,
-    },
-  } = useCreateRoomForm();
-
-  const {
-    register: registerJoin,
-    handleSubmit: handleSubmitJoin,
-    setValue: setJoinValue,
-    formState: {
-      errors: joinErrors,
-      isSubmitting: isJoining,
-      isSubmitSuccessful: joinSuccessful,
-    },
-  } = useJoinRoomForm(roomId);
-
-  const handleJoinRoom = (data: JoinRoomForm) => {
-    const { name, roomId } = data;
+  const handleJoinRoom = async (data: JoinRoomForm) => {
+    setIsJoining(true);
     try {
-      const joinPromise = joinRoom(roomId, name);
+      const joinPromise = joinRoom(data.roomId, data.name);
 
       toast.promise(joinPromise, {
         loading: "Joining room, please wait...",
         success: () => {
-          router.push(`/room/${roomId}`);
+          router.push(`/room/${data.roomId}`);
           return "Joined room successfully. Happy coding!";
         },
         error: (error) => `Failed to join room.\n${parseError(error)}`,
       });
 
-      return joinPromise;
+      await joinPromise;
+      setIsSuccessful(true);
     } catch {
       // Toast already handles the error
+    } finally {
+      setIsJoining(false);
     }
   };
 
-  const handleCreateRoom = (data: CreateRoomForm) => {
+  const handleCreateRoom = async (data: CreateRoomForm) => {
+    setIsCreating(true);
     try {
-      const { name } = data;
-      const createPromise = createRoom(name);
+      const createPromise = createRoom(data.name);
 
       toast.promise(createPromise, {
         loading: "Creating room, please wait...",
@@ -91,17 +75,16 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
         error: (error) => `Failed to create room.\n${parseError(error)}`,
       });
 
-      return createPromise;
+      await createPromise;
+      setIsSuccessful(true);
     } catch {
       // Toast already handles the error
+    } finally {
+      setIsCreating(false);
     }
   };
 
-  const handleFormError = () => {
-    toast.error("Please check the information and try again.");
-  };
-
-  if (createSuccessful || joinSuccessful) {
+  if (isSuccessful) {
     return (
       <div className="my-32 flex items-center justify-center">
         <RedirectingCard />
@@ -137,13 +120,10 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
                     </p>
                   </div>
                   <InvitedSection
-                    errors={joinErrors}
-                    handleSubmit={handleSubmitJoin}
                     isCreating={isCreating}
                     isSubmitting={isJoining}
-                    onError={handleFormError}
                     onSubmit={handleJoinRoom}
-                    register={registerJoin}
+                    roomId={roomId}
                   />
                   <BackButton
                     disabled={isJoining}
@@ -180,26 +160,18 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
               <>
                 <section aria-label="Create new room">
                   <CreateRoomSection
-                    errors={createErrors}
-                    handleSubmit={handleSubmitCreate}
                     isJoining={isJoining}
                     isSubmitting={isCreating}
-                    onError={handleFormError}
                     onSubmit={handleCreateRoom}
-                    register={registerCreate}
                   />
                 </section>
                 <Separator />
                 <section aria-label="Join existing room">
                   <JoinRoomSection
-                    errors={joinErrors}
-                    handleSubmit={handleSubmitJoin}
+                    defaultRoomId=""
                     isCreating={isCreating}
                     isSubmitting={isJoining}
-                    onError={handleFormError}
                     onSubmit={handleJoinRoom}
-                    register={registerJoin}
-                    setValue={setJoinValue}
                   />
                 </section>
               </>

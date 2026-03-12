@@ -9,117 +9,108 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import * as Form from "@radix-ui/react-form";
 import { ArrowRight } from "lucide-react";
-import type {
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-  UseFormSetValue,
-} from "react-hook-form";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { NAME_MAX_LENGTH } from "@/lib/constants";
 
 import type { JoinRoomForm } from "../types";
 import { onRoomIdChange } from "../utils";
 
 interface JoinRoomSectionProps {
-  errors: FieldErrors<JoinRoomForm>;
-  handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
+  defaultRoomId: string;
   isCreating: boolean;
   isSubmitting: boolean;
-  onError: () => void;
-  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
-  register: UseFormRegister<JoinRoomForm>;
-  setValue: UseFormSetValue<JoinRoomForm>;
+  onSubmit: (data: JoinRoomForm) => void;
 }
 
 export const JoinRoomSection = ({
-  register,
-  setValue,
-  handleSubmit,
+  defaultRoomId,
   onSubmit,
-  onError,
-  errors,
   isSubmitting,
   isCreating,
 }: JoinRoomSectionProps) => {
   const isDisabled = isCreating || isSubmitting;
-  const roomIdErrorId = "room-id-error";
-  const nameErrorId = "name-join-error";
 
   return (
     <section aria-labelledby="join-room-heading">
-      <form
+      <Form.Root
         className="flex flex-col space-y-2 sm:space-y-4"
-        noValidate
-        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const name = (formData.get("name") as string).trim();
+          const roomId = formData.get("roomId") as string;
+          onSubmit({ name, roomId });
+        }}
       >
         <h1 className="font-medium text-lg sm:text-xl" id="join-room-heading">
           Join a Room
         </h1>
-        <fieldset
-          aria-labelledby="room-id"
-          className="flex flex-col space-y-1.5"
-        >
-          <Label className="text-sm sm:text-base" htmlFor="room-id">
-            Room ID
-          </Label>
-          <Input
-            aria-describedby={errors.roomId ? roomIdErrorId : undefined}
-            aria-invalid={errors.roomId ? "true" : "false"}
-            aria-required="true"
-            className="font-mono text-sm sm:text-base"
+        <Form.Field className="flex flex-col space-y-1.5" name="roomId">
+          <Form.Label className="text-sm sm:text-base">Room ID</Form.Label>
+          <Form.Control asChild>
+            <Input
+              className="font-mono text-sm sm:text-base"
+              defaultValue={defaultRoomId}
+              disabled={isDisabled}
+              onChange={onRoomIdChange}
+              pattern="[A-Z0-9]{4}-[A-Z0-9]{4}"
+              placeholder="XXXX-XXXX"
+              required
+            />
+          </Form.Control>
+          <Form.Message className="text-red-500 text-sm" match="valueMissing">
+            Room ID is required
+          </Form.Message>
+          <Form.Message
+            className="text-red-500 text-sm"
+            match="patternMismatch"
+          >
+            Invalid room ID
+          </Form.Message>
+        </Form.Field>
+        <Form.Field className="flex flex-col space-y-1.5" name="name">
+          <Form.Label className="text-sm sm:text-base">Name</Form.Label>
+          <Form.Control asChild>
+            <Input
+              autoComplete="name"
+              className="text-sm sm:text-base"
+              disabled={isDisabled}
+              maxLength={NAME_MAX_LENGTH}
+              placeholder="Enter your name"
+              required
+            />
+          </Form.Control>
+          <Form.Message className="text-red-500 text-sm" match="valueMissing">
+            Name is required
+          </Form.Message>
+          <Form.Message
+            className="text-red-500 text-sm"
+            match={(value) => value.trim().length > NAME_MAX_LENGTH}
+          >
+            {`Name must not exceed ${NAME_MAX_LENGTH} characters`}
+          </Form.Message>
+        </Form.Field>
+        <Form.Submit asChild>
+          <Button
+            aria-busy={isSubmitting}
+            className="bg-primary text-sm sm:text-base"
             disabled={isDisabled}
-            id="room-id"
-            placeholder="XXXX-XXXX"
-            {...register("roomId", {
-              onChange: (e) => onRoomIdChange(e, setValue),
-            })}
-          />
-          {errors.roomId && (
-            <p className="text-red-500 text-sm" id={roomIdErrorId} role="alert">
-              {errors.roomId.message}
-            </p>
-          )}
-        </fieldset>
-        <fieldset
-          aria-labelledby="name-join"
-          className="flex flex-col space-y-1.5"
-        >
-          <Label className="text-sm sm:text-base" htmlFor="name-join">
-            Name
-          </Label>
-          <Input
-            aria-describedby={errors.name ? nameErrorId : undefined}
-            aria-invalid={errors.name ? "true" : "false"}
-            aria-required="true"
-            className="text-sm sm:text-base"
-            disabled={isDisabled}
-            id="name-join"
-            placeholder="Enter your name"
-            {...register("name")}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm" id={nameErrorId} role="alert">
-              {errors.name.message}
-            </p>
-          )}
-        </fieldset>
-        <Button
-          aria-busy={isSubmitting}
-          className="bg-primary text-sm sm:text-base"
-          disabled={isDisabled}
-          type="submit"
-        >
-          {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
-          {isSubmitting ? "Joining..." : "Join Room"}
-          {!isSubmitting && (
-            <ArrowRight aria-hidden="true" className="ml-2 size-4 sm:size-5" />
-          )}
-        </Button>
-      </form>
+          >
+            {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
+            {isSubmitting ? "Joining..." : "Join Room"}
+            {!isSubmitting && (
+              <ArrowRight
+                aria-hidden="true"
+                className="ml-2 size-4 sm:size-5"
+              />
+            )}
+          </Button>
+        </Form.Submit>
+      </Form.Root>
     </section>
   );
 };

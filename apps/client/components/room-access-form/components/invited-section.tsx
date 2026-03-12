@@ -9,84 +9,81 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import * as Form from "@radix-ui/react-form";
 import { ArrowRight } from "lucide-react";
-import type {
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-} from "react-hook-form";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { NAME_MAX_LENGTH } from "@/lib/constants";
 
 import type { JoinRoomForm } from "../types";
 
 interface InvitedSectionProps {
-  errors: FieldErrors<JoinRoomForm>;
-  handleSubmit: UseFormHandleSubmit<JoinRoomForm>;
   isCreating: boolean;
   isSubmitting: boolean;
-  onError: () => void;
-  onSubmit: (data: JoinRoomForm) => Promise<boolean> | undefined;
-  register: UseFormRegister<JoinRoomForm>;
+  onSubmit: (data: JoinRoomForm) => void;
+  roomId: string;
 }
 
 export const InvitedSection = ({
-  register,
-  handleSubmit,
+  roomId,
   onSubmit,
-  onError,
-  errors,
   isSubmitting,
   isCreating,
 }: InvitedSectionProps) => {
   const isDisabled = isCreating || isSubmitting;
-  const nameErrorId = "invited-name-error";
 
   return (
     <section aria-label="Join Room Form">
-      <form
+      <Form.Root
         className="flex flex-col gap-y-4"
-        noValidate
-        onSubmit={handleSubmit((data) => onSubmit(data), onError)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const name = (formData.get("name") as string).trim();
+          onSubmit({ name, roomId });
+        }}
       >
-        <fieldset
-          aria-labelledby="name-join"
-          className="flex flex-col space-y-1.5"
-        >
-          <Label className="text-sm sm:text-base" htmlFor="name-join">
-            Name
-          </Label>
-          <Input
-            aria-describedby={errors.name ? nameErrorId : undefined}
-            aria-invalid={errors.name ? "true" : "false"}
-            aria-required="true"
-            className="text-sm sm:text-base"
+        <Form.Field className="flex flex-col space-y-1.5" name="name">
+          <Form.Label className="text-sm sm:text-base">Name</Form.Label>
+          <Form.Control asChild>
+            <Input
+              autoComplete="name"
+              autoFocus
+              className="text-sm sm:text-base"
+              disabled={isDisabled}
+              maxLength={NAME_MAX_LENGTH}
+              placeholder="Enter your name"
+              required
+            />
+          </Form.Control>
+          <Form.Message className="text-red-500 text-sm" match="valueMissing">
+            Name is required
+          </Form.Message>
+          <Form.Message
+            className="text-red-500 text-sm"
+            match={(value) => value.trim().length > NAME_MAX_LENGTH}
+          >
+            {`Name must not exceed ${NAME_MAX_LENGTH} characters`}
+          </Form.Message>
+        </Form.Field>
+        <Form.Submit asChild>
+          <Button
+            aria-busy={isSubmitting}
+            className="bg-primary text-sm sm:text-base"
             disabled={isDisabled}
-            id="name-join"
-            placeholder="Enter your name"
-            {...register("name")}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm" id={nameErrorId} role="alert">
-              {errors.name.message}
-            </p>
-          )}
-        </fieldset>
-        <Button
-          aria-busy={isSubmitting}
-          className="bg-primary text-sm sm:text-base"
-          disabled={isDisabled}
-          type="submit"
-        >
-          {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
-          {isSubmitting ? "Joining..." : "Join Room"}
-          {!isSubmitting && (
-            <ArrowRight aria-hidden="true" className="ml-2 size-4 sm:size-5" />
-          )}
-        </Button>
-      </form>
+          >
+            {isSubmitting && <Spinner className="mr-2 size-4 sm:size-5" />}
+            {isSubmitting ? "Joining..." : "Join Room"}
+            {!isSubmitting && (
+              <ArrowRight
+                aria-hidden="true"
+                className="ml-2 size-4 sm:size-5"
+              />
+            )}
+          </Button>
+        </Form.Submit>
+      </Form.Root>
     </section>
   );
 };
