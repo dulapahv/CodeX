@@ -42,7 +42,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     selectedVideoDevice,
     selectedAudioInput,
     selectedAudioOutput,
-    hasRequestedPermissions,
     setSelectedVideoDevice,
     setSelectedAudioInput,
     handleDevicePermission,
@@ -81,7 +80,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
   // Socket events management
   useSocketEvents({
-    hasRequestedPermissions,
     speakerOn,
     streamRef,
     peersRef,

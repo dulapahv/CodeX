@@ -1,10 +1,9 @@
 /**
  * Device stream control functions for webcam interface.
  * Features:
- * - Camera toggle control
- * - Permission handling
- * - Stream initialization
- * - Error handling
+ * - Camera toggle with peer track cleanup
+ * - Camera rotation (mobile)
+ * - Microphone toggle
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -12,42 +11,72 @@
 import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { isMobile } from "react-device-detect";
+import type Peer from "simple-peer";
 import { toast } from "sonner";
 
 import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 
-// Toggle camera
+// Remove all tracks from peer connections before stopping them
+const removeTracksFromPeers = (
+  stream: MediaStream,
+  peersRef: RefObject<Record<string, Peer.Instance>>
+) => {
+  const tracks = stream.getTracks();
+  for (const peer of Object.values(peersRef.current)) {
+    if (peer.destroyed) {
+      continue;
+    }
+    for (const track of tracks) {
+      try {
+        peer.removeTrack(track, stream);
+      } catch {
+        // Track may not be on this peer, that's OK
+      }
+    }
+  }
+};
+
+// Stop all tracks and clean up the local stream
+const stopLocalStream = (
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>
+) => {
+  if (streamRef.current) {
+    for (const track of streamRef.current.getTracks()) {
+      track.stop();
+    }
+  }
+  if (videoRef.current) {
+    videoRef.current.srcObject = null;
+  }
+  streamRef.current = null;
+};
+
+// Toggle camera on/off
 export const toggleCamera = async (
   cameraOn: boolean,
   setCameraOn: Dispatch<SetStateAction<boolean>>,
   setMicOn: Dispatch<SetStateAction<boolean>>,
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
   getMedia: () => Promise<boolean>
 ) => {
   const socket = getSocket();
 
   try {
     if (cameraOn) {
-      // Turning off camera
+      // Turning off - remove tracks from peers, stop stream, notify others
       if (streamRef.current) {
-        for (const track of streamRef.current.getTracks()) {
-          track.stop();
-        }
+        removeTracksFromPeers(streamRef.current, peersRef);
       }
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
-
+      stopLocalStream(streamRef, videoRef);
       socket.emit(StreamServiceMsg.CAMERA_OFF);
-      streamRef.current = null;
       setCameraOn(false);
       setMicOn(false);
     } else {
-      // Get the media stream directly with selected devices
-      // No need for separate permission check since we already did it on mount
+      // Turning on - get media stream and set up peer tracks
       const mediaStarted = await getMedia();
       if (mediaStarted) {
         setCameraOn(true);
@@ -58,7 +87,7 @@ export const toggleCamera = async (
   }
 };
 
-// Rotate camera
+// Rotate camera (mobile only)
 export const rotateCamera = async (
   cameraOn: boolean,
   cameraFacingMode: string,

@@ -27,9 +27,8 @@ export const useMediaDevices = () => {
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>("");
   const [selectedAudioInput, setSelectedAudioInput] = useState<string>("");
   const [selectedAudioOutput, setSelectedAudioOutput] = useState<string>("");
-  const [hasRequestedPermissions, setHasRequestedPermissions] = useState(false);
 
-  // Initialize device enumeration
+  // Initialize device enumeration (no getUserMedia - avoids camera flash)
   useEffect(() => {
     const handleDeviceChange = async () => {
       await enumerateDevices(
@@ -53,53 +52,6 @@ export const useMediaDevices = () => {
       );
     };
   }, [selectedVideoDevice, selectedAudioInput, selectedAudioOutput]);
-
-  // Request permissions on mount
-  useEffect(() => {
-    const requestInitialPermissions = async () => {
-      if (hasRequestedPermissions) {
-        return;
-      }
-
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasLabels = devices.some((device) => device.label !== "");
-
-        if (!hasLabels) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" },
-            audio: true,
-          });
-          for (const track of stream.getTracks()) {
-            track.stop();
-          }
-        }
-
-        await enumerateDevices(
-          setVideoDevices,
-          setAudioInputDevices,
-          setAudioOutputDevices,
-          selectedVideoDevice,
-          setSelectedVideoDevice,
-          selectedAudioInput,
-          setSelectedAudioInput,
-          selectedAudioOutput,
-          setSelectedAudioOutput
-        );
-
-        setHasRequestedPermissions(true);
-      } catch (error) {
-        console.warn("Initial permission request failed:", error);
-      }
-    };
-
-    requestInitialPermissions();
-  }, [
-    hasRequestedPermissions,
-    selectedAudioInput,
-    selectedAudioOutput,
-    selectedVideoDevice,
-  ]);
 
   const handleDevicePermission = useCallback(
     async (kind: "videoinput" | "audioinput" | "audiooutput") => {
@@ -141,7 +93,6 @@ export const useMediaDevices = () => {
     selectedVideoDevice,
     selectedAudioInput,
     selectedAudioOutput,
-    hasRequestedPermissions,
     setSelectedVideoDevice,
     setSelectedAudioInput,
     handleDevicePermission,

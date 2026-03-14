@@ -86,6 +86,7 @@ export const useWebcamStream = ({
         setMicOn,
         streamRef,
         videoRef,
+        peersRef,
         () => handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
       );
     },
@@ -142,9 +143,17 @@ export const useWebcamStream = ({
       pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>,
       setSelectedVideoDevice: (value: string) => void
     ) => {
+      // Always store the preference
+      setSelectedVideoDevice(deviceId);
+
+      // Only activate the device if camera is currently on
+      if (!cameraOn) {
+        return;
+      }
+
       try {
         const { switchVideoDevice } = await import("../utils/media");
-        const success = await switchVideoDevice(
+        await switchVideoDevice(
           deviceId,
           streamRef,
           videoRef,
@@ -156,15 +165,11 @@ export const useWebcamStream = ({
           selectedAudioOutput,
           cameraFacingMode
         );
-
-        if (success) {
-          setSelectedVideoDevice(deviceId);
-        }
       } catch (error) {
         toast.error(`Failed to switch video device: ${parseError(error)}`);
       }
     },
-    [micOn, selectedAudioInput, selectedAudioOutput, cameraFacingMode]
+    [cameraOn, micOn, selectedAudioInput, selectedAudioOutput, cameraFacingMode]
   );
 
   const handleAudioDeviceSwitch = useCallback(
@@ -177,9 +182,17 @@ export const useWebcamStream = ({
       pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>,
       setSelectedAudioInput: (value: string) => void
     ) => {
+      // Always store the preference
+      setSelectedAudioInput(deviceId);
+
+      // Only activate the device if camera is currently on
+      if (!cameraOn) {
+        return;
+      }
+
       try {
         const { switchAudioDevice } = await import("../utils/media");
-        const success = await switchAudioDevice(
+        await switchAudioDevice(
           deviceId,
           streamRef,
           videoRef,
@@ -191,15 +204,17 @@ export const useWebcamStream = ({
           selectedAudioOutput,
           cameraFacingMode
         );
-
-        if (success) {
-          setSelectedAudioInput(deviceId);
-        }
       } catch (error) {
         toast.error(`Failed to switch audio device: ${parseError(error)}`);
       }
     },
-    [micOn, selectedVideoDevice, selectedAudioOutput, cameraFacingMode]
+    [
+      cameraOn,
+      micOn,
+      selectedVideoDevice,
+      selectedAudioOutput,
+      cameraFacingMode,
+    ]
   );
 
   return {

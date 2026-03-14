@@ -1,10 +1,9 @@
 /**
- * Media stream control functions for webcam interface.
+ * Media stream utilities for webcam interface.
  * Features:
  * - Stream initialization with device selection
- * - Track cleanup and management
- * - Peer connection setup
- * - Error handling
+ * - Peer connection recreation on stream change
+ * - Device switching
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -19,7 +18,7 @@ import { parseError } from "@/lib/utils";
 
 import { cleanupPeer, createPeer } from "./peer";
 
-// Get local media stream with proper camera constraints
+// Get local media stream and recreate peer connections with the new stream
 export const getMedia = async (
   selectedVideoDevice: string,
   selectedAudioInput: string,
@@ -33,13 +32,11 @@ export const getMedia = async (
     SetStateAction<Record<string, MediaStream | null>>
   >,
   pendingSignalsRef: RefObject<Record<string, Peer.SignalData[]>>
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: media handling requires many device/stream branches
 ) => {
   try {
     // Stop any existing tracks before requesting new ones
     if (streamRef.current) {
-      const tracks = streamRef.current.getTracks();
-      for (const track of tracks) {
+      for (const track of streamRef.current.getTracks()) {
         track.stop();
       }
     }
@@ -66,19 +63,19 @@ export const getMedia = async (
       ? { deviceId: { exact: selectedAudioInput } }
       : true;
 
-    // Complete constraints object
-    const constraints: MediaStreamConstraints = {
+    // Get new stream
+    const newStream = await navigator.mediaDevices.getUserMedia({
       video: videoConstraints,
       audio: audioConstraints,
-    };
-
-    // Get new stream
-    const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+    });
 
     // Set audio track state based on mic status
     for (const track of newStream.getAudioTracks()) {
       track.enabled = micOn;
     }
+
+    // Update stream reference before peer recreation
+    streamRef.current = newStream;
 
     // Update video element
     if (videoRef.current) {
@@ -97,41 +94,22 @@ export const getMedia = async (
       }
     }
 
-    // Update peer connections with new tracks
-    for (const [userID, peer] of Object.entries(peersRef.current)) {
-      if (!peer.destroyed) {
-        try {
-          // Remove old tracks
-          if (streamRef.current) {
-            for (const track of streamRef.current.getTracks()) {
-              if (streamRef.current) {
-                peer.removeTrack(track, streamRef.current);
-              }
-            }
-          }
-
-          // Add new tracks
-          for (const track of newStream.getTracks()) {
-            peer.addTrack(track, newStream);
-          }
-        } catch (error) {
-          console.warn("Error updating peer tracks:", error);
-          // If updating tracks fails, recreate the peer
-          cleanupPeer(userID, peersRef, setRemoteStreams);
-          createPeer(
-            userID,
-            true,
-            { current: newStream },
-            peersRef,
-            setRemoteStreams,
-            pendingSignalsRef
-          );
-        }
-      }
+    // Recreate all peer connections with the new stream.
+    // This is more reliable than trying to add/remove individual tracks,
+    // which can leave stale tracks and cause negotiation issues.
+    const peerUserIDs = Object.keys(peersRef.current);
+    for (const userID of peerUserIDs) {
+      cleanupPeer(userID, peersRef, setRemoteStreams);
+      createPeer(
+        userID,
+        true,
+        streamRef,
+        peersRef,
+        setRemoteStreams,
+        pendingSignalsRef
+      );
     }
 
-    // Update stream reference
-    streamRef.current = newStream;
     return true;
   } catch (error) {
     toast.error(`Error accessing media devices: ${parseError(error)}`);
@@ -139,7 +117,7 @@ export const getMedia = async (
   }
 };
 
-// Helper function to switch video device
+// Switch video device (calls getMedia with the new device)
 export const switchVideoDevice = (
   deviceId: string,
   streamRef: RefObject<MediaStream | null>,
@@ -168,7 +146,7 @@ export const switchVideoDevice = (
   );
 };
 
-// Helper function to switch audio input device
+// Switch audio input device (calls getMedia with the new device)
 export const switchAudioDevice = (
   deviceId: string,
   streamRef: RefObject<MediaStream | null>,

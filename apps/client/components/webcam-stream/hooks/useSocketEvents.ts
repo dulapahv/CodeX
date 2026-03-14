@@ -5,8 +5,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { StreamServiceMsg } from "@codex/types/message";
-import { useEffect } from "react";
+import { RoomServiceMsg, StreamServiceMsg } from "@codex/types/message";
+import { useEffect, useRef } from "react";
 import type Peer from "simple-peer";
 
 import { storage } from "@/lib/services/storage";
@@ -15,7 +15,6 @@ import { getSocket } from "@/lib/socket";
 import { cleanupPeer, createPeer, handleSignal } from "../utils/peer";
 
 interface UseSocketEventsProps {
-  hasRequestedPermissions: boolean;
   peersRef: React.RefObject<Record<string, Peer.Instance>>;
   pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>;
   setRemoteMicStates: React.Dispatch<
@@ -32,7 +31,6 @@ interface UseSocketEventsProps {
 }
 
 export const useSocketEvents = ({
-  hasRequestedPermissions,
   speakerOn,
   streamRef,
   peersRef,
@@ -43,27 +41,44 @@ export const useSocketEvents = ({
 }: UseSocketEventsProps) => {
   const socket = getSocket();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: refs and socket methods are stable, only re-run on permission/speaker changes
-  useEffect(() => {
-    if (hasRequestedPermissions) {
-      socket.emit(StreamServiceMsg.STREAM_READY);
-      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
-    }
+  // Use a ref for speakerOn so the one-time effect always has the latest value
+  const speakerOnRef = useRef(speakerOn);
+  speakerOnRef.current = speakerOn;
 
+  // One-time setup: emit STREAM_READY and register all socket event handlers.
+  // This effect runs only once on mount and cleans up on unmount.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refs and socket are stable, one-time setup on mount
+  useEffect(() => {
+    // Notify other users that we're ready for peer connections
+    socket.emit(StreamServiceMsg.STREAM_READY);
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOnRef.current);
+
+    // When another user is ready, create an initiator peer for them
     socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
-      if (hasRequestedPermissions) {
-        createPeer(
-          userID,
-          true,
-          streamRef,
-          peersRef,
-          setRemoteStreams,
-          pendingSignalsRef
-        );
-        socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
-      }
+      createPeer(
+        userID,
+        true,
+        streamRef,
+        peersRef,
+        setRemoteStreams,
+        pendingSignalsRef
+      );
+      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOnRef.current);
     });
 
+    // Handle incoming WebRTC signals (offers, answers, ICE candidates)
+    socket.on(StreamServiceMsg.SIGNAL, ({ userID, signal }) => {
+      handleSignal(
+        signal as Peer.SignalData,
+        userID,
+        streamRef,
+        peersRef,
+        setRemoteStreams,
+        pendingSignalsRef
+      );
+    });
+
+    // Track remote mic states
     socket.on(
       StreamServiceMsg.MIC_STATE,
       ({ userID, micOn }: { userID: string; micOn: boolean }) => {
@@ -71,6 +86,7 @@ export const useSocketEvents = ({
       }
     );
 
+    // Track remote speaker states
     socket.on(
       StreamServiceMsg.SPEAKER_STATE,
       ({ userID, speakersOn }: { userID: string; speakersOn: boolean }) => {
@@ -78,19 +94,7 @@ export const useSocketEvents = ({
       }
     );
 
-    socket.on(StreamServiceMsg.SIGNAL, ({ userID, signal }) => {
-      if (hasRequestedPermissions) {
-        handleSignal(
-          signal as Peer.SignalData,
-          userID,
-          streamRef,
-          peersRef,
-          setRemoteStreams,
-          pendingSignalsRef
-        );
-      }
-    });
-
+    // Remote user turned off their camera - remove their stream but keep peer
     socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
       if (userID !== storage.getUserId()) {
         setRemoteStreams((prev) => {
@@ -101,27 +105,50 @@ export const useSocketEvents = ({
       }
     });
 
-    return () => {
-      socket.off(StreamServiceMsg.USER_READY);
-      socket.off(StreamServiceMsg.SIGNAL);
-      socket.off(StreamServiceMsg.MIC_STATE);
-      socket.off(StreamServiceMsg.SPEAKER_STATE);
-      socket.off(StreamServiceMsg.CAMERA_OFF);
-    };
-  }, [hasRequestedPermissions, speakerOn]);
+    // Clean up peer when a user leaves the room
+    socket.on(RoomServiceMsg.LEAVE, (customId: string) => {
+      cleanupPeer(customId, peersRef, setRemoteStreams);
+      setRemoteMicStates((prev) => {
+        const newStates = { ...prev };
+        delete newStates[customId];
+        return newStates;
+      });
+      setRemoteSpeakerStates((prev) => {
+        const newStates = { ...prev };
+        delete newStates[customId];
+        return newStates;
+      });
+    });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: cleanup only on unmount
-  useEffect(() => {
     return () => {
+      // Stop local media tracks
       if (streamRef.current) {
         for (const track of streamRef.current.getTracks()) {
           track.stop();
         }
       }
+
+      // Destroy all peer connections
       for (const userID of Object.keys(peersRef.current)) {
         cleanupPeer(userID, peersRef, setRemoteStreams);
       }
+
+      // Notify others that our camera is off
       socket.emit(StreamServiceMsg.CAMERA_OFF);
+
+      // Remove all event listeners
+      socket.off(StreamServiceMsg.USER_READY);
+      socket.off(StreamServiceMsg.SIGNAL);
+      socket.off(StreamServiceMsg.MIC_STATE);
+      socket.off(StreamServiceMsg.SPEAKER_STATE);
+      socket.off(StreamServiceMsg.CAMERA_OFF);
+      socket.off(RoomServiceMsg.LEAVE);
     };
   }, []);
+
+  // Broadcast speaker state changes separately from the main setup effect
+  // biome-ignore lint/correctness/useExhaustiveDependencies: socket is stable
+  useEffect(() => {
+    socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOn);
+  }, [speakerOn]);
 };

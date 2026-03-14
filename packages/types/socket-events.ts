@@ -46,7 +46,10 @@ export interface ClientToServerEvents {
 
   // Stream (WebRTC)
   [StreamServiceMsg.STREAM_READY]: () => void;
-  [StreamServiceMsg.SIGNAL]: (signal: unknown) => void;
+  [StreamServiceMsg.SIGNAL]: (data: {
+    signal: unknown;
+    targetUserID: string;
+  }) => void;
   [StreamServiceMsg.CAMERA_OFF]: () => void;
   [StreamServiceMsg.MIC_STATE]: (micOn: boolean) => void;
   [StreamServiceMsg.SPEAKER_STATE]: (speakersOn: boolean) => void;

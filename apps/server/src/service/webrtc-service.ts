@@ -1,7 +1,7 @@
 /**
  * WebRTC service handlers for peer-to-peer video streaming.
  * Features:
- * - Stream signaling
+ * - Targeted stream signaling
  * - Camera state sync
  * - User notification
  *
@@ -24,16 +24,22 @@ export const onStreamReady = (socket: Socket) => {
   }
 };
 
-// Forward the WebRTC signal to the specific user
-export const handleSignal = (socket: Socket, signal: SignalData) => {
-  const room = roomService.getUserRoom(socket);
+// Forward the WebRTC signal to the specific target user only
+export const handleSignal = (
+  socket: Socket,
+  data: { signal: SignalData; targetUserID: string }
+) => {
   const customId = userService.getCustomId(socket.id);
-  if (!(room && customId)) {
+  if (!customId) {
     return;
   }
-  socket.to(room).emit(StreamServiceMsg.SIGNAL, {
+  const targetSocketId = userService.getSocketId(data.targetUserID);
+  if (!targetSocketId) {
+    return;
+  }
+  socket.to(targetSocketId).emit(StreamServiceMsg.SIGNAL, {
     userID: customId,
-    signal,
+    signal: data.signal,
   });
 };
 

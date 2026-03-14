@@ -2,8 +2,8 @@
  * WebRTC peer connection utilities for video/audio streaming.
  * Features:
  * - Peer creation and cleanup
+ * - Targeted signal routing
  * - Stream handling
- * - Signal processing
  * - Error handling
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 
-// Create a new peer connection
+// Create a new peer connection for a specific user
 export const createPeer = (
   userID: string,
   initiator: boolean,
@@ -42,8 +42,9 @@ export const createPeer = (
         : undefined,
     });
 
+    // Send signals to the specific target user, not broadcast
     peer.on("signal", (signal) => {
-      socket.emit(StreamServiceMsg.SIGNAL, signal);
+      socket.emit(StreamServiceMsg.SIGNAL, { signal, targetUserID: userID });
     });
 
     peer.on("stream", (stream) => {
@@ -62,6 +63,9 @@ export const createPeer = (
       console.log(`Peer connection established with ${userID}`);
     });
 
+    // Store peer before processing pending signals
+    peersRef.current[userID] = peer;
+
     // Process any pending signals
     const pendingSignals = pendingSignalsRef.current[userID] || [];
     for (const signal of pendingSignals) {
@@ -75,7 +79,6 @@ export const createPeer = (
     }
     delete pendingSignalsRef.current[userID];
 
-    peersRef.current[userID] = peer;
     return peer;
   } catch (error) {
     toast.error(`Error creating peer connection:\n${parseError(error)}`);
@@ -83,7 +86,7 @@ export const createPeer = (
   }
 };
 
-// Handle incoming signals
+// Handle incoming signals from a specific user
 export const handleSignal = (
   signal: Peer.SignalData,
   userID: string,
@@ -95,29 +98,43 @@ export const handleSignal = (
   pendingSignalsRef: RefObject<Record<string, Peer.SignalData[]>>
 ) => {
   try {
-    let peer = peersRef.current[userID];
+    const existingPeer = peersRef.current[userID];
+
+    // If we receive an offer but already have a peer, the remote side is
+    // re-establishing the connection (e.g. after toggling camera or reload).
+    // Clean up our old peer to accept the new connection.
+    if (
+      existingPeer &&
+      !existingPeer.destroyed &&
+      (signal as { type?: string }).type === "offer"
+    ) {
+      cleanupPeer(userID, peersRef, setRemoteStreams);
+    }
+
+    const peer = peersRef.current[userID];
 
     if (!peer || peer.destroyed) {
-      // Store signal if peer doesn't exist yet
+      // Queue signal and create new non-initiator peer
       if (!pendingSignalsRef.current[userID]) {
         pendingSignalsRef.current[userID] = [];
       }
       pendingSignalsRef.current[userID].push(signal);
 
-      // Create new peer as non-initiator
-      peer = createPeer(
+      // createPeer processes pending signals internally, so we return
+      // to avoid double-processing the signal
+      createPeer(
         userID,
         false,
         streamRef,
         peersRef,
         setRemoteStreams,
         pendingSignalsRef
-      ) as Peer.Instance;
+      );
+      return;
     }
 
-    if (peer && !peer.destroyed) {
-      peer.signal(signal);
-    }
+    // Peer exists and is healthy, signal directly
+    peer.signal(signal);
   } catch (error) {
     console.error(`Error handling peer signal:\n${parseError(error)}`);
   }
