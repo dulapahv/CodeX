@@ -58,7 +58,7 @@ export const EDITOR_SETTINGS_KEY = "editor-settings";
 
 export const DISABLE_TAILWIND_CDN_WARN = `<script>(()=>{const w=console.warn;console.warn=(...a)=>{typeof a[0]!=="string"||!a[0].includes("Tailwind CSS")?w.apply(console,a):void 0}})();</script>`;
 
-export const SANDPACK_CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" crossorigin="anonymous">
+export const PREVIEW_CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2/dist/aos.min.css" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>

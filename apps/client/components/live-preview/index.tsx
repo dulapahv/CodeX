@@ -1,22 +1,14 @@
 /**
- * Live preview component that renders HTML with Sandpack.
+ * Live preview component that renders HTML in a lightweight iframe.
  * Features:
  * - Real-time preview updates
  * - Tailwind CSS support
  * - Theme-aware rendering
- * - Error handling
+ * - Pre-installed CDN libraries cached by the browser
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
-
-import {
-  SandpackLayout,
-  SandpackPreview,
-  SandpackProvider,
-} from "@codesandbox/sandpack-react";
-import { useTheme } from "next-themes";
-
-import { DISABLE_TAILWIND_CDN_WARN, SANDPACK_CDN } from "@/lib/constants";
+import { DISABLE_TAILWIND_CDN_WARN, PREVIEW_CDN } from "@/lib/constants";
 
 import { HelpPopover } from "./components/help-popover";
 
@@ -25,28 +17,20 @@ interface LivePreviewProps {
 }
 
 const LivePreview = ({ value }: LivePreviewProps) => {
-  const { resolvedTheme } = useTheme();
+  const srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${DISABLE_TAILWIND_CDN_WARN}${PREVIEW_CDN}</head><body class="h-screen">${value}</body></html>`;
 
   return (
-    <SandpackProvider
-      className="!h-full"
-      files={{
-        "index.html": `<!DOCTYPE html><html><head>${DISABLE_TAILWIND_CDN_WARN}${SANDPACK_CDN}</head><body class="h-screen">${value}</body></html>`,
-      }}
-      options={{
-        initMode: "user-visible",
-      }}
-      template="static"
-      theme={resolvedTheme === "dark" ? "dark" : "light"}
-    >
-      <SandpackLayout className="!h-full !rounded-none !border-none">
-        <SandpackPreview
-          actionsChildren={<HelpPopover />}
-          className="!h-full"
-          showOpenInCodeSandbox={false}
-        />
-      </SandpackLayout>
-    </SandpackProvider>
+    <div className="relative h-full w-full">
+      <iframe
+        className="h-full w-full border-none"
+        sandbox="allow-scripts allow-same-origin"
+        srcDoc={srcdoc}
+        title="Live Preview"
+      />
+      <div className="absolute right-2 bottom-2 z-10">
+        <HelpPopover />
+      </div>
+    </div>
   );
 };
 

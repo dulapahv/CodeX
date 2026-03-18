@@ -15,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -29,7 +28,7 @@ const HelpPopover = () => (
       <PopoverTrigger asChild>
         <TooltipTrigger asChild>
           <Button
-            className="size-7 rounded-full border-[color:var(--sp-colors-surface3)] bg-[color:var(--sp-colors-surface2)] p-0 text-[color:var(--sp-colors-clickable)] hover:bg-[color:var(--sp-colors-surface3)] hover:text-[color:var(--sp-colors-hover)]"
+            className="size-7 rounded-full border-border bg-muted p-0 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             size="icon"
           >
             <CircleHelp className="size-4" />
@@ -106,21 +105,8 @@ const HelpPopover = () => (
             </div>
           </div>
         </div>
-
-        <Separator />
-
         <div className="text-muted-foreground text-xs">
-          <p>
-            Powered by{" "}
-            <a
-              className="!transition-all font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
-              href="https://sandpack.codesandbox.io/"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Sandpack
-            </a>
-          </p>
+          <p>Preview renders HTML with CDN-loaded libraries</p>
         </div>
       </div>
     </PopoverContent>

@@ -12,7 +12,6 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "@codesandbox/sandpack-react": "^2.20.0",
     "@codex/types": "workspace:*",
     "@mdxeditor/editor": "^3.52.4",
     "@monaco-editor/react": "^4.7.0",

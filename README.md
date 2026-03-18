@@ -270,7 +270,6 @@ pnpm --filter server test:socket
   - [shadcn/ui](https://ui.shadcn.com/)
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
   - [Socket.IO Client](https://socket.io)
-  - [Sandpack](https://sandpack.codesandbox.io/) (live preview)
   - [MDXEditor](https://mdxeditor.dev/) (notepad)
   - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
   - [Radix Form](https://www.radix-ui.com/primitives/docs/components/form) (form validation)

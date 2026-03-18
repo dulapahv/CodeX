@@ -721,27 +721,6 @@ For troubleshooting video and audio issues, refer to the [Troubleshooting](#trou
 
 ## Troubleshooting
 
-### Live Preview not Updating or Displaying Error
-
-The Live Preview is not updating or displaying this error (where `x` is a random string):
-
-```txt
-The webpage at https://xxxxxx-preview.sandpack-static-server.codesandbox.io/ might be temporarily down or it may have moved permanently to a new web address.
-```
-
-**This issue can be caused by:**
-
-- Idling for an extended period
-- Network connectivity problems
-
-**To resolve this issue:**
-
-- Re-toggle the Live Preview panel by going to `View > Live Preview` in the top menu bar
-
-<div align="center">
-  <img src="docs/images/live-preview-button.png" alt="Live Preview Menu" width="200"/>
-</div>
-
 ### Follow Mode not working
 
 **This issue can be caused by:**

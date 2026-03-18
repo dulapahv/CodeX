@@ -25,7 +25,6 @@ const nextConfig: NextConfig = {
     turbopackFileSystemCacheForBuild: true,
     browserDebugInfoInTerminal: true,
     optimizePackageImports: [
-      "@codesandbox/sandpack-react",
       "@mdxeditor/editor",
       "@monaco-editor/react",
       "monaco-editor",
