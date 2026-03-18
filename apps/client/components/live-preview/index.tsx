@@ -20,9 +20,9 @@ const LivePreview = ({ value }: LivePreviewProps) => {
   const srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${DISABLE_TAILWIND_CDN_WARN}${PREVIEW_CDN}</head><body class="h-screen">${value}</body></html>`;
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative size-full bg-white">
       <iframe
-        className="h-full w-full border-none"
+        className="size-full border-none"
         sandbox="allow-scripts allow-same-origin"
         srcDoc={srcdoc}
         title="Live Preview"
