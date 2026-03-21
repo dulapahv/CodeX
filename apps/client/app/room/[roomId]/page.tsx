@@ -26,6 +26,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 
 import { CodeEditor } from "@/components/code-editor";
 import { FollowUser } from "@/components/follow-user";
@@ -187,6 +188,7 @@ export default function Room() {
   const [showWebcam, setShowWebcam] = useState(true);
   const [showLivePreview, setShowLivePreview] = useState(true);
   const [code, setCode] = useState<string | null>(null);
+  const [debouncedCode] = useDebounce(code, 300);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
@@ -399,7 +401,9 @@ export default function Room() {
                     minSize={10}
                   >
                     {editor && (
-                      <MemoizedLivePreview value={code || defaultCode} />
+                      <MemoizedLivePreview
+                        value={debouncedCode || defaultCode}
+                      />
                     )}
                   </ResizablePanel>
                 </ResizablePanelGroup>
