@@ -13,6 +13,11 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { GITHUB_API_URL } from "@/lib/constants";
+import {
+  validateGitHubBranch,
+  validateGitHubPath,
+  validateGitHubRepo,
+} from "@/lib/github";
 
 // export const runtime = 'edge';
 
@@ -40,14 +45,37 @@ export async function POST(request: Request) {
     const body: CommitRequest = await request.json();
     const { repo, branch, path, filename, commitMessage, content } = body;
 
+    if (
+      !(
+        repo &&
+        branch &&
+        filename &&
+        validateGitHubRepo(repo) &&
+        validateGitHubBranch(branch) &&
+        validateGitHubPath(filename)
+      ) ||
+      (path && !validateGitHubPath(path))
+    ) {
+      return NextResponse.json(
+        { error: "Invalid parameter value" },
+        { status: 400 }
+      );
+    }
+
     // Construct the file path
     const filePath = path ? `${path}/${filename}` : filename;
+    const encodedRepo = repo.split("/").map(encodeURIComponent).join("/");
+    const encodedFilePath = filePath
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/");
+    const encodedBranch = encodeURIComponent(branch);
 
     // Get the current file (if it exists) to get its SHA
     const getCurrentFile = async () => {
       try {
         const response = await fetch(
-          `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}?ref=${branch}`,
+          `${GITHUB_API_URL}/repos/${encodedRepo}/contents/${encodedFilePath}?ref=${encodedBranch}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -81,7 +109,7 @@ export async function POST(request: Request) {
 
     // Create or update the file
     const response = await fetch(
-      `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}`,
+      `${GITHUB_API_URL}/repos/${encodedRepo}/contents/${encodedFilePath}`,
       {
         method: "PUT",
         headers: {

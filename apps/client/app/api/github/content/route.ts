@@ -13,6 +13,11 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { GITHUB_API_URL } from "@/lib/constants";
+import {
+  validateGitHubBranch,
+  validateGitHubPath,
+  validateGitHubRepo,
+} from "@/lib/github";
 
 // export const runtime = 'edge';
 
@@ -43,12 +48,32 @@ export async function GET(request: Request) {
       );
     }
 
+    if (
+      !(
+        validateGitHubRepo(repo) &&
+        validateGitHubBranch(branch) &&
+        validateGitHubPath(filename)
+      ) ||
+      (path && !validateGitHubPath(path))
+    ) {
+      return NextResponse.json(
+        { error: "Invalid parameter value" },
+        { status: 400 }
+      );
+    }
+
     // Construct the file path
     const filePath = path ? `${path}/${filename}` : filename;
+    const encodedRepo = repo.split("/").map(encodeURIComponent).join("/");
+    const encodedFilePath = filePath
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/");
+    const encodedBranch = encodeURIComponent(branch);
 
     // Fetch file content from GitHub
     const response = await fetch(
-      `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}?ref=${branch}`,
+      `${GITHUB_API_URL}/repos/${encodedRepo}/contents/${encodedFilePath}?ref=${encodedBranch}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -74,7 +99,7 @@ export async function GET(request: Request) {
 
     // Get file metadata from GitHub
     const metadataResponse = await fetch(
-      `${GITHUB_API_URL}/repos/${repo}/contents/${filePath}?ref=${branch}`,
+      `${GITHUB_API_URL}/repos/${encodedRepo}/contents/${encodedFilePath}?ref=${encodedBranch}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

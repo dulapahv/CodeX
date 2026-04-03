@@ -13,6 +13,12 @@ import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
 import { GITHUB_API_URL } from "@/lib/constants";
+import {
+  validateGitHubBranch,
+  validateGitHubOwner,
+  validateGitHubPath,
+  validateGitHubRepo,
+} from "@/lib/github";
 
 // export const runtime = 'edge';
 
@@ -31,17 +37,30 @@ export async function GET(
 
     const [action, owner, repo] = params.params;
 
+    if (
+      !(owner && repo && validateGitHubOwner(owner) && validateGitHubRepo(repo))
+    ) {
+      return Response.json({ error: "Invalid owner or repo" }, { status: 400 });
+    }
+
     let endpoint = "";
 
     switch (action) {
       case "branches":
-        endpoint = `${GITHUB_API_URL}/repos/${owner}/${repo}/branches`;
+        endpoint = `${GITHUB_API_URL}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/branches`;
         break;
       case "contents": {
         const { searchParams } = new URL(req.url);
         const path = searchParams.get("path") || "";
         const ref = searchParams.get("ref") || "main";
-        endpoint = `${GITHUB_API_URL}/repos/${owner}/${repo}/contents/${path}?ref=${ref}`;
+        if (!(validateGitHubPath(path) && validateGitHubBranch(ref))) {
+          return Response.json(
+            { error: "Invalid path or ref" },
+            { status: 400 }
+          );
+        }
+        const encodedPath = path.split("/").map(encodeURIComponent).join("/");
+        endpoint = `${GITHUB_API_URL}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedPath}?ref=${encodeURIComponent(ref)}`;
         break;
       }
       default:

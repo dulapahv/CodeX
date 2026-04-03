@@ -77,6 +77,34 @@ export const verifyGithubAuth = async () => {
   }
 };
 
+// Input validation for SSRF prevention
+const GITHUB_OWNER_REPO_RE = /^[a-zA-Z0-9._-]+$/;
+const GITHUB_PATH_SEGMENT_RE = /^[a-zA-Z0-9._\-/]+$/;
+
+export const validateGitHubOwner = (value: string): boolean =>
+  GITHUB_OWNER_REPO_RE.test(value) && value.length <= 100;
+
+export const validateGitHubRepo = (value: string): boolean => {
+  // repo can be "owner/repo" or just "name"
+  const parts = value.split("/");
+  return (
+    parts.length <= 2 &&
+    parts.every((p) => GITHUB_OWNER_REPO_RE.test(p) && p.length <= 100)
+  );
+};
+
+export const validateGitHubPath = (value: string): boolean =>
+  value === "" ||
+  (GITHUB_PATH_SEGMENT_RE.test(value) &&
+    !value.includes("..") &&
+    !value.startsWith("/") &&
+    value.length <= 500);
+
+export const validateGitHubBranch = (value: string): boolean =>
+  GITHUB_PATH_SEGMENT_RE.test(value) &&
+  !value.includes("..") &&
+  value.length <= 255;
+
 // API route handlers
 export const githubAuthHandlers = {
   // Consolidated check/get endpoint
