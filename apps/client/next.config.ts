@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
     viewTransition: true,
     inlineCss: true,
     turbopackFileSystemCacheForBuild: true,
+    turbopackServerSideNestedAsyncChunking: true,
+    cssChunking: "strict",
     optimizePackageImports: [
       "@mdxeditor/editor",
       "@monaco-editor/react",

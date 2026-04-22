@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@codex/types": "workspace:*",
-    "@mdxeditor/editor": "^3.54.0",
+    "@mdxeditor/editor": "^3.55.0",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.12",
