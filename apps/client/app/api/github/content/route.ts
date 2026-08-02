@@ -12,7 +12,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { GITHUB_API_URL } from "@/lib/constants";
+import { GITHUB_API_URL, GITHUB_USER_AGENT } from "@/lib/constants";
 import {
   validateGitHubBranch,
   validateGitHubPath,
@@ -77,6 +77,7 @@ export async function GET(request: Request) {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "User-Agent": GITHUB_USER_AGENT,
           Accept: "application/vnd.github.v3.raw",
           "X-GitHub-Api-Version": "2022-11-28",
         },
@@ -103,6 +104,7 @@ export async function GET(request: Request) {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "User-Agent": GITHUB_USER_AGENT,
           "X-GitHub-Api-Version": "2022-11-28",
         },
       }

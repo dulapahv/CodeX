@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
     ],
     externalDir: true,
   },
+  // Cloudflare generates/validates etags at the edge — skipping Next's
+  // etag hashing saves per-request CPU on CF Workers.
+  generateEtags: false,
   images: {
     remotePatterns: [
       {

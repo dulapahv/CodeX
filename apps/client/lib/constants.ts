@@ -24,6 +24,7 @@ export const STATUS_URL = "https://codex-status.dulapahv.dev";
 export const KASCA_SERVER_MONITOR_ID = "2887417";
 
 export const GITHUB_API_URL = "https://api.github.com";
+export const GITHUB_USER_AGENT = "codex-client";
 export const GITHUB_OAUTH_URL = "https://github.com/login/oauth";
 export const GITHUB_CLIENT_ID = IS_DEV_ENV
   ? "Ov23liuy4d9jGnpy9t6j"

@@ -12,7 +12,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { GITHUB_API_URL } from "@/lib/constants";
+import { GITHUB_API_URL, GITHUB_USER_AGENT } from "@/lib/constants";
 
 // export const runtime = 'edge';
 
@@ -41,6 +41,7 @@ export async function GET(request: Request) {
     const response = await fetch(apiUrl, {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
+        "User-Agent": GITHUB_USER_AGENT,
         Accept: "application/vnd.github.v3+json",
       },
     });

@@ -17,6 +17,7 @@ import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
   GITHUB_OAUTH_URL,
+  GITHUB_USER_AGENT,
   IS_DEV_ENV,
 } from "@/lib/constants";
 
@@ -60,7 +61,10 @@ export const verifyGithubAuth = async () => {
 
   try {
     const response = await fetch(`${GITHUB_API_URL}/user`, {
-      headers: { Authorization: `Bearer ${token.value}` },
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        "User-Agent": GITHUB_USER_AGENT,
+      },
     });
 
     if (!response.ok) {

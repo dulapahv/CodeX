@@ -12,7 +12,7 @@
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
-import { GITHUB_API_URL } from "@/lib/constants";
+import { GITHUB_API_URL, GITHUB_USER_AGENT } from "@/lib/constants";
 import {
   validateGitHubBranch,
   validateGitHubOwner,
@@ -70,6 +70,7 @@ export async function GET(
     const response = await fetch(endpoint, {
       headers: {
         Authorization: `token ${accessToken}`,
+        "User-Agent": GITHUB_USER_AGENT,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
       },
