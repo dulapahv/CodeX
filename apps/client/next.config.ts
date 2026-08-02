@@ -10,6 +10,7 @@
  */
 
 import path from "node:path";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
@@ -23,7 +24,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     typedEnv: true,
-    viewTransition: true,
     inlineCss: true,
     turbopackFileSystemCacheForBuild: true,
     turbopackServerSideNestedAsyncChunking: true,
@@ -46,12 +46,6 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: ["monaco-themes"],
-  webpack: (config) => {
-    // Bypass package.json exports field for monaco-themes
-    config.resolve.exportsFields = [];
-
-    return config;
-  },
 };
 
 const isCi = process.env.CI === "true";
@@ -75,3 +69,5 @@ export default withSentryConfig(nextConfig, {
   },
   telemetry: !isCi, // Disable Sentry telemetry in CI
 });
+
+initOpenNextCloudflareForDev();

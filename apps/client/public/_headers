@@ -1,0 +1,17 @@
+/_next/static/*
+  Cache-Control: public,max-age=31536000,immutable
+
+/opengraph-image.png
+  Cache-Control: public,max-age=86400,stale-while-revalidate=604800
+
+/apple-icon.png
+  Cache-Control: public,max-age=86400,stale-while-revalidate=604800
+
+/icon.svg
+  Cache-Control: public,max-age=86400,stale-while-revalidate=604800
+
+/favicon.ico
+  Cache-Control: public,max-age=86400,stale-while-revalidate=604800
+
+/images/*
+  Cache-Control: public,max-age=86400,stale-while-revalidate=604800

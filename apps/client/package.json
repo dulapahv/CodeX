@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -15,6 +15,7 @@
     "@codex/types": "workspace:*",
     "@mdxeditor/editor": "^3.55.0",
     "@monaco-editor/react": "^4.7.0",
+    "@opennextjs/cloudflare": "^1.20.2",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.2.20",
     "@radix-ui/react-alert-dialog": "^1.1.23",
@@ -67,6 +68,7 @@
     "postcss": "^8.5.25",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
-    "use-resize-observer": "^9.1.0"
+    "use-resize-observer": "^9.1.0",
+    "wrangler": "^4.118.0"
   }
 }
