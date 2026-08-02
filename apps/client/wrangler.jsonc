@@ -12,6 +12,9 @@
       "previews_enabled": false
     }
   ],
+  "placement": {
+    "hostname": "codex-server.dulapahv.dev"
+  },
   "vars": {
     // Workaround for opennextjs/opennextjs-cloudflare#1232 (open).
     // https://github.com/opennextjs/opennextjs-cloudflare/issues/1232
