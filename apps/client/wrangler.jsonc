@@ -8,24 +8,13 @@
   "routes": [
     {
       "pattern": "codex.dulapahv.dev",
-      "custom_domain": true,
-      "previews_enabled": false
+      "custom_domain": true
     }
   ],
-  "placement": {
-    "hostname": "codex-server.dulapahv.dev"
-  },
   "vars": {
     // Workaround for opennextjs/opennextjs-cloudflare#1232 (open).
     // https://github.com/opennextjs/opennextjs-cloudflare/issues/1232
     "NEXT_PRIVATE_MINIMAL_MODE": "1"
-  },
-  "secrets": {
-    "required": [
-      "GITHUB_CLIENT_SECRET_PROD",
-      "PISTON_API_KEY",
-      "BETTERSTACK_API_KEY"
-    ]
   },
   "assets": {
     "directory": ".open-next/assets",

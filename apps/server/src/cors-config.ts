@@ -2,7 +2,6 @@
  * CORS configuration for server request handling.
  * Features:
  * - Origin validation
- * - Vercel deployment detection
  * - Header generation
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -10,17 +9,9 @@
 
 const ALLOWED_ORIGINS = [
   "https://codex.dulapahv.dev",
-  "https://codex.vercel.app",
   "https://dev-codex.dulapahv.dev",
   "http://localhost:3000",
 ] as const;
-
-const VERCEL_DEPLOYMENT_PATTERN =
-  /^https:\/\/codex-client-[a-zA-Z0-9]+-[a-zA-Z0-9-]+\.vercel\.app$/;
-
-const isVercelDeployment = (origin: string): boolean => {
-  return VERCEL_DEPLOYMENT_PATTERN.test(origin);
-};
 
 const getAllowedOrigin = (origin: string | undefined): string => {
   // For security, avoid returning '*' in production
@@ -32,10 +23,7 @@ const getAllowedOrigin = (origin: string | undefined): string => {
     return "*";
   }
 
-  if (
-    ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number]) ||
-    isVercelDeployment(origin)
-  ) {
+  if (ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number])) {
     return origin;
   }
 
@@ -48,4 +36,4 @@ const getCorsHeaders = (origin: string | undefined) => ({
   Vary: "Origin",
 });
 
-export { ALLOWED_ORIGINS, getCorsHeaders, isVercelDeployment };
+export { ALLOWED_ORIGINS, getCorsHeaders };

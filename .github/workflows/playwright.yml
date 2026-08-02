@@ -117,3 +117,9 @@ jobs:
           name: playwright-screenshots
           path: apps/client/test-results/
           retention-days: 30
+      
+      # Trigger client deployment if tests pass
+      - name: 🚀 Trigger Client Deployment
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.CLIENT_DEPLOY_HOOK }}"

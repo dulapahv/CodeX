@@ -5,7 +5,6 @@
  * - Metadata and SEO settings
  * - Theme provider
  * - Toast notifications
- * - Analytics
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -13,7 +12,6 @@
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
-import { Analytics } from "@/components/analytics";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -104,7 +102,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <meta name="darkreader-lock" />
       </head>
       <body className="h-dvh text-pretty antialiased">
-        <Analytics />
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster

@@ -38,24 +38,23 @@ For detailed usage instructions and feature documentation, please see the **[Use
 
 ## Table of Contents
 
-- [CodeX - Code Collaboration Platform](#codex---code-collaboration-platform)
-  - [Features](#features)
-  - [Table of Contents](#table-of-contents)
-  - [Project Structure](#project-structure)
-  - [Prerequisites](#prerequisites)
-  - [Getting Started](#getting-started)
-  - [Development](#development)
-  - [Test](#test)
-    - [Frontend Test](#frontend-test)
-    - [Backend Test](#backend-test)
-  - [Build](#build)
-  - [Deployment](#deployment)
-  - [Scripts](#scripts)
-  - [Tech Stack](#tech-stack)
-  - [Coding Style](#coding-style)
-  - [Contributing](#contributing)
-  - [User Manual](#user-manual)
-  - [License](#license)
+- [Features](#features)
+- [Table of Contents](#table-of-contents)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Test](#test)
+  - [Frontend Test](#frontend-test)
+  - [Backend Test](#backend-test)
+- [Build](#build)
+- [Deployment](#deployment)
+- [Scripts](#scripts)
+- [Tech Stack](#tech-stack)
+- [Coding Style](#coding-style)
+- [Contributing](#contributing)
+- [User Manual](#user-manual)
+- [License](#license)
 
 ## Project Structure
 
@@ -216,7 +215,7 @@ The build artifacts of the frontend will be available in the `apps/client/.next`
 
 The project is configured for automatic deployment through Deploy Hooks which trigger after the GitHub Actions CI/CD pipeline completes successfully:
 
-- Frontend (client): Automatically deploys to [Vercel](https://vercel.com)
+- Frontend (client): Automatically deploys to [Cloudflare](https://cloudflare.com)
 - Backend (server): Automatically deploys to [Render](https://render.com)
 
 ## Scripts
@@ -288,11 +287,10 @@ pnpm --filter server test:socket
 - **Build & DevOps:**
   - [Turborepo](https://turbo.build/repo/docs) (monorepo build system)
   - [GitHub Actions](https://github.com/features/actions) (CI/CD)
-  - [Vercel](https://vercel.com) (frontend deployment)
+  - [Cloudflare](https://cloudflare.com) (frontend deployment)
   - [Render](https://render.com) (backend deployment)
 - **Monitoring & Analytics:**
   - [Sentry](https://sentry.io) (error tracking)
-  - [Vercel Analytics](https://vercel.com/docs/analytics) (web analytics)
   - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) (web analytics)
   - [Better Stack](https://betterstack.com/) (uptime monitoring and status page)
 - **External Services:**

@@ -35,10 +35,6 @@
 **/dist/
 .turbo
 
-# Deployment
-**/.vercel
-.vercel
-
 # Misc
 .eslintcache
 

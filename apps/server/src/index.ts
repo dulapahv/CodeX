@@ -35,11 +35,7 @@ import * as scrollService from "@/service/scroll-service";
 import * as userService from "@/service/user-service";
 import * as webRTCService from "@/service/webrtc-service";
 
-import {
-  ALLOWED_ORIGINS,
-  getCorsHeaders,
-  isVercelDeployment,
-} from "./cors-config";
+import { ALLOWED_ORIGINS, getCorsHeaders } from "./cors-config";
 
 const PORT = 3001;
 
@@ -55,8 +51,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>({
 
       if (
         !origin ||
-        ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number]) ||
-        isVercelDeployment(origin)
+        ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number])
       ) {
         callback(null, true);
       } else {
