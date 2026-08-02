@@ -39,6 +39,9 @@ const nextConfig: NextConfig = {
   // etag hashing saves per-request CPU on CF Workers.
   generateEtags: false,
   images: {
+    loader: "custom",
+    loaderFile: "./image-loader.ts",
+    qualities: [75, 100],
     remotePatterns: [
       {
         protocol: "https",
