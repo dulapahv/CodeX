@@ -9,10 +9,7 @@
 <br />
 
 <div align="center">
-  <a href="https://github.com/dulapahv/CodeX/actions/workflows/playwright.yml"><img src="https://github.com/dulapahv/CodeX/actions/workflows/playwright.yml/badge.svg"></a>
-  <a href="https://github.com/dulapahv/CodeX/actions/workflows/jest.yml"><img src="https://github.com/dulapahv/CodeX/actions/workflows/jest.yml/badge.svg"></a>
-</div>
-<div align="center">
+  <a href="https://github.com/dulapahv/CodeX/actions/workflows/ci.yml"><img src="https://github.com/dulapahv/CodeX/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/dulapahv/CodeX/issues"><img src="https://img.shields.io/github/issues/dulapahv/CodeX.svg?style=flat" /></a>
 <!--   <a href="https://codeclimate.com/github/dulapahv/CodeX/maintainability"><img src="https://api.codeclimate.com/v1/badges/3984a19491b5e90cfa08/maintainability" /></a> -->
 </div>
