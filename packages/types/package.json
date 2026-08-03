@@ -2,6 +2,7 @@
   "name": "@codex/types",
   "version": "1.0.0",
   "private": true,
+  "license": "AGPL-3.0-only",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc"

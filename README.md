@@ -122,6 +122,7 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
     ```bash
     PISTON_API_KEY=
     BETTERSTACK_API_KEY=
+    NEXT_PUBLIC_SENTRY_DSN=
     SENTRY_AUTH_TOKEN=
     GITHUB_CLIENT_SECRET_PROD=
     GITHUB_CLIENT_SECRET_DEV=
@@ -356,4 +357,15 @@ For detailed usage instructions and feature documentation, please refer to the *
 
 ## License
 
-Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
+Copyright (C) 2024-2026 Dulapah Vibulsanti.
+
+Licensed under the **GNU Affero General Public License v3.0** - see [LICENSE](LICENSE) for the full text.
+
+You are free to use, study, modify and share this project. In return, the AGPL asks two things:
+
+- **If you deploy a modified version as a network service**, you must offer its complete source to everyone who uses it (AGPL section 13). Running it on a server counts as distribution - this is the difference between the AGPL and the GPL.
+- **You must preserve attribution.** Under an [additional term](NOTICE) permitted by AGPL section 7(b), the per-file authorship headers must stay intact, and a network-deployed derivative must visibly credit `Based on CodeX by Dulapah Vibulsanti` in its interface.
+
+The name **CodeX**, the logo, and the author's name are **not** covered by the AGPL and may not be used to identify, endorse or promote derived works. See [NOTICE](NOTICE) for the attribution and trademark terms in full.
+
+> Versions released before this change remain available under Apache-2.0; the AGPL applies from this commit onward.

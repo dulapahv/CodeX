@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "license": "AGPL-3.0-only",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -r tsconfig-paths/register src/index.ts",

@@ -1,6 +1,7 @@
 {
   "name": "codex",
   "private": true,
+  "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

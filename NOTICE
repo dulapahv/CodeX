@@ -1,0 +1,70 @@
+CodeX - Code Collaboration Platform
+Copyright (C) 2024-2026 Dulapah Vibulsanti <https://dulapahv.dev>
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+--------------------------------------------------------------------------------
+ADDITIONAL TERMS under AGPL-3.0 Section 7
+--------------------------------------------------------------------------------
+
+As permitted by section 7(b) of the GNU Affero General Public License, the
+following additional term applies to this program and to all works based on it:
+
+  ATTRIBUTION. You must preserve the author attributions carried by this
+  program. Specifically:
+
+  1. The per-file authorship headers in the source ("By Dulapah Vibulsanti
+     (https://dulapahv.dev)" and equivalents) are author attributions within
+     the meaning of section 7(b). They must not be removed or altered, in
+     original or modified files.
+
+  2. If you modify this program and make it available to users over a network,
+     the Appropriate Legal Notices (see section 13) must include, visibly and
+     unmodified, the text:
+
+         Based on CodeX by Dulapah Vibulsanti - https://github.com/dulapahv/CodeX
+
+     placed in the user interface where users can reasonably find it, such as a
+     footer, About screen, or Credits screen.
+
+  3. Section 13 applies in full: if you run a modified version of this program
+     on a network server, you must offer all users interacting with it the
+     opportunity to receive the Complete Corresponding Source of your modified
+     version, free of charge, through a network server.
+
+Removing or obscuring the notices required above terminates your rights under
+this License (see section 8).
+
+
+--------------------------------------------------------------------------------
+TRADEMARKS
+--------------------------------------------------------------------------------
+
+The name "CodeX", the CodeX logo, the name "Dulapah Vibulsanti", and the
+domains dulapahv.dev and codex.dulapahv.dev are NOT licensed under the GNU
+Affero General Public License and are reserved by the copyright holder.
+
+Nothing in this License grants permission to use these names or marks, whether
+to identify a derived work or to endorse or promote it. Works based on this
+program must be distributed and deployed under a name clearly distinguishable
+from "CodeX", except as required by the attribution term above.
+
+
+--------------------------------------------------------------------------------
+THIRD-PARTY COMPONENTS
+--------------------------------------------------------------------------------
+
+This program depends on third-party packages distributed under their own
+licenses. Those licenses govern those components; see the dependency metadata
+in package.json and pnpm-lock.yaml for details.
