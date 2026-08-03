@@ -16,7 +16,7 @@ const isCi = process.env.NEXT_PUBLIC_CI === "true";
 
 if (!isCi) {
   Sentry.init({
-    dsn: "https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832",
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     enabled: !IS_DEV_ENV, // Disable Sentry in development
     integrations: [Sentry.replayIntegration()], // Enable replay for client-side errors
     tracesSampleRate: IS_DEV_ENV ? 1 : 0.1, // Sample rate for performance monitoring

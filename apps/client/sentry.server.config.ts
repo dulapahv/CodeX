@@ -14,7 +14,9 @@ const isCi = process.env.CI === "true";
 
 if (!isCi) {
   Sentry.init({
-    dsn: "https://fa46ee0c923d1b354dd7829624efb99a@o4506180276518912.ingest.us.sentry.io/4508365072760832",
+    // NEXT_PUBLIC_ so one build-time value covers both bundles. The DSN is public
+    // by design, and inlining it avoids needing a separate Worker var at runtime.
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     enabled: !IS_DEV_ENV, // Disable Sentry in development
     // Sample rate for performance monitoring. Every Worker request becomes a
     // transaction, so sample in production rather than sending all of them.

@@ -1,8 +1,7 @@
 /**
- * Sentry error monitoring initialization for server and edge runtimes.
+ * Sentry error monitoring initialization for the server runtime.
  * Features:
  * - Server-side monitoring
- * - Edge runtime monitoring
  * - Environment detection
  *
  * Modified by Dulapah Vibulsanti (https://dulapahv.dev) from auto-generated

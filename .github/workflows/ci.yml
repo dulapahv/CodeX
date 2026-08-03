@@ -27,6 +27,35 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      client: ${{ steps.filter.outputs.client }}
+      server: ${{ steps.filter.outputs.server }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Filter paths
+        id: filter
+        uses: dorny/paths-filter@d1c1ffe0248fe513906c8e24db8ea791d46f8590 # v3
+        with:
+          filters: |
+            shared: &shared
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - 'packages/**'
+              - '.github/workflows/ci.yml'
+            client:
+              - *shared
+              - 'apps/client/**'
+            server:
+              - *shared
+              - 'apps/server/**'
+
   test-server:
     name: Server tests
     runs-on: ubuntu-latest
@@ -155,8 +184,10 @@ jobs:
 
   deploy-client:
     name: Deploy client to Cloudflare
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-server, test-client]
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main'
+      && needs.changes.outputs.client == 'true'
+    needs: [changes, test-server, test-client]
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -191,6 +222,7 @@ jobs:
         working-directory: apps/client
         run: pnpm exec opennextjs-cloudflare build
         env:
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
           # Without this the Sentry bundler plugin generates source maps, then
           # deletes them without uploading, and production stack traces stay minified.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -207,8 +239,10 @@ jobs:
 
   deploy-server:
     name: Deploy server to Render
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-server, test-client]
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main'
+      && needs.changes.outputs.server == 'true'
+    needs: [changes, test-server, test-client]
     runs-on: ubuntu-latest
     environment: production
     steps:
