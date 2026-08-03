@@ -6,7 +6,7 @@
 #
 # By Dulapah Vibulsanti (https://dulapahv.dev)
 
-name: 🚀 CI
+name: CI
 
 on:
   push:
@@ -28,22 +28,22 @@ env:
 
 jobs:
   test-server:
-    name: 🧪 Server tests
+    name: Server tests
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Install pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
 
-      - name: 🔧 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
 
-      - name: 💾 Cache Turbo
+      - name: Cache Turbo
         uses: actions/cache@v4
         with:
           path: .turbo
@@ -51,16 +51,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-server-
 
-      - name: 🏗️ Install dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🔨 Build server
+      - name: Build server
         run: pnpm build:server
 
-      - name: 🧪 Run Jest tests
+      - name: Run Jest tests
         run: pnpm test:server
 
-      - name: 📊 Upload test results
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -69,7 +69,7 @@ jobs:
           retention-days: 30
 
   test-client:
-    name: 🎭 Client E2E tests
+    name: Client E2E tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -81,19 +81,19 @@ jobs:
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
       PISTON_API_KEY: ${{ secrets.PISTON_API_KEY }}
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Install pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
 
-      - name: 🔧 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
 
-      - name: 💾 Cache Turbo
+      - name: Cache Turbo
         uses: actions/cache@v4
         with:
           path: .turbo
@@ -101,7 +101,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-client-
 
-      - name: 💾 Cache Next.js build
+      - name: Cache Next.js build
         uses: actions/cache@v4
         with:
           path: apps/client/.next/cache
@@ -109,35 +109,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-e2e-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - name: 🏗️ Install dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🔨 Build packages
+      - name: Build packages
         run: pnpm build
 
-      - name: 🔍 Get Playwright version
+      - name: Get Playwright version
         id: playwright-version
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
 
-      - name: 💾 Cache Playwright browsers
+      - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
-      - name: 🎭 Install Playwright browsers
+      - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter client exec playwright install --with-deps chromium
 
-      - name: 🎭 Install Playwright system dependencies
+      - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --filter client exec playwright install-deps chromium
 
-      - name: 🧪 Run Playwright tests
+      - name: Run Playwright tests
         run: pnpm test:client
 
-      - name: 📊 Upload test results
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -145,7 +145,7 @@ jobs:
           path: apps/client/playwright-report/
           retention-days: 30
 
-      - name: 📸 Upload test screenshots
+      - name: Upload test screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -154,25 +154,27 @@ jobs:
           retention-days: 30
 
   deploy-client:
-    name: 🚀 Deploy client to Cloudflare
+    name: Deploy client to Cloudflare
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [test-server, test-client]
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Install pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
 
-      - name: 🔧 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+          # Matches the Node version the Cloudflare Workers Builds image used, so
+          # the artifact this pipeline ships is built the same way it always was.
           node-version: 24
           cache: 'pnpm'
 
-      - name: 💾 Cache Next.js build
+      - name: Cache Next.js build
         uses: actions/cache@v4
         with:
           path: apps/client/.next/cache
@@ -180,12 +182,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-deploy-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
-      - name: 🏗️ Install dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       # @codex/types is consumed as TypeScript source (bundler resolution +
       # experimental.externalDir), so no workspace pre-build is needed here.
-      - name: 🔨 Build application
+      - name: Build application
         working-directory: apps/client
         run: pnpm exec opennextjs-cloudflare build
         env:
@@ -196,7 +198,7 @@ jobs:
           # WORKERS_CI_COMMIT_SHA that Workers Builds used to inject.
           SENTRY_RELEASE: ${{ github.sha }}
 
-      - name: 🚀 Deploy to Cloudflare
+      - name: Deploy to Cloudflare
         working-directory: apps/client
         run: pnpm exec opennextjs-cloudflare deploy
         env:
@@ -204,11 +206,11 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-server:
-    name: 🚀 Deploy server to Render
+    name: Deploy server to Render
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [test-server, test-client]
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: 🚀 Trigger Render deploy hook
+      - name: Trigger Render deploy hook
         run: curl -fsS -X POST "${{ secrets.SERVER_DEPLOY_HOOK }}"
