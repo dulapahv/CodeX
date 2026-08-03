@@ -125,7 +125,6 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
     SENTRY_AUTH_TOKEN=
     GITHUB_CLIENT_SECRET_PROD=
     GITHUB_CLIENT_SECRET_DEV=
-    SENTRY_SUPPRESS_TURBOPACK_WARNING="1"
     TURBO_TEAM=
     TURBO_TOKEN=
     ```
@@ -210,10 +209,12 @@ The build artifacts of the frontend will be available in the `apps/client/.next`
 
 ## Deployment
 
-The project is configured for automatic deployment through Deploy Hooks which trigger after the GitHub Actions CI/CD pipeline completes successfully:
+Deployment runs from the GitHub Actions pipeline (`.github/workflows/ci.yml`) on every push to `main`, and only after both the server and client test jobs pass:
 
-- Frontend (client): Automatically deploys to [Cloudflare](https://cloudflare.com)
-- Backend (server): Automatically deploys to [Render](https://render.com)
+- Frontend (client): built with the [OpenNext](https://opennext.js.org/cloudflare) adapter and deployed straight to [Cloudflare Workers](https://cloudflare.com) by the workflow
+- Backend (server): deployed to [Render](https://render.com) via a Deploy Hook
+
+The deploy job needs these repository secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `SENTRY_AUTH_TOKEN` (source map upload), and `SERVER_DEPLOY_HOOK`.
 
 ## Scripts
 
