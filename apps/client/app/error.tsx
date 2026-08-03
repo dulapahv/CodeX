@@ -10,9 +10,11 @@
 
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { Bug, Home, RefreshCcw } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
+import { useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { BASE_CLIENT_URL, CONTACT_URL, IS_DEV_ENV } from "@/lib/constants";
@@ -24,6 +26,10 @@ export default function ErrorPage({
   error: globalThis.Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   const generateErrorReport = () => {
     const timestamp = new Date().toISOString();
     let errorMessage = `Error Details:

@@ -5,7 +5,7 @@
     "client#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "env": ["SENTRY_AUTH_TOKEN"],
+      "env": ["SENTRY_AUTH_TOKEN", "NEXT_PUBLIC_CI"],
       "cache": true
     },
     "server#build": {

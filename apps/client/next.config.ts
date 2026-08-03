@@ -61,16 +61,21 @@ export default withSentryConfig(nextConfig, {
   project: "codex",
   silent: !process.env.CI, // Only print logs for uploading source maps in CI
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
-  // Automatically annotate React components to show their full name in breadcrumbs and session replay
-  reactComponentAnnotation: {
-    enabled: true,
+  // Automatically annotate React components to show their full name in breadcrumbs
+  // and session replay
+  _experimental: {
+    turbopackReactComponentAnnotation: {
+      enabled: true,
+    },
   },
   tunnelRoute: "/monitoring", // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // hideSourceMaps: true, // Hides source maps from generated client bundles
-  disableLogger: true, // Automatically tree-shake Sentry logger statements to reduce bundle size
-  // Automatically upload source maps for all Next.js pages
+  // On Turbopack builds the SDK enables `productionBrowserSourceMaps` itself and
+  // uploads via `compiler.runAfterProductionCompile`. Always delete afterwards:
+  // OpenNext copies whatever is left in `.next/static` into `.open-next/assets`,
+  // which Cloudflare serves publicly, so keeping them would expose full sources
+  // on any deploy made from a machine where CI is unset.
   sourcemaps: {
-    deleteSourcemapsAfterUpload: isCi,
+    deleteSourcemapsAfterUpload: true,
   },
   telemetry: !isCi, // Disable Sentry telemetry in CI
 });

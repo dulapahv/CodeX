@@ -26,7 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      SENTRY_SUPPRESS_TURBOPACK_WARNING: 1
+      # Inlined into the browser bundle at build time so instrumentation-client.ts
+      # can skip Sentry.init and keep E2E runs out of the production Sentry project.
+      NEXT_PUBLIC_CI: 'true'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}

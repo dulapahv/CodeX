@@ -31,7 +31,7 @@
     "@radix-ui/react-slot": "^1.3.3",
     "@radix-ui/react-switch": "^1.3.7",
     "@radix-ui/react-tooltip": "^1.2.16",
-    "@sentry/nextjs": "^9.47.1",
+    "@sentry/nextjs": "^10.69.0",
     "@uiw/codemirror-theme-github": "^4.25.11",
     "babel-plugin-react-compiler": "^1.0.0",
     "class-variance-authority": "^0.7.1",
