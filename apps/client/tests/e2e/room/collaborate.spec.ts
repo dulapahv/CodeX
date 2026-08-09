@@ -82,7 +82,7 @@ test.describe("Collaborative Features", () => {
 
     // Verify execution result appears in both users' terminals.
     // The Piston API may return 401 on CI (no API key), so we check for
-    // either successful output or an error response — both prove the
+    // either successful output or an error response, both prove the
     // execution flow and terminal sync work correctly.
     const userATerminal = userAPage.getByRole("region", { name: "Terminal" });
     const userBTerminal = userBPage.getByRole("region", { name: "Terminal" });
@@ -162,5 +162,37 @@ test.describe("Collaborative Features", () => {
         .locator(".cm-line")
         .filter({ hasText: "Adding more collaborative content!" })
     ).toBeVisible();
+  });
+
+  test("undo should revert the local user's text after a peer inserts ahead of it", async ({
+    browser,
+  }) => {
+    const userAContext = await browser.newContext();
+    const userBContext = await browser.newContext();
+
+    const userAPage = await userAContext.newPage();
+    const userBPage = await userBContext.newPage();
+
+    const roomUrl = await createRoom(userAPage, "User A");
+    await joinRoom(userBPage, roomUrl, "User B");
+
+    const userAEditor = userAPage.locator(".view-lines");
+    const userBEditor = userBPage.locator(".view-lines");
+    const userALine = userAPage.locator(".view-line").first();
+
+    await userAEditor.pressSequentially("AAAA");
+    await expect(userBPage.getByText("AAAA")).toBeVisible();
+
+    // User B inserts ahead of User A's text, shifting it right. A native
+    // Monaco undo entry still points at the original range [0,4], which now
+    // covers User B's characters instead of User A's.
+    await userBPage.keyboard.press("Control+Home");
+    await userBEditor.pressSequentially("BBBB");
+    await expect(userALine).toHaveText("BBBBAAAA");
+
+    // User A undoes their own insertion. "BBBB" must survive.
+    await userAPage.keyboard.press("Control+z");
+
+    await expect(userALine).toHaveText("BBBB");
   });
 });

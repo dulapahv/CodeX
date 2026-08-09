@@ -1,7 +1,7 @@
 /**
  * Type definitions for editor operations.
  * Includes:
- * - Edit operation type
+ * - Binary CRDT payload type
  * - Cursor position type
  * - Range information
  *
@@ -9,17 +9,14 @@
  */
 
 /**
- * Edit operation for the editor.
- * Contains text and range data.
+ * A binary Yjs payload as it travels over Socket.IO, either a document
+ * update or an encoded state vector.
  *
- * Index 0: text
- * Index 1: startLineNumber
- * Index 2: startColumn
- * Index 3: endLineNumber
- * Index 4: endColumn
+ * The union is not cosmetic: Socket.IO delivers binary as a `Buffer` on the
+ * server and as an `ArrayBuffer` in the browser, so both ends must normalise
+ * with their local `toUint8Array` helper before handing bytes to Yjs.
  */
-
-export type EditOp = [string, number, number, number, number];
+export type YjsUpdate = ArrayBuffer | Uint8Array;
 
 /**
  * Cursor data for the editor.

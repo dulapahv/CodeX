@@ -2,15 +2,16 @@
  * Code synchronization service for collaborative editing.
  * Features:
  * - Room data management
- * - Code update handling
+ * - CRDT update merging and broadcast
  * - Language state sync
- * - Real-time broadcast
+ * - State-vector handshake
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { CodeServiceMsg } from "@codex/types/message";
-import type { EditOp } from "@codex/types/operation";
+import type { YjsUpdate } from "@codex/types/operation";
+import * as Y from "yjs";
 import type { Server, Socket } from "@/types";
 
 import { getUserRoom } from "./room-service";
@@ -18,7 +19,7 @@ import { getCustomId } from "./user-service";
 
 // Use a single Map for all room data to reduce memory overhead
 interface RoomData {
-  code: string;
+  doc: Y.Doc;
   langId: string;
 }
 
@@ -27,6 +28,17 @@ const roomData = new Map<string, RoomData>();
 
 // Default language ID for HTML
 const DEFAULT_LANG_ID = "html";
+
+/** Name of the Y.Text holding the editor contents. Must match the client. */
+const CODE_TEXT_KEY = "monaco";
+
+/**
+ * Socket.IO hands us binary as a Buffer here and as an ArrayBuffer in the
+ * browser. Buffer is already a Uint8Array, so this is a no-op on the server
+ * in practice, it exists so a stray ArrayBuffer cannot reach Yjs.
+ */
+const toUint8Array = (data: YjsUpdate): Uint8Array =>
+  data instanceof Uint8Array ? data : new Uint8Array(data);
 
 /**
  * Room existence check - O(1) operation
@@ -38,20 +50,20 @@ export const roomExists = (roomID: string): boolean => {
 /**
  * Initialize room data if not present
  */
-function initializeRoom(roomID: string): RoomData {
+export const initializeRoom = (roomID: string): RoomData => {
   let data = roomData.get(roomID);
   if (!data) {
-    data = { code: "", langId: DEFAULT_LANG_ID };
+    data = { doc: new Y.Doc(), langId: DEFAULT_LANG_ID };
     roomData.set(roomID, data);
   }
   return data;
-}
+};
 
 /**
- * Get code with O(1) lookup
+ * Get the room's document text with O(1) lookup
  */
 export const getCode = (roomID: string): string => {
-  return roomData.get(roomID)?.code || "";
+  return roomData.get(roomID)?.doc.getText(CODE_TEXT_KEY).toString() || "";
 };
 
 /**
@@ -70,15 +82,40 @@ export const setLang = (roomID: string, langId: string): void => {
 };
 
 /**
- * Optimized code sync
+ * Answer a client's sync handshake.
+ *
+ * The client sends the state vector describing what it already has; we reply
+ * with only the operations it is missing, plus our own state vector so it can
+ * push back anything we are missing (edits made before the handshake landed,
+ * or while it was disconnected).
  */
-export const syncCode = (socket: Socket, io: Server): void => {
+export const syncCode = (
+  socket: Socket,
+  io: Server,
+  clientStateVector: YjsUpdate
+): void => {
   const customId = getCustomId(socket.id);
   const roomId = getUserRoom(socket);
-  if (customId && roomId) {
-    const code = getCode(roomId);
-    io.to(socket.id).emit(CodeServiceMsg.SYNC_CODE, code);
+  if (!(customId && roomId)) {
+    return;
   }
+
+  const { doc } = initializeRoom(roomId);
+
+  // A malformed state vector from a client must not take the server down.
+  let update: Uint8Array;
+  try {
+    const bytes = toUint8Array(clientStateVector);
+    update = Y.encodeStateAsUpdate(doc, bytes.length > 0 ? bytes : undefined);
+  } catch {
+    update = Y.encodeStateAsUpdate(doc);
+  }
+
+  io.to(socket.id).emit(
+    CodeServiceMsg.SYNC_CODE,
+    update,
+    Y.encodeStateVector(doc)
+  );
 };
 
 /**
@@ -114,36 +151,13 @@ export const updateLang = (socket: Socket, langId: string): void => {
 };
 
 /**
- * Convert a 1-indexed (line, column) position to a 0-indexed character offset.
- * Matches Monaco Editor's coordinate system where lines and columns start at 1.
+ * Merge a client's update into the room document and fan it out.
+ *
+ * Yjs updates are commutative and idempotent, so ordering across clients does
+ * not matter and a replayed update is harmless, which is what makes this
+ * safe under Socket.IO's connection state recovery.
  */
-const positionToOffset = (
-  code: string,
-  line: number,
-  column: number
-): number => {
-  let offset = 0;
-  let currentLine = 1;
-
-  while (currentLine < line) {
-    const nextNewline = code.indexOf("\n", offset);
-    if (nextNewline === -1) {
-      offset = code.length;
-      break;
-    }
-    offset = nextNewline + 1;
-    currentLine++;
-  }
-
-  return Math.min(offset + column - 1, code.length);
-};
-
-/**
- * Apply an edit operation to the server-side document using offset-based
- * string replacement. This mirrors exactly what Monaco's pushEditOperations
- * does internally: replace the text in range [start, end) with new text.
- */
-export const updateCode = (socket: Socket, operation: EditOp): void => {
+export const updateCode = (socket: Socket, update: YjsUpdate): void => {
   const roomID = getUserRoom(socket);
   const customId = getCustomId(socket.id);
 
@@ -151,26 +165,23 @@ export const updateCode = (socket: Socket, operation: EditOp): void => {
     return;
   }
 
-  socket.to(roomID).emit(CodeServiceMsg.UPDATE_CODE, operation);
+  const bytes = toUint8Array(update);
+  const { doc } = initializeRoom(roomID);
 
-  const currentCode = getCode(roomID);
-  const [txt, startLnNum, startCol, endLnNum, endCol] = operation;
+  // Merge first: a corrupt update must not be relayed to the other peers.
+  try {
+    Y.applyUpdate(doc, bytes);
+  } catch {
+    return;
+  }
 
-  const startOffset = positionToOffset(currentCode, startLnNum, startCol);
-  const endOffset = positionToOffset(currentCode, endLnNum, endCol);
-
-  const updatedCode =
-    currentCode.substring(0, startOffset) +
-    txt +
-    currentCode.substring(endOffset);
-
-  const data = initializeRoom(roomID);
-  data.code = updatedCode;
+  socket.to(roomID).emit(CodeServiceMsg.UPDATE_CODE, bytes);
 };
 
 /**
  * Clean up room data when a room is deleted
  */
 export const deleteRoom = (roomID: string): void => {
+  roomData.get(roomID)?.doc.destroy();
   roomData.delete(roomID);
 };

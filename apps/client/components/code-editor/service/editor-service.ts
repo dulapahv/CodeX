@@ -10,7 +10,7 @@
  */
 
 import { CodeServiceMsg, ScrollServiceMsg } from "@codex/types/message";
-import type { Cursor, EditOp } from "@codex/types/operation";
+import type { Cursor } from "@codex/types/operation";
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
@@ -36,22 +36,20 @@ export const handleBeforeMount = (monaco: Monaco): void => {
  * Handle the Monaco editor after mounting.
  * @param editor Monaco editor instance
  * @param monaco Monaco instance
- * @param editorRef Editor reference function
- * @param monacoRef Monaco reference function
- * @param editorInstanceRef Editor instance reference
+ * @param disposablesRef Collected Monaco disposables to clean up on unmount
+ * @param setCursorPosition Status bar cursor position setter
+ *
+ * @remarks
+ * Initial content is not set here. The CRDT binding owns the model's text.
  */
 export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monaco: Monaco,
   disposablesRef: RefObject<monaco.IDisposable[]>,
-  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
-  defaultCode?: string
+  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>
 ): void => {
   const socket = getSocket();
 
-  if (defaultCode) {
-    editor.setValue(defaultCode);
-  }
   editor.focus();
 
   editor.updateOptions({
@@ -118,31 +116,4 @@ export const handleOnMount = (
 
   disposablesRef.current.push(cursorSelectionDisposable);
   disposablesRef.current.push(scrollDisposable);
-};
-
-/**
- * Handle changes in the editor.
- * @param value Current value in the editor.
- * @param ev Editor change event.
- * @param skipUpdateRef Skip update reference.
- */
-export const handleOnChange = (
-  _value: string | undefined,
-  ev: monaco.editor.IModelContentChangedEvent,
-  skipUpdateRef: RefObject<boolean>
-): void => {
-  if (skipUpdateRef.current) {
-    return;
-  }
-  const socket = getSocket();
-
-  for (const change of ev.changes) {
-    socket.emit(CodeServiceMsg.UPDATE_CODE, [
-      change.text,
-      change.range.startLineNumber,
-      change.range.startColumn,
-      change.range.endLineNumber,
-      change.range.endColumn,
-    ] as EditOp);
-  }
 };

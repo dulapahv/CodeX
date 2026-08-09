@@ -12,7 +12,7 @@ import type {
   ScrollServiceMsg,
   StreamServiceMsg,
 } from "./message";
-import type { Cursor, EditOp } from "./operation";
+import type { Cursor, YjsUpdate } from "./operation";
 import type { Pointer } from "./pointer";
 import type { Scroll } from "./scroll";
 import type { ExecutionResult } from "./terminal";
@@ -33,8 +33,8 @@ export interface ClientToServerEvents {
   [RoomServiceMsg.UPDATE_MD]: (note: string) => void;
 
   // Code
-  [CodeServiceMsg.SYNC_CODE]: () => void;
-  [CodeServiceMsg.UPDATE_CODE]: (op: EditOp) => void;
+  [CodeServiceMsg.SYNC_CODE]: (stateVector: YjsUpdate) => void;
+  [CodeServiceMsg.UPDATE_CODE]: (update: YjsUpdate) => void;
   [CodeServiceMsg.UPDATE_CURSOR]: (cursor: Cursor) => void;
   [CodeServiceMsg.SYNC_LANG]: () => void;
   [CodeServiceMsg.UPDATE_LANG]: (langID: string) => void;
@@ -74,8 +74,11 @@ export interface ServerToClientEvents {
   [RoomServiceMsg.UPDATE_MD]: (note: string) => void;
 
   // Code
-  [CodeServiceMsg.SYNC_CODE]: (code: string) => void;
-  [CodeServiceMsg.UPDATE_CODE]: (op: EditOp) => void;
+  [CodeServiceMsg.SYNC_CODE]: (
+    update: YjsUpdate,
+    serverStateVector: YjsUpdate
+  ) => void;
+  [CodeServiceMsg.UPDATE_CODE]: (update: YjsUpdate) => void;
   [CodeServiceMsg.UPDATE_CURSOR]: (customId: string, cursor: Cursor) => void;
   [CodeServiceMsg.UPDATE_LANG]: (langID: string) => void;
   [CodeServiceMsg.EXEC]: (isExecuting: boolean) => void;

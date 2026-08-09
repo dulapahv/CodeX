@@ -14,7 +14,8 @@
   "dependencies": {
     "@codex/types": "workspace:*",
     "socket.io": "^4.8.3",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.52.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.52.0",
+    "yjs": "13.6.27"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

@@ -17,7 +17,7 @@ import {
   ScrollServiceMsg,
   StreamServiceMsg,
 } from "@codex/types/message";
-import type { Cursor, EditOp } from "@codex/types/operation";
+import type { Cursor, YjsUpdate } from "@codex/types/operation";
 import type { Pointer } from "@codex/types/pointer";
 import type { Scroll } from "@codex/types/scroll";
 import type {
@@ -111,11 +111,11 @@ io.on("connection", (socket) => {
   socket.on(RoomServiceMsg.SYNC_USERS, async () =>
     roomService.getUsersInRoom(socket, io)
   );
-  socket.on(CodeServiceMsg.SYNC_CODE, async () =>
-    codeService.syncCode(socket, io)
+  socket.on(CodeServiceMsg.SYNC_CODE, async (stateVector: YjsUpdate) =>
+    codeService.syncCode(socket, io, stateVector)
   );
-  socket.on(CodeServiceMsg.UPDATE_CODE, async (op: EditOp) =>
-    codeService.updateCode(socket, op)
+  socket.on(CodeServiceMsg.UPDATE_CODE, async (update: YjsUpdate) =>
+    codeService.updateCode(socket, update)
   );
   socket.on(CodeServiceMsg.UPDATE_CURSOR, async (cursor: Cursor) =>
     userService.updateCursor(socket, cursor)

@@ -91,6 +91,10 @@ export const create = async (socket: Socket, name: string): Promise<void> => {
 
   await socket.join(roomID);
 
+  // Materialise the room's document now so roomExists(), used above for the
+  // ID-collision check, is true for a room that has not been edited yet.
+  codeService.initializeRoom(roomID);
+
   // Initialize room cache
   roomUsersCache.set(roomID, { [customId]: name });
 
@@ -156,7 +160,7 @@ export const leave = async (socket: Socket, io: Server): Promise<void> => {
     if (users) {
       delete users[customId];
       if (Object.keys(users).length === 0) {
-        // Room is empty — start grace period instead of immediate deletion.
+        // Room is empty, start grace period instead of immediate deletion.
         // Room data (code, notes) is preserved so users can rejoin.
         roomUsersCache.delete(roomID);
         startGracePeriod(roomID);

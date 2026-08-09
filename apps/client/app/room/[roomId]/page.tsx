@@ -201,7 +201,6 @@ export default function Room() {
   );
 
   const [users, setUsers] = useState<User[]>([]);
-  const [defaultCode, setDefaultCode] = useState<string | null>(null);
   const [mdContent, setMdContent] = useState<string | null>(null);
   const [output, setOutput] = useState<ExecutionResult[]>([]);
 
@@ -217,10 +216,6 @@ export default function Room() {
     setUsers(userMap.getAll());
   }, []);
 
-  const handleCodeReceive = useCallback((code: string) => {
-    setDefaultCode(code);
-  }, []);
-
   const handleMarkdownReceive = useCallback((md: string) => {
     setMdContent(md);
   }, []);
@@ -234,9 +229,9 @@ export default function Room() {
       router.replace(`/?room=${roomId}`);
     }
 
-    // Full state sync on initial page load
+    // Full state sync on initial page load. The code editor runs its own
+    // CRDT handshake, so only users and notes are fetched here.
     socket.emit(RoomServiceMsg.SYNC_USERS);
-    socket.emit(CodeServiceMsg.SYNC_CODE);
     socket.emit(RoomServiceMsg.SYNC_MD);
 
     // Re-sync on reconnection only if connection state recovery fails.
@@ -245,7 +240,6 @@ export default function Room() {
     const handleReconnect = () => {
       if (!socket.recovered) {
         socket.emit(RoomServiceMsg.SYNC_USERS);
-        socket.emit(CodeServiceMsg.SYNC_CODE);
         socket.emit(RoomServiceMsg.SYNC_MD);
       }
     };
@@ -258,7 +252,6 @@ export default function Room() {
     };
 
     socket.on(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
-    socket.on(CodeServiceMsg.SYNC_CODE, handleCodeReceive);
     socket.on(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
     socket.on(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
     socket.on(RoomServiceMsg.TERMINATE, handleTerminate);
@@ -271,7 +264,6 @@ export default function Room() {
       window.removeEventListener("popstate", disconnect);
       socket.off("connect", handleReconnect);
       socket.off(RoomServiceMsg.SYNC_USERS);
-      socket.off(CodeServiceMsg.SYNC_CODE);
       socket.off(CodeServiceMsg.UPDATE_LANG);
       socket.off(RoomServiceMsg.UPDATE_MD);
       socket.off(CodeServiceMsg.UPDATE_TERM);
@@ -284,7 +276,6 @@ export default function Room() {
     router,
     socket,
     handleUsersUpdate,
-    handleCodeReceive,
     handleMarkdownReceive,
     handleTerminalReceive,
   ]);
@@ -329,7 +320,7 @@ export default function Room() {
           />
         )}
       </div>
-      {defaultCode !== null && mdContent !== null ? (
+      {mdContent !== null ? (
         <ResizablePanelGroup
           className="!h-[calc(100%-54px)]"
           direction="horizontal"
@@ -376,7 +367,6 @@ export default function Room() {
                   <ResizablePanel defaultSize={60} minSize={10}>
                     <CodeEditor
                       cursorPosition={setCursorPosition}
-                      defaultCode={defaultCode}
                       editorRef={handleEditorSetup}
                       monacoRef={handleMonacoSetup}
                       setCode={setCode}
@@ -401,9 +391,7 @@ export default function Room() {
                     minSize={10}
                   >
                     {editor && (
-                      <MemoizedLivePreview
-                        value={debouncedCode || defaultCode}
-                      />
+                      <MemoizedLivePreview value={debouncedCode ?? ""} />
                     )}
                   </ResizablePanel>
                 </ResizablePanelGroup>

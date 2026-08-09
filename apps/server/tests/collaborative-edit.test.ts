@@ -7,66 +7,81 @@ import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
-import type { EditOp } from "@codex/types/operation";
 import { io as Client } from "socket.io-client";
+import * as Y from "yjs";
 
 const SERVER_URL = process.env.SERVER_URL;
 const SAMPLES_PER_TEST = 50;
+
+/** Must match CODE_TEXT_KEY on the client and server. */
+const CODE_TEXT_KEY = "monaco";
+
+/**
+ * Build the binary update produced by applying `mutate` to a document that
+ * already contains `initialCode`. This is the payload a real client would put
+ * on the wire for that edit.
+ */
+const buildUpdate = (
+  initialCode: string,
+  mutate: (text: Y.Text) => void
+): Uint8Array => {
+  const doc = new Y.Doc();
+  const text = doc.getText(CODE_TEXT_KEY);
+  text.insert(0, initialCode);
+
+  const before = Y.encodeStateVector(doc);
+  doc.transact(() => mutate(text));
+  return Y.encodeStateAsUpdate(doc, before);
+};
 
 const testCases: TestCase[] = [
   {
     name: "Simple insertion at start",
     initialCode: "world",
-    operation: ["hello ", 1, 1, 1, 1] as EditOp,
-    expectedResult: "hello world",
+    mutate: (text) => text.insert(0, "hello "),
   },
   {
     name: "Replace word in middle",
     initialCode: "The quick brown fox",
-    operation: ["lazy", 1, 5, 1, 10] as EditOp,
-    expectedResult: "The lazy brown fox",
+    mutate: (text) => {
+      text.delete(4, 5);
+      text.insert(4, "lazy");
+    },
   },
   {
     name: "Add new line",
     initialCode: "First line",
-    operation: ["\nSecond line", 1, 11, 1, 11] as EditOp,
-    expectedResult: "First line\nSecond line",
+    mutate: (text) => text.insert(10, "\nSecond line"),
   },
   {
     name: "Delete empty lines",
     initialCode: "First\n\n\nLast",
-    operation: ["", 2, 1, 4, 1] as EditOp,
-    expectedResult: "First\nLast",
+    mutate: (text) => text.delete(6, 2),
   },
   {
-    name: "Insert at non-existent line",
+    name: "Append after a trailing newline",
     initialCode: "Line 1",
-    operation: ["Line 3", 3, 1, 3, 1] as EditOp,
-    expectedResult: "Line 1\n\nLine 3",
+    mutate: (text) => text.insert(6, "\n\nLine 3"),
   },
   {
     name: "Multi-line insertion",
     initialCode: "Start\nEnd",
-    operation: ["Middle\nLine", 2, 1, 2, 1] as EditOp,
-    expectedResult: "Start\nMiddle\nLineEnd",
+    mutate: (text) => text.insert(6, "Middle\nLine"),
   },
   {
     name: "Delete partial line",
     initialCode: "Hello beautiful world",
-    operation: ["", 1, 6, 1, 16] as EditOp,
-    expectedResult: "Hello world",
+    mutate: (text) => text.delete(5, 10),
   },
   {
     name: "Handle very long line",
     initialCode: "x".repeat(1000),
-    operation: ["test", 1, 500, 1, 500] as EditOp,
-    expectedResult: `${"x".repeat(499)}test${"x".repeat(501)}`,
+    mutate: (text) => text.insert(499, "test"),
   },
   {
     name: "Multiple consecutive newlines",
     initialCode: "Start",
-    operation: ["\n\n\n\n", 1, 6, 1, 6] as EditOp,
-    expectedResult: "Start\n\n\n\n",
+    mutate: (text) => text.insert(5, "\n\n\n\n"),
   },
 ];
 
@@ -81,10 +96,9 @@ interface TestResult {
 }
 
 interface TestCase {
-  expectedResult: string;
   initialCode: string;
+  mutate: (text: Y.Text) => void;
   name: string;
-  operation: EditOp;
 }
 
 class LatencyReport {
@@ -106,7 +120,7 @@ class LatencyReport {
   private generateTestCaseReport(result: TestResult): string {
     return `Test Case: ${result.name}
 ─────────────────────────────────────────────────────
-Operation Size: ${result.operationSize} bytes
+Update Size: ${result.operationSize} bytes
 Samples: ${result.samples.map((s) => this.formatNumber(s)).join(", ")} ms
 
 Statistics:
@@ -136,7 +150,7 @@ Statistics:
 
   generateReport(): string {
     const timestamp = new Date().toISOString();
-    const summary = `Socket.IO Edit Operation Latency Analysis Report
+    const summary = `Yjs CRDT Update Latency Analysis Report
 ═══════════════════════════════════════════════════════════════
 Timestamp: ${timestamp}
 Server URL: ${SERVER_URL}
@@ -229,7 +243,7 @@ describe("Socket.IO Latency Tests", () => {
     receiverSocket?.disconnect();
   });
 
-  const measureLatency = async (operation: EditOp): Promise<number[]> => {
+  const measureLatency = async (update: Uint8Array): Promise<number[]> => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
@@ -242,7 +256,7 @@ describe("Socket.IO Latency Tests", () => {
           latencies.push(latency);
           resolve();
         });
-        senderSocket.emit(CodeServiceMsg.UPDATE_CODE, operation);
+        senderSocket.emit(CodeServiceMsg.UPDATE_CODE, update);
       });
     }
 
@@ -272,23 +286,26 @@ describe("Socket.IO Latency Tests", () => {
 
   test.each(testCases)("Socket.IO latency for $name", async ({
     name,
-    operation,
+    initialCode,
+    mutate,
   }) => {
-    const latencies = await measureLatency(operation);
+    const update = buildUpdate(initialCode, mutate);
+    const latencies = await measureLatency(update);
     const stats = calculateStats(latencies);
 
     report.addResult({
       name,
       samples: latencies,
       ...stats,
-      operationSize: Buffer.from(String(operation[0])).length,
+      operationSize: update.byteLength,
     });
   });
 
   test("Socket.IO latency for rapid edits", async () => {
-    const edits: EditOp[] = new Array(100)
-      .fill(null)
-      .map((_, i) => [`${i}`, 1, 1, 1, 1] as EditOp);
+    const RAPID_EDIT_COUNT = 100;
+    const edits = Array.from({ length: RAPID_EDIT_COUNT }, (_, i) =>
+      buildUpdate("", (text) => text.insert(0, `${i}`))
+    );
     const timings: number[] = [];
 
     await Promise.all(
@@ -310,7 +327,7 @@ describe("Socket.IO Latency Tests", () => {
       name: "Rapid Edits",
       samples: timings,
       ...stats,
-      operationSize: 1,
+      operationSize: edits[0]?.byteLength ?? 0,
     });
   });
 });

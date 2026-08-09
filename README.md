@@ -267,6 +267,7 @@ pnpm --filter server test:socket
   - [Tailwind CSS](https://tailwindcss.com)
   - [shadcn/ui](https://ui.shadcn.com/)
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
+  - [Yjs](https://yjs.dev) (CRDT for conflict-free code synchronization)
   - [Socket.IO Client](https://socket.io)
   - [MDXEditor](https://mdxeditor.dev/) (notepad)
   - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
@@ -275,6 +276,7 @@ pnpm --filter server test:socket
   - [Node.js](https://nodejs.org)
   - [TypeScript](https://www.typescriptlang.org)
   - [Socket.IO](https://socket.io) (binded to [µWebSockets.js](https://github.com/uNetworking/uWebSockets.js) server)
+  - [Yjs](https://yjs.dev) (per-room CRDT document that merges and relays edits)
 - **Testing:**
   - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
   - [Jest](https://jestjs.io) (unit testing for backend)

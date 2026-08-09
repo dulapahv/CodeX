@@ -14,7 +14,7 @@ import {
   RoomServiceMsg,
   ScrollServiceMsg,
 } from "@codex/types/message";
-import type { Cursor, EditOp } from "@codex/types/operation";
+import type { Cursor } from "@codex/types/operation";
 import type { Scroll } from "@codex/types/scroll";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
@@ -31,14 +31,14 @@ import type { StatusBarCursorPosition } from "@/components/status-bar";
 import { getSocket } from "@/lib/socket";
 
 import { LoadingCard } from "./components/loading-card";
-import * as codeService from "./service/code-service";
 import * as cursorService from "./service/cursor-service";
 import * as editorService from "./service/editor-service";
+import { bindMonacoToYText } from "./service/monaco-binding";
 import * as scrollService from "./service/scroll-service";
+import { createCollabDoc } from "./service/yjs-doc-service";
 
 interface CodeEditorProps {
   cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
-  defaultCode?: string;
   editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   monacoRef: (monaco: Monaco) => void;
   setCode: (code: string) => void;
@@ -48,7 +48,6 @@ const CodeEditor = memo(function CodeEditor({
   monacoRef,
   editorRef,
   cursorPosition,
-  defaultCode,
   setCode,
 }: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
@@ -63,7 +62,6 @@ const CodeEditor = memo(function CodeEditor({
     null
   );
   const monacoInstanceRef = useRef<Monaco | null>(null);
-  const skipUpdateRef = useRef(false);
   const cursorDecorationsRef = useRef<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >({});
@@ -90,10 +88,6 @@ const CodeEditor = memo(function CodeEditor({
       return;
     }
 
-    socket.on(CodeServiceMsg.UPDATE_CODE, (op: EditOp) => {
-      codeService.updateCode(op, editorInstanceRef, skipUpdateRef);
-    });
-
     socket.on(CodeServiceMsg.UPDATE_CURSOR, (userID: string, cursor: Cursor) =>
       cursorService.updateCursor(
         userID,
@@ -117,12 +111,30 @@ const CodeEditor = memo(function CodeEditor({
 
     // Cleanup socket listeners
     return () => {
-      socket.off(CodeServiceMsg.UPDATE_CODE);
       socket.off(CodeServiceMsg.UPDATE_CURSOR);
       socket.off(ScrollServiceMsg.UPDATE_SCROLL);
       socket.off(RoomServiceMsg.LEAVE);
     };
   }, [isMonacoReady, socket]);
+
+  // Attach the shared document once Monaco exists. Creating it here (rather
+  // than on the page) keeps the socket handshake and the model binding in one
+  // lifecycle, so both are torn down together.
+  useEffect(() => {
+    const editor = editorInstanceRef.current;
+    const monacoInstance = monacoInstanceRef.current;
+    if (!(isMonacoReady && editor && monacoInstance)) {
+      return;
+    }
+
+    const collab = createCollabDoc();
+    const unbind = bindMonacoToYText(collab.ytext, editor, monacoInstance);
+
+    return () => {
+      unbind();
+      collab.destroy();
+    };
+  }, [isMonacoReady]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -160,13 +172,7 @@ const CodeEditor = memo(function CodeEditor({
     monacoRef(monaco);
 
     // Set up the editor with the default configuration
-    editorService.handleOnMount(
-      editor,
-      monaco,
-      disposablesRef,
-      cursorPosition,
-      defaultCode
-    );
+    editorService.handleOnMount(editor, monaco, disposablesRef, cursorPosition);
 
     // Mark Monaco as ready
     setIsMonacoReady(true);
@@ -177,13 +183,7 @@ const CodeEditor = memo(function CodeEditor({
       beforeMount={editorService.handleBeforeMount}
       defaultLanguage="html"
       loading={<LoadingCard />}
-      onChange={(
-        value: string | undefined,
-        ev: monaco.editor.IModelContentChangedEvent
-      ) => {
-        editorService.handleOnChange(value, ev, skipUpdateRef);
-        setCode(value || "");
-      }}
+      onChange={(value: string | undefined) => setCode(value || "")}
       onMount={handleEditorMount}
       theme={theme}
     />
