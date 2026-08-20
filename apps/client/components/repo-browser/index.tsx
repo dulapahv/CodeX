@@ -54,17 +54,9 @@ const RepoBrowser = memo(
       []
     );
 
-    const fetchReposCallback = useCallback(() => {
+    useEffect(() => {
       fetchRepos(setLoading, setError, setTreeData, searchQuery);
     }, [searchQuery]);
-
-    useEffect(() => {
-      fetchRepos(setLoading, setError, setTreeData);
-    }, []);
-
-    useEffect(() => {
-      fetchReposCallback();
-    }, [fetchReposCallback]);
 
     const handleSelectChangeCallback = useCallback(
       (item: TreeDataItem) => {
