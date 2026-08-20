@@ -81,33 +81,108 @@ export const verifyGithubAuth = async () => {
   }
 };
 
-// Input validation for SSRF prevention
+// Input validation for SSRF prevention.
+//
+// Every call site interpolates these values into the GitHub API URL after
+// running each path segment through encodeURIComponent, which escapes all
+// URL-structural characters (/ ? # : @ & = % and control bytes). Encoding does
+// not neutralize a literal ".." segment or a leading "/", so those are checked
+// explicitly below. Beyond that we only reject what git itself forbids, since a
+// character allowlist rejects legal paths such as "app/(home)/page.tsx".
 const GITHUB_OWNER_REPO_RE = /^[a-zA-Z0-9._-]+$/;
-const GITHUB_PATH_SEGMENT_RE = /^[a-zA-Z0-9._\-/]+$/;
+
+// git check-ref-format forbids these in a ref name, alongside control characters.
+const REF_ILLEGAL_CHARS = new Set([" ", "~", "^", ":", "?", "*", "[", "\\"]);
+
+const SPACE_CODE_POINT = 0x20;
+const DELETE_CODE_POINT = 0x7f;
+
+const MAX_OWNER_REPO_LENGTH = 100;
+const MAX_PATH_LENGTH = 500;
+const MAX_REF_LENGTH = 255;
+
+// C0 control characters and DEL are never valid in a git path or ref name.
+const hasControlCharacter = (value: string): boolean => {
+  for (const char of value) {
+    const code = char.codePointAt(0) ?? 0;
+    if (code < SPACE_CODE_POINT || code === DELETE_CODE_POINT) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export const validateGitHubOwner = (value: string): boolean =>
-  GITHUB_OWNER_REPO_RE.test(value) && value.length <= 100;
+  GITHUB_OWNER_REPO_RE.test(value) && value.length <= MAX_OWNER_REPO_LENGTH;
 
 export const validateGitHubRepo = (value: string): boolean => {
   // repo can be "owner/repo" or just "name"
   const parts = value.split("/");
   return (
     parts.length <= 2 &&
-    parts.every((p) => GITHUB_OWNER_REPO_RE.test(p) && p.length <= 100)
+    parts.every(
+      (p) => GITHUB_OWNER_REPO_RE.test(p) && p.length <= MAX_OWNER_REPO_LENGTH
+    )
   );
 };
 
-export const validateGitHubPath = (value: string): boolean =>
-  value === "" ||
-  (GITHUB_PATH_SEGMENT_RE.test(value) &&
-    !value.includes("..") &&
-    !value.startsWith("/") &&
-    value.length <= 500);
+export const validateGitHubPath = (value: string): boolean => {
+  // An empty path addresses the repository root.
+  if (value === "") {
+    return true;
+  }
 
-export const validateGitHubBranch = (value: string): boolean =>
-  GITHUB_PATH_SEGMENT_RE.test(value) &&
-  !value.includes("..") &&
-  value.length <= 255;
+  if (value.length > MAX_PATH_LENGTH || hasControlCharacter(value)) {
+    return false;
+  }
+
+  // A leading slash would escape the /repos/{owner}/{repo}/contents/ prefix.
+  if (value.startsWith("/")) {
+    return false;
+  }
+
+  // Reject traversal segments only. A filename such as "notes..md" is legal, so
+  // this inspects each segment rather than searching for ".." as a substring.
+  return value
+    .split("/")
+    .every((segment) => segment !== "." && segment !== "..");
+};
+
+export const validateGitHubBranch = (value: string): boolean => {
+  // A ref may be a branch, a tag, or a commit SHA; all follow check-ref-format.
+  if (value === "" || value.length > MAX_REF_LENGTH) {
+    return false;
+  }
+
+  if (hasControlCharacter(value)) {
+    return false;
+  }
+
+  for (const char of value) {
+    if (REF_ILLEGAL_CHARS.has(char)) {
+      return false;
+    }
+  }
+
+  if (value.includes("..") || value.includes("@{") || value === "@") {
+    return false;
+  }
+
+  if (
+    value.startsWith("/") ||
+    value.endsWith("/") ||
+    value.includes("//") ||
+    value.endsWith(".")
+  ) {
+    return false;
+  }
+
+  return value
+    .split("/")
+    .every(
+      (segment) => !(segment.startsWith(".") || segment.endsWith(".lock"))
+    );
+};
 
 // API route handlers
 export const githubAuthHandlers = {
