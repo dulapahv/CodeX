@@ -25,9 +25,7 @@ const nextConfig: NextConfig = {
   experimental: {
     typedEnv: true,
     inlineCss: true,
-    turbopackFileSystemCacheForBuild: true,
     turbopackServerSideNestedAsyncChunking: true,
-    cssChunking: "strict",
     optimizePackageImports: [
       "@mdxeditor/editor",
       "@monaco-editor/react",
