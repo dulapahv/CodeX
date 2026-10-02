@@ -25,7 +25,15 @@ const nextConfig: NextConfig = {
   experimental: {
     typedEnv: true,
     inlineCss: true,
+    cssChunking: "graph",
+    turbopackRustReactCompiler: true,
+    turbopackFileSystemCacheForBuild: true,
     turbopackServerSideNestedAsyncChunking: true,
+    turbopackSharedRuntime: true,
+    turbopackCjsTreeShaking: true,
+    turbopackChunking: {
+      generateComponentChunks: true,
+    },
     optimizePackageImports: [
       "@mdxeditor/editor",
       "@monaco-editor/react",
