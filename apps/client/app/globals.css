@@ -455,6 +455,10 @@
   @apply hover:bg-foreground/10! cursor-pointer! p-0! align-middle transition-all!;
 }
 
+[class*="_tableEditor_"] {
+  @apply h-auto!;
+}
+
 [class*="_tableToolsColumn_"] {
   @apply align-middle;
 }
