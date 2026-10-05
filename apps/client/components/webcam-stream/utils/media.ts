@@ -12,10 +12,9 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 
 import { isMobile } from "react-device-detect";
 import type Peer from "simple-peer";
-import { toast } from "sonner";
 
 import { parseError } from "@/lib/utils";
-
+import { reportWebcamError } from "./errors";
 import { cleanupPeer, createPeer } from "./peer";
 
 // Get local media stream and recreate peer connections with the new stream
@@ -112,7 +111,7 @@ export const getMedia = async (
 
     return true;
   } catch (error) {
-    toast.error(`Error accessing media devices: ${parseError(error)}`);
+    reportWebcamError(`Error accessing media devices: ${parseError(error)}`);
     return false;
   }
 };

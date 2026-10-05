@@ -1,5 +1,5 @@
 /**
- * Responsive dialog component that renders as AlertDialog on desktop
+ * Responsive dialog component that renders as Dialog on desktop
  * and Drawer on mobile devices.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -7,13 +7,13 @@
 
 import type { ReactNode } from "react";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
@@ -27,7 +27,6 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 interface ResponsiveDialogProps {
   children: ReactNode;
   description: string;
-  dismissible?: boolean;
   footer: ReactNode;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,33 +40,29 @@ export const ResponsiveDialog = ({
   description,
   children,
   footer,
-  dismissible = false,
 }: ResponsiveDialogProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
-      <AlertDialog onOpenChange={onOpenChange} open={isOpen}>
-        <AlertDialogContent
-          autoFocus={false}
-          className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl"
-        >
-          <AlertDialogHeader className="flex-shrink-0 space-y-0 text-left">
-            <AlertDialogTitle>{title}</AlertDialogTitle>
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          </AlertDialogHeader>
+      <Dialog onOpenChange={onOpenChange} open={isOpen}>
+        <DialogContent className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl">
+          <DialogHeader className="flex-shrink-0 text-left">
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
           {children}
-          <AlertDialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
+          <DialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
             {footer}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
-    <Drawer dismissible={dismissible} onOpenChange={onOpenChange} open={isOpen}>
-      <DrawerContent className="first:[&>div]:mt-0 first:[&>div]:bg-transparent">
+    <Drawer onOpenChange={onOpenChange} open={isOpen}>
+      <DrawerContent>
         <div className="flex h-[90vh] flex-col">
           <DrawerHeader className="flex-shrink-0 text-left">
             <DrawerTitle>{title}</DrawerTitle>

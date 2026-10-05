@@ -26,8 +26,8 @@ interface RoomData {
 // Core data structure for room management
 const roomData = new Map<string, RoomData>();
 
-// Default language ID for HTML
-const DEFAULT_LANG_ID = "html";
+// Default language ID for Python
+const DEFAULT_LANG_ID = "python";
 
 /** Name of the Y.Text holding the editor contents. Must match the client. */
 const CODE_TEXT_KEY = "monaco";

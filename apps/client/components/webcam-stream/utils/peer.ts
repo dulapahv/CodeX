@@ -12,10 +12,10 @@
 import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import Peer from "simple-peer";
-import { toast } from "sonner";
 
 import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
+import { reportWebcamError } from "./errors";
 
 // Create a new peer connection for a specific user
 export const createPeer = (
@@ -81,7 +81,7 @@ export const createPeer = (
 
     return peer;
   } catch (error) {
-    toast.error(`Error creating peer connection:\n${parseError(error)}`);
+    reportWebcamError(`Error creating peer connection:\n${parseError(error)}`);
     return null;
   }
 };

@@ -78,9 +78,11 @@ const Avatar = ({
   if (isMobile) {
     return (
       <Popover>
-        <PopoverTrigger aria-label={`${displayName}'s avatar`} asChild>
-          {AvatarContent}
-        </PopoverTrigger>
+        <PopoverTrigger
+          aria-label={`${displayName}'s avatar`}
+          nativeButton={false}
+          render={AvatarContent}
+        />
         <PopoverContent
           className="w-auto p-2 text-sm"
           role="tooltip"
@@ -94,10 +96,12 @@ const Avatar = ({
   }
 
   return (
-    <Tooltip delayDuration={0}>
-      <TooltipTrigger aria-label={`${displayName}'s avatar`} asChild>
-        {AvatarContent}
-      </TooltipTrigger>
+    <Tooltip>
+      <TooltipTrigger
+        aria-label={`${displayName}'s avatar`}
+        delay={0}
+        render={AvatarContent}
+      />
       <TooltipContent role="tooltip" sideOffset={8}>
         {displayName}
       </TooltipContent>

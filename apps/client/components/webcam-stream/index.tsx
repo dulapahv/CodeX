@@ -26,6 +26,7 @@ import { useMediaDevices } from "./hooks/useMediaDevices";
 import { usePeerConnections } from "./hooks/usePeerConnections";
 import { useSocketEvents } from "./hooks/useSocketEvents";
 import { useWebcamStream } from "./hooks/useWebcamStream";
+import { clearWebcamError, useWebcamError } from "./utils/errors";
 
 interface WebcamStreamProps {
   users: User[];
@@ -33,6 +34,7 @@ interface WebcamStreamProps {
 
 const WebcamStream = ({ users }: WebcamStreamProps) => {
   const [micOn, setMicOn] = useState(false);
+  const error = useWebcamError();
 
   // Custom hooks for state management
   const {
@@ -102,6 +104,15 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
         videoRef={videoRef}
       />
 
+      {error && (
+        <p
+          className="absolute bottom-14 left-1/2 w-max max-w-[90%] -translate-x-1/2 bg-destructive/10 px-2 py-1 text-center text-destructive text-xs"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+
       {/* Controls */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-4">
         <div className="flex items-center gap-2">
@@ -130,13 +141,14 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             <Button
               aria-label="Rotate camera"
               className="bg-foreground/10 hover:bg-foreground/20"
-              onClick={() =>
+              onClick={() => {
+                clearWebcamError();
                 handleRotateCamera(
                   peersRef,
                   setRemoteStreams,
                   pendingSignalsRef
-                )
-              }
+                );
+              }}
               size="icon"
               variant="ghost"
             >

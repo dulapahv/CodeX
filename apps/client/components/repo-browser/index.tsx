@@ -88,7 +88,7 @@ const RepoBrowser = memo(
     return (
       <section
         aria-label="Repository search"
-        className="flex h-full flex-col rounded-md border"
+        className="flex h-full flex-col border"
       >
         <div className="relative border-b">
           <Search

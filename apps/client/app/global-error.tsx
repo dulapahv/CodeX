@@ -18,8 +18,9 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CONTACT_URL } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export default function GlobalError({
   error,
@@ -59,12 +60,16 @@ URL: ${window.location.href}`;
               )}
             </AlertDescription>
             <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
-              <Button asChild className="gap-2" variant="outline">
-                <Link href={generateErrorReport() as Route} target="_blank">
-                  <Bug className="size-4" />
-                  Report Issue
-                </Link>
-              </Button>
+              <Link
+                className={cn(
+                  buttonVariants({ variant: "outline", className: "gap-2" })
+                )}
+                href={generateErrorReport() as Route}
+                target="_blank"
+              >
+                <Bug className="size-4" />
+                Report Issue
+              </Link>
               <Button
                 className="gap-2"
                 onClick={() => reset()}

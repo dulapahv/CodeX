@@ -64,28 +64,31 @@ const ArgsInputPopover = ({
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <PopoverTrigger asChild>
-            <Button
-              aria-label="Program arguments and input"
-              className={cn(
-                "hover:!opacity-80 disabled:!opacity-50 relative size-7 rounded-l-none border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)]",
-                disabled && "bg-red-600"
-              )}
-              disabled={disabled}
-              size="icon"
-              variant="ghost"
-            >
-              <ChevronDown className="size-4" />
-              {hasInput && (
-                <span
-                  aria-hidden="true"
-                  className="absolute -top-0.5 -right-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
-                />
-              )}
-            </Button>
-          </PopoverTrigger>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <PopoverTrigger
+              render={
+                <Button
+                  aria-label="Program arguments and input"
+                  className={cn(
+                    "hover:!opacity-80 disabled:!opacity-50 relative size-7 border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] bg-clip-border text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)]",
+                    disabled && "bg-red-600"
+                  )}
+                  disabled={disabled}
+                  size="icon"
+                >
+                  <ChevronDown className="size-4" />
+                  {hasInput && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -top-0.5 -right-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
+                    />
+                  )}
+                </Button>
+              }
+            />
+          }
+        />
         <TooltipContent sideOffset={8}>
           {hasInput ? (
             <div className="space-y-1">
@@ -113,7 +116,7 @@ const ArgsInputPopover = ({
               {argsStr && (
                 <Button
                   aria-label="Clear arguments"
-                  className="absolute top-1 right-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  className="absolute top-1 right-1 size-6 text-muted-foreground hover:text-foreground"
                   onClick={clearArgs}
                   size="icon"
                   variant="ghost"
@@ -137,7 +140,7 @@ const ArgsInputPopover = ({
               {stdin && (
                 <Button
                   aria-label="Clear program input"
-                  className="absolute top-1 right-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
+                  className="absolute top-1 right-1 size-6 text-muted-foreground hover:text-foreground"
                   onClick={clearStdin}
                   size="icon"
                   variant="ghost"

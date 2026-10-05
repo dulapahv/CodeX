@@ -9,12 +9,12 @@ import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useRef, useState } from "react";
 import type Peer from "simple-peer";
-import { toast } from "sonner";
 
 import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 
 import { rotateCamera, toggleCamera, toggleMic } from "../utils/controls";
+import { reportWebcamError } from "../utils/errors";
 import { getMedia } from "../utils/media";
 
 interface UseWebcamStreamProps {
@@ -166,7 +166,9 @@ export const useWebcamStream = ({
           cameraFacingMode
         );
       } catch (error) {
-        toast.error(`Failed to switch video device: ${parseError(error)}`);
+        reportWebcamError(
+          `Failed to switch video device: ${parseError(error)}`
+        );
       }
     },
     [cameraOn, micOn, selectedAudioInput, selectedAudioOutput, cameraFacingMode]
@@ -205,7 +207,9 @@ export const useWebcamStream = ({
           cameraFacingMode
         );
       } catch (error) {
-        toast.error(`Failed to switch audio device: ${parseError(error)}`);
+        reportWebcamError(
+          `Failed to switch audio device: ${parseError(error)}`
+        );
       }
     },
     [

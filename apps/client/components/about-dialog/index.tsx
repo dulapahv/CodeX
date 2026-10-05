@@ -81,8 +81,8 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
 
     if (isDesktop) {
       return (
-        <Dialog aria-label="About CodeX" onOpenChange={setIsOpen} open={isOpen}>
-          <DialogContent className={cn("max-w-2xl", forceDark && "dark")}>
+        <Dialog onOpenChange={setIsOpen} open={isOpen}>
+          <DialogContent className={cn("sm:max-w-2xl", forceDark && "dark")}>
             <DialogHeader className="text-left text-foreground">
               <DialogTitle>{SITE_NAME}</DialogTitle>
               <DialogDescription className="pt-2 text-base">
@@ -99,7 +99,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               <Image
                 alt="CodeX application interface preview"
                 aria-hidden={!isImgLoaded}
-                className="absolute rounded-md object-cover"
+                className="absolute object-cover"
                 fill
                 loading="eager"
                 onLoad={() => setIsImgLoaded(true)}
@@ -110,7 +110,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               {!isImgLoaded && (
                 <Skeleton
                   aria-label="Loading image..."
-                  className="absolute inset-0 h-full w-full rounded-lg"
+                  className="absolute inset-0 h-full w-full"
                 />
               )}
             </div>
@@ -130,11 +130,13 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
             </div>
 
             <DialogFooter>
-              <DialogClose asChild>
-                <Button aria-label="Close dialog" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
+              <DialogClose
+                render={
+                  <Button aria-label="Close dialog" variant="secondary">
+                    Close
+                  </Button>
+                }
+              />
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -161,7 +163,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               <Image
                 alt="CodeX application interface preview"
                 aria-hidden={!isImgLoaded}
-                className="rounded-md object-cover"
+                className="object-cover"
                 fill
                 loading="eager"
                 onLoad={() => setIsImgLoaded(true)}
@@ -172,7 +174,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
               {!isImgLoaded && (
                 <Skeleton
                   aria-label="Loading image..."
-                  className="absolute inset-0 h-full w-full rounded-lg"
+                  className="absolute inset-0 h-full w-full"
                 />
               )}
             </div>
@@ -192,11 +194,13 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
           </div>
 
           <DrawerFooter>
-            <DrawerClose asChild>
-              <Button aria-label="Close drawer" variant="secondary">
-                Close
-              </Button>
-            </DrawerClose>
+            <DrawerClose
+              render={
+                <Button aria-label="Close drawer" variant="secondary">
+                  Close
+                </Button>
+              }
+            />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

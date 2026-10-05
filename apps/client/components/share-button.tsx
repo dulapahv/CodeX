@@ -34,20 +34,22 @@ const ShareButton = ({ roomId }: RoomProps) => {
     <>
       <Dialog>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              aria-expanded="false"
-              aria-haspopup="dialog"
-              aria-label="Share this coding room"
-              className="hover:!text-foreground aspect-square h-7 animate-fade-in-top rounded-sm p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
-              onClick={handleButtonClick}
-              size="sm"
-              variant="ghost"
-            >
-              <Share aria-hidden="true" className="mr-0 size-4 sm:mr-2" />
-              <span className="hidden sm:flex">Share</span>
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button
+                aria-expanded="false"
+                aria-haspopup="dialog"
+                aria-label="Share this coding room"
+                className="hover:!text-foreground aspect-square h-7 animate-fade-in-top p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
+                onClick={handleButtonClick}
+                size="sm"
+                variant="ghost"
+              >
+                <Share aria-hidden="true" className="size-4" />
+                <span className="hidden sm:flex">Share</span>
+              </Button>
+            }
+          />
           <TooltipContent role="tooltip" sideOffset={8}>
             <p>Share this room with others</p>
           </TooltipContent>

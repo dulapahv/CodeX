@@ -22,7 +22,6 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -34,6 +33,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { cn, loginWithGithub } from "@/lib/utils";
 
 import { EditorConfig } from "./components/editor-config";
@@ -128,7 +128,8 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
         <SheetContent
           aria-label="Editor Settings"
           aria-modal="true"
-          className="w-[calc(100%-10%)] overflow-y-auto sm:min-w-[540px]"
+          className="overflow-y-auto data-[side=right]:w-[calc(100%-10%)] sm:min-w-[540px]"
+          data-backdrop="clear"
           role="dialog"
         >
           <SheetHeader className="text-left">
@@ -140,7 +141,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           {/* biome-ignore lint/a11y/useSemanticElements: grouping settings options */}
           <div
             aria-label="Settings Options"
-            className="flex flex-col gap-y-4 py-4"
+            className="flex flex-col gap-y-4 px-4 pb-4"
             role="group"
           >
             <div>

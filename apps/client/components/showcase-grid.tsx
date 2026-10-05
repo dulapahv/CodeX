@@ -77,11 +77,11 @@ const showcaseImages: ShowcaseImage[] = [
 ];
 
 const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
-  <div className="group relative min-h-[300px] w-full overflow-hidden rounded-lg border-none bg-black/20 backdrop-blur-sm">
+  <div className="group relative min-h-[300px] w-full overflow-hidden border-none bg-black/20 backdrop-blur-xs">
     <div className="relative aspect-video w-full">
       <Image
         alt={image.alt}
-        className="rounded-t-lg object-cover transition-transform duration-300"
+        className="object-cover transition-transform duration-300"
         fill
         loading="eager"
         sizes="(min-width: 1189px) 33vw, (min-width: 560px) 50vw, 100vw"
@@ -90,9 +90,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
     </div>
     <div className="min-h-28 p-4">
       <div className="mb-2 flex items-center gap-2">
-        <span className="rounded-full bg-[#f6d84f]/10 p-2 text-[#f6d84f]">
-          {image.icon}
-        </span>
+        <span className="bg-[#f6d84f]/10 p-2 text-[#f6d84f]">{image.icon}</span>
         <h1 className="font-semibold text-base text-foreground tracking-tight">
           {image.title}
         </h1>

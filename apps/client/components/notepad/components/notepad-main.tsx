@@ -160,12 +160,12 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
     <MDXEditor
       autoFocus={false}
       className={cn(
-        `!bg-[color:var(--panel-background)] !font-sans [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] first:[&>div]:!rounded-none flex w-full flex-col [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto first:[&>div]:flex first:[&>div]:min-h-fit first:[&>div]:flex-wrap`,
+        `!bg-[color:var(--panel-background)] !font-sans [&>div>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div>div]:!ml-0 [&>div[role="dialog"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div[role="toolbar"]]:!bg-[color:var(--toolbar-bg-secondary)] [&>div]:first:!rounded-none flex w-full flex-col [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)>div]:h-full [&:not(.mdxeditor-popup-container)>*:nth-child(2)]:h-full [&>*:nth-child(2)]:overflow-auto [&>div]:first:flex [&>div]:first:min-h-fit [&>div]:first:flex-wrap`,
         resolvedTheme === "dark" && "!dark-editor !dark-theme"
       )}
       contentEditableClassName={cn(
         `prose h-full max-w-none dark:prose-invert
-        first:prose-headings:mt-0
+        prose-headings:first:mt-0
         prose-h1:text-3xl prose-h1:font-extrabold prose-h1:my-2
         prose-h2:text-2xl prose-h2:my-2
         prose-h3:text-xl prose-h3:my-2
@@ -173,15 +173,15 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         prose-h5:text-base prose-h5:my-0
         prose-h6:text-base prose-h6:my-0
         prose-p:leading-7 prose-p:my-1
-        prose-img:rounded prose-img:my-0
+        prose-img:my-0
         prose-blockquote:border-foreground/30 prose-blockquote:my-0 prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground/50
-        prose-code:text-base prose-code:font-normal before:prose-code:content-none after:prose-code:content-none [&>span]:prose-code:!font-mono [&>span]:prose-code:rounded [&>span]:prose-code:border [&>span]:prose-code:border-foreground/40 [&>span]:prose-code:bg-foreground/20 [&>span]:prose-code:px-1 [&>span]:prose-code:py-px
-        prose-pre:bg-muted prose-pre:rounded-lg
-        prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/80 prose-a:transition-opacity
+        prose-code:text-base prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-code:[&>span]:!font-mono prose-code:[&>span]:border prose-code:[&>span]:border-foreground/40 prose-code:[&>span]:!bg-foreground/20 prose-code:[&>span]:px-1 prose-code:[&>span]:py-px
+        prose-pre:bg-muted
+        prose-a:text-primary prose-a:underline-offset-4 prose-a:hover:text-primary/80 prose-a:transition-opacity
         prose-em:italic prose-em:text-foreground/90
         prose-ul:my-0
         prose-ol:my-0
-        prose-li:!no-underline prose-li:!my-0 before:prose-li:-translate-y-1/2 before:prose-li:!top-1/2 after:prose-li:!-translate-y-1/2 after:prose-li:!top-1/2 after:prose-li:rotate-45
+        prose-li:!no-underline prose-li:!my-0 prose-li:before:-translate-y-1/2 prose-li:before:!top-1/2 prose-li:after:!-translate-y-1/2 prose-li:after:!top-1/2
         prose-hr:border-foreground/30 prose-hr:my-4
         prose-table:my-0
         prose-th:!py-0

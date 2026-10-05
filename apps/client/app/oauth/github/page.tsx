@@ -13,8 +13,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { Spinner } from "@/components/spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Page() {
   const searchParams = useSearchParams();

@@ -152,19 +152,21 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
     <div className="flex flex-col gap-y-2">
       <Label className="font-normal">Theme</Label>
       <Popover onOpenChange={setOpen} open={open}>
-        <PopoverTrigger asChild>
-          <Button
-            aria-expanded={open}
-            className="justify-between"
-            role="combobox"
-            variant="outline"
-          >
-            {themes.find(([key]) => key === editorTheme)?.[1].name ||
-              "Dark (Visual Studio)"}
-            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0">
+        <PopoverTrigger
+          render={
+            <Button
+              aria-expanded={open}
+              className="justify-between"
+              role="combobox"
+              variant="outline"
+            >
+              {themes.find(([key]) => key === editorTheme)?.[1].name ||
+                "Dark (Visual Studio)"}
+              <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+            </Button>
+          }
+        />
+        <PopoverContent className="max-h-(--available-height) w-(--anchor-width) p-0">
           <Command>
             <CommandInput placeholder="Search theme..." />
             <CommandList>

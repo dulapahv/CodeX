@@ -46,10 +46,10 @@ export const VideoGrid = ({
     >
       {/* Local video */}
       <div className="relative">
-        <div className="relative aspect-video rounded-lg bg-black/10 dark:bg-black/30">
+        <div className="relative aspect-video bg-black/10 dark:bg-black/30">
           <video
             autoPlay
-            className="size-full scale-x-[-1] rounded-lg object-cover"
+            className="size-full scale-x-[-1] object-cover"
             muted
             playsInline
             ref={videoRef}
@@ -74,7 +74,7 @@ export const VideoGrid = ({
             speakersOn={speakerOn}
             userId={currentUserId}
           />
-          <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+          <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
             {currentUsername} (you)
           </div>
         </div>
@@ -85,11 +85,11 @@ export const VideoGrid = ({
         .filter((user) => user.id !== currentUserId)
         .map((user) => (
           <div className="relative" key={user.id}>
-            <div className="relative aspect-video rounded-lg bg-black/10 dark:bg-black/30">
+            <div className="relative aspect-video bg-black/10 dark:bg-black/30">
               {remoteStreams[user.id] ? (
                 <video
                   autoPlay
-                  className="size-full scale-x-[-1] rounded-lg object-cover"
+                  className="size-full scale-x-[-1] object-cover"
                   muted={!speakerOn}
                   playsInline
                   ref={(element) => {
@@ -111,7 +111,7 @@ export const VideoGrid = ({
                 speakersOn={speakerOn}
                 userId={user.id}
               />
-              <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded bg-black/50 px-2 py-1 text-sm text-white">
+              <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
                 {user.username}
               </div>
             </div>

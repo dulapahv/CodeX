@@ -26,7 +26,7 @@ const BackButton = ({ onClick, disabled }: BackButtonProps) => (
     size="sm"
     variant="link"
   >
-    <ArrowLeft aria-hidden="true" className="mr-2 size-4" />
+    <ArrowLeft aria-hidden="true" className="size-4" />
     <span>Back to create/join room</span>
   </Button>
 );

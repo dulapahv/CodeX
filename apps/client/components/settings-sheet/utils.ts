@@ -10,7 +10,6 @@
 
 import type * as monaco from "monaco-editor";
 import type { ChangeEvent } from "react";
-import { toast } from "sonner";
 
 import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 
@@ -45,7 +44,8 @@ export const exportSettings = (settings: Record<string, unknown>) => {
 export const importSettings = (
   editor: monaco.editor.IStandaloneCodeEditor,
   setSettings: (settings: Record<string, unknown>) => void,
-  event: ChangeEvent<HTMLInputElement>
+  event: ChangeEvent<HTMLInputElement>,
+  onError: (message: string) => void
 ) => {
   const file = event.target.files?.[0];
   if (!file) {
@@ -65,11 +65,9 @@ export const importSettings = (
       editor.updateOptions(imported);
       setSettings(imported);
       localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(imported));
-
-      toast.success("Settings imported successfully!");
     } catch (error) {
       console.error("Failed to import settings:", error);
-      toast.error("Failed to import settings. Please check the file format.");
+      onError("Failed to import settings. Please check the file format.");
     }
   };
 

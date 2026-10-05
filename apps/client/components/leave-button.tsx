@@ -8,6 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import type { BaseUIEvent } from "@base-ui/react/types";
 import { LogOut } from "lucide-react";
 import { type FocusEvent, useRef } from "react";
 import { LeaveDialog, type LeaveDialogRef } from "@/components/leave-dialog";
@@ -30,33 +31,33 @@ const LeaveButton = ({ className }: LeaveButtonProps) => {
     leaveDialogRef.current?.openDialog();
   };
 
-  const handleTooltipFocus = (e: FocusEvent) => {
-    e.preventDefault();
+  const handleTooltipFocus = (e: BaseUIEvent<FocusEvent>) => {
+    e.preventBaseUIHandler();
   };
 
   return (
     <>
       <Tooltip>
-        <TooltipTrigger asChild onFocus={handleTooltipFocus}>
-          <Button
-            aria-expanded="false"
-            aria-haspopup="dialog"
-            aria-label="Leave room"
-            className={cn(
-              "size-7 animate-fade-in-top rounded-sm p-0",
-              className
-            )}
-            onClick={handleButtonClick}
-            size="icon"
-            variant="ghost"
-          >
-            <LogOut
-              aria-hidden="true"
-              className="size-4 text-red-600"
-              strokeWidth={2.5}
-            />
-          </Button>
-        </TooltipTrigger>
+        <TooltipTrigger
+          onFocus={handleTooltipFocus}
+          render={
+            <Button
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-label="Leave room"
+              className={cn("size-7 animate-fade-in-top p-0", className)}
+              onClick={handleButtonClick}
+              size="icon"
+              variant="ghost"
+            >
+              <LogOut
+                aria-hidden="true"
+                className="size-4 text-red-600"
+                strokeWidth={2.5}
+              />
+            </Button>
+          }
+        />
         <TooltipContent
           aria-label="Leave Room"
           className="mr-1"

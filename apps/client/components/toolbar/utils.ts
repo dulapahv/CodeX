@@ -10,7 +10,6 @@
 
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
-import { toast } from "sonner";
 
 import { parseError } from "@/lib/utils";
 
@@ -134,12 +133,10 @@ export const openLocal = (
       if (model) {
         monaco.editor.setModelLanguage(model, language?.id || "plaintext");
       }
-      toast.success("File opened successfully");
     };
 
     reader.onerror = () => {
-      toast.error("Failed to read file");
-      throw new Error("Failed to read file");
+      console.error("Failed to read file:", reader.error);
     };
 
     reader.readAsText(file);

@@ -7,7 +7,6 @@
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import { forwardRef, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { RepoBrowser } from "@/components/repo-browser";
 import {
   type ExtendedTreeDataItem,
@@ -21,8 +20,8 @@ import {
 import { GithubAuthPrompt } from "@/components/shared/github/components/github-auth-prompt";
 import { GithubFooterInfo } from "@/components/shared/github/components/github-footer-info";
 import { useGithubAuth } from "@/components/shared/github/hooks/useGithubAuth";
-import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 import { getDisplayPath } from "./utils";
 
@@ -44,6 +43,7 @@ const OpenFromGithubDialog = forwardRef<
   const [branch, setBranch] = useState("");
   const [fileName, setFileName] = useState("");
   const [isFetchingContent, setIsFetchingContent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { isOpen, setIsOpen, closeDialog } = useDialogState(ref, {
     onClose: () => {
@@ -51,6 +51,7 @@ const OpenFromGithubDialog = forwardRef<
       setBranch("");
       setFileName("");
       setSelectedItem(null);
+      setError(null);
     },
   });
 
@@ -66,11 +67,12 @@ const OpenFromGithubDialog = forwardRef<
 
   const handleOpenFile = async () => {
     if (!(monaco && editor && repo && branch && fileName && selectedItem)) {
-      toast.error("Please select a file to open");
+      setError("Please select a file to open");
       return;
     }
 
     try {
+      setError(null);
       setIsFetchingContent(true);
 
       // Construct the path from selectedItem's path
@@ -101,16 +103,10 @@ const OpenFromGithubDialog = forwardRef<
         monaco.editor.setModelLanguage(model, language?.id || "plaintext");
       }
 
-      // Close dialog
       closeDialog();
-
-      // Show success message
-      toast.success("File opened successfully");
     } catch (error) {
       console.error("Error opening file:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to open file"
-      );
+      setError(error instanceof Error ? error.message : "Failed to open file");
     } finally {
       setIsFetchingContent(false);
     }
@@ -147,35 +143,42 @@ const OpenFromGithubDialog = forwardRef<
         )}
         githubUser={githubUser}
       />
-      <div className="ml-auto flex gap-2">
-        <Button
-          disabled={isFetchingContent}
-          onClick={closeDialog}
-          type="button"
-          variant="secondary"
-        >
-          Cancel
-        </Button>
-        {githubUser && (
-          <Button
-            aria-busy={isFetchingContent}
-            disabled={
-              !selectedItem?.type ||
-              selectedItem.type !== itemType.FILE ||
-              isFetchingContent
-            }
-            onClick={handleOpenFile}
-          >
-            {isFetchingContent ? (
-              <>
-                <Spinner className="mr-2" />
-                Opening...
-              </>
-            ) : (
-              "Open"
-            )}
-          </Button>
+      <div className="ml-auto flex flex-col items-end gap-2">
+        {error && (
+          <p className="text-right text-destructive text-xs" role="alert">
+            {error}
+          </p>
         )}
+        <div className="flex gap-2">
+          <Button
+            disabled={isFetchingContent}
+            onClick={closeDialog}
+            type="button"
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+          {githubUser && (
+            <Button
+              aria-busy={isFetchingContent}
+              disabled={
+                !selectedItem?.type ||
+                selectedItem.type !== itemType.FILE ||
+                isFetchingContent
+              }
+              onClick={handleOpenFile}
+            >
+              {isFetchingContent ? (
+                <>
+                  <Spinner />
+                  Opening...
+                </>
+              ) : (
+                "Open"
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );
@@ -183,7 +186,6 @@ const OpenFromGithubDialog = forwardRef<
   return (
     <ResponsiveDialog
       description="Select a repository, branch, and folder to open your code."
-      dismissible={false}
       footer={footer}
       isOpen={isOpen}
       onOpenChange={setIsOpen}

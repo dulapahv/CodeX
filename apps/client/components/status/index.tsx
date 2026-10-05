@@ -12,7 +12,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Spinner } from "@/components/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { STATUS_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 

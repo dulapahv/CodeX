@@ -38,6 +38,7 @@ export const SharedMenuItem = ({
     return (
       <MenubarCheckboxItem
         checked={item.checked}
+        closeOnClick
         onCheckedChange={() => actions[item.action]()}
       >
         {item.icon}
@@ -47,7 +48,7 @@ export const SharedMenuItem = ({
   }
 
   return (
-    <MenubarItem onSelect={() => actions[item.action]()}>
+    <MenubarItem onClick={() => actions[item.action]()}>
       {item.icon}
       {item.label}
       {!hideShortcut && item.shortcut && (

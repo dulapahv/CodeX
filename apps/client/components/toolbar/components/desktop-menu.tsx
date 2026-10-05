@@ -57,11 +57,11 @@ const DesktopMenu = ({
       ref={menubarRef}
     >
       {menuConfig.map((group) => (
-        <MenubarMenu key={group.label}>
+        <MenubarMenu key={group.label} loopFocus>
           <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
             {group.label}
           </MenubarTrigger>
-          <MenubarContent className="ml-1" loop>
+          <MenubarContent className="ml-1 w-auto">
             {group.items.map((item, index) => (
               <SharedMenuItem
                 actions={actions}

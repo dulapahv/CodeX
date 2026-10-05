@@ -15,7 +15,6 @@ import type { Monaco } from "@monaco-editor/react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import type * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { isMobile } from "react-device-detect";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -50,7 +49,7 @@ const LanguageSelection = memo(
   ({
     monaco,
     editor,
-    defaultLanguage = "html",
+    defaultLanguage = "python",
     className,
   }: LanguageSelectionProps) => {
     const socket = useMemo(() => getSocket(), []);
@@ -144,30 +143,24 @@ const LanguageSelection = memo(
 
     return (
       <Popover onOpenChange={setOpen} open={open}>
-        <PopoverTrigger asChild>
-          <Button
-            aria-expanded={open}
-            aria-label="Select programming language"
-            className={cn(
-              "size-fit justify-between gap-x-1 rounded-sm p-0 pr-1 pl-2 text-xs",
-              className
-            )}
-            role="combobox"
-            variant="ghost"
-          >
-            {selectedLanguage}
-            <ChevronsUpDown className="size-4 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="mr-1 w-64 p-0"
-          onOpenAutoFocus={(event) => {
-            if (isMobile) {
-              event.preventDefault();
-            }
-          }}
-          sideOffset={8}
-        >
+        <PopoverTrigger
+          render={
+            <Button
+              aria-expanded={open}
+              aria-label="Select programming language"
+              className={cn(
+                "size-fit justify-between gap-x-1 p-0 pr-1 pl-2 text-xs",
+                className
+              )}
+              role="combobox"
+              variant="ghost"
+            >
+              {selectedLanguage}
+              <ChevronsUpDown className="size-4 opacity-50" />
+            </Button>
+          }
+        />
+        <PopoverContent className="mr-1 w-64 p-0" sideOffset={8}>
           <Command>
             <CommandInput className="h-9" placeholder="Search languages..." />
             <CommandList>

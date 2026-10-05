@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       />
       <div
         aria-hidden="true"
-        className="fixed inset-0 -z-10 bg-gradient-to-tr from-[#fb568a]/50 via-[#c240ff]/50 to-90% to-[#3b77fd]/50"
+        className="fixed inset-0 -z-10 bg-linear-to-tr/srgb from-[#fb568a]/50 via-45% via-[#c240ff]/50 to-90% to-[#3b77fd]/50"
         role="presentation"
       />
       <div className="dark fixed inset-0 -z-10">
@@ -57,7 +57,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
                   <span>Code together</span>
                   <span className="flex items-end gap-2 min-[1189px]:items-baseline">
                     <span>now on</span>
-                    <span className="bg-gradient-to-r from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]">
+                    <span className="bg-linear-to-r/srgb from-[#fb568a] to-[#e456fb] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]">
                       CodeX
                     </span>
                   </span>

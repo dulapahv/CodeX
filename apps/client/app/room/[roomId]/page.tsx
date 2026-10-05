@@ -25,7 +25,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 
 import { CodeEditor } from "@/components/code-editor";
@@ -37,7 +36,6 @@ import { RemotePointers } from "@/components/remote-pointers";
 import { RunButton } from "@/components/run-button";
 import { SettingsButton } from "@/components/settings-button";
 import { ShareButton } from "@/components/share-button";
-import { Spinner } from "@/components/spinner";
 import {
   StatusBar,
   type StatusBarCursorPosition,
@@ -50,9 +48,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { Spinner } from "@/components/ui/spinner";
 import { UserList } from "@/components/user-list";
 import { WebcamStream } from "@/components/webcam-stream";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { ROOM_TERMINATED_KEY } from "@/lib/constants";
 import { initEditorTheme } from "@/lib/init-editor-theme";
 import { storage } from "@/lib/services/storage";
 import { userMap } from "@/lib/services/user-map";
@@ -246,8 +246,8 @@ export default function Room() {
     socket.on("connect", handleReconnect);
 
     const handleTerminate = () => {
-      toast.error("This room has been terminated by the host.");
       storage.clear();
+      sessionStorage.setItem(ROOM_TERMINATED_KEY, "1");
       router.replace("/");
     };
 
@@ -323,7 +323,7 @@ export default function Room() {
       {mdContent !== null ? (
         <ResizablePanelGroup
           className="!h-[calc(100%-54px)]"
-          direction="horizontal"
+          orientation="horizontal"
         >
           <ResizablePanel
             aria-label="Notepad"
@@ -334,8 +334,8 @@ export default function Room() {
               !showNotepad && "hidden"
             )}
             collapsible
-            defaultSize={20}
-            minSize={10}
+            defaultSize="20%"
+            minSize="10%"
             role="region"
           >
             <MemoizedNotepad markdown={mdContent} />
@@ -349,22 +349,22 @@ export default function Room() {
             )}
           />
 
-          <ResizablePanel defaultSize={65} minSize={10}>
-            <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize="65%" minSize="10%">
+            <ResizablePanelGroup orientation="vertical">
               <ResizablePanel
                 aria-label="Code Editor"
                 className="z-[1] animate-fade-in"
-                defaultSize={75}
-                minSize={10}
+                defaultSize="75%"
+                minSize="10%"
                 role="region"
               >
                 <ResizablePanelGroup
                   className={cn(
                     monaco && editor && "border-muted-foreground border-t"
                   )}
-                  direction="horizontal"
+                  orientation="horizontal"
                 >
-                  <ResizablePanel defaultSize={60} minSize={10}>
+                  <ResizablePanel defaultSize="60%" minSize="10%">
                     <CodeEditor
                       cursorPosition={setCursorPosition}
                       editorRef={handleEditorSetup}
@@ -387,8 +387,8 @@ export default function Room() {
                       !showLivePreview && "hidden"
                     )}
                     collapsible
-                    defaultSize={40}
-                    minSize={10}
+                    defaultSize="40%"
+                    minSize="10%"
                   >
                     {editor && (
                       <MemoizedLivePreview value={debouncedCode ?? ""} />
@@ -412,8 +412,8 @@ export default function Room() {
                   !showTerminal && "hidden"
                 )}
                 collapsible
-                defaultSize={25}
-                minSize={10}
+                defaultSize="25%"
+                minSize="10%"
                 role="region"
               >
                 <MemoizedTerminal results={output} setResults={setOutput} />
@@ -437,8 +437,8 @@ export default function Room() {
               !showWebcam && "hidden"
             )}
             collapsible
-            defaultSize={15}
-            minSize={10}
+            defaultSize="15%"
+            minSize="10%"
             role="region"
           >
             <MemoizedWebcamStream users={users} />

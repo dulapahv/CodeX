@@ -9,13 +9,14 @@
  */
 
 import { RoomServiceMsg } from "@codex/types/message";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 
 import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from "@/lib/constants";
 import { getSocket } from "@/lib/socket";
 
 import { storage } from "./services/storage";
+
+// biome-ignore lint/performance/noBarrelFile: shadcn convention, app code imports cn from here
+export { cn } from "cn";
 
 export const leaveRoom = (): void => {
   const socket = getSocket();
@@ -29,10 +30,6 @@ export const terminateRoom = (): void => {
 
   socket.emit(RoomServiceMsg.TERMINATE);
   storage.clear();
-};
-
-export const cn = (...inputs: ClassValue[]) => {
-  return twMerge(clsx(inputs));
 };
 
 export const parseError = (error: unknown): string => {

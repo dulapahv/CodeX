@@ -7,8 +7,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { toast } from "sonner";
-
 import { parseError } from "@/lib/utils";
 
 import type { MediaDevice } from "../types";
@@ -17,6 +15,7 @@ import {
   handleDevicePermissionGranted,
   initDevices,
 } from "../utils/device";
+import { reportWebcamError } from "../utils/errors";
 
 export const useMediaDevices = () => {
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
@@ -79,7 +78,7 @@ export const useMediaDevices = () => {
             }
           ).setSinkId(deviceId);
         } catch (error) {
-          toast.error(`Error setting audio output: ${parseError(error)}`);
+          reportWebcamError(`Error setting audio output: ${parseError(error)}`);
         }
       }
     },

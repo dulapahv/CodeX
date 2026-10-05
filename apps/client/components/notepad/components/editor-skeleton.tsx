@@ -15,12 +15,12 @@ const EditorSkeleton = () => (
     {/* Top toolbar skeleton */}
     <div className="flex items-center justify-between bg-[color:var(--toolbar-bg-secondary)] p-2">
       <div className="flex items-center gap-2">
-        <Skeleton className="size-8 rounded-md" />
-        <Skeleton className="h-8 w-32 rounded-md" />
+        <Skeleton className="size-8" />
+        <Skeleton className="h-8 w-32" />
       </div>
       <div className="flex items-center gap-2">
-        <Skeleton className="size-8 rounded-md" />
-        <Skeleton className="size-8 rounded-md" />
+        <Skeleton className="size-8" />
+        <Skeleton className="size-8" />
       </div>
     </div>
 

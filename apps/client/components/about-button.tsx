@@ -26,19 +26,22 @@ const AboutButton = () => {
   return (
     <>
       <Tooltip>
-        <TooltipTrigger asChild className="dark">
-          <Button
-            aria-haspopup="dialog"
-            aria-label="About"
-            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
-            onClick={() => aboutDialogRef.current?.openDialog()}
-            size="icon"
-            type="button"
-            variant="ghost"
-          >
-            <Info className="size-5" />
-          </Button>
-        </TooltipTrigger>
+        <TooltipTrigger
+          className="dark"
+          render={
+            <Button
+              aria-haspopup="dialog"
+              aria-label="About"
+              className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+              onClick={() => aboutDialogRef.current?.openDialog()}
+              size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <Info className="size-5" />
+            </Button>
+          }
+        />
         <TooltipContent className="mr-1" side="top">
           About
         </TooltipContent>

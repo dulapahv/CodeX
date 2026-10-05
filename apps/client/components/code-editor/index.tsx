@@ -181,7 +181,7 @@ const CodeEditor = memo(function CodeEditor({
   return (
     <Editor
       beforeMount={editorService.handleBeforeMount}
-      defaultLanguage="html"
+      defaultLanguage="python"
       loading={<LoadingCard />}
       onChange={(value: string | undefined) => setCode(value || "")}
       onMount={handleEditorMount}

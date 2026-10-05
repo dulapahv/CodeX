@@ -44,7 +44,6 @@ const UserList = ({ users }: UserListProps) => {
               ? "[&>div]:bg-foreground"
               : "[&>div]:bg-primary"
           )}
-          color="white"
           orientation="horizontal"
         />
       </ScrollArea>

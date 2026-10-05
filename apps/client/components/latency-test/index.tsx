@@ -15,11 +15,11 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { type ChangeEvent, useEffect, useState } from "react";
 import type { Socket } from "socket.io-client";
-import { Spinner } from "@/components/spinner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { BASE_CLIENT_URL, BASE_SERVER_URL } from "@/lib/constants";
 import { getSocket } from "@/lib/socket";
+import { cn } from "@/lib/utils";
 
 import type { TestResult } from "./types";
 import { calculateStats } from "./utils";
@@ -144,12 +145,18 @@ const LatencyTest = () => {
 
   return (
     <Card className="mx-auto w-full max-w-3xl">
-      <Button asChild className="mt-4 px-6 text-foreground" variant="link">
-        <Link href={BASE_CLIENT_URL}>
-          <ArrowLeft className="mr-2 size-4" />
-          Go back
-        </Link>
-      </Button>
+      <Link
+        className={cn(
+          buttonVariants({
+            variant: "link",
+            className: "self-start text-foreground",
+          })
+        )}
+        href={BASE_CLIENT_URL}
+      >
+        <ArrowLeft className="size-4" />
+        Go back
+      </Link>
       <CardHeader>
         <CardTitle>Server Latency Test</CardTitle>
       </CardHeader>
@@ -179,7 +186,7 @@ const LatencyTest = () => {
                 if (isConnecting) {
                   return (
                     <>
-                      <Spinner className="mr-2" />
+                      <Spinner />
                       Connecting...
                     </>
                   );
@@ -187,7 +194,7 @@ const LatencyTest = () => {
                 if (isTesting) {
                   return (
                     <>
-                      <Spinner className="mr-2" />
+                      <Spinner />
                       Testing ({testCount}/{iterations})
                     </>
                   );

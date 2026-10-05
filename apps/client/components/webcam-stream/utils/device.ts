@@ -11,11 +11,10 @@
 
 import type { Dispatch, SetStateAction } from "react";
 
-import { toast } from "sonner";
-
 import { parseError } from "@/lib/utils";
 
 import type { MediaDevice } from "../types";
+import { reportWebcamError } from "./errors";
 
 export const initDevices = async (handleDeviceChange: () => Promise<void>) => {
   // Only enumerate devices without requesting permissions
@@ -101,7 +100,7 @@ export const enumerateDevices = async (
       }
     }
   } catch (error) {
-    toast.error(`Error enumerating devices: ${parseError(error)}`);
+    reportWebcamError(`Error enumerating devices: ${parseError(error)}`);
   }
 };
 

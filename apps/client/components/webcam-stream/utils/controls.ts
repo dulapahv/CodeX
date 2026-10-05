@@ -12,10 +12,10 @@ import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { isMobile } from "react-device-detect";
 import type Peer from "simple-peer";
-import { toast } from "sonner";
 
 import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
+import { reportWebcamError } from "./errors";
 
 // Remove all tracks from peer connections before stopping them
 const removeTracksFromPeers = (
@@ -83,7 +83,7 @@ export const toggleCamera = async (
       }
     }
   } catch (error) {
-    toast.error(`Error toggling camera: ${parseError(error)}`);
+    reportWebcamError(`Error toggling camera: ${parseError(error)}`);
   }
 };
 
@@ -124,13 +124,13 @@ export const toggleMic = (
 
   try {
     if (!streamRef.current) {
-      toast.error("No active media stream");
+      reportWebcamError("No active media stream");
       return;
     }
 
     const audioTracks = streamRef.current.getAudioTracks();
     if (audioTracks.length === 0) {
-      toast.error("No audio track found");
+      reportWebcamError("No audio track found");
       return;
     }
 
@@ -142,6 +142,6 @@ export const toggleMic = (
     setMicOn(newMicState);
     socket.emit(StreamServiceMsg.MIC_STATE, newMicState);
   } catch (error) {
-    toast.error(`Error toggling microphone.\n${parseError(error)}`);
+    reportWebcamError(`Error toggling microphone.\n${parseError(error)}`);
   }
 };

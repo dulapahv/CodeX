@@ -46,20 +46,22 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
 
   return (
     <div className="relative h-full bg-[color:var(--panel-background)]">
-      <div className="absolute top-2 right-1 z-10 flex items-center gap-1 rounded-md px-1">
+      <div className="absolute top-2 right-1 z-10 flex items-center gap-1 px-1">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                aria-label="Download terminal logs"
-                className="size-6"
-                onClick={() => handleDownloadLogs(results)}
-                size="icon"
-                variant="ghost"
-              >
-                <Download className="size-3" />
-              </Button>
-            </TooltipTrigger>
+            <TooltipTrigger
+              render={
+                <Button
+                  aria-label="Download terminal logs"
+                  className="size-6"
+                  onClick={() => handleDownloadLogs(results)}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <Download className="size-3" />
+                </Button>
+              }
+            />
             <TooltipContent>
               <p>Download output</p>
             </TooltipContent>
@@ -68,17 +70,19 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
 
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                aria-label="Clear terminal"
-                className="size-6"
-                onClick={() => setResults([])}
-                size="icon"
-                variant="ghost"
-              >
-                <Trash2 className="size-3" />
-              </Button>
-            </TooltipTrigger>
+            <TooltipTrigger
+              render={
+                <Button
+                  aria-label="Clear terminal"
+                  className="size-6"
+                  onClick={() => setResults([])}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <Trash2 className="size-3" />
+                </Button>
+              }
+            />
             <TooltipContent>
               <p>Clear output</p>
             </TooltipContent>
@@ -86,7 +90,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
         </TooltipProvider>
       </div>
       <div className="h-full overflow-y-auto p-4" ref={terminalRef}>
-        <div className="flex flex-col space-y-2 divide-y whitespace-pre-wrap font-mono text-sm *:border-muted-foreground/40 *:pt-2">
+        <div className="flex flex-col divide-y whitespace-pre-wrap font-mono text-sm *:border-muted-foreground/40 *:py-2">
           <WelcomeMsg />
           {results.map((result, index) => (
             <Output

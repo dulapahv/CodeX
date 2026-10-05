@@ -27,17 +27,19 @@ const LatencyTestButton = () => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
-            onClick={() => router.push("/test/latency")}
-            size="icon"
-            variant="ghost"
-          >
-            <Gauge className="size-5" />
-            <span className="sr-only">Test Latency</span>
-          </Button>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <Button
+              className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+              onClick={() => router.push("/test/latency")}
+              size="icon"
+              variant="ghost"
+            >
+              <Gauge className="size-5" />
+              <span className="sr-only">Test Latency</span>
+            </Button>
+          }
+        />
         <TooltipContent className="mr-1" side="top">
           <p>Test Latency</p>
         </TooltipContent>

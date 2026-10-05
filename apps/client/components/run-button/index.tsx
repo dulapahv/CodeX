@@ -65,7 +65,7 @@ const RunButton = ({
           aria-busy={isRunning}
           aria-label={isRunning ? "Cancel execution" : "Run code"}
           className={cn(
-            "hover:!opacity-80 disabled:!opacity-50 h-7 rounded-r-none bg-[color:var(--toolbar-accent)] px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)]",
+            "hover:!opacity-80 disabled:!opacity-50 h-7 bg-[color:var(--toolbar-accent)] bg-clip-border px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)]",
             isRunning && "bg-red-600 hover:bg-red-700",
             className
           )}
@@ -88,15 +88,12 @@ const RunButton = ({
         >
           {isRunning ? (
             <>
-              <OctagonX aria-hidden="true" className="mr-0 size-4 sm:mr-1" />
+              <OctagonX aria-hidden="true" className="size-4" />
               <span className="hidden sm:flex">Cancel</span>
             </>
           ) : (
             <>
-              <Play
-                aria-hidden="true"
-                className="mr-0 size-4 fill-green-600 sm:mr-1"
-              />
+              <Play aria-hidden="true" className="size-4 fill-green-600" />
               <span className="hidden sm:flex">Run Code</span>
             </>
           )}

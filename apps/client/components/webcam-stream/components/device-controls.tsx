@@ -10,7 +10,6 @@
 
 import { type ElementType, useCallback, useState } from "react";
 
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -26,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import type { MediaDevice } from "../types";
+import { clearWebcamError, reportWebcamError } from "../utils/errors";
 
 interface DeviceButtonProps {
   devices: MediaDevice[];
@@ -115,7 +115,7 @@ const DeviceControls = ({
       return true;
     } catch (error) {
       console.error("Error requesting permissions:", error);
-      toast.error(
+      reportWebcamError(
         `Please grant ${label.toLowerCase()} permissions to see available devices`
       );
       return false;
@@ -123,6 +123,7 @@ const DeviceControls = ({
   }, [label, onDevicePermissionGranted]);
 
   const handleOpenChange = async (open: boolean) => {
+    clearWebcamError();
     setIsOpen(open);
     if (open && !hasValidDevices) {
       const success = await requestPermissions();
@@ -135,24 +136,29 @@ const DeviceControls = ({
   return (
     <div className="flex items-center">
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            aria-label={`Toggle ${label}`}
-            className={cn(
-              isEnabled
-                ? "bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]"
-                : "bg-black/70 hover:bg-black/80 dark:bg-white/10 dark:hover:bg-white/20",
-              "rounded-r-none",
-              (disabled || disableToggle) && "opacity-50"
-            )}
-            disabled={disabled || disableToggle}
-            onClick={onToggle}
-            size="icon"
-            type="button"
-          >
-            <Icon className="size-5" />
-          </Button>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <Button
+              aria-label={`Toggle ${label}`}
+              className={cn(
+                isEnabled
+                  ? "bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]"
+                  : "bg-black/70 hover:bg-black/80 dark:bg-white/10 dark:hover:bg-white/20",
+                "bg-clip-border",
+                (disabled || disableToggle) && "opacity-50"
+              )}
+              disabled={disabled || disableToggle}
+              onClick={() => {
+                clearWebcamError();
+                onToggle();
+              }}
+              size="icon"
+              type="button"
+            >
+              <Icon className="size-5" />
+            </Button>
+          }
+        />
         <TooltipContent>
           {(() => {
             if (disableToggle) {
@@ -166,7 +172,11 @@ const DeviceControls = ({
       <Select
         disabled={disabled}
         onOpenChange={handleOpenChange}
-        onValueChange={onDeviceSelect}
+        onValueChange={(deviceId) => {
+          if (deviceId !== null) {
+            onDeviceSelect(deviceId);
+          }
+        }}
         open={isOpen}
         value={
           hasValidDevices
@@ -175,22 +185,20 @@ const DeviceControls = ({
         }
       >
         <Tooltip>
-          <TooltipTrigger asChild>
-            <SelectTrigger
-              aria-label={`Select ${label} device`}
-              className={cn(
-                "h-10 w-5 rounded-l-none border-0 p-0 transition-all hover:bg-foreground/20 [&>svg]:w-full [&>svg]:rotate-180",
-                disabled && "cursor-not-allowed opacity-50"
-              )}
-            />
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <SelectTrigger
+                aria-label={`Select ${label} device`}
+                className={cn(
+                  "w-5 border-0 p-0 transition-all hover:bg-foreground/20 [&>svg]:w-full [&>svg]:rotate-180",
+                  disabled && "cursor-not-allowed opacity-50"
+                )}
+              />
+            }
+          />
           <TooltipContent>Select {label}</TooltipContent>
         </Tooltip>
-        <SelectContent
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-          }}
-        >
+        <SelectContent className="w-auto" finalFocus={false}>
           {hasValidDevices ? (
             validDevices.map((device) => (
               <SelectItem

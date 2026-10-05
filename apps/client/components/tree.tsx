@@ -13,20 +13,13 @@
 
 "use client";
 
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { ChevronRight, FileCode, Folder, type LucideIcon } from "lucide-react";
-import {
-  type ComponentPropsWithoutRef,
-  type ComponentRef,
-  forwardRef,
-  type HTMLAttributes,
-  useCallback,
-  useState,
-} from "react";
+import { forwardRef, type HTMLAttributes, useCallback, useState } from "react";
 import useResizeObserver from "use-resize-observer";
 import { itemType } from "@/components/repo-browser/types/tree";
-import { Spinner } from "@/components/spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 // Base interface for tree items
@@ -134,16 +127,16 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                 item.type === itemType.BRANCH ||
                 item.type === itemType.DIR ? (
                   <AccordionPrimitive.Root
-                    defaultValue={expandedIds}
+                    multiple
                     onValueChange={() => {
                       onExpand(item.id);
                     }}
-                    type="multiple"
+                    value={expandedIds}
                   >
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          "px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
+                          "px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
                           selectedItemId === item.id &&
                             "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
                         )}
@@ -162,9 +155,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                           />
                         )}
                         <span className="truncate text-sm">{item.name}</span>
-                        {item.isLoading && (
-                          <Spinner className="ml-2" size="sm" />
-                        )}
+                        {item.isLoading && <Spinner className="ml-2" />}
                       </AccordionTrigger>
                       <AccordionContent className="ml-4 pl-2">
                         {item.children && (
@@ -218,7 +209,7 @@ const Leaf = forwardRef<
 >(({ className, item, isSelected, Icon, ...props }, ref) => (
   <div
     className={cn(
-      "flex cursor-pointer items-center px-2 py-2 before:absolute before:right-1 before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:rounded before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
+      "flex cursor-pointer items-center px-2 py-2 before:absolute before:right-1 before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
       className,
       isSelected &&
         "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
@@ -243,41 +234,39 @@ const Leaf = forwardRef<
 ));
 Leaf.displayName = "Leaf";
 
-const AccordionTrigger = forwardRef<
-  ComponentRef<typeof AccordionPrimitive.Trigger>,
-  ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+const AccordionTrigger = ({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Trigger.Props) => (
   <AccordionPrimitive.Header>
     <AccordionPrimitive.Trigger
       className={cn(
-        "flex w-full flex-1 items-center py-2 transition-all last:[&[data-state=open]>svg]:rotate-90",
+        "flex w-full flex-1 items-center py-2 transition-all [&[data-panel-open]>svg]:last:rotate-90",
         className
       )}
-      ref={ref}
       {...props}
     >
       {children}
       <ChevronRight className="ml-auto size-4 shrink-0 text-accent-foreground/50 transition-transform duration-200" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
-));
-AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
+);
 
-const AccordionContent = forwardRef<
-  ComponentRef<typeof AccordionPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Content
+const AccordionContent = ({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Panel.Props) => (
+  <AccordionPrimitive.Panel
     className={cn(
-      "left-3 overflow-hidden border-foreground/10 border-l text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+      "left-3 overflow-hidden border-foreground/10 border-l text-sm transition-all data-closed:animate-accordion-up data-open:animate-accordion-down",
       className
     )}
-    ref={ref}
     {...props}
   >
     <div className="pt-0 pb-1">{children}</div>
-  </AccordionPrimitive.Content>
-));
-AccordionContent.displayName = AccordionPrimitive.Content.displayName;
+  </AccordionPrimitive.Panel>
+);
 
 export { Tree, type TreeDataItem };

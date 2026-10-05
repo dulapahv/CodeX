@@ -68,7 +68,7 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
       <Label className="text-sm" htmlFor="room-id">
         Room ID
       </Label>
-      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+      <div className="flex w-full items-center gap-2 bg-secondary p-2 md:p-3">
         <code
           className="flex-1 break-all font-medium text-md sm:text-lg md:text-2xl"
           data-testid="room-id-text"
@@ -118,7 +118,7 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
       <Label className="text-sm" htmlFor="invite-link">
         Invite Link
       </Label>
-      <div className="flex w-full items-center gap-2 rounded-md bg-secondary p-2 md:p-3">
+      <div className="flex w-full items-center gap-2 bg-secondary p-2 md:p-3">
         <code
           className="flex-1 break-all font-medium text-md sm:text-lg md:text-2xl"
           data-testid="invite-link-text"
@@ -170,7 +170,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           data-testid="qr-code"
         >
           <QRCodeCanvas
-            className="rounded-lg"
+            className=""
             imageSettings={{
               src: "/images/codex-logo.svg",
               height: 48,
@@ -197,12 +197,8 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
 
     if (isDesktop) {
       return (
-        <Dialog
-          aria-label="Share room dialog"
-          onOpenChange={setIsOpen}
-          open={isOpen}
-        >
-          <DialogContent className="max-w-3xl">
+        <Dialog onOpenChange={setIsOpen} open={isOpen}>
+          <DialogContent className="sm:max-w-3xl">
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
               <DialogDescription>
@@ -212,11 +208,13 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
             </DialogHeader>
             {content}
             <DialogFooter className="mt-6">
-              <DialogClose asChild>
-                <Button aria-label="Close share dialog" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
+              <DialogClose
+                render={
+                  <Button aria-label="Close share dialog" variant="secondary">
+                    Close
+                  </Button>
+                }
+              />
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -239,11 +237,13 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           </DrawerHeader>
           <div className="px-4 pb-4">{content}</div>
           <DrawerFooter>
-            <DrawerClose asChild>
-              <Button aria-label="Close share drawer" variant="secondary">
-                Close
-              </Button>
-            </DrawerClose>
+            <DrawerClose
+              render={
+                <Button aria-label="Close share drawer" variant="secondary">
+                  Close
+                </Button>
+              }
+            />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

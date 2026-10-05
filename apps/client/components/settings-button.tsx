@@ -38,19 +38,21 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
   return (
     <>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            aria-expanded="false"
-            aria-haspopup="dialog"
-            aria-label="Open Settings"
-            className="hover:!text-foreground size-7 animate-fade-in-top rounded-sm p-0 text-[color:var(--toolbar-foreground)]"
-            onClick={handleButtonClick}
-            size="icon"
-            variant="ghost"
-          >
-            <Settings aria-hidden="true" className="size-4" />
-          </Button>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <Button
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-label="Open Settings"
+              className="hover:!text-foreground size-7 animate-fade-in-top p-0 text-[color:var(--toolbar-foreground)]"
+              onClick={handleButtonClick}
+              size="icon"
+              variant="ghost"
+            >
+              <Settings aria-hidden="true" className="size-4" />
+            </Button>
+          }
+        />
         <TooltipContent role="tooltip" sideOffset={8}>
           <p>Settings</p>
         </TooltipContent>

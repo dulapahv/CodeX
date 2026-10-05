@@ -15,6 +15,11 @@ import type * as monaco from "monaco-editor";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -44,6 +49,7 @@ interface EditorConfigProps {
 
 export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const [search, setSearch] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
   const [settings, setSettings] = useState<
     monaco.editor.IEditorOptions & monaco.editor.IGlobalEditorOptions
   >(() => {
@@ -254,7 +260,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         case "boolean":
           return (
             <div
-              className="flex items-center justify-between space-x-4 pt-4 pb-3"
+              className="flex items-center justify-between gap-4 pt-4 pb-3"
               key={key}
             >
               <Label className="font-medium text-sm" htmlFor={id}>
@@ -277,7 +283,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               </Label>
               <Select
                 onValueChange={(value) => updateSetting(key, value)} // Ensure string value with fallback
-                value={String(value || "")}
+                value={value ? String(value) : null}
               >
                 <SelectTrigger className="w-full" id={id}>
                   <SelectValue placeholder={`Select ${option.title}`} />
@@ -338,59 +344,69 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
       role="group"
     >
       <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search
-            aria-hidden="true"
-            className="absolute top-3 left-2.5 size-4 text-muted-foreground"
-          />
-          <Input
+        <InputGroup className="flex-1">
+          <InputGroupInput
             aria-label="Search editor settings"
-            className="pl-8"
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search settings..."
             type="search"
             value={search}
           />
-        </div>
+          <InputGroupAddon>
+            <Search aria-hidden="true" />
+          </InputGroupAddon>
+        </InputGroup>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              aria-label="Import settings"
-              onClick={handleImportClick}
-              size="icon"
-              variant="outline"
-            >
-              <Folder className="size-4" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button
+                aria-label="Import settings"
+                onClick={handleImportClick}
+                size="icon"
+                variant="outline"
+              >
+                <Folder className="size-4" />
+              </Button>
+            }
+          />
           <TooltipContent>Import Settings</TooltipContent>
         </Tooltip>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              aria-label="Export settings"
-              onClick={() =>
-                exportSettings(settings as Record<string, unknown>)
-              }
-              size="icon"
-              variant="outline"
-            >
-              <Download className="size-4" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button
+                aria-label="Export settings"
+                onClick={() =>
+                  exportSettings(settings as Record<string, unknown>)
+                }
+                size="icon"
+                variant="outline"
+              >
+                <Download className="size-4" />
+              </Button>
+            }
+          />
           <TooltipContent className="mr-1">Export Settings</TooltipContent>
         </Tooltip>
         <input
           accept=".json"
           aria-label="Import settings file"
           className="hidden"
-          onChange={(e) => importSettings(editor, setSettings, e)}
+          onChange={(e) => {
+            setImportError(null);
+            importSettings(editor, setSettings, e, setImportError);
+          }}
           ref={fileInputRef}
           type="file"
         />
       </div>
+      {importError && (
+        <p className="text-destructive text-xs" role="alert">
+          {importError}
+        </p>
+      )}
 
-      <div className="space-y-1 divide-y">
+      <div className="divide-y">
         {filteredSettings.length > 0 ? (
           filteredSettings.map(renderSetting)
         ) : (

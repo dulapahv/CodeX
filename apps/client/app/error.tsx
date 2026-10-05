@@ -16,8 +16,9 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { BASE_CLIENT_URL, CONTACT_URL, IS_DEV_ENV } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export default function ErrorPage({
   error,
@@ -66,18 +67,25 @@ Stack: ${error.stack || "No stack trace available"}`;
             <RefreshCcw className="size-4" />
             Try Again
           </Button>
-          <Button asChild className="gap-2" variant="outline">
-            <Link href={generateErrorReport() as Route} target="_blank">
-              <Bug className="size-4" />
-              Report Issue
-            </Link>
-          </Button>
-          <Button asChild className="gap-2" variant="default">
-            <Link href={BASE_CLIENT_URL}>
-              <Home className="size-4" />
-              Return Home
-            </Link>
-          </Button>
+          <Link
+            className={cn(
+              buttonVariants({ variant: "outline", className: "gap-2" })
+            )}
+            href={generateErrorReport() as Route}
+            target="_blank"
+          >
+            <Bug className="size-4" />
+            Report Issue
+          </Link>
+          <Link
+            className={cn(
+              buttonVariants({ variant: "default", className: "gap-2" })
+            )}
+            href={BASE_CLIENT_URL}
+          >
+            <Home className="size-4" />
+            Return Home
+          </Link>
         </div>
       </Alert>
     </div>

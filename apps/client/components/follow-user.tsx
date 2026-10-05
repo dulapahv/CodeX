@@ -13,7 +13,6 @@ import type { User } from "@codex/types/user";
 
 import { Check, Navigation, NavigationOff } from "lucide-react";
 import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,38 +81,37 @@ const FollowUser = ({ users }: UserListProps) => {
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <PopoverTrigger asChild>
-            <Button
-              aria-label="Follow user"
-              className="size-7 animate-fade-in-top rounded-sm p-0"
-              size="icon"
-              variant="ghost"
-            >
-              {value === null ? (
-                <NavigationOff className="size-4 text-[color:var(--panel-text)]" />
-              ) : (
-                <Navigation className="size-4 animate-pulse fill-[#f6d84f] text-[#f6d84f]" />
-              )}
-            </Button>
-          </PopoverTrigger>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <PopoverTrigger
+              render={
+                <Button
+                  aria-label="Follow user"
+                  className="size-7 animate-fade-in-top p-0"
+                  size="icon"
+                  variant="ghost"
+                >
+                  {value === null ? (
+                    <NavigationOff className="size-4 text-[color:var(--panel-text)]" />
+                  ) : (
+                    <Navigation className="size-4 animate-pulse fill-[#f6d84f] text-[#f6d84f]" />
+                  )}
+                </Button>
+              }
+            />
+          }
+        />
         <TooltipContent sideOffset={8}>{getTooltipText()}</TooltipContent>
       </Tooltip>
       <PopoverContent
         className="mr-1 w-64 p-0"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-        }}
-        onOpenAutoFocus={(event) => {
-          if (isMobile) {
-            event.preventDefault();
-          }
-        }}
+        finalFocus={false}
         sideOffset={8}
       >
         <Command>
-          <Label className="px-3 pt-3 font-medium text-sm">Follow user</Label>
+          <Label className="bg-input/30 px-3 pt-3 font-medium text-sm">
+            Follow user
+          </Label>
           <CommandInput placeholder="Search users..." />
           <CommandList>
             <CommandEmpty className="p-3 text-muted-foreground text-sm">

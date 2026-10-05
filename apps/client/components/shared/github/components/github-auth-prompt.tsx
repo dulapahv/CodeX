@@ -8,8 +8,8 @@
 import Image from "next/image";
 
 import { useTheme } from "next-themes";
-import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { loginWithGithub } from "@/lib/utils";
 
 interface GithubAuthPromptProps {
@@ -36,7 +36,7 @@ export const GithubAuthPrompt = ({
       role="status"
     >
       {isLoading ? (
-        <Spinner size="lg" />
+        <Spinner className="size-8" />
       ) : (
         <>
           <p

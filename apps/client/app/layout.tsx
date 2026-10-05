@@ -13,7 +13,6 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   BASE_CLIENT_URL,
@@ -104,12 +103,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="h-dvh text-pretty antialiased">
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>
-          <Toaster
-            className="whitespace-pre-line"
-            containerAriaLabel="Toast Notifications"
-            pauseWhenPageIsHidden
-            richColors
-          />
         </ThemeProvider>
       </body>
     </html>

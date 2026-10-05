@@ -57,11 +57,7 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
 
   if (isDesktop) {
     return (
-      <Dialog
-        aria-label="Leave room dialog"
-        onOpenChange={setIsOpen}
-        open={isOpen}
-      >
+      <Dialog onOpenChange={setIsOpen} open={isOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
@@ -76,11 +72,13 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
               Terminate Room
             </Button>
             <div className="flex gap-2">
-              <DialogClose asChild>
-                <Button aria-label="Cancel leaving room" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
+              <DialogClose
+                render={
+                  <Button aria-label="Cancel leaving room" variant="secondary">
+                    Close
+                  </Button>
+                }
+              />
               <Button
                 aria-label="Confirm leaving room"
                 onClick={handleLeaveRoom}
@@ -117,15 +115,17 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
           >
             Terminate Room
           </Button>
-          <DrawerClose asChild>
-            <Button
-              aria-label="Cancel leaving room"
-              onClick={closeDialog}
-              variant="secondary"
-            >
-              Cancel
-            </Button>
-          </DrawerClose>
+          <DrawerClose
+            render={
+              <Button
+                aria-label="Cancel leaving room"
+                onClick={closeDialog}
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            }
+          />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

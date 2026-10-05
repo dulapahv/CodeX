@@ -36,7 +36,7 @@ const VideoControls = ({
     <div className="absolute top-2 right-2 flex gap-1">
       <div
         className={cn(
-          "rounded px-1.5 py-0.5",
+          "px-1.5 py-0.5",
           micState ? "bg-green-500/70" : "bg-red-500/70"
         )}
       >
@@ -48,7 +48,7 @@ const VideoControls = ({
       </div>
       <div
         className={cn(
-          "rounded px-1.5 py-0.5",
+          "px-1.5 py-0.5",
           speakerState ? "bg-green-500/70" : "bg-red-500/70"
         )}
       >

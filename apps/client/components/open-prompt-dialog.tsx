@@ -67,12 +67,10 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
               <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="secondary">Close</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button onClick={callback}>Open</Button>
-              </DialogClose>
+              <DialogClose
+                render={<Button variant="secondary">Close</Button>}
+              />
+              <DialogClose render={<Button onClick={callback}>Open</Button>} />
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -95,11 +93,13 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
             >
               Open
             </Button>
-            <DrawerClose asChild>
-              <Button onClick={closeDialog} variant="secondary">
-                Close
-              </Button>
-            </DrawerClose>
+            <DrawerClose
+              render={
+                <Button onClick={closeDialog} variant="secondary">
+                  Close
+                </Button>
+              }
+            />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

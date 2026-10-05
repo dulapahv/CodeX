@@ -8,14 +8,14 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Spinner } from "@/components/spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 export const RedirectingCard = () => (
   // biome-ignore lint/a11y/useSemanticElements: status div for redirect loading indicator
   <div
     aria-live="polite"
-    className="w-full max-w-md animate-fade-in backdrop-blur-sm"
+    className="w-full max-w-md animate-fade-in backdrop-blur-xs"
     role="status"
   >
     <Alert
