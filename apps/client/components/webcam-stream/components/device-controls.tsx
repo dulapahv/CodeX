@@ -33,10 +33,8 @@ interface DeviceButtonProps {
   icon: ElementType;
   isEnabled: boolean;
   label: string;
-  onDevicePermissionGranted?: (
-    kind: "videoinput" | "audioinput" | "audiooutput"
-  ) => Promise<void>;
   onDeviceSelect: (deviceId: string) => void;
+  onRefreshDevices: () => Promise<void>;
   onToggle: () => void;
   selectedDevice: string;
 }
@@ -50,7 +48,7 @@ const DeviceControls = ({
   onToggle,
   isEnabled,
   disabled = false,
-  onDevicePermissionGranted,
+  onRefreshDevices,
 }: DeviceButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -105,10 +103,7 @@ const DeviceControls = ({
         }
       }
 
-      // Only update the device list for this specific type
-      if (onDevicePermissionGranted) {
-        await onDevicePermissionGranted(deviceKind);
-      }
+      await onRefreshDevices();
 
       return true;
     } catch (error) {
@@ -118,12 +113,14 @@ const DeviceControls = ({
       );
       return false;
     }
-  }, [label, onDevicePermissionGranted]);
+  }, [label, onRefreshDevices]);
 
   const handleOpenChange = async (open: boolean) => {
     clearWebcamError();
     setIsOpen(open);
-    if (open && !hasValidDevices) {
+    if (open && hasValidDevices) {
+      await onRefreshDevices();
+    } else if (open) {
       const success = await requestPermissions();
       if (!success) {
         setIsOpen(false);

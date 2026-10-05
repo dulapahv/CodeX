@@ -8,8 +8,8 @@
 import type { User } from "@codex/types/user";
 import { type RefObject, useEffect, useRef } from "react";
 import { Avatar } from "@/components/avatar";
+import { useCurrentUserId } from "@/hooks/use-current-user-id";
 import { storage } from "@/lib/services/storage";
-import { userMap } from "@/lib/services/user-map";
 import { parseError } from "@/lib/utils";
 
 import { reportWebcamError } from "../utils/errors";
@@ -73,8 +73,11 @@ export const VideoGrid = ({
   remoteMicStates,
   remoteSpeakerStates,
 }: VideoGridProps) => {
-  const currentUserId = storage.getUserId() ?? "";
-  const currentUsername = userMap.get(currentUserId) ?? "";
+  const currentUserId = useCurrentUserId() ?? "";
+  const currentUsername =
+    users.find((user) => user.id === currentUserId)?.username ??
+    storage.getUsername() ??
+    "";
 
   return (
     <div

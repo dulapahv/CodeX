@@ -34,6 +34,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useCurrentUserId } from "@/hooks/use-current-user-id";
 import { storage } from "@/lib/services/storage";
 
 interface UserListProps {
@@ -44,7 +45,7 @@ const FollowUser = ({ users }: UserListProps) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(storage.getFollowUserId());
 
-  const currentUserId = storage.getUserId();
+  const currentUserId = useCurrentUserId();
   const filteredUsers = users.filter((user) => user.id !== currentUserId);
 
   useEffect(() => {

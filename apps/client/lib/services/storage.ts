@@ -1,8 +1,8 @@
 /**
  * Storage service class for managing room and user state.
  * Features:
- * - Room ID persistence
  * - User ID management
+ * - Username for rejoining after a reconnect
  * - Follow mode state
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -16,6 +16,7 @@ interface StorageData {
 
 export class Storage {
   private data: StorageData;
+  private readonly listeners = new Set<() => void>();
 
   constructor() {
     this.data = {
@@ -33,6 +34,21 @@ export class Storage {
   // Set the user ID
   setUserId(userId: string | null): void {
     this.data.userId = userId;
+    this.notify();
+  }
+
+  // Subscribe to user ID changes, for useSyncExternalStore
+  subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  private notify(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
   }
 
   // Get the username used to join the room
@@ -67,6 +83,7 @@ export class Storage {
       username: null,
       followUserId: null,
     };
+    this.notify();
   }
 }
 

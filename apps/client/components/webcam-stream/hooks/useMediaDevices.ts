@@ -8,11 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { MediaDevice } from "../types";
-import {
-  enumerateDevices,
-  handleDevicePermissionGranted,
-  initDevices,
-} from "../utils/device";
+import { enumerateDevices } from "../utils/device";
 
 export const useMediaDevices = () => {
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
@@ -24,42 +20,30 @@ export const useMediaDevices = () => {
   const [selectedAudioInput, setSelectedAudioInput] = useState<string>("");
   const [selectedAudioOutput, setSelectedAudioOutput] = useState<string>("");
 
-  // Initialize device enumeration (no getUserMedia - avoids camera flash)
-  useEffect(() => {
-    const handleDeviceChange = async () => {
-      await enumerateDevices(
+  const refreshDevices = useCallback(
+    () =>
+      enumerateDevices(
         setVideoDevices,
         setAudioInputDevices,
         setAudioOutputDevices,
-        selectedVideoDevice,
         setSelectedVideoDevice,
-        selectedAudioInput,
         setSelectedAudioInput,
-        selectedAudioOutput,
         setSelectedAudioOutput
-      );
-    };
+      ),
+    []
+  );
 
-    initDevices(handleDeviceChange);
+  // Enumerate only (no getUserMedia) so the camera light stays off
+  useEffect(() => {
+    refreshDevices();
+    navigator.mediaDevices.addEventListener("devicechange", refreshDevices);
     return () => {
       navigator.mediaDevices.removeEventListener(
         "devicechange",
-        handleDeviceChange
+        refreshDevices
       );
     };
-  }, [selectedVideoDevice, selectedAudioInput, selectedAudioOutput]);
-
-  const handleDevicePermission = useCallback(
-    async (kind: "videoinput" | "audioinput" | "audiooutput") => {
-      await handleDevicePermissionGranted(
-        kind,
-        setVideoDevices,
-        setAudioInputDevices,
-        setAudioOutputDevices
-      );
-    },
-    []
-  );
+  }, [refreshDevices]);
 
   return {
     videoDevices,
@@ -71,6 +55,6 @@ export const useMediaDevices = () => {
     setSelectedVideoDevice,
     setSelectedAudioInput,
     setSelectedAudioOutput,
-    handleDevicePermission,
+    refreshDevices,
   };
 };

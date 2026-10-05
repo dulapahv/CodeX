@@ -25,10 +25,13 @@ const DynamicNotepadMain = dynamic(
   }
 );
 
-const Notepad = ({ markdown }: { markdown: string }) => (
-  <Suspense fallback={null}>
-    <DynamicNotepadMain markdown={markdown} />
-  </Suspense>
-);
+const Notepad = ({ markdown }: { markdown: string | null }) =>
+  markdown === null ? (
+    <EditorSkeleton />
+  ) : (
+    <Suspense fallback={null}>
+      <DynamicNotepadMain markdown={markdown} />
+    </Suspense>
+  );
 
 export { Notepad };

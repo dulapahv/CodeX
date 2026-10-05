@@ -16,135 +16,63 @@ import { parseError } from "@/lib/utils";
 import type { MediaDevice } from "../types";
 import { reportWebcamError } from "./errors";
 
-export const initDevices = async (handleDeviceChange: () => Promise<void>) => {
-  // Only enumerate devices without requesting permissions
-  await handleDeviceChange();
+const DEFAULT_DEVICE_ID = "default";
+// Chrome's alias for the Windows communications device, which is always
+// listed again under its own name
+const COMMUNICATIONS_DEVICE_ID = "communications";
 
-  // Listen for device changes
-  navigator.mediaDevices.addEventListener("devicechange", handleDeviceChange);
+const toMediaDevices = (
+  devices: MediaDeviceInfo[],
+  kind: MediaDeviceKind,
+  fallbackLabel: string
+): MediaDevice[] =>
+  devices
+    .filter(
+      (device) =>
+        device.kind === kind &&
+        device.deviceId !== "" &&
+        device.deviceId !== COMMUNICATIONS_DEVICE_ID
+    )
+    .map((device, index) => ({
+      deviceId: device.deviceId,
+      label: device.label || `${fallbackLabel} ${index + 1}`,
+    }));
+
+// Keep the current choice while it is still plugged in, otherwise prefer the
+// system default
+const pickDevice = (devices: MediaDevice[]) => (current: string) => {
+  if (devices.some((device) => device.deviceId === current)) {
+    return current;
+  }
+  const fallback =
+    devices.find((device) => device.deviceId === DEFAULT_DEVICE_ID) ??
+    devices[0];
+  return fallback?.deviceId ?? "";
 };
 
 export const enumerateDevices = async (
   setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
   setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
   setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  selectedVideoDevice: string,
   setSelectedVideoDevice: Dispatch<SetStateAction<string>>,
-  selectedAudioInput: string,
   setSelectedAudioInput: Dispatch<SetStateAction<string>>,
-  selectedAudioOutput: string,
   setSelectedAudioOutput: Dispatch<SetStateAction<string>>
 ) => {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
-    // Group devices by kind and ensure they have valid deviceIds
-    const videoInputs = devices.filter(
-      (device) => device.kind === "videoinput" && device.deviceId !== ""
-    );
-    const audioInputs = devices.filter(
-      (device) => device.kind === "audioinput" && device.deviceId !== ""
-    );
-    const audioOutputs = devices.filter(
-      (device) => device.kind === "audiooutput" && device.deviceId !== ""
-    );
+    const videoInputs = toMediaDevices(devices, "videoinput", "Camera");
+    const audioInputs = toMediaDevices(devices, "audioinput", "Microphone");
+    const audioOutputs = toMediaDevices(devices, "audiooutput", "Speaker");
 
-    // Function to get a generic label if permissions haven't been granted
-    const getDeviceLabel = (
-      device: MediaDeviceInfo,
-      type: string,
-      index: number
-    ) => {
-      return device.label || `${type} ${index + 1}`;
-    };
+    setVideoDevices(videoInputs);
+    setAudioInputDevices(audioInputs);
+    setAudioOutputDevices(audioOutputs);
 
-    // Set all available devices
-    setVideoDevices(
-      videoInputs.map((device, index) => ({
-        deviceId: device.deviceId,
-        label: getDeviceLabel(device, "Camera", index),
-      }))
-    );
-    setAudioInputDevices(
-      audioInputs.map((device, index) => ({
-        deviceId: device.deviceId,
-        label: getDeviceLabel(device, "Microphone", index),
-      }))
-    );
-    setAudioOutputDevices(
-      audioOutputs.map((device, index) => ({
-        deviceId: device.deviceId,
-        label: getDeviceLabel(device, "Speaker", index),
-      }))
-    );
-
-    // Set default devices if not already set
-    if (!selectedVideoDevice && videoInputs.length > 0) {
-      const defaultVideo = videoInputs[0]?.deviceId;
-      if (defaultVideo) {
-        setSelectedVideoDevice(defaultVideo);
-      }
-    }
-
-    if (!selectedAudioInput && audioInputs.length > 0) {
-      const defaultAudio = audioInputs[0]?.deviceId;
-      if (defaultAudio) {
-        setSelectedAudioInput(defaultAudio);
-      }
-    }
-
-    if (!selectedAudioOutput && audioOutputs.length > 0) {
-      const defaultOutput = audioOutputs[0]?.deviceId;
-      if (defaultOutput) {
-        setSelectedAudioOutput(defaultOutput);
-      }
-    }
+    setSelectedVideoDevice(pickDevice(videoInputs));
+    setSelectedAudioInput(pickDevice(audioInputs));
+    setSelectedAudioOutput(pickDevice(audioOutputs));
   } catch (error) {
     reportWebcamError(`Error enumerating devices: ${parseError(error)}`);
-  }
-};
-
-export const handleDevicePermissionGranted = async (
-  deviceKind: "videoinput" | "audioinput" | "audiooutput",
-  setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>
-) => {
-  const devices = await navigator.mediaDevices.enumerateDevices();
-
-  // Update only the relevant device list
-  switch (deviceKind) {
-    case "videoinput":
-      setVideoDevices(
-        devices
-          .filter((device) => device.kind === "videoinput")
-          .map((device) => ({
-            deviceId: device.deviceId,
-            label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
-          }))
-      );
-      break;
-    case "audioinput":
-      setAudioInputDevices(
-        devices
-          .filter((device) => device.kind === "audioinput")
-          .map((device) => ({
-            deviceId: device.deviceId,
-            label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
-          }))
-      );
-      break;
-    case "audiooutput":
-      setAudioOutputDevices(
-        devices
-          .filter((device) => device.kind === "audiooutput")
-          .map((device) => ({
-            deviceId: device.deviceId,
-            label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
-          }))
-      );
-      break;
-    default:
-      break;
   }
 };

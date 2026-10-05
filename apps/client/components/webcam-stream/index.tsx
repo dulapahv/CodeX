@@ -47,7 +47,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     setSelectedVideoDevice,
     setSelectedAudioInput,
     setSelectedAudioOutput,
-    handleDevicePermission,
+    refreshDevices,
   } = useMediaDevices();
 
   const {
@@ -122,7 +122,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             icon={cameraOn ? Video : VideoOff}
             isEnabled={cameraOn}
             label="camera"
-            onDevicePermissionGranted={handleDevicePermission}
             onDeviceSelect={(deviceId) =>
               handleVideoDeviceSwitch(
                 deviceId,
@@ -132,6 +131,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 setSelectedVideoDevice
               )
             }
+            onRefreshDevices={refreshDevices}
             onToggle={() =>
               handleToggleCamera(peersRef, setRemoteStreams, pendingSignalsRef)
             }
@@ -163,7 +163,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           icon={micOn ? Mic : MicOff}
           isEnabled={micOn}
           label="microphone"
-          onDevicePermissionGranted={handleDevicePermission}
           onDeviceSelect={(deviceId) =>
             handleAudioDeviceSwitch(
               deviceId,
@@ -173,6 +172,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               setSelectedAudioInput
             )
           }
+          onRefreshDevices={refreshDevices}
           onToggle={() =>
             handleToggleMic(peersRef, setRemoteStreams, pendingSignalsRef)
           }
@@ -184,8 +184,8 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           icon={speakerOn ? Volume2 : VolumeOff}
           isEnabled={speakerOn}
           label="speaker"
-          onDevicePermissionGranted={handleDevicePermission}
           onDeviceSelect={setSelectedAudioOutput}
+          onRefreshDevices={refreshDevices}
           onToggle={() => handleToggleSpeaker(!speakerOn)}
           selectedDevice={selectedAudioOutput}
         />

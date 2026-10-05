@@ -30,7 +30,7 @@ import {
 import type { StatusBarCursorPosition } from "@/components/status-bar";
 import { getSocket } from "@/lib/socket";
 
-import { LoadingCard } from "./components/loading-card";
+import { CodeEditorSkeleton } from "./components/editor-skeleton";
 import * as cursorService from "./service/cursor-service";
 import * as editorService from "./service/editor-service";
 import { bindMonacoToYText } from "./service/monaco-binding";
@@ -176,7 +176,7 @@ const CodeEditor = memo(function CodeEditor({
     <Editor
       beforeMount={editorService.handleBeforeMount}
       defaultLanguage="python"
-      loading={<LoadingCard />}
+      loading={<CodeEditorSkeleton />}
       onChange={(value: string | undefined) => setCode(value || "")}
       onMount={handleEditorMount}
       theme={theme}

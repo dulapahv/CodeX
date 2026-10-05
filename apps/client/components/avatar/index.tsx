@@ -21,9 +21,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { storage } from "@/lib/services/storage";
-import { userMap } from "@/lib/services/user-map";
-import { cn } from "@/lib/utils";
+import { useCurrentUserId } from "@/hooks/use-current-user-id";
+import { cn, getBackgroundColor, getTextColor } from "@/lib/utils";
 
 import { getDisplayName, getInitials } from "./utils";
 
@@ -49,8 +48,9 @@ const Avatar = ({
   animate = true,
 }: AvatarProps) => {
   const initials = getInitials(user.username);
-  const colors = userMap.getColors(user.id);
-  const currentUserId = storage.getUserId() ?? "";
+  const backgroundColor = getBackgroundColor(user.username);
+  const colors = { backgroundColor, color: getTextColor(backgroundColor) };
+  const currentUserId = useCurrentUserId() ?? "";
   const displayName = getDisplayName(user, currentUserId);
 
   const AvatarContent = (
