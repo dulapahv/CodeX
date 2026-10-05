@@ -71,7 +71,10 @@ test.describe("Collaborative Features", () => {
 
     // Set language to Python
     await userAPage.getByLabel("Select programming language").click();
-    await userAPage.getByText("Python", { exact: true }).click();
+    await userAPage
+      .getByRole("listbox")
+      .getByText("Python", { exact: true })
+      .click();
 
     // Execute code
     await userAPage.getByLabel("Run code").click();
