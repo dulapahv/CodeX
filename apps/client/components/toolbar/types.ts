@@ -52,20 +52,20 @@ export interface ToolbarActions {
   moveLineDown: () => void;
   /** Move current line up */
   moveLineUp: () => void;
-  /** Open from GitHub */
-  openGitHub: () => void;
   /** Open from local device */
   openLocal: () => void;
+  /** Open from a git provider */
+  openRepository: () => void;
   /** Paste from clipboard */
   paste: () => void;
   /** Redo last undone action */
   redo: () => void;
   /** Open find and replace dialog */
   replace: () => void;
-  /** Open GitHub save dialog */
-  saveGitHub: () => void;
   /** Save to local device */
   saveLocal: () => void;
+  /** Open the save-to-repository dialog */
+  saveRepository: () => void;
   /** Select all content */
   selectAll: () => void;
   /** Select all occurrences of current selection */

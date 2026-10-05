@@ -3,26 +3,15 @@
  * Features:
  * - Theme selection
  * - Editor preferences
- * - GitHub connection
+ * - Repository connections
  * - Settings import/export
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import { Unplug } from "lucide-react";
 import type * as monaco from "monaco-editor";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useState,
-} from "react";
-import { Button } from "@/components/ui/button";
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -32,17 +21,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
-import { cn, isGithubOAuthSuccess, loginWithGithub } from "@/lib/utils";
 
 import { EditorConfig } from "./components/editor-config";
 import { EditorThemeSettings } from "./components/editor-theme";
-
-interface GithubUser {
-  avatarUrl: string;
-  username: string;
-}
+import { RepositoryConnections } from "./components/repository-connections";
 
 interface SettingsSheetRef {
   closeDialog: () => void;
@@ -56,12 +38,7 @@ interface SettingsSheetProps {
 
 const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
   ({ monaco, editor }, ref) => {
-    const { resolvedTheme } = useTheme();
-
     const [isOpen, setIsOpen] = useState(false);
-    const [githubUser, setGithubUser] = useState<GithubUser | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [imageLoaded, setImageLoaded] = useState(false);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -70,58 +47,6 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
       openDialog,
       closeDialog,
     }));
-
-    useLayoutEffect(() => {
-      fetch("/api/github/auth", {
-        credentials: "include",
-      })
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) =>
-          data
-            ? setGithubUser({
-                username: data.username,
-                avatarUrl: data.avatarUrl,
-              })
-            : null
-        )
-        .catch(console.error)
-        .finally(() => setIsLoading(false));
-    }, []);
-
-    useEffect(() => {
-      const handleMessage = async (event: MessageEvent) => {
-        if (isGithubOAuthSuccess(event)) {
-          const response = await fetch("/api/github/auth", {
-            credentials: "include",
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setGithubUser({
-              username: data.username,
-              avatarUrl: data.avatarUrl,
-            });
-          }
-          window.authWindow?.close();
-        }
-      };
-
-      window.addEventListener("message", handleMessage);
-      return () => window.removeEventListener("message", handleMessage);
-    }, []);
-
-    async function handleLogout() {
-      try {
-        const response = await fetch("/api/github/auth", {
-          method: "DELETE",
-          credentials: "include",
-        });
-        if (response.ok) {
-          setGithubUser(null);
-        }
-      } catch (error) {
-        console.error("Error logging out:", error);
-      }
-    }
 
     return (
       <Sheet onOpenChange={setIsOpen} open={isOpen}>
@@ -135,7 +60,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
           <SheetHeader className="text-left">
             <SheetTitle>Settings</SheetTitle>
             <SheetDescription>
-              Configure your editor and GitHub connection.
+              Configure your editor and repository connections.
             </SheetDescription>
           </SheetHeader>
           {/* biome-ignore lint/a11y/useSemanticElements: grouping settings options */}
@@ -145,99 +70,15 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
             role="group"
           >
             <div>
-              <Label className="text-base" id="github-section">
-                GitHub Connection
+              <Label className="text-base" id="repository-section">
+                Repository connections
               </Label>
               <div className="text-muted-foreground text-sm">
-                Connect to GitHub to save your work and open files from your
+                Connect a provider to open files from and save your work to your
                 repositories.
               </div>
             </div>
-            {(() => {
-              if (isLoading) {
-                return (
-                  // biome-ignore lint/a11y/useSemanticElements: status div for loading state
-                  <div
-                    aria-label="Loading GitHub connection status"
-                    className="flex items-center justify-center py-2"
-                    role="status"
-                  >
-                    <Spinner />
-                  </div>
-                );
-              }
-              if (githubUser) {
-                return (
-                  // biome-ignore lint/a11y/useSemanticElements: status div for GitHub connection info
-                  <div
-                    aria-label={`Connected to GitHub as ${githubUser.username}`}
-                    className="space-y-2"
-                    role="status"
-                  >
-                    <div className="text-muted-foreground text-sm">
-                      Connected to GitHub as:
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative size-8 overflow-hidden rounded-full">
-                          <Skeleton
-                            aria-hidden={imageLoaded ? "true" : "false"}
-                            aria-label="Loading avatar"
-                            className="absolute size-full"
-                          />
-                          <Image
-                            alt={`${githubUser.username}'s GitHub profile`}
-                            aria-hidden={!imageLoaded}
-                            className={cn(
-                              "object-cover transition-opacity",
-                              imageLoaded ? "opacity-100" : "opacity-0"
-                            )}
-                            fill
-                            loading="eager"
-                            onLoad={() => setImageLoaded(true)}
-                            sizes="32px"
-                            src={githubUser.avatarUrl}
-                          />
-                        </div>
-                        {imageLoaded ? (
-                          <span className="max-w-[100px] truncate font-medium sm:max-w-[300px]">
-                            {githubUser.username}
-                          </span>
-                        ) : (
-                          <Skeleton className="h-4 w-24" />
-                        )}
-                      </div>
-                      <Button
-                        aria-label="Disconnect from GitHub"
-                        className="flex shrink-0 items-center gap-2"
-                        onClick={handleLogout}
-                        size="sm"
-                        variant="destructive"
-                      >
-                        <Unplug aria-hidden="true" className="size-4" />
-                        Disconnect
-                      </Button>
-                    </div>
-                  </div>
-                );
-              }
-              return (
-                <Button
-                  aria-describedby="github-section"
-                  className="w-full"
-                  onClick={loginWithGithub}
-                  variant="outline"
-                >
-                  <Image
-                    alt="GitHub logo"
-                    height={18}
-                    src={`/images/${resolvedTheme === "light" ? "octocat" : "octocat-white"}.svg`}
-                    width={18}
-                  />
-                  Connect to GitHub
-                </Button>
-              );
-            })()}
+            <RepositoryConnections isOpen={isOpen} />
             <Separator />
             <div>
               <Label className="text-base" id="editor-section">

@@ -68,6 +68,19 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
       stderr: "pipe",
+      // Fake OAuth apps plus the test proxy, so repository tests can answer
+      // the server's provider API calls (see tests/e2e/repository)
+      env: {
+        NEXT_TEST_PROXY: "true",
+        GITHUB_CLIENT_SECRET_DEV: "test-secret",
+        GITHUB_CLIENT_SECRET_PROD: "test-secret",
+        GITLAB_CLIENT_ID: "test-client",
+        GITLAB_CLIENT_SECRET: "test-secret",
+        BITBUCKET_CLIENT_ID: "test-client",
+        BITBUCKET_CLIENT_SECRET: "test-secret",
+        CODEBERG_CLIENT_ID: "test-client",
+        CODEBERG_CLIENT_SECRET: "test-secret",
+      },
     },
   ],
 });

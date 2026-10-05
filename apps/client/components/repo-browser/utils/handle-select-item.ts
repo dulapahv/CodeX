@@ -1,5 +1,5 @@
 /**
- * Handle item selection in the GitHub repository browser tree.
+ * Handle item selection in the repository browser tree.
  * Functions:
  * - Parent repo/branch lookup
  * - Content fetching
@@ -12,6 +12,7 @@
 import type { Dispatch, SetStateAction } from "react";
 
 import type { TreeDataItem } from "@/components/tree";
+import type { ProviderId } from "@/lib/git-providers/types";
 
 import { type ExtendedTreeDataItem, itemType } from "../types/tree";
 import { fetchBranches } from "./fetch-branches";
@@ -55,6 +56,7 @@ const findParents = (
 };
 
 export const handleSelectItem = async (
+  provider: ProviderId,
   item: TreeDataItem,
   treeData: ExtendedTreeDataItem[],
   setSelectedItem: Dispatch<SetStateAction<ExtendedTreeDataItem | null>>,
@@ -73,50 +75,58 @@ export const handleSelectItem = async (
 
   // Reset branch and path when selecting a new repository
   if (extendedItem.type === itemType.REPO) {
-    setRepo(extendedItem.full_name || "");
+    setRepo(extendedItem.fullName || "");
     setBranch("");
 
     if (!item.children) {
-      await fetchBranches(extendedItem, setTreeData, setItemLoading, setError);
-    }
-  }
-  // Update branch when selecting a branch
-  else if (extendedItem.type === itemType.BRANCH) {
-    setBranch(extendedItem.name);
-
-    if (!item.children) {
-      const parentRepo = treeData.find((repo) =>
-        repo.children?.some((branch) => branch.id === item.id)
-      );
-      if (parentRepo) {
-        await fetchContents(
-          parentRepo,
-          extendedItem,
-          "",
-          setTreeData,
-          setItemLoading,
-          setError
-        );
-      }
-    }
-  }
-  // Update path when selecting a directory or file
-  else if (
-    extendedItem.type === itemType.DIR &&
-    extendedItem.path &&
-    !item.children
-  ) {
-    const { parentRepo, parentBranch } = findParents(treeData, item.id);
-
-    if (parentRepo && parentBranch && extendedItem.path) {
-      await fetchContents(
-        parentRepo,
-        parentBranch,
-        extendedItem.path,
+      await fetchBranches(
+        provider,
+        extendedItem,
         setTreeData,
         setItemLoading,
         setError
       );
     }
+    return;
+  }
+
+  if (extendedItem.type === itemType.BRANCH) {
+    const parentRepo = treeData.find((repo) =>
+      repo.children?.some((branch) => branch.id === item.id)
+    );
+    setRepo(parentRepo?.fullName || "");
+    setBranch(extendedItem.name);
+
+    if (parentRepo && !item.children) {
+      await fetchContents(
+        provider,
+        parentRepo,
+        extendedItem,
+        "",
+        setTreeData,
+        setItemLoading,
+        setError
+      );
+    }
+    return;
+  }
+
+  // A folder or file: target the repo and branch it actually belongs to
+  const { parentRepo, parentBranch } = findParents(treeData, item.id);
+  setRepo(parentRepo?.fullName || "");
+  setBranch(parentBranch?.name || "");
+
+  const isUnloadedFolder =
+    extendedItem.type === itemType.DIR && extendedItem.path && !item.children;
+  if (parentRepo && parentBranch && isUnloadedFolder && extendedItem.path) {
+    await fetchContents(
+      provider,
+      parentRepo,
+      parentBranch,
+      extendedItem.path,
+      setTreeData,
+      setItemLoading,
+      setError
+    );
   }
 };

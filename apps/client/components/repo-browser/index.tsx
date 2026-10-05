@@ -1,5 +1,5 @@
 /**
- * Repository browser component for GitHub integration.
+ * Repository browser for the connected git providers.
  * Features:
  * - Repository search
  * - Tree navigation
@@ -25,6 +25,7 @@ import { useDebounce } from "use-debounce";
 import { Tree, type TreeDataItem } from "@/components/tree";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
+import type { ProviderId } from "@/lib/git-providers/types";
 
 import { LoadingState } from "./components/loading-skeleton";
 import { NotFound } from "./components/not-found";
@@ -34,13 +35,14 @@ import { handleSelectItem } from "./utils/handle-select-item";
 import { setItemLoading } from "./utils/set-item-loading";
 
 interface RepoBrowserProps {
+  provider: ProviderId;
   setBranch: Dispatch<SetStateAction<string>>;
   setRepo: Dispatch<SetStateAction<string>>;
   setSelectedItem: Dispatch<SetStateAction<ExtendedTreeDataItem | null>>;
 }
 
 const RepoBrowser = memo(
-  ({ setSelectedItem, setRepo, setBranch }: RepoBrowserProps) => {
+  ({ provider, setSelectedItem, setRepo, setBranch }: RepoBrowserProps) => {
     const [treeData, setTreeData] = useState<ExtendedTreeDataItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -55,12 +57,13 @@ const RepoBrowser = memo(
     );
 
     useEffect(() => {
-      fetchRepos(setLoading, setError, setTreeData, searchQuery);
-    }, [searchQuery]);
+      fetchRepos(provider, setLoading, setError, setTreeData, searchQuery);
+    }, [provider, searchQuery]);
 
     const handleSelectChangeCallback = useCallback(
       (item: TreeDataItem) => {
         handleSelectItem(
+          provider,
           item as ExtendedTreeDataItem,
           treeData,
           setSelectedItem,
@@ -71,7 +74,7 @@ const RepoBrowser = memo(
           setBranch
         );
       },
-      [treeData, setSelectedItem, setRepo, setBranch]
+      [provider, treeData, setSelectedItem, setRepo, setBranch]
     );
 
     const memoizedTree = useMemo(

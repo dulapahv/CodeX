@@ -33,6 +33,21 @@ export const GITHUB_CLIENT_SECRET = IS_DEV_ENV
   ? process.env.GITHUB_CLIENT_SECRET_DEV
   : process.env.GITHUB_CLIENT_SECRET_PROD;
 
+// Each environment sets its own OAuth app; a provider without one stays
+// listed but unavailable
+export const GITLAB_URL = "https://gitlab.com";
+export const GITLAB_CLIENT_ID = process.env.GITLAB_CLIENT_ID ?? "";
+export const GITLAB_CLIENT_SECRET = process.env.GITLAB_CLIENT_SECRET;
+
+export const BITBUCKET_URL = "https://bitbucket.org";
+export const BITBUCKET_API_URL = "https://api.bitbucket.org/2.0";
+export const BITBUCKET_CLIENT_ID = process.env.BITBUCKET_CLIENT_ID ?? "";
+export const BITBUCKET_CLIENT_SECRET = process.env.BITBUCKET_CLIENT_SECRET;
+
+export const CODEBERG_URL = "https://codeberg.org";
+export const CODEBERG_CLIENT_ID = process.env.CODEBERG_CLIENT_ID ?? "";
+export const CODEBERG_CLIENT_SECRET = process.env.CODEBERG_CLIENT_SECRET;
+
 export const PISTON_API_URL = "https://emkc.org/api/v2/piston/execute";
 
 export const NAME_MAX_LENGTH = 64;
@@ -47,9 +62,9 @@ export const INVITED_DESCRIPTION =
 export const LATENCY_TEST_TITLE = "Server Latency Test";
 export const LATENCY_TEST_DESCRIPTION =
   "Test your latency to the CodeX server.";
-export const GITHUB_OAUTH_TITLE = "GitHub OAuth Callback";
-export const GITHUB_OAUTH_DESCRIPTION =
-  "This page is used to handle the GitHub OAuth callback.";
+export const OAUTH_TITLE = "Sign-in Callback";
+export const OAUTH_DESCRIPTION =
+  "This page completes signing in to a git hosting provider.";
 export const NAME = "Dulapah Vibulsanti";
 export const PORTFOLIO_URL = "https://dulapahv.dev";
 export const CONTACT_URL = "https://dulapahv.dev/contact";

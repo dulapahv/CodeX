@@ -1,5 +1,5 @@
 /**
- * GitHub API utility function for fetching repository branches.
+ * Fetches a repository's branches from a git provider.
  * Features:
  * - Branch data fetching
  * - Loading state management
@@ -11,12 +11,15 @@
 
 import type { Dispatch, SetStateAction } from "react";
 
+import { requestJson } from "@/components/shared/git/utils/request";
+import type { GitBranch, ProviderId } from "@/lib/git-providers/types";
 import { parseError } from "@/lib/utils";
 
 import type { ExtendedTreeDataItem } from "../types/tree";
 import { transformBranchesToTreeData } from "./transform-branches-to-tree";
 
 export const fetchBranches = async (
+  provider: ProviderId,
   repo: ExtendedTreeDataItem,
   setTreeData: Dispatch<SetStateAction<ExtendedTreeDataItem[]>>,
   setItemLoading: (
@@ -26,24 +29,16 @@ export const fetchBranches = async (
   ) => void,
   setError: Dispatch<SetStateAction<string>>
 ) => {
-  if (!repo.full_name) {
+  if (!repo.fullName) {
     return;
   }
 
   setItemLoading(repo.id, true, setTreeData);
   setError("");
   try {
-    const [owner, repoName] = repo.full_name.split("/");
-    const response = await fetch(
-      `/api/github/repos/branches/${owner}/${repoName}`
+    const branches = await requestJson<GitBranch[]>(
+      `/api/${provider}/branches?${new URLSearchParams({ repo: repo.fullName })}`
     );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to fetch branches");
-    }
-
-    const branches = await response.json();
     const branchData = transformBranchesToTreeData(repo.id, branches);
 
     setTreeData((prevData) =>

@@ -1,5 +1,5 @@
 /**
- * Transform GitHub branch data into tree structure for repository browser.
+ * Transform provider branches into tree structure for repository browser.
  * Features:
  * - Branch data transformation
  * - Tree item icon mapping
@@ -10,21 +10,18 @@
 
 import { GitBranch } from "lucide-react";
 
-import type { GithubBranch } from "../types/github";
+import type { GitBranch as GitBranchData } from "@/lib/git-providers/types";
+
 import { type ExtendedTreeDataItem, itemType } from "../types/tree";
 
 export const transformBranchesToTreeData = (
   repoID: string,
-  branches: GithubBranch[]
-): ExtendedTreeDataItem[] => {
-  if (!branches) {
-    return [];
-  }
-  return branches.map((branch) => ({
+  branches: GitBranchData[]
+): ExtendedTreeDataItem[] =>
+  branches.map((branch) => ({
     id: `${repoID}/${branch.name}`,
     name: branch.name,
     children: undefined,
     icon: GitBranch,
     type: itemType.BRANCH,
   }));
-};

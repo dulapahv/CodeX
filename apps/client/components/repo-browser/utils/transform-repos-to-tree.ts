@@ -1,5 +1,5 @@
 /**
- * Transform GitHub API repository data into tree structure for repository browser.
+ * Transform provider repositories into tree structure for repository browser.
  * Features:
  * - Repository data transformation
  * - Icon assignment
@@ -10,21 +10,18 @@
 
 import { Folder } from "lucide-react";
 
-import type { GithubRepo } from "../types/github";
+import type { GitRepo } from "@/lib/git-providers/types";
+
 import { type ExtendedTreeDataItem, itemType } from "../types/tree";
 
 export const transformReposToTreeData = (
-  repos: GithubRepo[]
-): ExtendedTreeDataItem[] => {
-  if (!repos) {
-    return [];
-  }
-  return repos.map((repo) => ({
-    id: repo.id.toString(),
+  repos: GitRepo[]
+): ExtendedTreeDataItem[] =>
+  repos.map((repo) => ({
+    id: repo.id,
     name: repo.name,
-    full_name: repo.full_name,
+    fullName: repo.fullName,
     children: undefined,
     icon: Folder,
     type: itemType.REPO,
   }));
-};

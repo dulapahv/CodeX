@@ -17,10 +17,10 @@ export enum itemType {
   FILE = "file",
 }
 
-// Extended interface for GitHub-specific functionality
+// Tree node with the repository details needed to browse a provider
 export interface ExtendedTreeDataItem extends TreeDataItem {
   children?: ExtendedTreeDataItem[]; // Override children type
-  full_name?: string;
+  fullName?: string;
   path?: string;
   type?: itemType;
 }

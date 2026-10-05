@@ -90,10 +90,10 @@ export const createMenuConfig = (
           action: "openLocal",
         },
         {
-          label: "Open from GitHub",
+          label: "Open from repository…",
           icon: <FolderGit2 className="size-4" />,
           shortcut: `${modKey}+Shift+O`,
-          action: "openGitHub",
+          action: "openRepository",
         },
         {
           label: "Save to Local",
@@ -102,10 +102,10 @@ export const createMenuConfig = (
           action: "saveLocal",
         },
         {
-          label: "Save to GitHub",
+          label: "Save to repository…",
           icon: <CloudUpload className="size-4" />,
           shortcut: `${modKey}+Shift+S`,
-          action: "saveGitHub",
+          action: "saveRepository",
         },
         "separator",
         {

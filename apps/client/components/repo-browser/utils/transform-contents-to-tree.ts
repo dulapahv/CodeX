@@ -1,5 +1,5 @@
 /**
- * Transform GitHub API content data into tree structure for repository browser.
+ * Transform a provider folder listing into tree structure for repository browser.
  * Features:
  * - Directory/file mapping
  * - Icon assignment
@@ -11,23 +11,18 @@
 
 import { FileCode, Folder } from "lucide-react";
 
-import type { GithubContent } from "../types/github";
+import type { GitEntry } from "@/lib/git-providers/types";
+
 import { type ExtendedTreeDataItem, itemType } from "../types/tree";
 
 export const transformContentsToTreeData = (
   branchID: string,
-  contents: GithubContent[]
-): ExtendedTreeDataItem[] => {
-  if (!contents) {
-    return [];
-  }
-  return contents
-    .filter((item) => item.type === itemType.DIR || item.type === itemType.FILE)
-    .map((item) => ({
-      id: `${branchID}:${item.path}`,
-      name: item.name,
-      path: item.path,
-      icon: item.type === itemType.DIR ? Folder : FileCode,
-      type: item.type,
-    }));
-};
+  entries: GitEntry[]
+): ExtendedTreeDataItem[] =>
+  entries.map((entry) => ({
+    id: `${branchID}:${entry.path}`,
+    name: entry.name,
+    path: entry.path,
+    icon: entry.type === "dir" ? Folder : FileCode,
+    type: entry.type === "dir" ? itemType.DIR : itemType.FILE,
+  }));

@@ -6,6 +6,7 @@
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
+import { isProviderId, type ProviderId } from "@/lib/git-providers/types";
 
 // biome-ignore lint/performance/noBarrelFile: shadcn convention, app code imports cn from here
 export { cn } from "cn";
@@ -21,27 +22,47 @@ export const parseError = (error: unknown): string => {
   return "An unknown error occurred";
 };
 
-export const loginWithGithub = () => {
-  const width = 790;
-  const height = 720;
-  const left = window.screenX + (window.outerWidth - width) / 2;
-  const top = window.screenY + (window.outerHeight - height) / 2;
+const POPUP_WIDTH = 790;
+const POPUP_HEIGHT = 720;
 
-  if (window.authWindow?.closed === false) {
+export const connectProvider = (provider: ProviderId) => {
+  const url = `/api/${provider}/auth?login`;
+
+  if (window.authWindow && !window.authWindow.closed) {
+    window.authWindow.location.href = url;
     window.authWindow.focus();
-  } else {
-    window.authWindow = window.open(
-      "/api/github/auth?login",
-      "_blank",
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
-    );
+    return;
   }
+
+  const left = window.screenX + (window.outerWidth - POPUP_WIDTH) / 2;
+  const top = window.screenY + (window.outerHeight - POPUP_HEIGHT) / 2;
+  window.authWindow = window.open(
+    url,
+    "_blank",
+    `width=${POPUP_WIDTH},height=${POPUP_HEIGHT},left=${left},top=${top},scrollbars=yes,status=yes`
+  );
 };
 
-export const isGithubOAuthSuccess = (event: MessageEvent): boolean =>
-  event.origin === window.location.origin &&
-  event.data?.type === "github-oauth" &&
-  event.data.success === true;
+// The provider that just finished signing in, or null for any other message
+export const getConnectedProvider = (
+  event: MessageEvent
+): ProviderId | null => {
+  const data: unknown = event.data;
+  if (
+    event.origin !== window.location.origin ||
+    typeof data !== "object" ||
+    data === null
+  ) {
+    return null;
+  }
+  const { type, provider, success } = data as Record<string, unknown>;
+  const isSuccess =
+    type === "git-oauth" &&
+    success === true &&
+    typeof provider === "string" &&
+    isProviderId(provider);
+  return isSuccess ? provider : null;
+};
 
 /**
  * Color generation and text contrast calculation functions.

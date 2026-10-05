@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
     browserToTerminal: true,
   },
   experimental: {
+    // Lets e2e tests answer the server's outgoing fetches. Never enable in
+    // production: requests could then steer those fetches.
+    testProxy: process.env.NEXT_TEST_PROXY === "true",
     typedEnv: true,
     // inlineCss: true,
     cssChunking: "graph",

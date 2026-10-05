@@ -15,17 +15,17 @@ import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 import { AboutDialog, type AboutDialogRef } from "@/components/about-dialog";
 import { LeaveDialog, type LeaveDialogRef } from "@/components/leave-dialog";
 import {
-  OpenFromGithubDialog,
-  type OpenFromGithubDialogRef,
-} from "@/components/open-from-github-dialog";
+  OpenFromRepositoryDialog,
+  type OpenFromRepositoryDialogRef,
+} from "@/components/open-from-repository-dialog";
 import {
   OpenPromptDialog,
   type OpenPromptDialogRef,
 } from "@/components/open-prompt-dialog";
 import {
-  SaveToGithubDialog,
-  type SaveToGithubDialogRef,
-} from "@/components/save-to-github-dialog";
+  SaveToRepositoryDialog,
+  type SaveToRepositoryDialogRef,
+} from "@/components/save-to-repository-dialog";
 import {
   SettingsSheet,
   type SettingsSheetRef,
@@ -65,10 +65,10 @@ const Toolbar = ({
 }: ToolbarProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const openFromGithubDialogRef = useRef<OpenFromGithubDialogRef>(null);
+  const openFromRepositoryDialogRef = useRef<OpenFromRepositoryDialogRef>(null);
   const openPromptDialogRef1 = useRef<OpenPromptDialogRef>(null);
   const openPromptDialogRef2 = useRef<OpenPromptDialogRef>(null);
-  const saveToGithubDialogRef = useRef<SaveToGithubDialogRef>(null);
+  const saveToRepositoryDialogRef = useRef<SaveToRepositoryDialogRef>(null);
   const settingsSheetRef = useRef<SettingsSheetRef>(null);
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
   const aboutDialogRef = useRef<AboutDialogRef>(null);
@@ -83,11 +83,15 @@ const Toolbar = ({
           switch (event.key) {
             case "O":
               event.preventDefault();
-              openPromptDialogRef2.current?.openDialog();
+              if (editor?.getModel()?.getValue()) {
+                openPromptDialogRef2.current?.openDialog();
+              } else {
+                openFromRepositoryDialogRef.current?.openDialog();
+              }
               break;
             case "S":
               event.preventDefault();
-              saveToGithubDialogRef.current?.openDialog();
+              saveToRepositoryDialogRef.current?.openDialog();
               break;
             default:
               break;
@@ -134,15 +138,15 @@ const Toolbar = ({
         openLocal(monaco, editor);
       }
     },
-    openGitHub: () => {
+    openRepository: () => {
       if (editor.getModel()?.getValue()) {
         openPromptDialogRef2.current?.openDialog();
       } else {
-        openFromGithubDialogRef.current?.openDialog();
+        openFromRepositoryDialogRef.current?.openDialog();
       }
     },
     saveLocal: () => saveLocal(monaco, editor),
-    saveGitHub: () => saveToGithubDialogRef.current?.openDialog(),
+    saveRepository: () => saveToRepositoryDialogRef.current?.openDialog(),
     leaveRoom: () => leaveDialogRef.current?.openDialog(),
     settings: () => settingsSheetRef.current?.openDialog(),
     undo: () => {
@@ -304,20 +308,20 @@ const Toolbar = ({
           webcam={showWebcam}
         />
       )}
-      <OpenFromGithubDialog
+      <OpenFromRepositoryDialog
         editor={editor}
         monaco={monaco}
-        ref={openFromGithubDialogRef}
+        ref={openFromRepositoryDialogRef}
       />
       <OpenPromptDialog
         callback={() => openLocal(monaco, editor)}
         ref={openPromptDialogRef1}
       />
       <OpenPromptDialog
-        callback={() => openFromGithubDialogRef.current?.openDialog()}
+        callback={() => openFromRepositoryDialogRef.current?.openDialog()}
         ref={openPromptDialogRef2}
       />
-      <SaveToGithubDialog editor={editor} ref={saveToGithubDialogRef} />
+      <SaveToRepositoryDialog editor={editor} ref={saveToRepositoryDialogRef} />
       <SettingsSheet editor={editor} monaco={monaco} ref={settingsSheetRef} />
       <LeaveDialog ref={leaveDialogRef} />
       <AboutDialog ref={aboutDialogRef} />

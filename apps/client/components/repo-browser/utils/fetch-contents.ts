@@ -1,5 +1,5 @@
 /**
- * GitHub API utility function for merging repository folder contents.
+ * Fetches one folder from a git provider and merges it into the tree.
  * Features:
  * - Recursive content merging
  * - Path-based matching
@@ -11,6 +11,8 @@
 
 import type { Dispatch, SetStateAction } from "react";
 
+import { requestJson } from "@/components/shared/git/utils/request";
+import type { GitEntry, ProviderId } from "@/lib/git-providers/types";
 import { parseError } from "@/lib/utils";
 
 import type { ExtendedTreeDataItem } from "../types/tree";
@@ -72,6 +74,7 @@ const mergeFolderContents = (
 };
 
 export const fetchContents = async (
+  provider: ProviderId,
   repo: ExtendedTreeDataItem,
   branch: ExtendedTreeDataItem,
   path: string,
@@ -83,7 +86,7 @@ export const fetchContents = async (
   ) => void,
   setError: Dispatch<SetStateAction<string>>
 ) => {
-  if (!repo.full_name) {
+  if (!repo.fullName) {
     return;
   }
 
@@ -119,19 +122,14 @@ export const fetchContents = async (
   setError("");
 
   try {
-    const [owner, repoName] = repo.full_name.split("/");
-    const response = await fetch(
-      `/api/github/repos/contents/${owner}/${repoName}?path=${encodeURIComponent(
-        path
-      )}&ref=${encodeURIComponent(branch.name)}`
+    const params = new URLSearchParams({
+      repo: repo.fullName,
+      ref: branch.name,
+      path,
+    });
+    const contents = await requestJson<GitEntry[]>(
+      `/api/${provider}/tree?${params}`
     );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to fetch contents");
-    }
-
-    const contents = await response.json();
     const contentData = transformContentsToTreeData(branch.id, contents);
 
     setTreeData((prevData) => {
