@@ -30,7 +30,6 @@ import { clearWebcamError, reportWebcamError } from "../utils/errors";
 interface DeviceButtonProps {
   devices: MediaDevice[];
   disabled?: boolean;
-  disableToggle?: boolean;
   icon: ElementType;
   isEnabled: boolean;
   label: string;
@@ -51,7 +50,6 @@ const DeviceControls = ({
   onToggle,
   isEnabled,
   disabled = false,
-  disableToggle = false,
   onDevicePermissionGranted,
 }: DeviceButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -145,9 +143,9 @@ const DeviceControls = ({
                   ? "bg-[color:var(--toolbar-accent)] text-[color:var(--panel-text-accent)] hover:bg-[color:var(--toolbar-accent)]"
                   : "bg-black/70 hover:bg-black/80 dark:bg-white/10 dark:hover:bg-white/20",
                 "bg-clip-border",
-                (disabled || disableToggle) && "opacity-50"
+                disabled && "opacity-50"
               )}
-              disabled={disabled || disableToggle}
+              disabled={disabled}
               onClick={() => {
                 clearWebcamError();
                 onToggle();
@@ -160,12 +158,7 @@ const DeviceControls = ({
           }
         />
         <TooltipContent>
-          {(() => {
-            if (disableToggle) {
-              return `Turn on camera first to use ${label}`;
-            }
-            return isEnabled ? `Turn off ${label}` : `Turn on ${label}`;
-          })()}
+          {isEnabled ? `Turn off ${label}` : `Turn on ${label}`}
         </TooltipContent>
       </Tooltip>
 

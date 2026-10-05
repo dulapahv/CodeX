@@ -24,15 +24,14 @@ let socketInstance: TypedSocket | null = null;
  * Returns a singleton typed socket instance
  */
 export const getSocket = (): TypedSocket => {
-  if (!socketInstance?.connected) {
-    socketInstance = io(BASE_SERVER_URL, {
-      transports: ["websocket", "polling"],
-      autoConnect: false,
-      timestampRequests: false,
-    }) as TypedSocket;
-  }
+  socketInstance ??= io(BASE_SERVER_URL, {
+    transports: ["websocket", "polling"],
+    autoConnect: false,
+    timestampRequests: false,
+  }) as TypedSocket;
 
-  if (!socketInstance.connected) {
+  // `active` stays true while the manager reconnects by itself.
+  if (!socketInstance.active) {
     socketInstance.connect();
   }
 

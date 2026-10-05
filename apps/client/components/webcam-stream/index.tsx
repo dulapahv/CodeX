@@ -46,8 +46,8 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
     selectedAudioOutput,
     setSelectedVideoDevice,
     setSelectedAudioInput,
+    setSelectedAudioOutput,
     handleDevicePermission,
-    handleAudioOutputSelect,
   } = useMediaDevices();
 
   const {
@@ -94,6 +94,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   return (
     <div className="relative flex h-full flex-col bg-[color:var(--panel-background)] p-2">
       <VideoGrid
+        audioOutput={selectedAudioOutput}
         cameraOn={cameraOn}
         micOn={micOn}
         remoteMicStates={remoteMicStates}
@@ -159,7 +160,6 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
         <DeviceControls
           devices={audioInputDevices}
-          disableToggle={!cameraOn}
           icon={micOn ? Mic : MicOff}
           isEnabled={micOn}
           label="microphone"
@@ -173,7 +173,9 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
               setSelectedAudioInput
             )
           }
-          onToggle={handleToggleMic}
+          onToggle={() =>
+            handleToggleMic(peersRef, setRemoteStreams, pendingSignalsRef)
+          }
           selectedDevice={selectedAudioInput}
         />
 
@@ -183,9 +185,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           isEnabled={speakerOn}
           label="speaker"
           onDevicePermissionGranted={handleDevicePermission}
-          onDeviceSelect={(deviceId) =>
-            handleAudioOutputSelect(deviceId, videoRef)
-          }
+          onDeviceSelect={setSelectedAudioOutput}
           onToggle={() => handleToggleSpeaker(!speakerOn)}
           selectedDevice={selectedAudioOutput}
         />

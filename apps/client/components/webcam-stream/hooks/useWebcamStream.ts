@@ -5,17 +5,21 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useRef, useState } from "react";
 import type Peer from "simple-peer";
 
-import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 
 import { rotateCamera, toggleCamera, toggleMic } from "../utils/controls";
 import { reportWebcamError } from "../utils/errors";
-import { getMedia } from "../utils/media";
+import { getMedia, switchAudioDevice, switchVideoDevice } from "../utils/media";
+
+interface MediaRequest {
+  facingMode?: "user" | "environment";
+  micEnabled: boolean;
+  withVideo: boolean;
+}
 
 interface UseWebcamStreamProps {
   micOn: boolean;
@@ -32,7 +36,6 @@ export const useWebcamStream = ({
   micOn,
   setMicOn,
 }: UseWebcamStreamProps) => {
-  const socket = getSocket();
   const [cameraOn, setCameraOn] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(true);
   const [cameraFacingMode, setCameraFacingMode] = useState<
@@ -48,14 +51,16 @@ export const useWebcamStream = ({
       setRemoteStreams: React.Dispatch<
         React.SetStateAction<Record<string, MediaStream | null>>
       >,
-      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>,
+      { facingMode = cameraFacingMode, micEnabled, withVideo }: MediaRequest
     ) => {
       return getMedia(
         selectedVideoDevice,
         selectedAudioInput,
         selectedAudioOutput,
-        cameraFacingMode,
-        micOn,
+        facingMode,
+        withVideo,
+        micEnabled,
         streamRef,
         videoRef,
         peersRef,
@@ -68,7 +73,6 @@ export const useWebcamStream = ({
       selectedAudioInput,
       selectedAudioOutput,
       cameraFacingMode,
-      micOn,
     ]
   );
 
@@ -83,36 +87,47 @@ export const useWebcamStream = ({
       await toggleCamera(
         cameraOn,
         setCameraOn,
+        micOn,
         setMicOn,
         streamRef,
         videoRef,
         peersRef,
-        () => handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
+        (withVideo) =>
+          handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef, {
+            micEnabled: micOn,
+            withVideo,
+          })
       );
     },
-    [cameraOn, handleGetMedia, setMicOn]
+    [cameraOn, micOn, handleGetMedia, setMicOn]
   );
 
-  const handleToggleMic = useCallback(() => {
-    toggleMic(micOn, setMicOn, streamRef);
-  }, [micOn, setMicOn]);
-
-  const handleToggleSpeaker = useCallback(
-    (newState: boolean) => {
-      setSpeakerOn(newState);
-      socket.emit(StreamServiceMsg.SPEAKER_STATE, newState);
-
-      // Find all video elements in the component and update their muted state
-      const videoElements = document.querySelectorAll("video");
-      for (const video of videoElements) {
-        if (video !== videoRef.current) {
-          // Don't mute local video
-          video.muted = !newState;
-        }
-      }
+  const handleToggleMic = useCallback(
+    async (
+      peersRef: React.RefObject<Record<string, Peer.Instance>>,
+      setRemoteStreams: React.Dispatch<
+        React.SetStateAction<Record<string, MediaStream | null>>
+      >,
+      pendingSignalsRef: React.RefObject<Record<string, Peer.SignalData[]>>
+    ) => {
+      await toggleMic(
+        micOn,
+        setMicOn,
+        cameraOn,
+        streamRef,
+        videoRef,
+        peersRef,
+        () =>
+          handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef, {
+            micEnabled: true,
+            withVideo: false,
+          })
+      );
     },
-    [socket]
+    [cameraOn, micOn, handleGetMedia, setMicOn]
   );
+
+  const handleToggleSpeaker = setSpeakerOn;
 
   const handleRotateCamera = useCallback(
     async (
@@ -127,10 +142,15 @@ export const useWebcamStream = ({
         cameraFacingMode,
         setCameraFacingMode,
         streamRef,
-        () => handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef)
+        (facingMode) =>
+          handleGetMedia(peersRef, setRemoteStreams, pendingSignalsRef, {
+            facingMode,
+            micEnabled: micOn,
+            withVideo: true,
+          })
       );
     },
-    [cameraOn, cameraFacingMode, handleGetMedia]
+    [cameraOn, cameraFacingMode, micOn, handleGetMedia]
   );
 
   const handleVideoDeviceSwitch = useCallback(
@@ -152,7 +172,6 @@ export const useWebcamStream = ({
       }
 
       try {
-        const { switchVideoDevice } = await import("../utils/media");
         await switchVideoDevice(
           deviceId,
           streamRef,
@@ -187,13 +206,12 @@ export const useWebcamStream = ({
       // Always store the preference
       setSelectedAudioInput(deviceId);
 
-      // Only activate the device if camera is currently on
-      if (!cameraOn) {
+      // Only activate the device while a stream is live
+      if (!(cameraOn || micOn)) {
         return;
       }
 
       try {
-        const { switchAudioDevice } = await import("../utils/media");
         await switchAudioDevice(
           deviceId,
           streamRef,
@@ -204,7 +222,8 @@ export const useWebcamStream = ({
           micOn,
           selectedVideoDevice,
           selectedAudioOutput,
-          cameraFacingMode
+          cameraFacingMode,
+          cameraOn
         );
       } catch (error) {
         reportWebcamError(

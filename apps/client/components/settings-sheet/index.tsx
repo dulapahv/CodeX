@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { cn, loginWithGithub } from "@/lib/utils";
+import { cn, isGithubOAuthSuccess, loginWithGithub } from "@/lib/utils";
 
 import { EditorConfig } from "./components/editor-config";
 import { EditorThemeSettings } from "./components/editor-theme";
@@ -90,7 +90,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
 
     useEffect(() => {
       const handleMessage = async (event: MessageEvent) => {
-        if (event.data.type === "github-oauth" && event.data.success) {
+        if (isGithubOAuthSuccess(event)) {
           const response = await fetch("/api/github/auth", {
             credentials: "include",
           });
@@ -230,7 +230,6 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
                 >
                   <Image
                     alt="GitHub logo"
-                    className="mr-2"
                     height={18}
                     src={`/images/${resolvedTheme === "light" ? "octocat" : "octocat-white"}.svg`}
                     width={18}

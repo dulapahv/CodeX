@@ -77,7 +77,7 @@ const RepoBrowser = memo(
     const memoizedTree = useMemo(
       () => (
         <Tree
-          className="h-full animate-fade-in"
+          className="min-h-0 flex-1 animate-fade-in"
           data={treeData}
           onSelectChange={handleSelectChangeCallback}
         />

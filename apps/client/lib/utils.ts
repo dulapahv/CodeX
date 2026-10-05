@@ -10,7 +10,6 @@
 
 import { RoomServiceMsg } from "@codex/types/message";
 
-import { GITHUB_CLIENT_ID, GITHUB_OAUTH_URL } from "@/lib/constants";
 import { getSocket } from "@/lib/socket";
 
 import { storage } from "./services/storage";
@@ -53,12 +52,17 @@ export const loginWithGithub = () => {
     window.authWindow.focus();
   } else {
     window.authWindow = window.open(
-      `${GITHUB_OAUTH_URL}/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`,
+      "/api/github/auth?login",
       "_blank",
       `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
     );
   }
 };
+
+export const isGithubOAuthSuccess = (event: MessageEvent): boolean =>
+  event.origin === window.location.origin &&
+  event.data?.type === "github-oauth" &&
+  event.data.success === true;
 
 /**
  * Color generation and text contrast calculation functions.
@@ -156,15 +160,4 @@ export const getTextColor = (backgroundColor: string): string => {
   const luminance = getLuminance(backgroundColor);
   // Use a more precise threshold for WCAG AA compliance
   return luminance < 0.5 ? "#fff" : "#000";
-};
-
-/**
- * Helper function to check contrast ratio between colors
- */
-export const getContrastRatio = (color1: string, color2: string): number => {
-  const l1 = getLuminance(color1);
-  const l2 = getLuminance(color2);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  return (lighter + 0.05) / (darker + 0.05);
 };

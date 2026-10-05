@@ -41,7 +41,6 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
         <TooltipTrigger
           render={
             <Button
-              aria-expanded="false"
               aria-haspopup="dialog"
               aria-label="Open Settings"
               className="hover:!text-foreground size-7 animate-fade-in-top p-0 text-[color:var(--toolbar-foreground)]"

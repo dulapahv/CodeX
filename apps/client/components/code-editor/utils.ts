@@ -38,7 +38,7 @@ export const createCursorStyle = (
     z-index: 100;
   }
   .cursor-${userID}::after {
-    content: "${name.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}";
+    content: "${CSS.escape(name)}";
     background-color: ${bgColor};
     color: ${color};
     font-family: var(--font-geist-sans);
@@ -48,7 +48,6 @@ export const createCursorStyle = (
     height: 19px;
     font-size: 12px;
     padding: 0 4px;
-    ${isFirstLine ? "border-radius: 0px 3px 3px 3px;" : "border-radius: 3px 3px 3px 0px;"}
     white-space: nowrap;
     z-index: 100;
     ${
@@ -58,6 +57,9 @@ export const createCursorStyle = (
     animation: cursorLabelFadeOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     animation-delay: 2.7s;`
     }
+  }
+  [data-hovered-cursor="${userID}"] .cursor-${userID}::after {
+    animation: none;
   }
   .cursor-${userID}-selection {
     background-color: ${bgColor};

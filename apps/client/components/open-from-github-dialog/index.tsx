@@ -79,12 +79,12 @@ const OpenFromGithubDialog = forwardRef<
       const path = (selectedItem.path ?? "").split("/").slice(0, -1).join("/");
 
       const response = await fetch(
-        `/api/github/content?repo=${repo}&branch=${branch}&path=${path}&filename=${fileName}`
+        `/api/github/content?${new URLSearchParams({ repo, branch, path, filename: fileName })}`
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to fetch file content");
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || "Failed to fetch file content");
       }
 
       const data = await response.json();
@@ -143,42 +143,35 @@ const OpenFromGithubDialog = forwardRef<
         )}
         githubUser={githubUser}
       />
-      <div className="ml-auto flex flex-col items-end gap-2">
-        {error && (
-          <p className="text-right text-destructive text-xs" role="alert">
-            {error}
-          </p>
-        )}
-        <div className="flex gap-2">
+      <div className="ml-auto flex gap-2">
+        <Button
+          disabled={isFetchingContent}
+          onClick={closeDialog}
+          type="button"
+          variant="secondary"
+        >
+          Cancel
+        </Button>
+        {githubUser && (
           <Button
-            disabled={isFetchingContent}
-            onClick={closeDialog}
-            type="button"
-            variant="secondary"
+            aria-busy={isFetchingContent}
+            disabled={
+              !selectedItem?.type ||
+              selectedItem.type !== itemType.FILE ||
+              isFetchingContent
+            }
+            onClick={handleOpenFile}
           >
-            Cancel
+            {isFetchingContent ? (
+              <>
+                <Spinner />
+                Opening...
+              </>
+            ) : (
+              "Open"
+            )}
           </Button>
-          {githubUser && (
-            <Button
-              aria-busy={isFetchingContent}
-              disabled={
-                !selectedItem?.type ||
-                selectedItem.type !== itemType.FILE ||
-                isFetchingContent
-              }
-              onClick={handleOpenFile}
-            >
-              {isFetchingContent ? (
-                <>
-                  <Spinner />
-                  Opening...
-                </>
-              ) : (
-                "Open"
-              )}
-            </Button>
-          )}
-        </div>
+        )}
       </div>
     </>
   );
@@ -187,8 +180,16 @@ const OpenFromGithubDialog = forwardRef<
     <ResponsiveDialog
       description="Select a repository, branch, and folder to open your code."
       footer={footer}
+      fullHeight={isLoading || Boolean(githubUser)}
       isOpen={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={(open) => (open ? setIsOpen(true) : closeDialog())}
+      status={
+        error && (
+          <p className="text-destructive text-xs" role="alert">
+            {error}
+          </p>
+        )
+      }
       title="Open from GitHub"
     >
       {content}

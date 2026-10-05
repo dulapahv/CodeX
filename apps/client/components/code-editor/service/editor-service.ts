@@ -11,6 +11,7 @@
 
 import { CodeServiceMsg, ScrollServiceMsg } from "@codex/types/message";
 import type { Cursor } from "@codex/types/operation";
+import type { Scroll } from "@codex/types/scroll";
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
@@ -19,6 +20,8 @@ import type { StatusBarCursorPosition } from "@/components/status-bar";
 import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
 import { getSocket } from "@/lib/socket";
+
+const SCROLL_EMIT_INTERVAL = 50;
 
 /**
  * Handle the Monaco editor before mounting.
@@ -86,6 +89,12 @@ export const handleOnMount = (
       selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0,
     });
 
+    // Remote edits shift this cursor too; peers already track that through
+    // their own decorations, so echoing it back would only multiply traffic.
+    if (e.reason === monaco.editor.CursorChangeReason.RecoverFromMarkers) {
+      return;
+    }
+
     // If the selection is empty, send only the cursor position
     if (
       e.selection.startLineNumber === e.selection.endLineNumber &&
@@ -107,13 +116,27 @@ export const handleOnMount = (
     }
   });
 
+  let pendingScroll: Scroll | null = null;
+  let scrollTimer: ReturnType<typeof setTimeout> | undefined;
+
   const scrollDisposable = editor.onDidScrollChange((e) => {
+    if (!(e.scrollTopChanged || e.scrollLeftChanged)) {
+      return;
+    }
     if (storage.getFollowUserId()) {
       return; // If following another user, do not emit scroll events
     }
-    socket.emit(ScrollServiceMsg.UPDATE_SCROLL, [e.scrollLeft, e.scrollTop]);
+
+    pendingScroll = [e.scrollLeft, e.scrollTop];
+    scrollTimer ??= setTimeout(() => {
+      scrollTimer = undefined;
+      if (pendingScroll) {
+        socket.emit(ScrollServiceMsg.UPDATE_SCROLL, pendingScroll);
+      }
+    }, SCROLL_EMIT_INTERVAL);
   });
 
   disposablesRef.current.push(cursorSelectionDisposable);
   disposablesRef.current.push(scrollDisposable);
+  disposablesRef.current.push({ dispose: () => clearTimeout(scrollTimer) });
 };

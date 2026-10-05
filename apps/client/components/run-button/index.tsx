@@ -49,12 +49,10 @@ const RunButton = ({
   const [stdin, setStdin] = useState("");
 
   useEffect(() => {
-    socket.on(CodeServiceMsg.EXEC, (isExecuting: boolean) =>
-      setIsRunning(isExecuting)
-    );
+    socket.on(CodeServiceMsg.EXEC, setIsRunning);
 
     return () => {
-      socket.off(CodeServiceMsg.EXEC);
+      socket.off(CodeServiceMsg.EXEC, setIsRunning);
     };
   }, [socket]);
 

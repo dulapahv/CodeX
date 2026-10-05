@@ -146,9 +146,9 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
     return (
       <Drawer aria-label="About CodeX" onOpenChange={setIsOpen} open={isOpen}>
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle className="text-left">{SITE_NAME}</DrawerTitle>
-            <DrawerDescription className="pt-2 text-left text-base">
+          <DrawerHeader className="pb-4">
+            <DrawerTitle>{SITE_NAME}</DrawerTitle>
+            <DrawerDescription className="pt-2 text-base">
               This project is part of the course &quot;COMPSCI4025P Level 4
               Individual Project&quot; at the University of Glasgow.
             </DrawerDescription>

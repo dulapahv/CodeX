@@ -65,7 +65,6 @@ const CodeEditor = memo(function CodeEditor({
   const cursorDecorationsRef = useRef<
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >({});
-  const cleanupTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
   const disposablesRef = useRef<monaco.IDisposable[]>([]);
 
   // Initialize editor theme
@@ -88,32 +87,35 @@ const CodeEditor = memo(function CodeEditor({
       return;
     }
 
-    socket.on(CodeServiceMsg.UPDATE_CURSOR, (userID: string, cursor: Cursor) =>
+    const handleCursor = (userID: string, cursor: Cursor) =>
       cursorService.updateCursor(
         userID,
         cursor,
         editorInstanceRef,
         monacoInstanceRef,
-        cursorDecorationsRef,
-        cleanupTimeoutsRef
-      )
-    );
+        cursorDecorationsRef
+      );
+    const handleScroll = (userID: string, scroll: Scroll) =>
+      scrollService.updateScroll(editorInstanceRef, userID, scroll);
+    const handleLeave = (userID: string) =>
+      cursorService.removeCursor(userID, cursorDecorationsRef);
 
-    socket.on(
-      ScrollServiceMsg.UPDATE_SCROLL,
-      (userID: string, scroll: Scroll) =>
-        scrollService.updateScroll(editorInstanceRef, userID, scroll)
-    );
+    socket.on(CodeServiceMsg.UPDATE_CURSOR, handleCursor);
+    socket.on(ScrollServiceMsg.UPDATE_SCROLL, handleScroll);
+    socket.on(RoomServiceMsg.LEAVE, handleLeave);
 
-    socket.on(RoomServiceMsg.LEAVE, (userID: string) =>
-      cursorService.removeCursor(userID, cursorDecorationsRef)
-    );
+    const labelHover = editorInstanceRef.current
+      ? cursorService.showLabelOnHover(
+          editorInstanceRef.current,
+          cursorDecorationsRef
+        )
+      : undefined;
 
-    // Cleanup socket listeners
     return () => {
-      socket.off(CodeServiceMsg.UPDATE_CURSOR);
-      socket.off(ScrollServiceMsg.UPDATE_SCROLL);
-      socket.off(RoomServiceMsg.LEAVE);
+      labelHover?.dispose();
+      socket.off(CodeServiceMsg.UPDATE_CURSOR, handleCursor);
+      socket.off(ScrollServiceMsg.UPDATE_SCROLL, handleScroll);
+      socket.off(RoomServiceMsg.LEAVE, handleLeave);
     };
   }, [isMonacoReady, socket]);
 
@@ -145,17 +147,9 @@ const CodeEditor = memo(function CodeEditor({
       }
       disposablesRef.current = [];
 
-      // Clean up decorations
-      for (const decoration of Object.values(cursorDecorationsRef.current)) {
-        decoration.clear();
+      for (const userID of Object.keys(cursorDecorationsRef.current)) {
+        cursorService.removeCursor(userID, cursorDecorationsRef);
       }
-      cursorDecorationsRef.current = {};
-
-      // Clean up timeouts
-      for (const timeout of Object.values(cleanupTimeoutsRef.current)) {
-        clearTimeout(timeout);
-      }
-      cleanupTimeoutsRef.current = {};
     };
   }, []);
 

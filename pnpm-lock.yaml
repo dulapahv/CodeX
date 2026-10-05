@@ -177,9 +177,6 @@ importers:
       tw-animate-css:
         specifier: 1.4.0
         version: 1.4.0
-      use-resize-observer:
-        specifier: ^9.1.0
-        version: 9.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       wrangler:
         specifier: ^4.147.0
         version: 4.147.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
@@ -1605,9 +1602,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
-
-  '@juggle/resize-observer@3.4.0':
-    resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
   '@lexical/a11y@0.48.0':
     resolution: {integrity: sha512-18W4ehyipkUim4YVoDZitoH63Om3j6iCN4c84zdqE9RgkWf/PE4rvI/8BHTm6Ni7NkVE14nimXgkpaP5ok15zA==}
@@ -6438,12 +6432,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  use-resize-observer@9.1.0:
-    resolution: {integrity: sha512-R25VqO9Wb3asSD4eqtcxk8sJalvIOYBqS8MNZlpDSQ4l4xMQxC/J7Id9HoTqPq8FwULIn0PVW+OAqF2dyYbjow==}
-    peerDependencies:
-      react: 16.8.0 - 18
-      react-dom: 16.8.0 - 18
-
   use-sidecar@1.1.3:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
@@ -8534,8 +8522,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
-
-  '@juggle/resize-observer@3.4.0': {}
 
   '@lexical/a11y@0.48.0(typescript@5.9.3)':
     dependencies:
@@ -14023,12 +14009,6 @@ snapshots:
   use-debounce@10.1.1(react@19.2.8):
     dependencies:
       react: 19.2.8
-
-  use-resize-observer@9.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
-    dependencies:
-      '@juggle/resize-observer': 3.4.0
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
 
   use-sidecar@1.1.3(@types/react@19.0.2)(react@19.2.8):
     dependencies:

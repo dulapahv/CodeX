@@ -29,8 +29,8 @@ export async function GET() {
       throw new Error("Failed to fetch status");
     }
 
-    const data = (await response.json()) as BetterStackResponse;
-    return NextResponse.json(data);
+    const { data } = (await response.json()) as BetterStackResponse;
+    return NextResponse.json({ status: data?.attributes.status ?? null });
   } catch (error) {
     console.error("Error fetching server status:", error);
     return NextResponse.json(

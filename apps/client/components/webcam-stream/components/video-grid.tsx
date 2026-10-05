@@ -6,14 +6,52 @@
  */
 
 import type { User } from "@codex/types/user";
-import type { RefObject } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { Avatar } from "@/components/avatar";
 import { storage } from "@/lib/services/storage";
 import { userMap } from "@/lib/services/user-map";
+import { parseError } from "@/lib/utils";
 
+import { reportWebcamError } from "../utils/errors";
 import { VideoControls } from "./video-controls";
 
+interface RemoteVideoProps {
+  audioOutput: string;
+  muted: boolean;
+  stream: MediaStream;
+}
+
+const RemoteVideo = ({ audioOutput, muted, stream }: RemoteVideoProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (audioOutput && video && "setSinkId" in video) {
+      video.setSinkId(audioOutput).catch((error: unknown) => {
+        reportWebcamError(`Error setting audio output: ${parseError(error)}`);
+      });
+    }
+  }, [audioOutput]);
+
+  return (
+    <video
+      autoPlay
+      className="size-full scale-x-[-1] object-cover"
+      muted={muted}
+      playsInline
+      ref={videoRef}
+    />
+  );
+};
+
 interface VideoGridProps {
+  audioOutput: string;
   cameraOn: boolean;
   micOn: boolean;
   remoteMicStates: Record<string, boolean>;
@@ -25,6 +63,7 @@ interface VideoGridProps {
 }
 
 export const VideoGrid = ({
+  audioOutput,
   users,
   cameraOn,
   micOn,
@@ -83,40 +122,39 @@ export const VideoGrid = ({
       {/* Remote videos */}
       {users
         .filter((user) => user.id !== currentUserId)
-        .map((user) => (
-          <div className="relative" key={user.id}>
-            <div className="relative aspect-video bg-black/10 dark:bg-black/30">
-              {remoteStreams[user.id] ? (
-                <video
-                  autoPlay
-                  className="size-full scale-x-[-1] object-cover"
-                  muted={!speakerOn}
-                  playsInline
-                  ref={(element) => {
-                    if (element) {
-                      element.srcObject = remoteStreams[user.id];
-                    }
-                  }}
+        .map((user) => {
+          const stream = remoteStreams[user.id];
+          const hasVideo = Boolean(stream?.getVideoTracks().length);
+          return (
+            <div className="relative" key={user.id}>
+              <div className="relative aspect-video bg-black/10 dark:bg-black/30">
+                {stream && (
+                  <RemoteVideo
+                    audioOutput={audioOutput}
+                    muted={!speakerOn}
+                    stream={stream}
+                  />
+                )}
+                {!hasVideo && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Avatar showTooltip={false} size="lg" user={user} />
+                  </div>
+                )}
+                <VideoControls
+                  isLocal={false}
+                  micOn={micOn}
+                  remoteMicStates={remoteMicStates}
+                  remoteSpeakerStates={remoteSpeakerStates}
+                  speakersOn={speakerOn}
+                  userId={user.id}
                 />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Avatar showTooltip={false} size="lg" user={user} />
+                <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
+                  {user.username}
                 </div>
-              )}
-              <VideoControls
-                isLocal={false}
-                micOn={micOn}
-                remoteMicStates={remoteMicStates}
-                remoteSpeakerStates={remoteSpeakerStates}
-                speakersOn={speakerOn}
-                userId={user.id}
-              />
-              <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
-                {user.username}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
     </div>
   );
 };

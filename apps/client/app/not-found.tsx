@@ -8,8 +8,6 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-"use client";
-
 import { Home } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

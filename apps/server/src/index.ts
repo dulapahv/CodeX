@@ -25,7 +25,6 @@ import type {
   ServerToClientEvents,
 } from "@codex/types/socket-events";
 import type { ExecutionResult } from "@codex/types/terminal";
-import type { SignalData } from "simple-peer";
 import { Server } from "socket.io";
 
 import * as codeService from "@/service/code-service";
@@ -38,6 +37,8 @@ import * as webRTCService from "@/service/webrtc-service";
 import { ALLOWED_ORIGINS, getCorsHeaders } from "./cors-config";
 
 const PORT = 3001;
+const MAX_NAME_LENGTH = 64;
+const CONTROL_CHARACTER_PATTERN = /\p{Cc}/u;
 
 const app = App();
 
@@ -64,11 +65,6 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>({
   transports: ["websocket", "polling"],
   // Allow larger payloads for pasting large code blocks (default is 1MB)
   maxHttpBufferSize: 5e6, // 5MB
-  // Recover socket state (rooms, missed packets) after brief disconnects
-  connectionStateRecovery: {
-    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
-    skipMiddlewares: true,
-  },
 });
 io.attachApp(app);
 io.engine.on("connection", (rawSocket) => {
@@ -76,10 +72,11 @@ io.engine.on("connection", (rawSocket) => {
 });
 
 app.listen(PORT, (token) => {
-  if (!token) {
-    console.warn(`Port ${PORT} is already in use`);
+  if (token) {
+    console.log(`codex-server listening on port: ${PORT}`);
+  } else {
+    console.error(`Port ${PORT} is already in use`);
   }
-  console.log(`codex-server listening on port: ${PORT}`);
 });
 
 app.get("/", (res, req) => {
@@ -96,70 +93,158 @@ app.get("/", (res, req) => {
   );
 });
 
+const isString = (value: unknown): value is string => typeof value === "string";
+
+const isBoolean = (value: unknown): value is boolean =>
+  typeof value === "boolean";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isName = (value: unknown): value is string =>
+  isString(value) &&
+  value.trim().length > 0 &&
+  value.trim().length <= MAX_NAME_LENGTH &&
+  !CONTROL_CHARACTER_PATTERN.test(value);
+
+// Handlers run on untrusted input, so a throw must not become an unhandled
+// rejection that takes the whole process down.
+const handle =
+  <Args extends unknown[]>(handler: (...args: Args) => unknown) =>
+  async (...args: Args): Promise<void> => {
+    try {
+      await handler(...args);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 io.on("connection", (socket) => {
   socket.on("ping", () => socket.emit("pong"));
-  socket.on(RoomServiceMsg.CREATE, async (name: string) =>
-    roomService.create(socket, name)
+  socket.on(
+    RoomServiceMsg.CREATE,
+    handle(async (name: unknown) => {
+      if (isName(name)) {
+        await roomService.create(socket, name.trim());
+      }
+    })
   );
-  socket.on(RoomServiceMsg.JOIN, async (roomID: string, name: string) =>
-    roomService.join(socket, io, roomID, name)
+  socket.on(
+    RoomServiceMsg.JOIN,
+    handle(async (roomID: unknown, name: unknown) => {
+      if (isString(roomID) && isName(name)) {
+        await roomService.join(socket, io, roomID, name.trim());
+      }
+    })
   );
-  socket.on(RoomServiceMsg.LEAVE, async () => roomService.leave(socket, io));
-  socket.on(RoomServiceMsg.TERMINATE, async () =>
-    roomService.terminate(socket, io)
+  socket.on(
+    RoomServiceMsg.LEAVE,
+    handle(() => roomService.leave(socket, io))
   );
-  socket.on(RoomServiceMsg.SYNC_USERS, async () =>
-    roomService.getUsersInRoom(socket, io)
+  socket.on(
+    RoomServiceMsg.TERMINATE,
+    handle(() => roomService.terminate(socket, io))
   );
-  socket.on(CodeServiceMsg.SYNC_CODE, async (stateVector: YjsUpdate) =>
-    codeService.syncCode(socket, io, stateVector)
+  socket.on(
+    RoomServiceMsg.SYNC_USERS,
+    handle(() => roomService.getUsersInRoom(socket, io))
   );
-  socket.on(CodeServiceMsg.UPDATE_CODE, async (update: YjsUpdate) =>
-    codeService.updateCode(socket, update)
+  socket.on(
+    CodeServiceMsg.SYNC_CODE,
+    handle((stateVector: YjsUpdate) =>
+      codeService.syncCode(socket, io, stateVector)
+    )
   );
-  socket.on(CodeServiceMsg.UPDATE_CURSOR, async (cursor: Cursor) =>
-    userService.updateCursor(socket, cursor)
+  socket.on(
+    CodeServiceMsg.UPDATE_CODE,
+    handle((update: YjsUpdate) => codeService.updateCode(socket, update))
   );
-  socket.on(CodeServiceMsg.SYNC_LANG, async () =>
-    codeService.syncLang(socket, io)
+  socket.on(
+    CodeServiceMsg.UPDATE_CURSOR,
+    handle((cursor: Cursor) => userService.updateCursor(socket, cursor))
   );
-  socket.on(CodeServiceMsg.UPDATE_LANG, async (langID: string) =>
-    codeService.updateLang(socket, langID)
+  socket.on(
+    CodeServiceMsg.SYNC_LANG,
+    handle(() => codeService.syncLang(socket, io))
   );
-  socket.on(ScrollServiceMsg.UPDATE_SCROLL, async (scroll: Scroll) =>
-    scrollService.updateScroll(socket, scroll)
+  socket.on(
+    CodeServiceMsg.UPDATE_LANG,
+    handle((langID: unknown) => {
+      if (isString(langID)) {
+        codeService.updateLang(socket, langID);
+      }
+    })
   );
-  socket.on(RoomServiceMsg.SYNC_MD, () => {
-    roomService.syncNote(socket, io);
-  });
-  socket.on(RoomServiceMsg.UPDATE_MD, async (note: string) =>
-    roomService.updateNote(socket, note)
+  socket.on(
+    ScrollServiceMsg.UPDATE_SCROLL,
+    handle((scroll: Scroll) => scrollService.updateScroll(socket, scroll))
   );
-  socket.on(CodeServiceMsg.EXEC, async (isExecuting: boolean) =>
-    roomService.updateExecuting(socket, isExecuting)
+  socket.on(
+    RoomServiceMsg.SYNC_MD,
+    handle(() => roomService.syncNote(socket, io))
   );
-  socket.on(CodeServiceMsg.UPDATE_TERM, async (data: ExecutionResult) =>
-    roomService.updateTerminal(socket, data)
+  socket.on(
+    RoomServiceMsg.UPDATE_MD,
+    handle((note: unknown) => {
+      if (isString(note)) {
+        roomService.updateNote(socket, note);
+      }
+    })
   );
-  socket.on(StreamServiceMsg.STREAM_READY, () =>
-    webRTCService.onStreamReady(socket)
+  socket.on(
+    CodeServiceMsg.EXEC,
+    handle((isExecuting: unknown) => {
+      if (isBoolean(isExecuting)) {
+        roomService.updateExecuting(socket, isExecuting);
+      }
+    })
+  );
+  socket.on(
+    CodeServiceMsg.UPDATE_TERM,
+    handle((data: unknown) => {
+      if (isRecord(data) && isRecord(data.run)) {
+        roomService.updateTerminal(socket, data as unknown as ExecutionResult);
+      }
+    })
+  );
+  socket.on(
+    StreamServiceMsg.STREAM_READY,
+    handle(() => webRTCService.onStreamReady(socket))
   );
   socket.on(
     StreamServiceMsg.SIGNAL,
-    (data: { signal: SignalData; targetUserID: string }) =>
-      webRTCService.handleSignal(socket, data)
+    handle((data: unknown) => {
+      if (isRecord(data) && isString(data.targetUserID)) {
+        webRTCService.handleSignal(socket, data.targetUserID, data.signal);
+      }
+    })
   );
-  socket.on(StreamServiceMsg.CAMERA_OFF, () =>
-    webRTCService.onCameraOff(socket)
+  socket.on(
+    StreamServiceMsg.CAMERA_OFF,
+    handle(() => webRTCService.onCameraOff(socket))
   );
-  socket.on(StreamServiceMsg.MIC_STATE, (micOn: boolean) =>
-    webRTCService.handleMicState(socket, micOn)
+  socket.on(
+    StreamServiceMsg.MIC_STATE,
+    handle((micOn: unknown) => {
+      if (isBoolean(micOn)) {
+        webRTCService.handleMicState(socket, micOn);
+      }
+    })
   );
-  socket.on(StreamServiceMsg.SPEAKER_STATE, (speakersOn: boolean) =>
-    webRTCService.handleSpeakerState(socket, speakersOn)
+  socket.on(
+    StreamServiceMsg.SPEAKER_STATE,
+    handle((speakersOn: unknown) => {
+      if (isBoolean(speakersOn)) {
+        webRTCService.handleSpeakerState(socket, speakersOn);
+      }
+    })
   );
-  socket.on(PointerServiceMsg.POINTER, (pointer: Pointer) =>
-    pointerService.updatePointer(socket, pointer)
+  socket.on(
+    PointerServiceMsg.POINTER,
+    handle((pointer: Pointer) => pointerService.updatePointer(socket, pointer))
   );
-  socket.on("disconnecting", () => roomService.leave(socket, io));
+  socket.on(
+    "disconnecting",
+    handle(() => roomService.leave(socket, io))
+  );
 });

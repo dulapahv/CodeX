@@ -249,21 +249,28 @@ export default function Room() {
       router.replace(`/?room=${roomId}`);
     }
 
-    // Full state sync on initial page load. The code editor runs its own
-    // CRDT handshake, so only users and notes are fetched here.
-    socket.emit(RoomServiceMsg.SYNC_USERS);
-    socket.emit(RoomServiceMsg.SYNC_MD);
+    // The code editor runs its own CRDT handshake, so only users and notes
+    // are fetched here.
+    const syncRoom = () => {
+      socket.emit(RoomServiceMsg.SYNC_USERS);
+      socket.emit(RoomServiceMsg.SYNC_MD);
+    };
+    syncRoom();
 
-    // Re-sync on reconnection only if connection state recovery fails.
-    // When socket.recovered is true, rooms and missed packets are restored
-    // automatically by the server, so no manual sync is needed.
+    // The server drops a disconnected socket from its room, so join again.
+    // Emits made on `reconnect` are flushed before any `connect` listener runs.
     const handleReconnect = () => {
-      if (!socket.recovered) {
-        socket.emit(RoomServiceMsg.SYNC_USERS);
-        socket.emit(RoomServiceMsg.SYNC_MD);
+      const username = storage.getUsername();
+      if (username) {
+        socket.emit(RoomServiceMsg.JOIN, roomId, username);
       }
     };
-    socket.on("connect", handleReconnect);
+
+    const handleRejoin = (customId: string) => {
+      storage.setUserId(customId);
+      syncRoom();
+      socket.emit(CodeServiceMsg.SYNC_LANG);
+    };
 
     const handleTerminate = () => {
       storage.clear();
@@ -271,6 +278,9 @@ export default function Room() {
       router.replace("/");
     };
 
+    socket.io.on("reconnect", handleReconnect);
+    socket.on(RoomServiceMsg.JOIN, handleRejoin);
+    socket.on(RoomServiceMsg.NOT_FOUND, handleTerminate);
     socket.on(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
     socket.on(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
     socket.on(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
@@ -282,12 +292,13 @@ export default function Room() {
 
     return () => {
       window.removeEventListener("popstate", disconnect);
-      socket.off("connect", handleReconnect);
-      socket.off(RoomServiceMsg.SYNC_USERS);
-      socket.off(CodeServiceMsg.UPDATE_LANG);
-      socket.off(RoomServiceMsg.UPDATE_MD);
-      socket.off(CodeServiceMsg.UPDATE_TERM);
-      socket.off(RoomServiceMsg.TERMINATE);
+      socket.io.off("reconnect", handleReconnect);
+      socket.off(RoomServiceMsg.JOIN, handleRejoin);
+      socket.off(RoomServiceMsg.NOT_FOUND, handleTerminate);
+      socket.off(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
+      socket.off(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
+      socket.off(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
+      socket.off(RoomServiceMsg.TERMINATE, handleTerminate);
       userMap.clear();
     };
   }, [

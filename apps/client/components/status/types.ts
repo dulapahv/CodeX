@@ -70,19 +70,3 @@ export interface BetterStackResponse {
     };
   };
 }
-
-export interface ResponseTimeData {
-  data: {
-    id: string;
-    type: string;
-    attributes: {
-      regions: Array<{
-        region: string;
-        response_times: Array<{
-          at: string;
-          response_time: number;
-        }>;
-      }>;
-    };
-  };
-}

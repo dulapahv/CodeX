@@ -34,8 +34,8 @@ export async function GET(request: Request) {
 
     // Construct the GitHub API URL with search query and sort parameters
     const apiUrl = query
-      ? `${GITHUB_API_URL}/search/repositories?q=${encodeURIComponent(query)}+in:name+user:@me&sort=updated&order=desc`
-      : `${GITHUB_API_URL}/user/repos?sort=updated&order=desc`;
+      ? `${GITHUB_API_URL}/search/repositories?q=${encodeURIComponent(query)}+in:name+user:@me&sort=updated&order=desc&per_page=100`
+      : `${GITHUB_API_URL}/user/repos?sort=updated&order=desc&per_page=100`;
 
     // Fetch repositories from GitHub API
     const response = await fetch(apiUrl, {

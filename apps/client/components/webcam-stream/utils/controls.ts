@@ -53,34 +53,51 @@ const stopLocalStream = (
   streamRef.current = null;
 };
 
+// Detach the local stream from every peer and release the devices
+const stopMedia = (
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>
+) => {
+  if (streamRef.current) {
+    removeTracksFromPeers(streamRef.current, peersRef);
+  }
+  stopLocalStream(streamRef, videoRef);
+};
+
 // Toggle camera on/off
 export const toggleCamera = async (
   cameraOn: boolean,
   setCameraOn: Dispatch<SetStateAction<boolean>>,
+  micOn: boolean,
   setMicOn: Dispatch<SetStateAction<boolean>>,
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
   peersRef: RefObject<Record<string, Peer.Instance>>,
-  getMedia: () => Promise<boolean>
+  getMedia: (withVideo: boolean) => Promise<boolean>
 ) => {
   const socket = getSocket();
 
   try {
-    if (cameraOn) {
-      // Turning off - remove tracks from peers, stop stream, notify others
-      if (streamRef.current) {
-        removeTracksFromPeers(streamRef.current, peersRef);
-      }
-      stopLocalStream(streamRef, videoRef);
-      socket.emit(StreamServiceMsg.CAMERA_OFF);
-      setCameraOn(false);
-      setMicOn(false);
-    } else {
-      // Turning on - get media stream and set up peer tracks
-      const mediaStarted = await getMedia();
-      if (mediaStarted) {
+    if (!cameraOn) {
+      if (await getMedia(true)) {
         setCameraOn(true);
       }
+      return;
+    }
+
+    socket.emit(StreamServiceMsg.CAMERA_OFF);
+    setCameraOn(false);
+
+    // Keep the call going on an audio-only stream
+    if (micOn && (await getMedia(false))) {
+      return;
+    }
+
+    stopMedia(streamRef, videoRef, peersRef);
+    if (micOn) {
+      setMicOn(false);
+      socket.emit(StreamServiceMsg.MIC_STATE, false);
     }
   } catch (error) {
     reportWebcamError(`Error toggling camera: ${parseError(error)}`);
@@ -93,7 +110,7 @@ export const rotateCamera = async (
   cameraFacingMode: string,
   setCameraFacingMode: Dispatch<SetStateAction<"user" | "environment">>,
   streamRef: RefObject<MediaStream | null>,
-  getMedia: () => Promise<boolean>
+  getMedia: (facingMode: "user" | "environment") => Promise<boolean>
 ) => {
   if (!isMobile) {
     return;
@@ -110,33 +127,40 @@ export const rotateCamera = async (
       }
     }
     // Get new stream with rotated camera
-    await getMedia();
+    await getMedia(newFacingMode);
   }
 };
 
-// Toggle microphone
-export const toggleMic = (
+// Toggle microphone. With the camera off the mic gets its own audio-only stream.
+export const toggleMic = async (
   micOn: boolean,
   setMicOn: Dispatch<SetStateAction<boolean>>,
-  streamRef: RefObject<MediaStream | null>
+  cameraOn: boolean,
+  streamRef: RefObject<MediaStream | null>,
+  videoRef: RefObject<HTMLVideoElement | null>,
+  peersRef: RefObject<Record<string, Peer.Instance>>,
+  startAudioOnly: () => Promise<boolean>
 ) => {
   const socket = getSocket();
+  const newMicState = !micOn;
 
   try {
-    if (!streamRef.current) {
-      reportWebcamError("No active media stream");
-      return;
-    }
-
-    const audioTracks = streamRef.current.getAudioTracks();
-    if (audioTracks.length === 0) {
-      reportWebcamError("No audio track found");
-      return;
-    }
-
-    const newMicState = !micOn;
-    for (const track of audioTracks) {
-      track.enabled = newMicState;
+    if (cameraOn) {
+      const audioTracks = streamRef.current?.getAudioTracks() ?? [];
+      if (audioTracks.length === 0) {
+        reportWebcamError("No audio track found");
+        return;
+      }
+      for (const track of audioTracks) {
+        track.enabled = newMicState;
+      }
+    } else if (newMicState) {
+      if (!(await startAudioOnly())) {
+        return;
+      }
+    } else {
+      stopMedia(streamRef, videoRef, peersRef);
+      socket.emit(StreamServiceMsg.CAMERA_OFF);
     }
 
     setMicOn(newMicState);

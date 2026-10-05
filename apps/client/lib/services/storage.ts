@@ -10,8 +10,8 @@
 
 interface StorageData {
   followUserId: string | null;
-  roomId: string | null;
   userId: string | null;
+  username: string | null;
 }
 
 export class Storage {
@@ -19,18 +19,13 @@ export class Storage {
 
   constructor() {
     this.data = {
-      roomId: null,
       userId: null,
+      username: null,
       followUserId: null,
     };
   }
 
-  // Set the room ID
-  setRoomId(roomId: string | null): void {
-    this.data.roomId = roomId;
-  }
-
-  // Get the room ID
+  // Get the user ID
   getUserId(): string | null {
     return this.data.userId;
   }
@@ -38,6 +33,16 @@ export class Storage {
   // Set the user ID
   setUserId(userId: string | null): void {
     this.data.userId = userId;
+  }
+
+  // Get the username used to join the room
+  getUsername(): string | null {
+    return this.data.username;
+  }
+
+  // Set the username used to join the room
+  setUsername(username: string | null): void {
+    this.data.username = username;
   }
 
   // Get the user ID to follow
@@ -58,8 +63,8 @@ export class Storage {
   // Clear all storage data
   clear(): void {
     this.data = {
-      roomId: null,
       userId: null,
+      username: null,
       followUserId: null,
     };
   }

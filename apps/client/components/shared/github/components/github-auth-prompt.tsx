@@ -32,7 +32,7 @@ export const GithubAuthPrompt = ({
   return (
     // biome-ignore lint/a11y/useSemanticElements: status div for auth loading/prompt state
     <div
-      className="flex flex-1 flex-col items-center justify-center gap-4"
+      className="flex flex-1 flex-col items-center justify-center gap-4 px-4 md:px-0"
       role="status"
     >
       {isLoading ? (
@@ -52,7 +52,6 @@ export const GithubAuthPrompt = ({
           >
             <Image
               alt="GitHub logo"
-              className="mr-2"
               height={16}
               src={`/images/${resolvedTheme === "light" ? "octocat" : "octocat-white"}.svg`}
               width={16}

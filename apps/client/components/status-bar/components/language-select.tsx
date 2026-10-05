@@ -101,10 +101,15 @@ const LanguageSelection = memo(
         return;
       }
 
+      // A language that arrived from the server must not be sent back.
+      let isRemoteChange = false;
+
       const handleLanguageChange = (langID: string) => {
         const model = editor.getModel();
         if (model) {
+          isRemoteChange = true;
           monaco.editor.setModelLanguage(model, langID);
+          isRemoteChange = false;
         }
       };
 
@@ -127,7 +132,9 @@ const LanguageSelection = memo(
           .find((lang) => lang.id === e.newLanguage);
         if (newLanguage?.aliases?.[0]) {
           setSelectedLanguage(newLanguage.aliases[0]);
-          socket.emit(CodeServiceMsg.UPDATE_LANG, newLanguage.id);
+          if (!isRemoteChange) {
+            socket.emit(CodeServiceMsg.UPDATE_LANG, newLanguage.id);
+          }
         }
       });
 

@@ -28,6 +28,9 @@ interface GithubUser {
 
 const ACCESS_TOKEN = "access_token" as const;
 const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+const OAUTH_STATE = "github_oauth_state" as const;
+const OAUTH_STATE_PATH = "/api/github/auth";
+const OAUTH_STATE_MAX_AGE = 10 * 60; // seconds
 
 // Centralized cookie management
 export const authCookie = {
@@ -194,15 +197,49 @@ export const githubAuthHandlers = {
       : NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   },
 
-  async callback(code: string) {
+  // Start the OAuth flow with a state value bound to this browser
+  async login() {
+    const state = crypto.randomUUID();
+    const cookieStore = await cookies();
+    cookieStore.set(OAUTH_STATE, state, {
+      secure: !IS_DEV_ENV,
+      httpOnly: true,
+      sameSite: "lax",
+      path: OAUTH_STATE_PATH,
+      maxAge: OAUTH_STATE_MAX_AGE,
+    });
+
+    const authorizeUrl = new URL(`${GITHUB_OAUTH_URL}/authorize`);
+    authorizeUrl.search = new URLSearchParams({
+      client_id: GITHUB_CLIENT_ID,
+      scope: "repo",
+      state,
+    }).toString();
+    return NextResponse.redirect(authorizeUrl);
+  },
+
+  async callback(code: string, state: string | null) {
+    const cookieStore = await cookies();
+    const expectedState = cookieStore.get(OAUTH_STATE)?.value;
+    cookieStore.delete({ name: OAUTH_STATE, path: OAUTH_STATE_PATH });
+
+    if (!(state && expectedState && state === expectedState)) {
+      return {
+        error: "invalid_state",
+        description: "The sign-in request could not be verified.",
+      };
+    }
+
     try {
-      const response = await fetch(
-        `${GITHUB_OAUTH_URL}/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&code=${code}`,
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-        }
-      );
+      const response = await fetch(`${GITHUB_OAUTH_URL}/access_token`, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new URLSearchParams({
+          client_id: GITHUB_CLIENT_ID,
+          client_secret: GITHUB_CLIENT_SECRET ?? "",
+          code,
+        }),
+      });
 
       const data = await response.json();
 

@@ -50,11 +50,14 @@ export const useSocketEvents = ({
   // biome-ignore lint/correctness/useExhaustiveDependencies: refs and socket are stable, one-time setup on mount
   useEffect(() => {
     // Notify other users that we're ready for peer connections
+    const announceReady = () => {
+      socket.emit(StreamServiceMsg.STREAM_READY);
+      socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOnRef.current);
+    };
     socket.emit(StreamServiceMsg.STREAM_READY);
-    socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOnRef.current);
 
     // When another user is ready, create an initiator peer for them
-    socket.on(StreamServiceMsg.USER_READY, (userID: string) => {
+    const handleUserReady = (userID: string) => {
       createPeer(
         userID,
         true,
@@ -64,10 +67,16 @@ export const useSocketEvents = ({
         pendingSignalsRef
       );
       socket.emit(StreamServiceMsg.SPEAKER_STATE, speakerOnRef.current);
-    });
+    };
 
     // Handle incoming WebRTC signals (offers, answers, ICE candidates)
-    socket.on(StreamServiceMsg.SIGNAL, ({ userID, signal }) => {
+    const handlePeerSignal = ({
+      userID,
+      signal,
+    }: {
+      userID: string;
+      signal: unknown;
+    }) => {
       handleSignal(
         signal as Peer.SignalData,
         userID,
@@ -76,26 +85,30 @@ export const useSocketEvents = ({
         setRemoteStreams,
         pendingSignalsRef
       );
-    });
+    };
 
-    // Track remote mic states
-    socket.on(
-      StreamServiceMsg.MIC_STATE,
-      ({ userID, micOn }: { userID: string; micOn: boolean }) => {
-        setRemoteMicStates((prev) => ({ ...prev, [userID]: micOn }));
-      }
-    );
+    const handleMicState = ({
+      userID,
+      micOn,
+    }: {
+      userID: string;
+      micOn: boolean;
+    }) => {
+      setRemoteMicStates((prev) => ({ ...prev, [userID]: micOn }));
+    };
 
-    // Track remote speaker states
-    socket.on(
-      StreamServiceMsg.SPEAKER_STATE,
-      ({ userID, speakersOn }: { userID: string; speakersOn: boolean }) => {
-        setRemoteSpeakerStates((prev) => ({ ...prev, [userID]: speakersOn }));
-      }
-    );
+    const handleSpeakerState = ({
+      userID,
+      speakersOn,
+    }: {
+      userID: string;
+      speakersOn: boolean;
+    }) => {
+      setRemoteSpeakerStates((prev) => ({ ...prev, [userID]: speakersOn }));
+    };
 
     // Remote user turned off their camera - remove their stream but keep peer
-    socket.on(StreamServiceMsg.CAMERA_OFF, (userID: string) => {
+    const handleCameraOff = (userID: string) => {
       if (userID !== storage.getUserId()) {
         setRemoteStreams((prev) => {
           const newStreams = { ...prev };
@@ -103,10 +116,10 @@ export const useSocketEvents = ({
           return newStreams;
         });
       }
-    });
+    };
 
     // Clean up peer when a user leaves the room
-    socket.on(RoomServiceMsg.LEAVE, (customId: string) => {
+    const handleLeave = (customId: string) => {
       cleanupPeer(customId, peersRef, setRemoteStreams);
       setRemoteMicStates((prev) => {
         const newStates = { ...prev };
@@ -118,7 +131,16 @@ export const useSocketEvents = ({
         delete newStates[customId];
         return newStates;
       });
-    });
+    };
+
+    socket.on(StreamServiceMsg.USER_READY, handleUserReady);
+    socket.on(StreamServiceMsg.SIGNAL, handlePeerSignal);
+    socket.on(StreamServiceMsg.MIC_STATE, handleMicState);
+    socket.on(StreamServiceMsg.SPEAKER_STATE, handleSpeakerState);
+    socket.on(StreamServiceMsg.CAMERA_OFF, handleCameraOff);
+    socket.on(RoomServiceMsg.LEAVE, handleLeave);
+    // The room page re-joins after a reconnect under a new ID
+    socket.on(RoomServiceMsg.JOIN, announceReady);
 
     return () => {
       // Stop local media tracks
@@ -136,13 +158,13 @@ export const useSocketEvents = ({
       // Notify others that our camera is off
       socket.emit(StreamServiceMsg.CAMERA_OFF);
 
-      // Remove all event listeners
-      socket.off(StreamServiceMsg.USER_READY);
-      socket.off(StreamServiceMsg.SIGNAL);
-      socket.off(StreamServiceMsg.MIC_STATE);
-      socket.off(StreamServiceMsg.SPEAKER_STATE);
-      socket.off(StreamServiceMsg.CAMERA_OFF);
-      socket.off(RoomServiceMsg.LEAVE);
+      socket.off(StreamServiceMsg.USER_READY, handleUserReady);
+      socket.off(StreamServiceMsg.SIGNAL, handlePeerSignal);
+      socket.off(StreamServiceMsg.MIC_STATE, handleMicState);
+      socket.off(StreamServiceMsg.SPEAKER_STATE, handleSpeakerState);
+      socket.off(StreamServiceMsg.CAMERA_OFF, handleCameraOff);
+      socket.off(RoomServiceMsg.LEAVE, handleLeave);
+      socket.off(RoomServiceMsg.JOIN, announceReady);
     };
   }, []);
 

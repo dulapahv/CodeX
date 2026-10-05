@@ -42,7 +42,6 @@ const LeaveButton = ({ className }: LeaveButtonProps) => {
           onFocus={handleTooltipFocus}
           render={
             <Button
-              aria-expanded="false"
               aria-haspopup="dialog"
               aria-label="Leave room"
               className={cn("size-7 animate-fade-in-top p-0", className)}

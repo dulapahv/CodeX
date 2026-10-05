@@ -59,10 +59,6 @@ export const createPeer = (
       cleanupPeer(userID, peersRef, setRemoteStreams);
     });
 
-    peer.on("connect", () => {
-      console.log(`Peer connection established with ${userID}`);
-    });
-
     // Store peer before processing pending signals
     peersRef.current[userID] = peer;
 

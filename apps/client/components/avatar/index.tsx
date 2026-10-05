@@ -84,7 +84,7 @@ const Avatar = ({
           render={AvatarContent}
         />
         <PopoverContent
-          className="w-auto p-2 text-sm"
+          className="w-fit max-w-xs bg-foreground px-3 py-1.5 text-background shadow-none ring-0"
           role="tooltip"
           side="top"
           sideOffset={8}

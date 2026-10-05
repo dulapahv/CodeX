@@ -80,7 +80,7 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
     return (
       <Drawer onOpenChange={setIsOpen} open={isOpen}>
         <DrawerContent>
-          <DrawerHeader>
+          <DrawerHeader className="pb-4">
             <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
             <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
           </DrawerHeader>

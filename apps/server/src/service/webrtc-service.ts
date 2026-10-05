@@ -9,7 +9,6 @@
  */
 
 import { StreamServiceMsg } from "@codex/types/message";
-import type { SignalData } from "simple-peer";
 import type { Socket } from "@/types";
 
 import * as roomService from "./room-service";
@@ -24,22 +23,26 @@ export const onStreamReady = (socket: Socket) => {
   }
 };
 
-// Forward the WebRTC signal to the specific target user only
+// Forward the WebRTC signal to the target user, only within the same room
 export const handleSignal = (
   socket: Socket,
-  data: { signal: SignalData; targetUserID: string }
+  targetUserID: string,
+  signal: unknown
 ) => {
+  const room = roomService.getUserRoom(socket);
   const customId = userService.getCustomId(socket.id);
-  if (!customId) {
+  if (!(room && customId)) {
     return;
   }
-  const targetSocketId = userService.getSocketId(data.targetUserID);
-  if (!targetSocketId) {
+  const targetSocketId = userService.getSocketId(targetUserID);
+  if (
+    !(targetSocketId && socket.nsp.adapter.rooms.get(room)?.has(targetSocketId))
+  ) {
     return;
   }
   socket.to(targetSocketId).emit(StreamServiceMsg.SIGNAL, {
     userID: customId,
-    signal: data.signal,
+    signal,
   });
 };
 

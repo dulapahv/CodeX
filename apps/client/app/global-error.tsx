@@ -22,6 +22,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { CONTACT_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+import "./globals.css";
+
 export default function GlobalError({
   error,
   reset,

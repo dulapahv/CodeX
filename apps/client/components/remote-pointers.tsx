@@ -12,7 +12,7 @@
 import { PointerServiceMsg } from "@codex/types/message";
 import type { Pointer } from "@codex/types/pointer";
 import { MousePointer2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { userMap } from "@/lib/services/user-map";
 import { getSocket } from "@/lib/socket";
@@ -33,7 +33,7 @@ const RemotePointers = () => {
   const [pointers, setPointers] = useState<Map<string, RemotePointer>>(
     new Map()
   );
-  const [lastEmit, setLastEmit] = useState<number>(0);
+  const lastEmitRef = useRef(0);
   const [viewport, setViewport] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
     height: typeof window !== "undefined" ? window.innerHeight : 0,
@@ -56,7 +56,7 @@ const RemotePointers = () => {
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       const now = Date.now();
-      if (now - lastEmit < THROTTLE_MS) {
+      if (now - lastEmitRef.current < THROTTLE_MS) {
         return;
       }
 
@@ -71,9 +71,9 @@ const RemotePointers = () => {
       const pointer: Pointer = [relativeX, relativeY];
 
       socket.emit(PointerServiceMsg.POINTER, pointer);
-      setLastEmit(now);
+      lastEmitRef.current = now;
     },
-    [socket, lastEmit]
+    [socket]
   );
 
   useEffect(() => {

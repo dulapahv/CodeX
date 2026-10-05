@@ -104,40 +104,6 @@ export const enumerateDevices = async (
   }
 };
 
-// Helper function to update device lists after permissions are granted
-export const updateDeviceLabels = async (
-  setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioInputDevices: Dispatch<SetStateAction<MediaDevice[]>>,
-  setAudioOutputDevices: Dispatch<SetStateAction<MediaDevice[]>>
-) => {
-  const devices = await navigator.mediaDevices.enumerateDevices();
-
-  const videoInputs = devices.filter((device) => device.kind === "videoinput");
-  const audioInputs = devices.filter((device) => device.kind === "audioinput");
-  const audioOutputs = devices.filter(
-    (device) => device.kind === "audiooutput"
-  );
-
-  setVideoDevices(
-    videoInputs.map((device) => ({
-      deviceId: device.deviceId,
-      label: device.label || `Camera ${device.deviceId.slice(0, 4)}`,
-    }))
-  );
-  setAudioInputDevices(
-    audioInputs.map((device) => ({
-      deviceId: device.deviceId,
-      label: device.label || `Microphone ${device.deviceId.slice(0, 4)}`,
-    }))
-  );
-  setAudioOutputDevices(
-    audioOutputs.map((device) => ({
-      deviceId: device.deviceId,
-      label: device.label || `Speaker ${device.deviceId.slice(0, 4)}`,
-    }))
-  );
-};
-
 export const handleDevicePermissionGranted = async (
   deviceKind: "videoinput" | "audioinput" | "audiooutput",
   setVideoDevices: Dispatch<SetStateAction<MediaDevice[]>>,

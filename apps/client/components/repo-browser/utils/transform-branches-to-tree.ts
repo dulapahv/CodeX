@@ -21,7 +21,7 @@ export const transformBranchesToTreeData = (
     return [];
   }
   return branches.map((branch) => ({
-    id: `${repoID}${branch.name}`,
+    id: `${repoID}/${branch.name}`,
     name: branch.name,
     children: undefined,
     icon: GitBranch,

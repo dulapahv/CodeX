@@ -225,6 +225,10 @@
   }
 }
 
+[data-slot="drawer-header"] {
+  text-align: left;
+}
+
 /* Settings changes stay visible behind the sheet */
 :root:has([data-slot="sheet-content"][data-backdrop="clear"])
   [data-slot="sheet-overlay"] {
@@ -234,6 +238,16 @@
 *::selection {
   color: oklch(0.936 0.031 17.717);
   background-color: oklch(0.688 0.203 4.932);
+}
+
+@supports (-moz-appearance: none) {
+  :root {
+    scrollbar-color: oklch(0.87 0 0) oklch(0.97 0 0);
+    scrollbar-width: thin;
+  }
+  .dark {
+    scrollbar-color: oklch(0.371 0 0) oklch(0.269 0 0);
+  }
 }
 
 ::-webkit-scrollbar {

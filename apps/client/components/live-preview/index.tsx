@@ -23,7 +23,7 @@ const LivePreview = ({ value }: LivePreviewProps) => {
     <div className="relative size-full bg-white">
       <iframe
         className="size-full border-none"
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts"
         srcDoc={srcdoc}
         title="Live Preview"
       />

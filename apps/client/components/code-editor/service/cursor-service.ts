@@ -20,6 +20,7 @@ import { userMap } from "@/lib/services/user-map";
 import { createCursorStyle } from "../utils";
 
 const VIEWPORT_PADDING = 0.1; // pixels to consider as padding when checking if line is in viewport
+const CARET_HOVER_TOLERANCE = 4;
 
 /**
  * Checks if a line number is within the editor's viewport
@@ -56,7 +57,6 @@ const isLineInViewport = (
  * @param editorInstanceRef Editor instance reference
  * @param monacoInstanceRef Monaco instance reference
  * @param cursorDecorationsRef Cursor decorations reference
- * @param cleanupTimeoutsRef Cleanup timeouts reference
  */
 export const updateCursor = (
   userID: string,
@@ -65,8 +65,7 @@ export const updateCursor = (
   monacoInstanceRef: RefObject<Monaco | null>,
   cursorDecorationsRef: RefObject<
     Record<string, monaco.editor.IEditorDecorationsCollection>
-  >,
-  cleanupTimeoutsRef: RefObject<Record<string, NodeJS.Timeout>>
+  >
 ): void => {
   const editor = editorInstanceRef.current;
   const monacoInstance = monacoInstanceRef.current;
@@ -104,7 +103,6 @@ export const updateCursor = (
     options: {
       className: `cursor-${userID}`,
       beforeContentClassName: "cursor-widget",
-      hoverMessage: { value: `${name}'s cursor` },
       stickiness:
         monacoInstance.editor.TrackedRangeStickiness
           .NeverGrowsWhenTypingAtEdges,
@@ -129,7 +127,6 @@ export const updateCursor = (
       },
       options: {
         className: `cursor-${userID}-selection`,
-        hoverMessage: { value: `${name}'s selection` },
         minimap: {
           color: backgroundColor,
           position: monacoInstance.editor.MinimapPosition.Inline,
@@ -164,12 +161,74 @@ export const updateCursor = (
 
   // Store decoration
   cursorDecorationsRef.current[userID] = cursorDecoration;
+};
 
-  // Remove any existing timeout if present
-  if (cleanupTimeoutsRef.current[userID]) {
-    clearTimeout(cleanupTimeoutsRef.current[userID]);
-    delete cleanupTimeoutsRef.current[userID];
-  }
+/**
+ * Reveal a remote cursor's name label while the mouse is over its caret.
+ * @param editor Editor instance
+ * @param cursorDecorationsRef Cursor decorations reference
+ */
+export const showLabelOnHover = (
+  editor: monaco.editor.IStandaloneCodeEditor,
+  cursorDecorationsRef: RefObject<
+    Record<string, monaco.editor.IEditorDecorationsCollection>
+  >
+): monaco.IDisposable => {
+  const root = editor.getDomNode();
+
+  const setHovered = (userID?: string) => {
+    if (!root) {
+      return;
+    }
+    if (userID) {
+      root.dataset.hoveredCursor = userID;
+    } else {
+      delete root.dataset.hoveredCursor;
+    }
+  };
+
+  const isOverCaret = (
+    range: monaco.IRange | null | undefined,
+    x: number,
+    y: number
+  ) => {
+    if (!range) {
+      return false;
+    }
+    const caret = editor.getScrolledVisiblePosition({
+      lineNumber: range.startLineNumber,
+      column: range.startColumn,
+    });
+    return (
+      caret !== null &&
+      Math.abs(x - caret.left) <= CARET_HOVER_TOLERANCE &&
+      y >= caret.top &&
+      y <= caret.top + caret.height
+    );
+  };
+
+  const moveDisposable = editor.onMouseMove(({ event }) => {
+    if (!root) {
+      return;
+    }
+    const rect = root.getBoundingClientRect();
+    const x = event.browserEvent.clientX - rect.left;
+    const y = event.browserEvent.clientY - rect.top;
+
+    const hovered = Object.entries(cursorDecorationsRef.current).find(
+      ([, decorations]) => isOverCaret(decorations.getRange(0), x, y)
+    );
+    setHovered(hovered?.[0]);
+  });
+  const leaveDisposable = editor.onMouseLeave(() => setHovered());
+
+  return {
+    dispose: () => {
+      moveDisposable.dispose();
+      leaveDisposable.dispose();
+      setHovered();
+    },
+  };
 };
 
 /**
@@ -183,16 +242,7 @@ export const removeCursor = (
     Record<string, monaco.editor.IEditorDecorationsCollection>
   >
 ): void => {
-  const cursorElements = document.querySelectorAll(`.cursor-${userID}`);
-  for (const el of cursorElements) {
-    el.remove();
-  }
-  const selectionElements = document.querySelectorAll(
-    `.cursor-${userID}-selection`
-  );
-  for (const el of selectionElements) {
-    el.remove();
-  }
-
   cursorDecorationsRef.current[userID]?.clear();
+  delete cursorDecorationsRef.current[userID];
+  document.getElementById(`cursor-style-${userID}`)?.remove();
 };

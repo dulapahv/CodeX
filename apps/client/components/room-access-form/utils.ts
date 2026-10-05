@@ -26,8 +26,8 @@ export const createRoom = (name: string): Promise<string> => {
     socket.once(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
       const formattedRoomId = formatRoomId(roomId);
 
-      storage.setRoomId(formattedRoomId);
       storage.setUserId(userID);
+      storage.setUsername(name);
 
       resolve(formattedRoomId);
     });
@@ -47,8 +47,8 @@ export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
     };
     const handleJoin = (userID: string) => {
       socket.off(RoomServiceMsg.NOT_FOUND, handleNotFound);
-      storage.setRoomId(cleanedRoomId);
       storage.setUserId(userID);
+      storage.setUsername(name);
       resolve(true);
     };
 

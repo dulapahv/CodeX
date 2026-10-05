@@ -23,13 +23,16 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 interface ResponsiveDialogProps {
   children: ReactNode;
   description: string;
   footer: ReactNode;
+  fullHeight?: boolean;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  status?: ReactNode;
   title: string;
 }
 
@@ -40,18 +43,26 @@ export const ResponsiveDialog = ({
   description,
   children,
   footer,
+  fullHeight = true,
+  status,
 }: ResponsiveDialogProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
       <Dialog onOpenChange={onOpenChange} open={isOpen}>
-        <DialogContent className="flex h-[90vh] flex-col gap-4 sm:max-w-2xl">
-          <DialogHeader className="flex-shrink-0 text-left">
+        <DialogContent
+          className={cn(
+            "flex flex-col gap-4 sm:max-w-2xl",
+            fullHeight && "h-[90vh]"
+          )}
+        >
+          <DialogHeader className="text-left">
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           {children}
+          {status}
           <DialogFooter className="flex items-center justify-between gap-2 sm:gap-0">
             {footer}
           </DialogFooter>
@@ -63,15 +74,23 @@ export const ResponsiveDialog = ({
   return (
     <Drawer onOpenChange={onOpenChange} open={isOpen}>
       <DrawerContent>
-        <div className="flex h-[90vh] flex-col">
-          <DrawerHeader className="flex-shrink-0 text-left">
+        <div
+          className={cn(
+            "flex flex-col gap-4",
+            fullHeight && "h-[calc(100dvh-6rem)]"
+          )}
+        >
+          <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
             {children}
           </div>
-          <DrawerFooter className="flex-shrink-0">{footer}</DrawerFooter>
+          <DrawerFooter>
+            {status}
+            {footer}
+          </DrawerFooter>
         </div>
       </DrawerContent>
     </Drawer>

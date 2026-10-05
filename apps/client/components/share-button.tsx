@@ -12,7 +12,6 @@ import { Share } from "lucide-react";
 import { useRef } from "react";
 import { ShareDialog, type ShareDialogRef } from "@/components/share-dialog";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -32,29 +31,26 @@ const ShareButton = ({ roomId }: RoomProps) => {
 
   return (
     <>
-      <Dialog>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                aria-expanded="false"
-                aria-haspopup="dialog"
-                aria-label="Share this coding room"
-                className="hover:!text-foreground aspect-square h-7 animate-fade-in-top p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
-                onClick={handleButtonClick}
-                size="sm"
-                variant="ghost"
-              >
-                <Share aria-hidden="true" className="size-4" />
-                <span className="hidden sm:flex">Share</span>
-              </Button>
-            }
-          />
-          <TooltipContent role="tooltip" sideOffset={8}>
-            <p>Share this room with others</p>
-          </TooltipContent>
-        </Tooltip>
-      </Dialog>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              aria-haspopup="dialog"
+              aria-label="Share this coding room"
+              className="hover:!text-foreground aspect-square h-7 animate-fade-in-top p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
+              onClick={handleButtonClick}
+              size="sm"
+              variant="ghost"
+            >
+              <Share aria-hidden="true" className="size-4" />
+              <span className="hidden sm:flex">Share</span>
+            </Button>
+          }
+        />
+        <TooltipContent role="tooltip" sideOffset={8}>
+          <p>Share this room with others</p>
+        </TooltipContent>
+      </Tooltip>
       <ShareDialog
         aria-label="Share room options"
         ref={shareDialogRef}

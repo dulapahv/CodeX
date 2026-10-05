@@ -7,15 +7,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { parseError } from "@/lib/utils";
-
 import type { MediaDevice } from "../types";
 import {
   enumerateDevices,
   handleDevicePermissionGranted,
   initDevices,
 } from "../utils/device";
-import { reportWebcamError } from "../utils/errors";
 
 export const useMediaDevices = () => {
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
@@ -64,27 +61,6 @@ export const useMediaDevices = () => {
     []
   );
 
-  const handleAudioOutputSelect = useCallback(
-    async (
-      deviceId: string,
-      videoRef: React.RefObject<HTMLVideoElement | null>
-    ) => {
-      setSelectedAudioOutput(deviceId);
-      if (videoRef.current && "setSinkId" in videoRef.current) {
-        try {
-          await (
-            videoRef.current as unknown as {
-              setSinkId: (id: string) => Promise<void>;
-            }
-          ).setSinkId(deviceId);
-        } catch (error) {
-          reportWebcamError(`Error setting audio output: ${parseError(error)}`);
-        }
-      }
-    },
-    []
-  );
-
   return {
     videoDevices,
     audioInputDevices,
@@ -94,7 +70,7 @@ export const useMediaDevices = () => {
     selectedAudioOutput,
     setSelectedVideoDevice,
     setSelectedAudioInput,
+    setSelectedAudioOutput,
     handleDevicePermission,
-    handleAudioOutputSelect,
   };
 };

@@ -7,6 +7,8 @@
 
 import { useEffect, useLayoutEffect, useState } from "react";
 
+import { isGithubOAuthSuccess } from "@/lib/utils";
+
 export const useGithubAuth = (isOpen: boolean) => {
   const [githubUser, setGithubUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +27,7 @@ export const useGithubAuth = (isOpen: boolean) => {
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.data.type === "github-oauth" && event.data.success) {
+      if (isGithubOAuthSuccess(event)) {
         const response = await fetch("/api/github/auth", {
           credentials: "include",
         });

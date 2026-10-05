@@ -154,8 +154,7 @@ export const updateLang = (socket: Socket, langId: string): void => {
  * Merge a client's update into the room document and fan it out.
  *
  * Yjs updates are commutative and idempotent, so ordering across clients does
- * not matter and a replayed update is harmless, which is what makes this
- * safe under Socket.IO's connection state recovery.
+ * not matter and a replayed update is harmless.
  */
 export const updateCode = (socket: Socket, update: YjsUpdate): void => {
   const roomID = getUserRoom(socket);

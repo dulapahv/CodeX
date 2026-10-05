@@ -22,7 +22,7 @@ export function useThemeColor() {
       // Update the color based on theme
       themeColorMeta.setAttribute(
         "content",
-        resolvedTheme === "dark" ? "#0a0a0a" : "#eef1f7"
+        resolvedTheme === "dark" ? "#0a0a0a" : "#ffffff"
       );
     }
   }, [resolvedTheme]);

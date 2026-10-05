@@ -11,13 +11,7 @@
 
 import { Check, Copy } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -152,7 +146,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const [isOpen, setIsOpen] = useState(false);
-    const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -170,7 +163,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           data-testid="qr-code"
         >
           <QRCodeCanvas
-            className=""
             imageSettings={{
               src: "/images/codex-logo.svg",
               height: 48,
@@ -178,7 +170,6 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
               excavate: true,
             }}
             marginSize={2}
-            ref={qrCodeRef}
             size={Math.min(256, window.innerWidth - 96)}
             title={`QR code to join room ${roomId}`}
             value={`${window.location.origin}/room/${roomId}`}
@@ -228,7 +219,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
         open={isOpen}
       >
         <DrawerContent>
-          <DrawerHeader className="text-left">
+          <DrawerHeader className="pb-4">
             <DrawerTitle>Share Room</DrawerTitle>
             <DrawerDescription>
               Anyone with this Room ID or Invite Link can collaborate in this

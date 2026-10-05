@@ -38,7 +38,6 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
       >
         <Image
           alt="Mirai logo"
-          className="mr-2"
           height={16}
           src="/images/codex-logo.svg"
           width={16}
@@ -54,7 +53,6 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
       >
         <Image
           alt="GitHub logo"
-          className="mr-2"
           height={16}
           src={`/images/${resolvedTheme === "light" && !forceDark ? "octocat" : "octocat-white"}.svg`}
           width={16}
@@ -70,7 +68,6 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
       >
         <Image
           alt="GitHub logo"
-          className="mr-2"
           height={16}
           src={`/images/${resolvedTheme === "light" && !forceDark ? "octocat" : "octocat-white"}.svg`}
           width={16}

@@ -18,12 +18,12 @@ import { cn } from "@/lib/utils";
 
 import type { BetterStackResponse, ServiceStatus } from "./types";
 
+type MonitorStatus = BetterStackResponse["data"]["attributes"]["status"];
+
 const REFRESH_INTERVAL = 15_000; // 15 seconds
 
-const getServerStatus = (
-  monitor: BetterStackResponse["data"]
-): ServiceStatus => {
-  if (!monitor) {
+const getServerStatus = (status: MonitorStatus | null): ServiceStatus => {
+  if (!status) {
     return {
       color: "bg-muted-foreground",
       label: "Unknown Server Status",
@@ -32,7 +32,7 @@ const getServerStatus = (
   }
 
   // Check server status
-  switch (monitor.attributes.status) {
+  switch (status) {
     case "maintenance":
     case "paused":
       return {
@@ -91,8 +91,10 @@ const Status = () => {
         throw new Error("Failed to fetch status");
       }
 
-      const { data } = (await response.json()) as BetterStackResponse;
-      setSystemStatus(getServerStatus(data));
+      const { status } = (await response.json()) as {
+        status: MonitorStatus | null;
+      };
+      setSystemStatus(getServerStatus(status));
     } catch (error) {
       console.error("Error fetching server status:", error);
       setSystemStatus({
@@ -110,6 +112,9 @@ const Status = () => {
     fetchStatus();
 
     const intervalId = setInterval(() => {
+      if (document.hidden) {
+        return;
+      }
       setIsRefreshing(true);
       fetchStatus();
     }, REFRESH_INTERVAL);

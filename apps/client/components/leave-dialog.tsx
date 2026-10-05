@@ -67,7 +67,7 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
             <Button
               aria-label="Terminate room immediately"
               onClick={handleTerminateRoom}
-              variant="outline"
+              variant="destructive"
             >
               Terminate Room
             </Button>
@@ -82,7 +82,6 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
               <Button
                 aria-label="Confirm leaving room"
                 onClick={handleLeaveRoom}
-                variant="destructive"
               >
                 Leave
               </Button>
@@ -96,22 +95,18 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
   return (
     <Drawer onOpenChange={setIsOpen} open={isOpen}>
       <DrawerContent aria-label="Leave room drawer" role="alertdialog">
-        <DrawerHeader>
+        <DrawerHeader className="pb-4">
           <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
           <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
-          <Button
-            aria-label="Confirm leaving room"
-            onClick={handleLeaveRoom}
-            variant="destructive"
-          >
+          <Button aria-label="Confirm leaving room" onClick={handleLeaveRoom}>
             Leave
           </Button>
           <Button
             aria-label="Terminate room immediately"
             onClick={handleTerminateRoom}
-            variant="outline"
+            variant="destructive"
           >
             Terminate Room
           </Button>

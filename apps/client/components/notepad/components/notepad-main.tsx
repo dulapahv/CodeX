@@ -88,7 +88,7 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         directiveDescriptors: [AdmonitionDirectiveDescriptor],
       }),
       diffSourcePlugin({
-        diffMarkdown: markdown,
+        diffMarkdown: contentRef.current,
         viewMode: "rich-text",
       }),
       imagePlugin(),
@@ -129,17 +129,19 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
         ),
       }),
     ],
-    [resolvedTheme, markdown]
+    [resolvedTheme]
   );
 
   useEffect(() => {
-    socket.on(RoomServiceMsg.UPDATE_MD, (value: string) => {
+    const handleUpdate = (value: string) => {
       contentRef.current = value;
       markdownEditorRef.current?.setMarkdown(value);
-    });
+    };
+
+    socket.on(RoomServiceMsg.UPDATE_MD, handleUpdate);
 
     return () => {
-      socket.off(RoomServiceMsg.UPDATE_MD);
+      socket.off(RoomServiceMsg.UPDATE_MD, handleUpdate);
     };
   }, [socket]);
 

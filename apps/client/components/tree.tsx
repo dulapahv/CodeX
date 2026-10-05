@@ -16,9 +16,7 @@
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { ChevronRight, FileCode, Folder, type LucideIcon } from "lucide-react";
 import { forwardRef, type HTMLAttributes, useCallback, useState } from "react";
-import useResizeObserver from "use-resize-observer";
 import { itemType } from "@/components/repo-browser/types/tree";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
@@ -67,25 +65,21 @@ const Tree = forwardRef<HTMLDivElement, TreeProps>(
       });
     }, []);
 
-    const { ref: refRoot, width, height } = useResizeObserver();
-
     return (
-      <div className={cn("overflow-hidden", className)} ref={refRoot}>
-        <ScrollArea style={{ width, height }}>
-          <div className="relative p-2">
-            <TreeItem
-              data={data}
-              expandedIds={expandedIds}
-              FolderIcon={Folder}
-              handleSelectChange={handleSelectChange}
-              ItemIcon={FileCode}
-              onExpand={handleExpand}
-              ref={ref}
-              selectedItemId={selectedItemId}
-              {...props}
-            />
-          </div>
-        </ScrollArea>
+      <div className={cn("overflow-auto", className)}>
+        <div className="relative p-2">
+          <TreeItem
+            data={data}
+            expandedIds={expandedIds}
+            FolderIcon={Folder}
+            handleSelectChange={handleSelectChange}
+            ItemIcon={FileCode}
+            onExpand={handleExpand}
+            ref={ref}
+            selectedItemId={selectedItemId}
+            {...props}
+          />
+        </div>
       </div>
     );
   }
@@ -136,7 +130,7 @@ const TreeItem = forwardRef<HTMLDivElement, TreeItemProps>(
                     <AccordionPrimitive.Item value={item.id}>
                       <AccordionTrigger
                         className={cn(
-                          "px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
+                          "px-2 before:absolute before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 hover:before:opacity-50",
                           selectedItemId === item.id &&
                             "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
                         )}
@@ -209,7 +203,7 @@ const Leaf = forwardRef<
 >(({ className, item, isSelected, Icon, ...props }, ref) => (
   <div
     className={cn(
-      "flex cursor-pointer items-center px-2 py-2 before:absolute before:right-1 before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 before:transition-opacity hover:before:opacity-50",
+      "flex cursor-pointer items-center px-2 py-2 before:absolute before:right-1 before:left-1 before:-z-10 before:h-[1.75rem] before:w-[calc(100%-8px)] before:bg-secondary before:opacity-0 hover:before:opacity-50",
       className,
       isSelected &&
         "text-accent-foreground before:border-l-4 before:border-l-accent-foreground/50 before:bg-accent before:opacity-50"
@@ -242,7 +236,7 @@ const AccordionTrigger = ({
   <AccordionPrimitive.Header>
     <AccordionPrimitive.Trigger
       className={cn(
-        "flex w-full flex-1 items-center py-2 transition-all [&[data-panel-open]>svg]:last:rotate-90",
+        "flex w-full flex-1 items-center py-2 [&[data-panel-open]>svg]:last:rotate-90",
         className
       )}
       {...props}

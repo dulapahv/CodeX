@@ -119,7 +119,7 @@ const SaveToGithubDialog = forwardRef<
             name="fileName"
             validate={(value) =>
               String(value).trim().length > 4096
-                ? "File name must be less than 4096 characters"
+                ? "File name must not exceed 4096 characters"
                 : null
             }
           >
@@ -139,7 +139,7 @@ const SaveToGithubDialog = forwardRef<
             name="commitSummary"
             validate={(value) =>
               String(value).trim().length > 72
-                ? "Commit summary must be less than 72 characters"
+                ? "Commit summary must not exceed 72 characters"
                 : null
             }
           >
@@ -178,54 +178,36 @@ const SaveToGithubDialog = forwardRef<
         )}
         githubUser={githubUser}
       />
-      <div className="ml-auto flex flex-col items-end gap-2">
-        {error && (
-          <p className="text-right text-destructive text-xs" role="alert">
-            {error}
-          </p>
-        )}
-        {commitUrl && (
-          <a
-            className="flex items-center gap-1 text-xs hover:underline"
-            href={commitUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Saved · View on GitHub
-            <ExternalLink className="size-3" />
-          </a>
-        )}
-        <div className="flex gap-2">
+      <div className="ml-auto flex gap-2">
+        <Button
+          disabled={isSubmitting}
+          onClick={closeDialog}
+          type="button"
+          variant="secondary"
+        >
+          Cancel
+        </Button>
+        {githubUser && (
           <Button
-            disabled={isSubmitting}
-            onClick={closeDialog}
-            type="button"
-            variant="secondary"
+            aria-busy={isSubmitting}
+            disabled={
+              isSubmitting ||
+              !selectedItem ||
+              selectedItem.type === itemType.REPO
+            }
+            form={COMMIT_FORM_ID}
+            type="submit"
           >
-            Cancel
+            {isSubmitting ? (
+              <>
+                <Spinner />
+                Saving...
+              </>
+            ) : (
+              "Save"
+            )}
           </Button>
-          {githubUser && (
-            <Button
-              aria-busy={isSubmitting}
-              disabled={
-                isSubmitting ||
-                !selectedItem ||
-                selectedItem.type === itemType.REPO
-              }
-              form={COMMIT_FORM_ID}
-              type="submit"
-            >
-              {isSubmitting ? (
-                <>
-                  <Spinner />
-                  Saving...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -234,8 +216,28 @@ const SaveToGithubDialog = forwardRef<
     <ResponsiveDialog
       description="Select a repository, branch, and folder to save your code."
       footer={footer}
+      fullHeight={isLoading || Boolean(githubUser)}
       isOpen={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={(open) => (open ? setIsOpen(true) : closeDialog())}
+      status={
+        error ? (
+          <p className="text-destructive text-xs" role="alert">
+            {error}
+          </p>
+        ) : (
+          commitUrl && (
+            <a
+              className="flex items-center gap-1 text-xs hover:underline"
+              href={commitUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Saved · View on GitHub
+              <ExternalLink className="size-3" />
+            </a>
+          )
+        )
+      }
       title="Save to GitHub"
     >
       {content}

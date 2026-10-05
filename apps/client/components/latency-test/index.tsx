@@ -53,11 +53,14 @@ const LatencyTest = () => {
     const newSocket = getSocket();
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      setIsConnecting(false);
-    });
+    const handleConnect = () => setIsConnecting(false);
+    if (newSocket.connected) {
+      handleConnect();
+    }
+    newSocket.on("connect", handleConnect);
 
     return () => {
+      newSocket.off("connect", handleConnect);
       newSocket.close();
     };
   }, []);

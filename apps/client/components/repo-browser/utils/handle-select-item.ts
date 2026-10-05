@@ -102,10 +102,8 @@ export const handleSelectItem = async (
   }
   // Update path when selecting a directory or file
   else if (
-    (extendedItem.type === itemType.DIR ||
-      extendedItem.type === itemType.FILE) &&
-    extendedItem.path &&
     extendedItem.type === itemType.DIR &&
+    extendedItem.path &&
     !item.children
   ) {
     const { parentRepo, parentBranch } = findParents(treeData, item.id);

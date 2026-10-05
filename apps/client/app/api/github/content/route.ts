@@ -88,43 +88,16 @@ export async function GET(request: Request) {
       if (response.status === 404) {
         return NextResponse.json({ error: "File not found" }, { status: 404 });
       }
-      const error = await response.json();
+      const error = await response.json().catch(() => null);
       return NextResponse.json(
         { error: "Failed to fetch file content", details: error },
         { status: response.status }
       );
     }
 
-    // Get the raw content
     const content = await response.text();
 
-    // Get file metadata from GitHub
-    const metadataResponse = await fetch(
-      `${GITHUB_API_URL}/repos/${encodedRepo}/contents/${encodedFilePath}?ref=${encodedBranch}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "User-Agent": GITHUB_USER_AGENT,
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      }
-    );
-
-    if (!metadataResponse.ok) {
-      return NextResponse.json({ content }, { status: 200 });
-    }
-
-    const metadata = await metadataResponse.json();
-
-    return NextResponse.json({
-      content,
-      sha: metadata.sha,
-      size: metadata.size,
-      encoding: metadata.encoding,
-      url: metadata.url,
-      git_url: metadata.git_url,
-      html_url: metadata.html_url,
-    });
+    return NextResponse.json({ content });
   } catch (error) {
     console.error("Error in content route:", error);
     return NextResponse.json(

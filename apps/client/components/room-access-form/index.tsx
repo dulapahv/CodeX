@@ -96,7 +96,7 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
           {isTerminated && (
             <Alert variant="destructive">
               <AlertDescription>
-                This room has been terminated by the host.
+                This room has been terminated.
               </AlertDescription>
             </Alert>
           )}

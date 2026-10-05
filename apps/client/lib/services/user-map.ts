@@ -27,10 +27,11 @@ export class UserMap {
 
   // Calculate and cache colors when adding a user
   private calculateUserData(username: string): UserData {
+    const backgroundColor = getBackgroundColor(username);
     return {
       username,
-      backgroundColor: getBackgroundColor(username),
-      textColor: getTextColor(getBackgroundColor(username)),
+      backgroundColor,
+      textColor: getTextColor(backgroundColor),
     };
   }
 

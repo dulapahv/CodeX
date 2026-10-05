@@ -23,6 +23,7 @@ export const getMedia = async (
   selectedAudioInput: string,
   selectedAudioOutput: string,
   cameraFacingMode: "user" | "environment",
+  withVideo: boolean,
   micOn: boolean,
   streamRef: RefObject<MediaStream | null>,
   videoRef: RefObject<HTMLVideoElement | null>,
@@ -64,7 +65,7 @@ export const getMedia = async (
 
     // Get new stream
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
+      video: withVideo ? videoConstraints : false,
       audio: audioConstraints,
     });
 
@@ -136,6 +137,7 @@ export const switchVideoDevice = (
     selectedAudioInput,
     selectedAudioOutput,
     cameraFacingMode,
+    true,
     micOn,
     streamRef,
     videoRef,
@@ -158,13 +160,15 @@ export const switchAudioDevice = (
   micOn: boolean,
   selectedVideoDevice: string,
   selectedAudioOutput: string,
-  cameraFacingMode: "user" | "environment"
+  cameraFacingMode: "user" | "environment",
+  withVideo: boolean
 ) => {
   return getMedia(
     selectedVideoDevice,
     deviceId,
     selectedAudioOutput,
     cameraFacingMode,
+    withVideo,
     micOn,
     streamRef,
     videoRef,
