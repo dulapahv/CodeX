@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     typedEnv: true,
-    inlineCss: true,
+    // inlineCss: true,
     cssChunking: "graph",
     turbopackRustReactCompiler: true,
     turbopackFileSystemCacheForBuild: true,
