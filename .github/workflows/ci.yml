@@ -107,6 +107,10 @@ jobs:
       # the production Sentry project. It must NEVER be set for the deploy build -
       # that would ship a production bundle with Sentry silently disabled.
       NEXT_PUBLIC_CI: 'true'
+      # Points the built client at the Worker that Playwright starts on
+      # localhost:3001, so the tests run against this commit's server rather
+      # than production. Also scoped to this job: never set it for deploys.
+      NEXT_PUBLIC_ENV: 'development'
       BETTERSTACK_API_KEY: ${{ secrets.BETTERSTACK_API_KEY }}
       PISTON_API_KEY: ${{ secrets.PISTON_API_KEY }}
     steps:

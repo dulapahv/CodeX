@@ -5,7 +5,12 @@
     "client#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "env": ["SENTRY_AUTH_TOKEN", "NEXT_PUBLIC_CI", "NEXT_PUBLIC_SENTRY_DSN"],
+      "env": [
+        "SENTRY_AUTH_TOKEN",
+        "NEXT_PUBLIC_CI",
+        "NEXT_PUBLIC_ENV",
+        "NEXT_PUBLIC_SENTRY_DSN"
+      ],
       "cache": true
     },
     "server#build": {

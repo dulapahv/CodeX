@@ -60,7 +60,11 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
-    if (url.pathname === "/" && request.method === "GET") {
+    // Readiness checks such as start-server-and-test probe with HEAD
+    if (
+      url.pathname === "/" &&
+      (request.method === "GET" || request.method === "HEAD")
+    ) {
       return new Response(
         "Hello from codex-server! Go to https://codex.dulapahv.dev/ to start coding.",
         { headers: { ...corsHeaders(origin), "Content-Type": "text/plain" } }
