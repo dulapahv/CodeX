@@ -17,7 +17,12 @@
     "enabled": true,
     "logs": {
       "enabled": true,
-      "invocation_logs": true
+      // Every WebSocket message is its own invocation, so these would log
+      // each cursor and pointer move
+      "invocation_logs": false
+    },
+    "issues": {
+      "enabled": true
     }
   }
 }
