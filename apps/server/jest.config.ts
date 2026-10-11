@@ -12,8 +12,17 @@
 import type { Config } from "jest";
 
 const config: Config = {
-  preset: "ts-jest",
   testEnvironment: "node",
+  // Tests run in Node; src/ is compiled for the Workers runtime instead
+  transform: {
+    "^.+\\.ts$": ["ts-jest", { tsconfig: "tests/tsconfig.json" }],
+    // nanoid ships only ESM, but y-partyserver's CommonJS build requires it
+    "nanoid[/\\\\].+\\.js$": [
+      "ts-jest",
+      { tsconfig: { allowJs: true, module: "commonjs" } },
+    ],
+  },
+  transformIgnorePatterns: ["node_modules[/\\\\](?!(\\.pnpm[/\\\\])?nanoid)"],
   testMatch: ["**/*.test.ts"],
   setupFiles: ["./jest.setup.ts"],
   verbose: true,

@@ -9,8 +9,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CodeServiceMsg, ScrollServiceMsg } from "@codex/types/message";
 import type { Cursor } from "@codex/types/operation";
+import type { Presence } from "@codex/types/realtime";
 import type { Scroll } from "@codex/types/scroll";
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
@@ -19,7 +19,6 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { StatusBarCursorPosition } from "@/components/status-bar";
 import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
-import { getSocket } from "@/lib/socket";
 
 const SCROLL_EMIT_INTERVAL = 50;
 
@@ -41,6 +40,7 @@ export const handleBeforeMount = (monaco: Monaco): void => {
  * @param monaco Monaco instance
  * @param disposablesRef Collected Monaco disposables to clean up on unmount
  * @param setCursorPosition Status bar cursor position setter
+ * @param publish Shares this user's cursor and scroll with the room
  *
  * @remarks
  * Initial content is not set here. The CRDT binding owns the model's text.
@@ -49,10 +49,9 @@ export const handleOnMount = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monaco: Monaco,
   disposablesRef: RefObject<monaco.IDisposable[]>,
-  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>
+  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
+  publish: (patch: Partial<Presence>) => void
 ): void => {
-  const socket = getSocket();
-
   editor.focus();
 
   editor.updateOptions({
@@ -100,19 +99,23 @@ export const handleOnMount = (
       e.selection.startLineNumber === e.selection.endLineNumber &&
       e.selection.startColumn === e.selection.endColumn
     ) {
-      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
-        e.selection.positionLineNumber,
-        e.selection.positionColumn,
-      ] as Cursor);
+      publish({
+        cursor: [
+          e.selection.positionLineNumber,
+          e.selection.positionColumn,
+        ] as Cursor,
+      });
     } else {
-      socket.emit(CodeServiceMsg.UPDATE_CURSOR, [
-        e.selection.positionLineNumber,
-        e.selection.positionColumn,
-        e.selection.startLineNumber,
-        e.selection.startColumn,
-        e.selection.endLineNumber,
-        e.selection.endColumn,
-      ] as Cursor);
+      publish({
+        cursor: [
+          e.selection.positionLineNumber,
+          e.selection.positionColumn,
+          e.selection.startLineNumber,
+          e.selection.startColumn,
+          e.selection.endLineNumber,
+          e.selection.endColumn,
+        ] as Cursor,
+      });
     }
   });
 
@@ -131,7 +134,7 @@ export const handleOnMount = (
     scrollTimer ??= setTimeout(() => {
       scrollTimer = undefined;
       if (pendingScroll) {
-        socket.emit(ScrollServiceMsg.UPDATE_SCROLL, pendingScroll);
+        publish({ scroll: pendingScroll });
       }
     }, SCROLL_EMIT_INTERVAL);
   });

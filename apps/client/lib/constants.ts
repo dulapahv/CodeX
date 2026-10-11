@@ -37,7 +37,7 @@ export const PISTON_API_URL = "https://emkc.org/api/v2/piston/execute";
 
 export const NAME_MAX_LENGTH = 64;
 
-export const ROOM_TERMINATED_KEY = "codex-room-terminated";
+export const ROOM_ENDED_KEY = "codex-room-ended";
 
 export const SITE_NAME = "CodeX - Code Collaboration Platform";
 export const SITE_DESCRIPTION =

@@ -12,7 +12,8 @@ import { expect, test } from "@playwright/test";
 
 import { createRoom, joinRoom } from "@/tests/utils/setup";
 
-const EXECUTION_RESULT_PATTERN = /Hello from Python!|HTTP error! status:/;
+const EXECUTION_RESULT_PATTERN =
+  /Hello from Python!|HTTP error! status:|Process exited with code/;
 
 test.describe("Collaborative Features", () => {
   test("should sync code changes between users in real-time", async ({
@@ -84,17 +85,17 @@ test.describe("Collaborative Features", () => {
     await expect(userAPage.getByText(executingMsg)).toBeVisible();
 
     // Verify execution result appears in both users' terminals.
-    // The Piston API may return 401 on CI (no API key), so we check for
-    // either successful output or an error response, both prove the
-    // execution flow and terminal sync work correctly.
+    // The Piston API may return 401 on CI (no API key) or 429 when tests run
+    // code in parallel, so we check for either successful output or an error
+    // response, both prove the execution flow and terminal sync work correctly.
     const userATerminal = userAPage.getByRole("region", { name: "Terminal" });
     const userBTerminal = userBPage.getByRole("region", { name: "Terminal" });
 
     await expect(
-      userATerminal.getByText(EXECUTION_RESULT_PATTERN)
+      userATerminal.getByText(EXECUTION_RESULT_PATTERN).first()
     ).toBeVisible();
     await expect(
-      userBTerminal.getByText(EXECUTION_RESULT_PATTERN)
+      userBTerminal.getByText(EXECUTION_RESULT_PATTERN).first()
     ).toBeVisible();
   });
 

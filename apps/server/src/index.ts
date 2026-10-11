@@ -1,250 +1,102 @@
 /**
- * Socket.IO server entry point for CodeX.
- * Features:
- * - WebSocket server setup
- * - Service initialization
- * - Message handling
- * - CORS configuration
+ * Realtime Worker for CodeX: creates rooms, checks they exist, answers the
+ * latency probe, and routes room WebSockets to their Durable Object.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { App } from "uWebSockets.js";
-import {
-  CodeServiceMsg,
-  PointerServiceMsg,
-  RoomServiceMsg,
-  ScrollServiceMsg,
-  StreamServiceMsg,
-} from "@codex/types/message";
-import type { Cursor, YjsUpdate } from "@codex/types/operation";
-import type { Pointer } from "@codex/types/pointer";
-import type { Scroll } from "@codex/types/scroll";
-import type {
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from "@codex/types/socket-events";
-import type { ExecutionResult } from "@codex/types/terminal";
-import { Server } from "socket.io";
+import { getServerByName, routePartykitRequest } from "partyserver";
 
-import * as codeService from "@/service/code-service";
-import * as pointerService from "@/service/pointer-service";
-import * as roomService from "@/service/room-service";
-import * as scrollService from "@/service/scroll-service";
-import * as userService from "@/service/user-service";
-import * as webRTCService from "@/service/webrtc-service";
+import { corsHeaders, isAllowedOrigin } from "./cors";
+import { generateRoomID } from "./utils/generate-room-id";
+import { normalizeRoomId } from "./utils/normalize-room-id";
 
-import { ALLOWED_ORIGINS, getCorsHeaders } from "./cors-config";
+// biome-ignore lint/performance/noBarrelFile: Wrangler needs the Durable Object class exported from the entry module
+export { Room } from "./room";
 
-const PORT = 3001;
-const MAX_NAME_LENGTH = 64;
-const CONTROL_CHARACTER_PATTERN = /\p{Cc}/u;
+const ROOM_PATH = /^\/rooms\/([^/]+)$/;
+const MAX_CREATE_ATTEMPTS = 5;
 
-const app = App();
+const json = (body: unknown, origin: string | null, status = 200) =>
+  Response.json(body, { status, headers: corsHeaders(origin) });
 
-const io = new Server<ClientToServerEvents, ServerToClientEvents>({
-  cors: {
-    origin: (origin, callback) => {
-      if (process.env.NODE_ENV === "development") {
-        callback(null, true);
-        return;
-      }
+const roomStub = (env: Env, roomId: string) =>
+  getServerByName(env.Room, roomId);
 
-      if (
-        !origin ||
-        ALLOWED_ORIGINS.includes(origin as (typeof ALLOWED_ORIGINS)[number])
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Origin not allowed"));
-      }
-    },
-    methods: ["GET", "POST"], // Socket.IO needs both
-    credentials: true,
-  },
-  transports: ["websocket", "polling"],
-  // Allow larger payloads for pasting large code blocks (default is 1MB)
-  maxHttpBufferSize: 5e6, // 5MB
-});
-io.attachApp(app);
-io.engine.on("connection", (rawSocket) => {
-  rawSocket.request = null;
-});
-
-app.listen(PORT, (token) => {
-  if (token) {
-    console.log(`codex-server listening on port: ${PORT}`);
-  } else {
-    console.error(`Port ${PORT} is already in use`);
-  }
-});
-
-app.get("/", (res, req) => {
-  const origin = req.getHeader("origin");
-  const headers = getCorsHeaders(origin);
-
-  for (const [key, value] of Object.entries(headers)) {
-    res.writeHeader(key, value);
-  }
-  res.writeHeader("Content-Type", "text/plain");
-
-  res.end(
-    "Hello from codex-server! Go to https://codex.dulapahv.dev/ to start coding."
-  );
-});
-
-const isString = (value: unknown): value is string => typeof value === "string";
-
-const isBoolean = (value: unknown): value is boolean =>
-  typeof value === "boolean";
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
-
-const isName = (value: unknown): value is string =>
-  isString(value) &&
-  value.trim().length > 0 &&
-  value.trim().length <= MAX_NAME_LENGTH &&
-  !CONTROL_CHARACTER_PATTERN.test(value);
-
-// Handlers run on untrusted input, so a throw must not become an unhandled
-// rejection that takes the whole process down.
-const handle =
-  <Args extends unknown[]>(handler: (...args: Args) => unknown) =>
-  async (...args: Args): Promise<void> => {
-    try {
-      await handler(...args);
-    } catch (error) {
-      console.error(error);
+const createRoom = async (env: Env, origin: string | null) => {
+  for (let attempt = 0; attempt < MAX_CREATE_ATTEMPTS; attempt++) {
+    const roomId = generateRoomID();
+    const room = await roomStub(env, roomId);
+    if (await room.create()) {
+      return json({ roomId }, origin, 201);
     }
-  };
+  }
+  return json({ error: "Couldn't create a room. Try again." }, origin, 503);
+};
 
-io.on("connection", (socket) => {
-  socket.on("ping", () => socket.emit("pong"));
-  socket.on(
-    RoomServiceMsg.CREATE,
-    handle(async (name: unknown) => {
-      if (isName(name)) {
-        await roomService.create(socket, name.trim());
-      }
-    })
-  );
-  socket.on(
-    RoomServiceMsg.JOIN,
-    handle(async (roomID: unknown, name: unknown) => {
-      if (isString(roomID) && isName(name)) {
-        await roomService.join(socket, io, roomID, name.trim());
-      }
-    })
-  );
-  socket.on(
-    RoomServiceMsg.LEAVE,
-    handle(() => roomService.leave(socket, io))
-  );
-  socket.on(
-    RoomServiceMsg.TERMINATE,
-    handle(() => roomService.terminate(socket, io))
-  );
-  socket.on(
-    RoomServiceMsg.SYNC_USERS,
-    handle(() => roomService.getUsersInRoom(socket, io))
-  );
-  socket.on(
-    CodeServiceMsg.SYNC_CODE,
-    handle((stateVector: YjsUpdate) =>
-      codeService.syncCode(socket, io, stateVector)
-    )
-  );
-  socket.on(
-    CodeServiceMsg.UPDATE_CODE,
-    handle((update: YjsUpdate) => codeService.updateCode(socket, update))
-  );
-  socket.on(
-    CodeServiceMsg.UPDATE_CURSOR,
-    handle((cursor: Cursor) => userService.updateCursor(socket, cursor))
-  );
-  socket.on(
-    CodeServiceMsg.SYNC_LANG,
-    handle(() => codeService.syncLang(socket, io))
-  );
-  socket.on(
-    CodeServiceMsg.UPDATE_LANG,
-    handle((langID: unknown) => {
-      if (isString(langID)) {
-        codeService.updateLang(socket, langID);
-      }
-    })
-  );
-  socket.on(
-    ScrollServiceMsg.UPDATE_SCROLL,
-    handle((scroll: Scroll) => scrollService.updateScroll(socket, scroll))
-  );
-  socket.on(
-    RoomServiceMsg.SYNC_MD,
-    handle(() => roomService.syncNote(socket, io))
-  );
-  socket.on(
-    RoomServiceMsg.UPDATE_MD,
-    handle((note: unknown) => {
-      if (isString(note)) {
-        roomService.updateNote(socket, note);
-      }
-    })
-  );
-  socket.on(
-    CodeServiceMsg.EXEC,
-    handle((isExecuting: unknown) => {
-      if (isBoolean(isExecuting)) {
-        roomService.updateExecuting(socket, isExecuting);
-      }
-    })
-  );
-  socket.on(
-    CodeServiceMsg.UPDATE_TERM,
-    handle((data: unknown) => {
-      if (isRecord(data) && isRecord(data.run)) {
-        roomService.updateTerminal(socket, data as unknown as ExecutionResult);
-      }
-    })
-  );
-  socket.on(
-    StreamServiceMsg.STREAM_READY,
-    handle(() => webRTCService.onStreamReady(socket))
-  );
-  socket.on(
-    StreamServiceMsg.SIGNAL,
-    handle((data: unknown) => {
-      if (isRecord(data) && isString(data.targetUserID)) {
-        webRTCService.handleSignal(socket, data.targetUserID, data.signal);
-      }
-    })
-  );
-  socket.on(
-    StreamServiceMsg.CAMERA_OFF,
-    handle(() => webRTCService.onCameraOff(socket))
-  );
-  socket.on(
-    StreamServiceMsg.MIC_STATE,
-    handle((micOn: unknown) => {
-      if (isBoolean(micOn)) {
-        webRTCService.handleMicState(socket, micOn);
-      }
-    })
-  );
-  socket.on(
-    StreamServiceMsg.SPEAKER_STATE,
-    handle((speakersOn: unknown) => {
-      if (isBoolean(speakersOn)) {
-        webRTCService.handleSpeakerState(socket, speakersOn);
-      }
-    })
-  );
-  socket.on(
-    PointerServiceMsg.POINTER,
-    handle((pointer: Pointer) => pointerService.updatePointer(socket, pointer))
-  );
-  socket.on(
-    "disconnecting",
-    handle(() => roomService.leave(socket, io))
-  );
-});
+const checkRoom = async (env: Env, rawId: string, origin: string | null) => {
+  const roomId = normalizeRoomId(decodeURIComponent(rawId));
+  const exists =
+    roomId !== null && (await (await roomStub(env, roomId)).exists());
+  return exists
+    ? json({ roomId }, origin)
+    : json({ error: "Room not found" }, origin, 404);
+};
+
+// Measures the client's round trip to Cloudflare for the latency page
+const echoSocket = () => {
+  const [client, server] = Object.values(new WebSocketPair());
+  server.accept();
+  server.addEventListener("message", (event) => server.send(event.data));
+  return new Response(null, { status: 101, webSocket: client });
+};
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const origin = request.headers.get("Origin");
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+
+    if (url.pathname === "/" && request.method === "GET") {
+      return new Response(
+        "Hello from codex-server! Go to https://codex.dulapahv.dev/ to start coding.",
+        { headers: { ...corsHeaders(origin), "Content-Type": "text/plain" } }
+      );
+    }
+
+    if (url.pathname === "/rooms" && request.method === "POST") {
+      return createRoom(env, origin);
+    }
+
+    const roomPath = ROOM_PATH.exec(url.pathname);
+    if (roomPath && request.method === "GET") {
+      return checkRoom(env, roomPath[1], origin);
+    }
+
+    if (url.pathname === "/ping") {
+      return isAllowedOrigin(origin)
+        ? echoSocket()
+        : new Response("Forbidden", { status: 403 });
+    }
+
+    const response = await routePartykitRequest(request, env, {
+      // Rooms are only reachable over WebSocket
+      onBeforeRequest: () => new Response("Not found", { status: 404 }),
+      onBeforeConnect: (_request, lobby) => {
+        const isRoom =
+          lobby.className === "Room" &&
+          normalizeRoomId(lobby.name) === lobby.name;
+        if (!isAllowedOrigin(origin)) {
+          return new Response("Forbidden", { status: 403 });
+        }
+        if (!isRoom) {
+          return new Response("Not found", { status: 404 });
+        }
+      },
+    });
+    return response ?? new Response("Not found", { status: 404 });
+  },
+} satisfies ExportedHandler<Env>;

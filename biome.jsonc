@@ -32,5 +32,14 @@
     "linter": {
       "enabled": true
     }
-  }
+  },
+  "overrides": [
+    {
+      // Cloudflare Workers runtime globals
+      "includes": ["apps/server/src/**"],
+      "javascript": {
+        "globals": ["WebSocketPair"]
+      }
+    }
+  ]
 }

@@ -8,12 +8,20 @@
 import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
 import type { Cursor } from "@codex/types/operation";
-import { io as Client } from "socket.io-client";
 
-const SERVER_URL = process.env.SERVER_URL;
+import {
+  calculateStats,
+  connectPeer,
+  createRoomPeer,
+  SERVER_URL,
+  settle,
+  type TestPeer,
+} from "./helpers";
+
 const SAMPLES_PER_TEST = 50;
+// Awareness only sends changed state, so each sample starts from here
+const RESET_CURSOR: Cursor = [0, 0];
 
 const testCases = [
   {
@@ -121,100 +129,44 @@ Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.max
 }
 
 describe("Cursor Synchronization Latency Tests", () => {
-  let senderSocket: ReturnType<typeof Client>;
-  let receiverSocket: ReturnType<typeof Client>;
-  let roomId: string;
+  let sender: TestPeer;
+  let receiver: TestPeer;
   const report = new CursorLatencyReport();
 
-  const createSocket = () => Client(SERVER_URL);
-
   beforeAll(async () => {
-    // Create sender socket and room
-    senderSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      senderSocket.on("connect_error", (error) => reject(error));
-      senderSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Create room
-    await new Promise<void>((resolve) => {
-      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
-        roomId = receivedRoomId;
-        resolve();
-      });
-      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
-    });
-
-    // Setup receiver
-    receiverSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      receiverSocket.on("connect_error", (error) => reject(error));
-      receiverSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Join room
-    await new Promise<void>((resolve) => {
-      receiverSocket.once(RoomServiceMsg.JOIN, () => {
-        resolve();
-      });
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
-    });
+    const [peer, roomId] = await createRoomPeer("Sender");
+    sender = peer;
+    receiver = await connectPeer(roomId, "Receiver");
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+    await settle(1000);
   }, 130_000);
 
   afterAll(() => {
     report.saveToFile();
-    senderSocket?.disconnect();
-    receiverSocket?.disconnect();
+    sender?.leave();
+    receiver?.leave();
   });
+
+  // Publishes a cursor and times its arrival in the receiver's presence
+  const sendCursor = async (cursor: Cursor): Promise<number> => {
+    const received = receiver.nextPresenceUpdate(sender.clientId);
+    const startTime = performance.now();
+    sender.setPresence({ cursor });
+    await received;
+    return performance.now() - startTime;
+  };
 
   const measureLatency = async (cursor: Cursor): Promise<number[]> => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
-
-      const startTime = performance.now();
-      await new Promise<void>((resolve) => {
-        receiverSocket.once(CodeServiceMsg.UPDATE_CURSOR, () => {
-          const latency = performance.now() - startTime;
-          latencies.push(latency);
-          resolve();
-        });
-        senderSocket.emit(CodeServiceMsg.UPDATE_CURSOR, cursor);
-      });
+      await settle(100); // Delay between samples
+      await sendCursor(RESET_CURSOR);
+      latencies.push(await sendCursor(cursor));
     }
 
     return latencies;
-  };
-
-  const calculateStats = (
-    samples: number[]
-  ): {
-    average: number;
-    standardDeviation: number;
-    minimum: number;
-    maximum: number;
-  } => {
-    const average = samples.reduce((a, b) => a + b) / samples.length;
-    const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + (val - average) ** 2, 0) /
-        samples.length
-    );
-    return {
-      average,
-      standardDeviation,
-      minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
-    };
   };
 
   test.each(testCases)("Cursor latency for $name", async ({
@@ -235,20 +187,11 @@ describe("Cursor Synchronization Latency Tests", () => {
 
   test("Rapid cursor movements", async () => {
     const movements = 100;
-    const timings: number[] = [];
 
-    await Promise.all(
-      new Array(movements).fill(null).map((_, i) => {
-        const cursor: Cursor = [i + 1, i + 1];
-        return new Promise<void>((resolve) => {
-          const startTime = performance.now();
-          receiverSocket.once(CodeServiceMsg.UPDATE_CURSOR, () => {
-            timings.push(performance.now() - startTime);
-            resolve();
-          });
-          senderSocket.emit(CodeServiceMsg.UPDATE_CURSOR, cursor);
-        });
-      })
+    const timings = await Promise.all(
+      Array.from({ length: movements }, (_, i) =>
+        sendCursor([i + 1, i + 1] as Cursor)
+      )
     );
 
     const stats = calculateStats(timings);

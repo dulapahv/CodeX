@@ -9,7 +9,11 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CodeServiceMsg } from "@codex/types/message";
+import {
+  DEFAULT_LANGUAGE,
+  META_LANGUAGE,
+  ROOM_DOC,
+} from "@codex/types/realtime";
 
 import type { Monaco } from "@monaco-editor/react";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -29,7 +33,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getSocket } from "@/lib/socket";
+import { useRoom } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 interface Language {
@@ -52,7 +56,7 @@ const LanguageSelection = memo(
     defaultLanguage = "python",
     className,
   }: LanguageSelectionProps) => {
-    const socket = useMemo(() => getSocket(), []);
+    const room = useRoom();
 
     const [open, setOpen] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
@@ -101,20 +105,22 @@ const LanguageSelection = memo(
         return;
       }
 
-      // A language that arrived from the server must not be sent back.
+      const meta = room.doc.getMap<string>(ROOM_DOC.meta);
+
+      // A language that came from the shared document must not be written back
       let isRemoteChange = false;
 
-      const handleLanguageChange = (langID: string) => {
-        const model = editor.getModel();
-        if (model) {
+      const applySharedLanguage = () => {
+        const langID = meta.get(META_LANGUAGE) ?? DEFAULT_LANGUAGE;
+        if (model.getLanguageId() !== langID) {
           isRemoteChange = true;
           monaco.editor.setModelLanguage(model, langID);
           isRemoteChange = false;
         }
       };
 
-      socket.emit(CodeServiceMsg.SYNC_LANG);
-      socket.on(CodeServiceMsg.UPDATE_LANG, handleLanguageChange);
+      meta.observe(applySharedLanguage);
+      applySharedLanguage();
 
       // Get initial language
       const currentLanguage = model.getLanguageId();
@@ -132,17 +138,17 @@ const LanguageSelection = memo(
           .find((lang) => lang.id === e.newLanguage);
         if (newLanguage?.aliases?.[0]) {
           setSelectedLanguage(newLanguage.aliases[0]);
-          if (!isRemoteChange) {
-            socket.emit(CodeServiceMsg.UPDATE_LANG, newLanguage.id);
+          if (!isRemoteChange && meta.get(META_LANGUAGE) !== newLanguage.id) {
+            meta.set(META_LANGUAGE, newLanguage.id);
           }
         }
       });
 
       return () => {
-        socket.off(CodeServiceMsg.UPDATE_LANG, handleLanguageChange);
+        meta.unobserve(applySharedLanguage);
         disposable.dispose();
       };
-    }, [editor, monaco, socket]);
+    }, [editor, monaco, room]);
 
     if (!(monaco && editor)) {
       return null;

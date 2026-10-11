@@ -6,110 +6,33 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
-import type { YjsUpdate } from "@codex/types/operation";
-import { io as Client } from "socket.io-client";
-import * as Y from "yjs";
-
-const SERVER_URL = process.env.SERVER_URL;
-
-/** Must match CODE_TEXT_KEY on the client and server. */
-const CODE_TEXT_KEY = "monaco";
-
-/** Byte length of a Yjs update carrying no new operations. */
-const EMPTY_UPDATE_BYTES = 2;
+import {
+  connectPeer,
+  createRoomPeer,
+  type TestPeer,
+  settle as wait,
+} from "./helpers";
 
 /** How long to let updates propagate before asserting convergence. */
 const SETTLE_MS = 2000;
 
-/** Marks updates that arrived from the server, so we do not echo them back. */
-const REMOTE_ORIGIN = Symbol("remote");
+const settle = () => wait(SETTLE_MS);
 
-type ClientSocket = ReturnType<typeof Client>;
+const createRoom = (name: string) => createRoomPeer(name);
 
-interface Peer {
-  doc: Y.Doc;
-  socket: ClientSocket;
-  text: Y.Text;
-}
-
-const toUint8Array = (data: YjsUpdate): Uint8Array =>
-  data instanceof Uint8Array ? data : new Uint8Array(data);
-
-const settle = () =>
-  new Promise<void>((resolve) => setTimeout(resolve, SETTLE_MS));
-
-const connect = (): Promise<ClientSocket> =>
-  new Promise((resolve, reject) => {
-    const socket = Client(SERVER_URL);
-    socket.on("connect_error", reject);
-    socket.on("connect", () => resolve(socket));
-  });
-
-/**
- * Mirrors the client's yjs-doc-service transport, so this suite exercises the
- * real handshake rather than a simplified stand-in.
- */
-const attachDoc = (socket: ClientSocket): Peer => {
-  const doc = new Y.Doc();
-  const text = doc.getText(CODE_TEXT_KEY);
-
-  doc.on("update", (update: Uint8Array, origin: unknown) => {
-    if (origin === REMOTE_ORIGIN) {
-      return;
-    }
-    socket.emit(CodeServiceMsg.UPDATE_CODE, update);
-  });
-
-  socket.on(CodeServiceMsg.UPDATE_CODE, (update: YjsUpdate) => {
-    Y.applyUpdate(doc, toUint8Array(update), REMOTE_ORIGIN);
-  });
-
-  socket.on(
-    CodeServiceMsg.SYNC_CODE,
-    (update: YjsUpdate, serverStateVector: YjsUpdate) => {
-      Y.applyUpdate(doc, toUint8Array(update), REMOTE_ORIGIN);
-      const diff = Y.encodeStateAsUpdate(doc, toUint8Array(serverStateVector));
-      if (diff.length > EMPTY_UPDATE_BYTES) {
-        socket.emit(CodeServiceMsg.UPDATE_CODE, diff);
-      }
-    }
-  );
-
-  socket.emit(CodeServiceMsg.SYNC_CODE, Y.encodeStateVector(doc));
-  return { doc, socket, text };
-};
-
-const createRoom = async (name: string): Promise<[Peer, string]> => {
-  const socket = await connect();
-  const roomId = await new Promise<string>((resolve) => {
-    socket.once(RoomServiceMsg.CREATE, (id: string) => resolve(id));
-    socket.emit(RoomServiceMsg.CREATE, name);
-  });
-  return [attachDoc(socket), roomId];
-};
-
-const joinRoom = async (roomId: string, name: string): Promise<Peer> => {
-  const socket = await connect();
-  await new Promise<void>((resolve) => {
-    socket.once(RoomServiceMsg.JOIN, () => resolve());
-    socket.emit(RoomServiceMsg.JOIN, roomId, name);
-  });
-  return attachDoc(socket);
-};
+const joinRoom = (roomId: string, name: string) => connectPeer(roomId, name);
 
 describe("CRDT convergence", () => {
-  const peers: Peer[] = [];
+  const peers: TestPeer[] = [];
 
-  const track = (peer: Peer): Peer => {
+  const track = (peer: TestPeer): TestPeer => {
     peers.push(peer);
     return peer;
   };
 
   afterEach(() => {
     for (const peer of peers) {
-      peer.socket.disconnect();
-      peer.doc.destroy();
+      peer.leave();
     }
     peers.length = 0;
   });

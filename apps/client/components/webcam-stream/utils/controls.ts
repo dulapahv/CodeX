@@ -8,12 +8,10 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { isMobile } from "react-device-detect";
 import type Peer from "simple-peer";
 
-import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 import { reportWebcamError } from "./errors";
 
@@ -76,8 +74,6 @@ export const toggleCamera = async (
   peersRef: RefObject<Record<string, Peer.Instance>>,
   getMedia: (withVideo: boolean) => Promise<boolean>
 ) => {
-  const socket = getSocket();
-
   try {
     if (!cameraOn) {
       if (await getMedia(true)) {
@@ -86,7 +82,6 @@ export const toggleCamera = async (
       return;
     }
 
-    socket.emit(StreamServiceMsg.CAMERA_OFF);
     setCameraOn(false);
 
     // Keep the call going on an audio-only stream
@@ -97,7 +92,6 @@ export const toggleCamera = async (
     stopMedia(streamRef, videoRef, peersRef);
     if (micOn) {
       setMicOn(false);
-      socket.emit(StreamServiceMsg.MIC_STATE, false);
     }
   } catch (error) {
     reportWebcamError(`Error toggling camera: ${parseError(error)}`);
@@ -141,7 +135,6 @@ export const toggleMic = async (
   peersRef: RefObject<Record<string, Peer.Instance>>,
   startAudioOnly: () => Promise<boolean>
 ) => {
-  const socket = getSocket();
   const newMicState = !micOn;
 
   try {
@@ -160,11 +153,9 @@ export const toggleMic = async (
       }
     } else {
       stopMedia(streamRef, videoRef, peersRef);
-      socket.emit(StreamServiceMsg.CAMERA_OFF);
     }
 
     setMicOn(newMicState);
-    socket.emit(StreamServiceMsg.MIC_STATE, newMicState);
   } catch (error) {
     reportWebcamError(`Error toggling microphone.\n${parseError(error)}`);
   }

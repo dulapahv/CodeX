@@ -9,13 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import {
-  CodeServiceMsg,
-  RoomServiceMsg,
-  ScrollServiceMsg,
-} from "@codex/types/message";
-import type { Cursor } from "@codex/types/operation";
-import type { Scroll } from "@codex/types/scroll";
+import { type Presence, ROOM_DOC } from "@codex/types/realtime";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import { useTheme } from "next-themes";
@@ -28,14 +22,19 @@ import {
   useState,
 } from "react";
 import type { StatusBarCursorPosition } from "@/components/status-bar";
-import { getSocket } from "@/lib/socket";
+import { useRoom } from "@/lib/realtime/room-context";
 
 import { CodeEditorSkeleton } from "./components/editor-skeleton";
 import * as cursorService from "./service/cursor-service";
 import * as editorService from "./service/editor-service";
 import { bindMonacoToYText } from "./service/monaco-binding";
 import * as scrollService from "./service/scroll-service";
-import { createCollabDoc } from "./service/yjs-doc-service";
+
+interface AwarenessChange {
+  added: number[];
+  removed: number[];
+  updated: number[];
+}
 
 interface CodeEditorProps {
   cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
@@ -52,7 +51,7 @@ const CodeEditor = memo(function CodeEditor({
 }: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
 
-  const socket = getSocket();
+  const room = useRoom();
 
   const [theme, setTheme] = useState<string>("vs-dark");
 
@@ -81,62 +80,84 @@ const CodeEditor = memo(function CodeEditor({
     editorInstanceRef.current?.updateOptions({ theme });
   }, [theme]);
 
-  // Setup socket event listeners after Monaco is ready
+  // Show other users' cursors, and follow a user's scroll when asked to
   useEffect(() => {
-    if (!isMonacoReady) {
+    const editor = editorInstanceRef.current;
+    if (!(isMonacoReady && editor)) {
       return;
     }
 
-    const handleCursor = (userID: string, cursor: Cursor) =>
-      cursorService.updateCursor(
-        userID,
-        cursor,
-        editorInstanceRef,
-        monacoInstanceRef,
-        cursorDecorationsRef
-      );
-    const handleScroll = (userID: string, scroll: Scroll) =>
-      scrollService.updateScroll(editorInstanceRef, userID, scroll);
-    const handleLeave = (userID: string) =>
-      cursorService.removeCursor(userID, cursorDecorationsRef);
+    // Presence also changes for pointer moves, so skip unchanged cursors
+    const lastSeen = new Map<number, string>();
 
-    socket.on(CodeServiceMsg.UPDATE_CURSOR, handleCursor);
-    socket.on(ScrollServiceMsg.UPDATE_SCROLL, handleScroll);
-    socket.on(RoomServiceMsg.LEAVE, handleLeave);
-
-    const labelHover = editorInstanceRef.current
-      ? cursorService.showLabelOnHover(
-          editorInstanceRef.current,
+    const handleChange = ({ added, updated, removed }: AwarenessChange) => {
+      const states = room.awareness.getStates() as Map<number, Presence>;
+      for (const clientId of removed) {
+        lastSeen.delete(clientId);
+        cursorService.removeCursor(String(clientId), cursorDecorationsRef);
+      }
+      for (const clientId of [...added, ...updated]) {
+        const state = states.get(clientId);
+        if (clientId === room.clientId || !state?.cursor) {
+          continue;
+        }
+        const key = JSON.stringify([
+          state.user.name,
+          state.cursor,
+          state.scroll,
+        ]);
+        if (lastSeen.get(clientId) === key) {
+          continue;
+        }
+        lastSeen.set(clientId, key);
+        cursorService.updateCursor(
+          String(clientId),
+          state.user.name,
+          state.cursor,
+          editorInstanceRef,
+          monacoInstanceRef,
           cursorDecorationsRef
-        )
-      : undefined;
+        );
+        if (state.scroll) {
+          scrollService.updateScroll(
+            editorInstanceRef,
+            String(clientId),
+            state.scroll
+          );
+        }
+      }
+    };
+
+    room.awareness.on("change", handleChange);
+    handleChange({
+      added: [...room.awareness.getStates().keys()],
+      updated: [],
+      removed: [],
+    });
+    const labelHover = cursorService.showLabelOnHover(
+      editor,
+      cursorDecorationsRef
+    );
 
     return () => {
-      labelHover?.dispose();
-      socket.off(CodeServiceMsg.UPDATE_CURSOR, handleCursor);
-      socket.off(ScrollServiceMsg.UPDATE_SCROLL, handleScroll);
-      socket.off(RoomServiceMsg.LEAVE, handleLeave);
+      room.awareness.off("change", handleChange);
+      labelHover.dispose();
     };
-  }, [isMonacoReady, socket]);
+  }, [isMonacoReady, room]);
 
-  // Attach the shared document once Monaco exists. Creating it here (rather
-  // than on the page) keeps the socket handshake and the model binding in one
-  // lifecycle, so both are torn down together.
+  // Bind the editor to the room's shared code once Monaco exists
   useEffect(() => {
     const editor = editorInstanceRef.current;
     const monacoInstance = monacoInstanceRef.current;
     if (!(isMonacoReady && editor && monacoInstance)) {
       return;
     }
-
-    const collab = createCollabDoc();
-    const unbind = bindMonacoToYText(collab.ytext, editor, monacoInstance);
-
-    return () => {
-      unbind();
-      collab.destroy();
-    };
-  }, [isMonacoReady]);
+    return bindMonacoToYText(
+      room.doc.getText(ROOM_DOC.code),
+      editor,
+      monacoInstance
+    );
+  }, [isMonacoReady, room]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -166,7 +187,13 @@ const CodeEditor = memo(function CodeEditor({
     monacoRef(monaco);
 
     // Set up the editor with the default configuration
-    editorService.handleOnMount(editor, monaco, disposablesRef, cursorPosition);
+    editorService.handleOnMount(
+      editor,
+      monaco,
+      disposablesRef,
+      cursorPosition,
+      room.setPresence
+    );
 
     // Mark Monaco as ready
     setIsMonacoReady(true);

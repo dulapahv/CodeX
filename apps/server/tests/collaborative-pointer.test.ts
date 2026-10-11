@@ -8,11 +8,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { PointerServiceMsg, RoomServiceMsg } from "@codex/types/message";
 import type { Pointer } from "@codex/types/pointer";
-import { io as Client } from "socket.io-client";
 
-const SERVER_URL = process.env.SERVER_URL;
+import {
+  calculateStats,
+  connectPeer,
+  createRoomPeer,
+  SERVER_URL,
+  settle,
+  type TestPeer,
+} from "./helpers";
+
 const SAMPLES_PER_TEST = 50;
 
 const testCases = [
@@ -137,65 +143,38 @@ Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.max
 }
 
 describe("Pointer Tracking Latency Tests", () => {
-  let senderSocket: ReturnType<typeof Client>;
-  let receiverSocket: ReturnType<typeof Client>;
-  let roomId: string;
+  let sender: TestPeer;
+  let receiver: TestPeer;
   const report = new PointerLatencyReport();
 
-  const createSocket = () => Client(SERVER_URL);
-
   beforeAll(async () => {
-    // Create sender socket and room
-    senderSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      senderSocket.on("connect_error", (error) => reject(error));
-      senderSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Create room
-    await new Promise<void>((resolve) => {
-      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
-        roomId = receivedRoomId;
-        resolve();
-      });
-      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
-    });
-
-    // Setup receiver
-    receiverSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      receiverSocket.on("connect_error", (error) => reject(error));
-      receiverSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Join room
-    await new Promise<void>((resolve) => {
-      receiverSocket.once(RoomServiceMsg.JOIN, () => {
-        resolve();
-      });
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
-    });
+    const [peer, roomId] = await createRoomPeer("Sender");
+    sender = peer;
+    receiver = await connectPeer(roomId, "Receiver");
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+    await settle(1000);
   }, 130_000);
 
   afterAll(() => {
     report.saveToFile();
-    senderSocket?.disconnect();
-    receiverSocket?.disconnect();
+    sender?.leave();
+    receiver?.leave();
   });
 
   const calculateDistance = (start: Pointer, end: Pointer): number => {
     const dx = end[0] - start[0];
     const dy = end[1] - start[1];
     return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Publishes a pointer and times its arrival in the receiver's presence
+  const sendPointer = async (pointer: Pointer): Promise<number> => {
+    const received = receiver.nextPresenceUpdate(sender.clientId);
+    const startTime = performance.now();
+    sender.setPresence({ pointer });
+    await received;
+    return performance.now() - startTime;
   };
 
   const measureLatency = async (
@@ -205,50 +184,14 @@ describe("Pointer Tracking Latency Tests", () => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
+      await settle(100); // Delay between samples
 
-      // First movement to start position
-      await new Promise<void>((resolve) => {
-        receiverSocket.once(PointerServiceMsg.POINTER, () => {
-          resolve();
-        });
-        senderSocket.emit(PointerServiceMsg.POINTER, start);
-      });
-
-      // Measure movement to end position
-      const startTime = performance.now();
-      await new Promise<void>((resolve) => {
-        receiverSocket.once(PointerServiceMsg.POINTER, () => {
-          const latency = performance.now() - startTime;
-          latencies.push(latency);
-          resolve();
-        });
-        senderSocket.emit(PointerServiceMsg.POINTER, end);
-      });
+      // First movement to start position, then measure the move to the end
+      await sendPointer(start);
+      latencies.push(await sendPointer(end));
     }
 
     return latencies;
-  };
-
-  const calculateStats = (
-    samples: number[]
-  ): {
-    average: number;
-    standardDeviation: number;
-    minimum: number;
-    maximum: number;
-  } => {
-    const average = samples.reduce((a, b) => a + b) / samples.length;
-    const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + (val - average) ** 2, 0) /
-        samples.length
-    );
-    return {
-      average,
-      standardDeviation,
-      minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
-    };
   };
 
   test.each(testCases)("Pointer latency for $name", async ({
@@ -275,29 +218,20 @@ describe("Pointer Tracking Latency Tests", () => {
 
   test("Rapid pointer movements", async () => {
     const movements = 100;
-    const timings: number[] = [];
     let totalDistance = 0;
     let lastPosition: Pointer = [0, 0];
 
-    await Promise.all(
-      new Array(movements).fill(null).map((_, i) => {
-        const newPosition: Pointer = [
-          100 * Math.cos((i * Math.PI) / 10) + 500,
-          100 * Math.sin((i * Math.PI) / 10) + 500,
-        ];
-        totalDistance += calculateDistance(lastPosition, newPosition);
-        lastPosition = newPosition;
+    const positions = Array.from({ length: movements }, (_, i) => {
+      const newPosition: Pointer = [
+        100 * Math.cos((i * Math.PI) / 10) + 500,
+        100 * Math.sin((i * Math.PI) / 10) + 500,
+      ];
+      totalDistance += calculateDistance(lastPosition, newPosition);
+      lastPosition = newPosition;
+      return newPosition;
+    });
 
-        return new Promise<void>((resolve) => {
-          const startTime = performance.now();
-          receiverSocket.once(PointerServiceMsg.POINTER, () => {
-            timings.push(performance.now() - startTime);
-            resolve();
-          });
-          senderSocket.emit(PointerServiceMsg.POINTER, newPosition);
-        });
-      })
-    );
+    const timings = await Promise.all(positions.map(sendPointer));
 
     const stats = calculateStats(timings);
     report.setRapidMovementResult({

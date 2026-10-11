@@ -11,7 +11,6 @@
 
 "use client";
 
-import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
 import type { ExecutionResult } from "@codex/types/terminal";
 import type { User } from "@codex/types/user";
 import type { Monaco } from "@monaco-editor/react";
@@ -23,16 +22,19 @@ import {
   type SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { usePanelRef } from "react-resizable-panels";
 import { useDebounce } from "use-debounce";
 
 import { CodeEditor } from "@/components/code-editor";
+import { CodeEditorSkeleton } from "@/components/code-editor/components/editor-skeleton";
 import { FollowUser } from "@/components/follow-user";
 import { LeaveButton } from "@/components/leave-button";
 import { LivePreview } from "@/components/live-preview";
 import { Notepad } from "@/components/notepad";
+import { EditorSkeleton } from "@/components/notepad/components/editor-skeleton";
 import { RemotePointers } from "@/components/remote-pointers";
 import { RunButton } from "@/components/run-button";
 import { SettingsButton } from "@/components/settings-button";
@@ -52,12 +54,21 @@ import {
 import { UserList } from "@/components/user-list";
 import { WebcamStream } from "@/components/webcam-stream";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { ROOM_TERMINATED_KEY } from "@/lib/constants";
+import { ROOM_ENDED_KEY } from "@/lib/constants";
 import { initEditorTheme } from "@/lib/init-editor-theme";
+import {
+  connectToRoom,
+  type RoomConnection,
+} from "@/lib/realtime/room-connection";
+import {
+  RoomProvider,
+  useRoomMessage,
+  useRoomUsers,
+} from "@/lib/realtime/room-context";
 import { storage } from "@/lib/services/storage";
-import { userMap } from "@/lib/services/user-map";
-import { getSocket } from "@/lib/socket";
-import { cn, leaveRoom } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+const DASH_PATTERN = /-/g;
 
 const MemoizedToolbar = memo(function MemoizedToolbar({
   monaco,
@@ -123,12 +134,8 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   );
 });
 
-const MemoizedNotepad = memo(function MemoizedNotepad({
-  markdown,
-}: {
-  markdown: string | null;
-}) {
-  return <Notepad markdown={markdown} />;
+const MemoizedNotepad = memo(function MemoizedNotepad() {
+  return <Notepad />;
 });
 
 const MemoizedTerminal = memo(function MemoizedTerminal({
@@ -193,7 +200,49 @@ export default function Room() {
   const params = useParams();
   const roomId = String(params.roomId);
   const router = useRouter();
-  const socket = getSocket();
+  const [connection, setConnection] = useState<RoomConnection | null>(null);
+
+  useEffect(() => {
+    const name = storage.getUsername();
+    if (!name) {
+      router.replace(`/?room=${roomId}`);
+      return;
+    }
+
+    const room = connectToRoom(
+      roomId.replace(DASH_PATTERN, "").toUpperCase(),
+      name
+    );
+    storage.setUserId(String(room.clientId));
+    setConnection(room);
+
+    const stopListening = room.onEnd((reason) => {
+      storage.clear();
+      sessionStorage.setItem(ROOM_ENDED_KEY, reason);
+      router.replace("/");
+    });
+
+    return () => {
+      stopListening();
+      room.destroy();
+      setConnection(null);
+    };
+  }, [roomId, router]);
+
+  return (
+    <RoomProvider connection={connection}>
+      <RoomWorkspace isConnected={connection !== null} roomId={roomId} />
+    </RoomProvider>
+  );
+}
+
+const RoomWorkspace = ({
+  isConnected,
+  roomId,
+}: {
+  isConnected: boolean;
+  roomId: string;
+}) => {
   useThemeColor();
 
   const [showNotepad, setShowNotepad] = useState(true);
@@ -213,100 +262,29 @@ export default function Room() {
     }
   );
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [mdContent, setMdContent] = useState<string | null>(null);
+  const users = useRoomUsers();
   const [output, setOutput] = useState<ExecutionResult[]>([]);
   const notepadPanelRef = useTogglePanel(showNotepad);
   const livePreviewPanelRef = useTogglePanel(showLivePreview);
   const terminalPanelRef = useTogglePanel(showTerminal);
   const webcamPanelRef = useTogglePanel(showWebcam);
 
-  const disconnect = useCallback(() => {
-    leaveRoom();
-    socket.disconnect();
-  }, [socket]);
-
-  // Memoized socket event handlers
-  const handleUsersUpdate = useCallback((usersDict: Record<string, string>) => {
-    userMap.clear();
-    userMap.addBulk(usersDict);
-    setUsers(userMap.getAll());
-  }, []);
-
-  const handleMarkdownReceive = useCallback((md: string) => {
-    setMdContent(md);
-  }, []);
-
-  const handleTerminalReceive = useCallback((result: ExecutionResult) => {
-    setOutput((prev) => [...prev, result]);
-  }, []);
+  // History arrives on every (re)connect; only the first one seeds the
+  // terminal, so output cleared locally stays cleared
+  const hasHistoryRef = useRef(false);
+  useRoomMessage("terminal-history", ({ results }) => {
+    if (!hasHistoryRef.current) {
+      hasHistoryRef.current = true;
+      setOutput(results);
+    }
+  });
+  useRoomMessage("terminal", ({ result }) => {
+    setOutput((previous) => [...previous, result]);
+  });
 
   useEffect(() => {
-    if (!socket.connected) {
-      router.replace(`/?room=${roomId}`);
-    }
-
-    // The code editor runs its own CRDT handshake, so only users and notes
-    // are fetched here.
-    const syncRoom = () => {
-      socket.emit(RoomServiceMsg.SYNC_USERS);
-      socket.emit(RoomServiceMsg.SYNC_MD);
-    };
-    syncRoom();
-
-    // The server drops a disconnected socket from its room, so join again.
-    // Emits made on `reconnect` are flushed before any `connect` listener runs.
-    const handleReconnect = () => {
-      const username = storage.getUsername();
-      if (username) {
-        socket.emit(RoomServiceMsg.JOIN, roomId, username);
-      }
-    };
-
-    const handleRejoin = (customId: string) => {
-      storage.setUserId(customId);
-      syncRoom();
-      socket.emit(CodeServiceMsg.SYNC_LANG);
-    };
-
-    const handleTerminate = () => {
-      storage.clear();
-      sessionStorage.setItem(ROOM_TERMINATED_KEY, "1");
-      router.replace("/");
-    };
-
-    socket.io.on("reconnect", handleReconnect);
-    socket.on(RoomServiceMsg.JOIN, handleRejoin);
-    socket.on(RoomServiceMsg.NOT_FOUND, handleTerminate);
-    socket.on(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
-    socket.on(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
-    socket.on(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
-    socket.on(RoomServiceMsg.TERMINATE, handleTerminate);
-
-    window.addEventListener("popstate", disconnect);
-
     initEditorTheme();
-
-    return () => {
-      window.removeEventListener("popstate", disconnect);
-      socket.io.off("reconnect", handleReconnect);
-      socket.off(RoomServiceMsg.JOIN, handleRejoin);
-      socket.off(RoomServiceMsg.NOT_FOUND, handleTerminate);
-      socket.off(RoomServiceMsg.SYNC_USERS, handleUsersUpdate);
-      socket.off(RoomServiceMsg.UPDATE_MD, handleMarkdownReceive);
-      socket.off(CodeServiceMsg.UPDATE_TERM, handleTerminalReceive);
-      socket.off(RoomServiceMsg.TERMINATE, handleTerminate);
-      userMap.clear();
-    };
-  }, [
-    disconnect,
-    roomId,
-    router,
-    socket,
-    handleUsersUpdate,
-    handleMarkdownReceive,
-    handleTerminalReceive,
-  ]);
+  }, []);
 
   const handleMonacoSetup = useCallback((monacoInstance: Monaco) => {
     setMonaco(monacoInstance);
@@ -324,7 +302,7 @@ export default function Room() {
       aria-label="Code Editor Workspace"
       className="flex h-full min-w-[821px] flex-col"
     >
-      <RemotePointers />
+      {isConnected && <RemotePointers />}
       <div
         aria-label="Editor Controls"
         className="h-9 flex-shrink-0"
@@ -363,7 +341,7 @@ export default function Room() {
           panelRef={notepadPanelRef}
           role="region"
         >
-          <MemoizedNotepad markdown={mdContent} />
+          {isConnected ? <MemoizedNotepad /> : <EditorSkeleton />}
         </ResizablePanel>
         <ResizableHandle
           aria-label="Resize Handle"
@@ -384,12 +362,16 @@ export default function Room() {
                 orientation="horizontal"
               >
                 <ResizablePanel defaultSize="60%" minSize="10%">
-                  <CodeEditor
-                    cursorPosition={setCursorPosition}
-                    editorRef={handleEditorSetup}
-                    monacoRef={handleMonacoSetup}
-                    setCode={setCode}
-                  />
+                  {isConnected ? (
+                    <CodeEditor
+                      cursorPosition={setCursorPosition}
+                      editorRef={handleEditorSetup}
+                      monacoRef={handleMonacoSetup}
+                      setCode={setCode}
+                    />
+                  ) : (
+                    <CodeEditorSkeleton />
+                  )}
                 </ResizablePanel>
                 <ResizableHandle
                   aria-label="Resize Handle"
@@ -439,7 +421,7 @@ export default function Room() {
           panelRef={webcamPanelRef}
           role="region"
         >
-          <MemoizedWebcamStream users={users} />
+          {isConnected && <MemoizedWebcamStream users={users} />}
         </ResizablePanel>
       </ResizablePanelGroup>
       {monaco && editor ? (
@@ -456,4 +438,4 @@ export default function Room() {
       )}
     </main>
   );
-}
+};

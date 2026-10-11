@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ROOM_TERMINATED_KEY } from "@/lib/constants";
+import { ROOM_ENDED_KEY } from "@/lib/constants";
 import { parseError } from "@/lib/utils";
 
 import { BackButton } from "./components/back-button";
@@ -38,12 +38,17 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [joinError, setJoinError] = useState<string | null>(null);
-  const [isTerminated, setIsTerminated] = useState(false);
+  const [endedMessage, setEndedMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (sessionStorage.getItem(ROOM_TERMINATED_KEY)) {
-      sessionStorage.removeItem(ROOM_TERMINATED_KEY);
-      setIsTerminated(true);
+    const reason = sessionStorage.getItem(ROOM_ENDED_KEY);
+    if (reason) {
+      sessionStorage.removeItem(ROOM_ENDED_KEY);
+      setEndedMessage(
+        reason === "terminated"
+          ? "This room has been terminated."
+          : "This room no longer exists."
+      );
     }
   }, []);
 
@@ -93,11 +98,9 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
       <CardContent className="px-4 py-4 sm:px-6 sm:py-6">
         {/* biome-ignore lint/a11y/useSemanticElements: grouping form sections without fieldset semantics */}
         <div className="grid w-full items-center gap-4 sm:gap-6" role="group">
-          {isTerminated && (
+          {endedMessage && (
             <Alert variant="destructive">
-              <AlertDescription>
-                This room has been terminated.
-              </AlertDescription>
+              <AlertDescription>{endedMessage}</AlertDescription>
             </Alert>
           )}
           {(() => {

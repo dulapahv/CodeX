@@ -15,7 +15,7 @@ import type * as monaco from "monaco-editor";
 import type { RefObject } from "react";
 
 import { storage } from "@/lib/services/storage";
-import { userMap } from "@/lib/services/user-map";
+import { getBackgroundColor, getTextColor } from "@/lib/utils";
 
 import { createCursorStyle } from "../utils";
 
@@ -53,6 +53,7 @@ const isLineInViewport = (
 /**
  * Show cursor and selection when other users type or select text.
  * @param userID User identifier
+ * @param name User's display name
  * @param cursor Cursor data
  * @param editorInstanceRef Editor instance reference
  * @param monacoInstanceRef Monaco instance reference
@@ -60,6 +61,7 @@ const isLineInViewport = (
  */
 export const updateCursor = (
   userID: string,
+  name: string,
   cursor: Cursor,
   editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
   monacoInstanceRef: RefObject<Monaco | null>,
@@ -82,12 +84,11 @@ export const updateCursor = (
     }
   }
 
-  const name = userMap.get(userID) || "Unknown";
-
   // Clean up previous decoration
   cursorDecorationsRef.current[userID]?.clear();
 
-  const { backgroundColor, color } = userMap.getColors(userID);
+  const backgroundColor = getBackgroundColor(name);
+  const color = getTextColor(backgroundColor);
   const isFirstLine = cursor[0] === 1;
 
   const decorations: monaco.editor.IModelDeltaDecoration[] = [];

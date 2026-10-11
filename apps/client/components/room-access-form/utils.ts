@@ -4,64 +4,36 @@
  * - Room creation handling
  * - Room joining validation
  * - Room ID formatting
- * - Socket communications
+ * - Server requests
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { RoomServiceMsg } from "@codex/types/message";
 import type { ChangeEvent } from "react";
 
+import { createRoomId, roomExists } from "@/lib/realtime/rooms";
 import { storage } from "@/lib/services/storage";
-import { getSocket } from "@/lib/socket";
 
 const DASH_PATTERN = /-/g;
 const NON_ALPHANUMERIC_PATTERN = /[^A-Z0-9]/g;
 const ROOM_ID_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
-export const createRoom = (name: string): Promise<string> => {
-  return new Promise((resolve) => {
-    const socket = getSocket();
-
-    socket.once(RoomServiceMsg.CREATE, (roomId: string, userID: string) => {
-      const formattedRoomId = formatRoomId(roomId);
-
-      storage.setUserId(userID);
-      storage.setUsername(name);
-
-      resolve(formattedRoomId);
-    });
-    socket.emit(RoomServiceMsg.CREATE, name);
-  });
+// Creates a room and returns its ID formatted for display ("ABCD-EFGH")
+export const createRoom = async (name: string): Promise<string> => {
+  const roomId = await createRoomId();
+  storage.setUsername(name);
+  return formatRoomId(roomId);
 };
 
-export const joinRoom = (roomId: string, name: string): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    const socket = getSocket();
-
-    const cleanedRoomId = roomId.replace(DASH_PATTERN, "");
-
-    const handleNotFound = () => {
-      socket.off(RoomServiceMsg.JOIN, handleJoin);
-      reject("Room does not exist. Please check the room ID and try again.");
-    };
-    const handleJoin = (userID: string) => {
-      socket.off(RoomServiceMsg.NOT_FOUND, handleNotFound);
-      storage.setUserId(userID);
-      storage.setUsername(name);
-      resolve(true);
-    };
-
-    socket.once(RoomServiceMsg.NOT_FOUND, handleNotFound);
-    socket.once(RoomServiceMsg.JOIN, handleJoin);
-    socket.emit(RoomServiceMsg.JOIN, cleanedRoomId, name);
-  });
+export const joinRoom = async (roomId: string, name: string) => {
+  if (!(await roomExists(roomId.replace(DASH_PATTERN, "")))) {
+    throw new Error(
+      "Room does not exist. Please check the room ID and try again."
+    );
+  }
+  storage.setUsername(name);
 };
 
-/**
- * Handles room ID input changes with formatting
- * @param e - Change event from input element
- */
 export const onRoomIdChange = (e: ChangeEvent<HTMLInputElement>) => {
   const rawValue = e.target.value.toUpperCase();
   e.target.value = formatRoomId(rawValue);

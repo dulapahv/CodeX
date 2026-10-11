@@ -9,25 +9,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CodeServiceMsg } from "@codex/types/message";
 import type { ExecutionResult } from "@codex/types/terminal";
 import type { Monaco } from "@monaco-editor/react";
 import { OctagonX, Play } from "lucide-react";
 import type * as monaco from "monaco-editor";
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getSocket } from "@/lib/socket";
+import { usePresenceSelector, useRoom } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 import { AboutPopover } from "./components/about-popover";
 import { ArgsInputPopover } from "./components/args-stdin-popover";
-import { cancelExecution, executeCode } from "./utils";
+import { cancelExecution, executeCode, type RunReporter } from "./utils";
 
 interface RunButtonProps {
   className?: string;
@@ -42,42 +35,58 @@ const RunButton = ({
   setOutput,
   className,
 }: RunButtonProps) => {
-  const socket = getSocket();
+  const room = useRoom();
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isLocalRunning, setIsLocalRunning] = useState(false);
   const [args, setArgs] = useState<string[]>([]);
   const [stdin, setStdin] = useState("");
 
-  useEffect(() => {
-    socket.on(CodeServiceMsg.EXEC, setIsRunning);
+  // Only the person running can cancel; everyone else waits for them
+  const isOtherRunning = usePresenceSelector(
+    (states) =>
+      [...states].some(
+        ([clientId, state]) => clientId !== room.clientId && state.running
+      ),
+    Object.is
+  );
+  const isRunning = isLocalRunning || isOtherRunning;
 
-    return () => {
-      socket.off(CodeServiceMsg.EXEC, setIsRunning);
-    };
-  }, [socket]);
+  const reporter: RunReporter = {
+    report: (result) => {
+      setOutput((previous) => [...previous, result]);
+      room.send({ type: "terminal", result });
+    },
+    setRunning: (running) => {
+      setIsLocalRunning(running);
+      room.setPresence({ running });
+    },
+  };
 
   return (
     <div className="flex items-center gap-1">
       <div className="animate-fade-in-top">
         <Button
           aria-busy={isRunning}
-          aria-label={isRunning ? "Cancel execution" : "Run code"}
+          aria-label={(() => {
+            if (isLocalRunning) {
+              return "Cancel execution";
+            }
+            return isOtherRunning ? "Code is running" : "Run code";
+          })()}
           className={cn(
             "hover:!opacity-80 disabled:!opacity-50 h-7 bg-[color:var(--toolbar-accent)] bg-clip-border px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)]",
             isRunning && "bg-red-600 hover:bg-red-700",
             className
           )}
-          disabled={!editor}
+          disabled={!editor || (isOtherRunning && !isLocalRunning)}
           onClick={
-            isRunning
-              ? () =>
-                  cancelExecution(abortControllerRef, setIsRunning, setOutput)
+            isLocalRunning
+              ? () => cancelExecution(abortControllerRef, reporter)
               : () =>
                   executeCode(
                     monaco,
                     editor,
-                    setOutput,
-                    setIsRunning,
+                    reporter,
                     abortControllerRef,
                     args,
                     stdin

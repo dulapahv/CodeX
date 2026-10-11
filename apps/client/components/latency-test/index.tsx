@@ -14,7 +14,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { type ChangeEvent, useEffect, useState } from "react";
-import type { Socket } from "socket.io-client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,7 +28,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BASE_CLIENT_URL, BASE_SERVER_URL } from "@/lib/constants";
-import { getSocket } from "@/lib/socket";
 import { cn } from "@/lib/utils";
 
 import type { TestResult } from "./types";
@@ -38,6 +36,8 @@ import { calculateStats } from "./utils";
 const DEFAULT_ITERATIONS = 10;
 const MIN_ITERATIONS = 1;
 const MAX_ITERATIONS = 50;
+const PING_TIMEOUT_MS = 5000;
+const PING_URL = `${BASE_SERVER_URL.replace("http", "ws")}/ping`;
 
 const LatencyTest = () => {
   const [results, setResults] = useState<TestResult[]>([]);
@@ -45,23 +45,21 @@ const LatencyTest = () => {
   const [error, setError] = useState<string | null>(null);
   const [testCount, setTestCount] = useState(0);
   const [iterations, setIterations] = useState(DEFAULT_ITERATIONS);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
-  // Initialize socket connection on component mount
+  // An echo socket on the realtime server measures the WebSocket round trip
   useEffect(() => {
-    const newSocket = getSocket();
-    setSocket(newSocket);
-
-    const handleConnect = () => setIsConnecting(false);
-    if (newSocket.connected) {
-      handleConnect();
-    }
-    newSocket.on("connect", handleConnect);
+    const echo = new WebSocket(PING_URL);
+    const handleOpen = () => {
+      setSocket(echo);
+      setIsConnecting(false);
+    };
+    echo.addEventListener("open", handleOpen);
 
     return () => {
-      newSocket.off("connect", handleConnect);
-      newSocket.close();
+      echo.removeEventListener("open", handleOpen);
+      echo.close();
     };
   }, []);
 
@@ -88,22 +86,24 @@ const LatencyTest = () => {
 
     const socketLatency = await new Promise<number>((resolve, reject) => {
       const start = performance.now();
-      const timeout = setTimeout(() => {
-        reject(new Error("Socket ping timeout"));
-      }, 5000);
-
-      socket.emit("ping");
-      socket.once("pong", () => {
+      const handlePong = () => {
         clearTimeout(timeout);
         resolve(Math.round(performance.now() - start));
-      });
+      };
+      const timeout = setTimeout(() => {
+        socket.removeEventListener("message", handlePong);
+        reject(new Error("Socket ping timeout"));
+      }, PING_TIMEOUT_MS);
+
+      socket.addEventListener("message", handlePong, { once: true });
+      socket.send("ping");
     });
 
     return { http: httpLatency, socket: socketLatency };
   };
 
   const measureLatency = async () => {
-    if (!socket?.connected) {
+    if (socket?.readyState !== WebSocket.OPEN) {
       setError("Socket not connected");
       return;
     }

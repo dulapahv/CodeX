@@ -1,35 +1,14 @@
 /**
  * Common utility functions used across the application.
  * Features:
- * - Room management
  * - CSS class merging
  * - Error parsing
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { RoomServiceMsg } from "@codex/types/message";
-
-import { getSocket } from "@/lib/socket";
-
-import { storage } from "./services/storage";
-
 // biome-ignore lint/performance/noBarrelFile: shadcn convention, app code imports cn from here
 export { cn } from "cn";
-
-export const leaveRoom = (): void => {
-  const socket = getSocket();
-
-  socket.emit(RoomServiceMsg.LEAVE);
-  storage.clear();
-};
-
-export const terminateRoom = (): void => {
-  const socket = getSocket();
-
-  socket.emit(RoomServiceMsg.TERMINATE);
-  storage.clear();
-};
 
 export const parseError = (error: unknown): string => {
   if (error instanceof Error) {

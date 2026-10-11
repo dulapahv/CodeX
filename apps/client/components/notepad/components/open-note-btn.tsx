@@ -8,20 +8,21 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { RoomServiceMsg } from "@codex/types/message";
-
+import { ROOM_DOC } from "@codex/types/realtime";
 import { ButtonWithTooltip, type MDXEditorMethods } from "@mdxeditor/editor";
 import { Folder } from "lucide-react";
 import type { RefObject } from "react";
 
-import { getSocket } from "@/lib/socket";
+import { useRoom } from "@/lib/realtime/room-context";
+
+import { replaceText } from "../utils";
 
 interface MarkdownEditorProps {
   markdownEditorRef: RefObject<MDXEditorMethods | null>;
 }
 
 const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
-  const socket = getSocket();
+  const room = useRoom();
 
   return (
     <ButtonWithTooltip
@@ -40,7 +41,7 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
           reader.onload = () => {
             const markdown = reader.result as string;
             markdownEditorRef.current?.setMarkdown(markdown);
-            socket.emit(RoomServiceMsg.UPDATE_MD, markdown);
+            replaceText(room.doc.getText(ROOM_DOC.notes), markdown);
           };
           reader.readAsText(file);
         };

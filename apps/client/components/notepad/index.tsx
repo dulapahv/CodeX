@@ -12,7 +12,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+
+import { useRoom } from "@/lib/realtime/room-context";
 
 import { EditorSkeleton } from "./components/editor-skeleton";
 
@@ -25,13 +27,26 @@ const DynamicNotepadMain = dynamic(
   }
 );
 
-const Notepad = ({ markdown }: { markdown: string | null }) =>
-  markdown === null ? (
-    <EditorSkeleton />
-  ) : (
+// The editor starts from the shared notes, so wait for the first sync
+const Notepad = () => {
+  const room = useRoom();
+  const [isSynced, setIsSynced] = useState(room.isSynced);
+
+  useEffect(() => {
+    if (room.isSynced()) {
+      setIsSynced(true);
+      return;
+    }
+    return room.onSynced(() => setIsSynced(true));
+  }, [room]);
+
+  return isSynced ? (
     <Suspense fallback={null}>
-      <DynamicNotepadMain markdown={markdown} />
+      <DynamicNotepadMain />
     </Suspense>
+  ) : (
+    <EditorSkeleton />
   );
+};
 
 export { Notepad };

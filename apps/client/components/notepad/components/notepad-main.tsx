@@ -11,7 +11,7 @@
 
 "use client";
 
-import { RoomServiceMsg } from "@codex/types/message";
+import { ROOM_DOC } from "@codex/types/realtime";
 
 import {
   AdmonitionDirectiveDescriptor,
@@ -49,29 +49,27 @@ import {
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-import { getSocket } from "@/lib/socket";
+import type * as Y from "yjs";
+import { useRoom } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 import { codeBlockLanguages } from "../constants";
+import { NOTES_ORIGIN, replaceText } from "../utils";
 import { OpenNoteBtn } from "./open-note-btn";
 import { SaveNoteBtn } from "./save-note-btn";
 
 import "@mdxeditor/editor/style.css";
 import "@radix-ui/colors/mauve-dark.css";
 
-interface MarkdownEditorProps {
-  markdown: string;
-}
-
-const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
+const MarkdownEditorMain = () => {
   const { resolvedTheme } = useTheme();
-  const socket = getSocket();
+  const room = useRoom();
+  const notes = room.doc.getText(ROOM_DOC.notes);
 
   const [key, setKey] = useState(0);
 
   const markdownEditorRef = useRef<MDXEditorMethods>(null);
-  const contentRef = useRef(markdown);
+  const contentRef = useRef(notes.toString());
 
   const plugins = useMemo(
     () => [
@@ -133,17 +131,18 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
   );
 
   useEffect(() => {
-    const handleUpdate = (value: string) => {
+    const handleChange = (_event: Y.YTextEvent, transaction: Y.Transaction) => {
+      if (transaction.origin === NOTES_ORIGIN) {
+        return;
+      }
+      const value = notes.toString();
       contentRef.current = value;
       markdownEditorRef.current?.setMarkdown(value);
     };
 
-    socket.on(RoomServiceMsg.UPDATE_MD, handleUpdate);
-
-    return () => {
-      socket.off(RoomServiceMsg.UPDATE_MD, handleUpdate);
-    };
-  }, [socket]);
+    notes.observe(handleChange);
+    return () => notes.unobserve(handleChange);
+  }, [notes]);
 
   useEffect(() => {
     const editor = markdownEditorRef.current;
@@ -155,7 +154,7 @@ const MarkdownEditorMain = ({ markdown }: MarkdownEditorProps) => {
 
   const onChange = (value: string) => {
     contentRef.current = value;
-    socket.emit(RoomServiceMsg.UPDATE_MD, value);
+    replaceText(notes, value);
   };
 
   return (

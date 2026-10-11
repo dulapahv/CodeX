@@ -9,28 +9,73 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { PointerServiceMsg } from "@codex/types/message";
 import type { Pointer } from "@codex/types/pointer";
+import type { Presence } from "@codex/types/realtime";
 import { MousePointer2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { userMap } from "@/lib/services/user-map";
-import { getSocket } from "@/lib/socket";
+import { useRoom } from "@/lib/realtime/room-context";
+import { getBackgroundColor, getTextColor } from "@/lib/utils";
 
 interface RemotePointer {
-  id: string;
+  id: number;
   isVisible: boolean;
   lastUpdate: number;
+  name: string;
   position: Pointer;
+}
+
+interface AwarenessChange {
+  added: number[];
+  removed: number[];
+  updated: number[];
 }
 
 const POINTER_TIMEOUT = 2700; // Hide pointer after 2.7 seconds of inactivity
 const FADE_DURATION = 200; // Duration of fade out animation in ms
-const THROTTLE_MS = 16; // Approximately 60fps for smoother updates
+// Each update carries the sender's whole presence, so ~30 per second
+const THROTTLE_MS = 33;
+const SWEEP_INTERVAL = 1000;
+
+// Refreshes pointers that moved and drops those whose owner left
+const applyPresenceChange = (
+  previous: Map<number, RemotePointer>,
+  { added, updated, removed }: AwarenessChange,
+  states: Map<number, Presence>,
+  selfId: number
+): Map<number, RemotePointer> => {
+  const next = new Map(previous);
+  let hasChanged = false;
+
+  for (const clientId of removed) {
+    hasChanged = next.delete(clientId) || hasChanged;
+  }
+  for (const clientId of [...added, ...updated]) {
+    const state = states.get(clientId);
+    const pointer = state?.pointer;
+    const current = previous.get(clientId);
+    const isUnmoved =
+      current?.position[0] === pointer?.[0] &&
+      current?.position[1] === pointer?.[1];
+    if (clientId === selfId || !(state && pointer) || isUnmoved) {
+      continue;
+    }
+    next.set(clientId, {
+      id: clientId,
+      name: state.user.name,
+      position: pointer,
+      lastUpdate: Date.now(),
+      isVisible: true,
+    });
+    hasChanged = true;
+  }
+
+  return hasChanged ? next : previous;
+};
 
 const RemotePointers = () => {
-  const socket = getSocket();
-  const [pointers, setPointers] = useState<Map<string, RemotePointer>>(
+  const room = useRoom();
+  const [pointers, setPointers] = useState<Map<number, RemotePointer>>(
     new Map()
   );
   const lastEmitRef = useRef(0);
@@ -52,92 +97,67 @@ const RemotePointers = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle sending pointer updates
-  const handlePointerMove = useCallback(
-    (event: PointerEvent) => {
+  // Share this user's pointer as a percentage of the viewport
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
       const now = Date.now();
       if (now - lastEmitRef.current < THROTTLE_MS) {
         return;
       }
-
-      // Calculate relative positions as percentages and round to 2 decimal places
-      const relativeX = Number(
-        ((event.clientX / window.innerWidth) * 100).toFixed(2)
-      );
-      const relativeY = Number(
-        ((event.clientY / window.innerHeight) * 100).toFixed(2)
-      );
-
-      const pointer: Pointer = [relativeX, relativeY];
-
-      socket.emit(PointerServiceMsg.POINTER, pointer);
       lastEmitRef.current = now;
-    },
-    [socket]
-  );
 
-  useEffect(() => {
-    const handlePointerUpdate = (userId: string, pointer: Pointer) => {
-      setPointers((prev) => {
-        const updated = new Map(prev);
-        updated.set(userId, {
-          id: userId,
-          position: pointer,
-          lastUpdate: Date.now(),
-          isVisible: true,
-        });
-        return updated;
-      });
+      const pointer: Pointer = [
+        Number(((event.clientX / window.innerWidth) * 100).toFixed(2)),
+        Number(((event.clientY / window.innerHeight) * 100).toFixed(2)),
+      ];
+      room.setPresence({ pointer });
     };
-
-    const cleanup = setInterval(() => {
-      setPointers((prev) => {
-        const now = Date.now();
-        const updated = new Map(prev);
-        let hasChanges = false;
-
-        for (const [id, pointer] of updated.entries()) {
-          const timeSinceUpdate = now - pointer.lastUpdate;
-
-          // Start fade out animation
-          if (timeSinceUpdate > POINTER_TIMEOUT && pointer.isVisible) {
-            updated.set(id, { ...pointer, isVisible: false });
-            hasChanges = true;
-
-            // Remove pointer after fade animation completes
-            setTimeout(() => {
-              setPointers((current) => {
-                const next = new Map(current);
-                next.delete(id);
-                return next;
-              });
-            }, FADE_DURATION);
-          }
-        }
-
-        return hasChanges ? updated : prev;
-      });
-    }, 1000);
 
     window.addEventListener("pointermove", handlePointerMove);
-    socket.on(PointerServiceMsg.POINTER, handlePointerUpdate);
+    return () => window.removeEventListener("pointermove", handlePointerMove);
+  }, [room]);
 
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      socket.off(PointerServiceMsg.POINTER, handlePointerUpdate);
-      clearInterval(cleanup);
+  // Track other users' pointers from presence
+  useEffect(() => {
+    const handleChange = (change: AwarenessChange) => {
+      const states = room.awareness.getStates() as Map<number, Presence>;
+      setPointers((previous) =>
+        applyPresenceChange(previous, change, states, room.clientId)
+      );
     };
-  }, [socket, handlePointerMove]);
+
+    room.awareness.on("change", handleChange);
+    return () => room.awareness.off("change", handleChange);
+  }, [room]);
+
+  // Fade out idle pointers, then drop them
+  useEffect(() => {
+    const sweep = setInterval(() => {
+      const now = Date.now();
+      setPointers((previous) => {
+        let next: Map<number, RemotePointer> | null = null;
+        for (const [id, pointer] of previous) {
+          const idleFor = now - pointer.lastUpdate;
+          if (idleFor > POINTER_TIMEOUT + FADE_DURATION) {
+            next ??= new Map(previous);
+            next.delete(id);
+          } else if (idleFor > POINTER_TIMEOUT && pointer.isVisible) {
+            next ??= new Map(previous);
+            next.set(id, { ...pointer, isVisible: false });
+          }
+        }
+        return next ?? previous;
+      });
+    }, SWEEP_INTERVAL);
+
+    return () => clearInterval(sweep);
+  }, []);
 
   return (
     <>
       {Array.from(pointers.values()).map((pointer) => {
-        const username = userMap.get(pointer.id);
-        if (!username) {
-          return null;
-        }
-
-        const { backgroundColor, color } = userMap.getColors(pointer.id);
+        const backgroundColor = getBackgroundColor(pointer.name);
+        const color = getTextColor(backgroundColor);
 
         // Calculate scaled position based on viewport differences
         const scaledX = (pointer.position[0] / 100) * viewport.width;
@@ -175,7 +195,7 @@ const RemotePointers = () => {
                   className="truncate font-medium text-xs"
                   style={{ color }}
                 >
-                  {username}
+                  {pointer.name}
                 </span>
               </div>
             </div>

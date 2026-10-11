@@ -8,14 +8,20 @@
 import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
 import {
   type ExecutionResult,
   ExecutionResultType,
 } from "@codex/types/terminal";
-import { io as Client } from "socket.io-client";
 
-const SERVER_URL = process.env.SERVER_URL;
+import {
+  calculateStats,
+  connectPeer,
+  createRoomPeer,
+  SERVER_URL,
+  settle,
+  type TestPeer,
+} from "./helpers";
+
 const SAMPLES_PER_TEST = 50;
 
 const testCases: Array<{
@@ -181,100 +187,43 @@ Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.max
 }
 
 describe("Terminal Output Synchronization Tests", () => {
-  let senderSocket: ReturnType<typeof Client>;
-  let receiverSocket: ReturnType<typeof Client>;
-  let roomId: string;
+  let sender: TestPeer;
+  let receiver: TestPeer;
   const report = new TerminalLatencyReport();
 
-  const createSocket = () => Client(SERVER_URL);
-
   beforeAll(async () => {
-    // Create sender socket and room
-    senderSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      senderSocket.on("connect_error", (error) => reject(error));
-      senderSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Create room
-    await new Promise<void>((resolve) => {
-      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
-        roomId = receivedRoomId;
-        resolve();
-      });
-      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
-    });
-
-    // Setup receiver
-    receiverSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      receiverSocket.on("connect_error", (error) => reject(error));
-      receiverSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Join room
-    await new Promise<void>((resolve) => {
-      receiverSocket.once(RoomServiceMsg.JOIN, () => {
-        resolve();
-      });
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
-    });
+    const [peer, roomId] = await createRoomPeer("Sender");
+    sender = peer;
+    receiver = await connectPeer(roomId, "Receiver");
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+    await settle(1000);
   }, 160_000);
 
   afterAll(() => {
     report.saveToFile();
-    senderSocket?.disconnect();
-    receiverSocket?.disconnect();
+    sender?.leave();
+    receiver?.leave();
   });
+
+  // Sends a result and times its arrival at the receiver
+  const sendOutput = async (output: ExecutionResult): Promise<number> => {
+    const received = receiver.nextMessage("terminal");
+    const startTime = performance.now();
+    sender.send({ type: "terminal", result: output });
+    await received;
+    return performance.now() - startTime;
+  };
 
   const measureLatency = async (output: ExecutionResult): Promise<number[]> => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
-
-      const startTime = performance.now();
-      await new Promise<void>((resolve) => {
-        receiverSocket.once(CodeServiceMsg.UPDATE_TERM, () => {
-          const latency = performance.now() - startTime;
-          latencies.push(latency);
-          resolve();
-        });
-        senderSocket.emit(CodeServiceMsg.UPDATE_TERM, output);
-      });
+      await settle(100); // Delay between samples
+      latencies.push(await sendOutput(output));
     }
 
     return latencies;
-  };
-
-  const calculateStats = (
-    samples: number[]
-  ): {
-    average: number;
-    standardDeviation: number;
-    minimum: number;
-    maximum: number;
-  } => {
-    const average = samples.reduce((a, b) => a + b) / samples.length;
-    const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + (val - average) ** 2, 0) /
-        samples.length
-    );
-    return {
-      average,
-      standardDeviation,
-      minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
-    };
   };
 
   test.each(testCases)("Terminal output latency for $name", async ({
@@ -298,36 +247,20 @@ describe("Terminal Output Synchronization Tests", () => {
   test("Streaming large output simulation", async () => {
     const chunks = 100;
     const chunkSize = 1000;
-    const timings: number[] = [];
     let totalSize = 0;
 
-    await Promise.all(
-      new Array(chunks).fill(null).map((_, i) => {
-        const chunk: ExecutionResult = {
-          language: "python",
-          version: "3.9",
-          run: {
-            stdout: `Chunk ${i + 1}: ${"x".repeat(chunkSize)}`,
-            stderr: "",
-            code: 0,
-            signal: null,
-            output: `Chunk ${i + 1}: ${"x".repeat(chunkSize)}`,
-          },
-          type: ExecutionResultType.OUTPUT,
-        };
+    const outputs = Array.from({ length: chunks }, (_, i): ExecutionResult => {
+      const text = `Chunk ${i + 1}: ${"x".repeat(chunkSize)}`;
+      totalSize += Buffer.from(text).length;
+      return {
+        language: "python",
+        version: "3.9",
+        run: { stdout: text, stderr: "", code: 0, signal: null, output: text },
+        type: ExecutionResultType.OUTPUT,
+      };
+    });
 
-        totalSize += Buffer.from(chunk.run.output).length;
-
-        return new Promise<void>((resolve) => {
-          const startTime = performance.now();
-          receiverSocket.once(CodeServiceMsg.UPDATE_TERM, () => {
-            timings.push(performance.now() - startTime);
-            resolve();
-          });
-          senderSocket.emit(CodeServiceMsg.UPDATE_TERM, chunk);
-        });
-      })
-    );
+    const timings = await Promise.all(outputs.map(sendOutput));
 
     const stats = calculateStats(timings);
     report.setStreamingResult({

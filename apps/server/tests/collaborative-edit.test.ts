@@ -1,37 +1,44 @@
 /**
- * Socket.IO Latency Analysis for Collaborative Editing
+ * WebSocket latency analysis for collaborative editing
  * Enhanced reporting for academic evaluation
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { CodeServiceMsg, RoomServiceMsg } from "@codex/types/message";
-import { io as Client } from "socket.io-client";
+import { ROOM_DOC } from "@codex/types/realtime";
 import * as Y from "yjs";
 
-const SERVER_URL = process.env.SERVER_URL;
+import {
+  calculateStats,
+  connectPeer,
+  createRoomPeer,
+  SERVER_URL,
+  settle,
+  type TestPeer,
+} from "./helpers";
+
 const SAMPLES_PER_TEST = 50;
 
-/** Must match CODE_TEXT_KEY on the client and server. */
-const CODE_TEXT_KEY = "monaco";
+interface Edit {
+  // The document containing `initialCode`, which the edit builds on
+  setup: Uint8Array;
+  // The payload a real client would put on the wire for the edit
+  update: Uint8Array;
+}
 
-/**
- * Build the binary update produced by applying `mutate` to a document that
- * already contains `initialCode`. This is the payload a real client would put
- * on the wire for that edit.
- */
-const buildUpdate = (
+const buildEdit = (
   initialCode: string,
   mutate: (text: Y.Text) => void
-): Uint8Array => {
+): Edit => {
   const doc = new Y.Doc();
-  const text = doc.getText(CODE_TEXT_KEY);
+  const text = doc.getText(ROOM_DOC.code);
   text.insert(0, initialCode);
+  const setup = Y.encodeStateAsUpdate(doc);
 
   const before = Y.encodeStateVector(doc);
   doc.transact(() => mutate(text));
-  return Y.encodeStateAsUpdate(doc, before);
+  return { setup, update: Y.encodeStateAsUpdate(doc, before) };
 };
 
 const testCases: TestCase[] = [
@@ -187,140 +194,78 @@ Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.max
   }
 }
 
-describe("Socket.IO Latency Tests", () => {
-  let senderSocket: ReturnType<typeof Client>;
-  let receiverSocket: ReturnType<typeof Client>;
-  let roomId: string;
+describe("WebSocket Latency Tests", () => {
+  let sender: TestPeer;
+  let receiver: TestPeer;
   const report = new LatencyReport();
 
-  const createSocket = () => Client(SERVER_URL);
-
   beforeAll(async () => {
-    // Create sender socket and room
-    senderSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      senderSocket.on("connect_error", (error) => reject(error));
-      senderSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Create room
-    await new Promise<void>((resolve) => {
-      senderSocket.once(RoomServiceMsg.CREATE, (receivedRoomId: string) => {
-        roomId = receivedRoomId;
-        resolve();
-      });
-      senderSocket.emit(RoomServiceMsg.CREATE, "Sender");
-    });
-
-    // Setup receiver
-    receiverSocket = createSocket();
-    await new Promise<void>((resolve, reject) => {
-      receiverSocket.on("connect_error", (error) => reject(error));
-      receiverSocket.on("connect", () => {
-        resolve();
-      });
-    });
-
-    // Join room
-    await new Promise<void>((resolve) => {
-      receiverSocket.once(RoomServiceMsg.JOIN, () => {
-        resolve();
-      });
-      receiverSocket.emit(RoomServiceMsg.JOIN, roomId, "Receiver");
-    });
+    const [peer, roomId] = await createRoomPeer("Sender");
+    sender = peer;
+    receiver = await connectPeer(roomId, "Receiver");
 
     // Warmup connection
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+    await settle(1000);
   }, 130_000);
 
   afterAll(() => {
     report.saveToFile();
-    senderSocket?.disconnect();
-    receiverSocket?.disconnect();
+    sender?.leave();
+    receiver?.leave();
   });
 
-  const measureLatency = async (update: Uint8Array): Promise<number[]> => {
+  // Applies an update to the sender and times its arrival at the receiver
+  const sendUpdate = async (update: Uint8Array): Promise<number> => {
+    const received = receiver.nextDocUpdate();
+    const startTime = performance.now();
+    Y.applyUpdate(sender.doc, update);
+    await received;
+    return performance.now() - startTime;
+  };
+
+  // Each sample needs a fresh edit: Yjs ignores one it has already applied,
+  // and holds back one whose base text it hasn't seen
+  const measureLatency = async (
+    initialCode: string,
+    mutate: (text: Y.Text) => void
+  ): Promise<number[]> => {
     const latencies: number[] = [];
 
     for (let i = 0; i < SAMPLES_PER_TEST; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between samples
-
-      const startTime = performance.now();
-      await new Promise<void>((resolve) => {
-        receiverSocket.once(CodeServiceMsg.UPDATE_CODE, () => {
-          const latency = performance.now() - startTime;
-          latencies.push(latency);
-          resolve();
-        });
-        senderSocket.emit(CodeServiceMsg.UPDATE_CODE, update);
-      });
+      await settle(100); // Delay between samples
+      const { setup, update } = buildEdit(initialCode, mutate);
+      await sendUpdate(setup);
+      latencies.push(await sendUpdate(update));
     }
 
     return latencies;
   };
 
-  const calculateStats = (
-    samples: number[]
-  ): {
-    average: number;
-    standardDeviation: number;
-    minimum: number;
-    maximum: number;
-  } => {
-    const average = samples.reduce((a, b) => a + b) / samples.length;
-    const standardDeviation = Math.sqrt(
-      samples.reduce((acc, val) => acc + (val - average) ** 2, 0) /
-        samples.length
-    );
-    return {
-      average,
-      standardDeviation,
-      minimum: Math.min(...samples),
-      maximum: Math.max(...samples),
-    };
-  };
-
-  test.each(testCases)("Socket.IO latency for $name", async ({
+  test.each(testCases)("WebSocket latency for $name", async ({
     name,
     initialCode,
     mutate,
   }) => {
-    const update = buildUpdate(initialCode, mutate);
-    const latencies = await measureLatency(update);
+    const latencies = await measureLatency(initialCode, mutate);
     const stats = calculateStats(latencies);
 
     report.addResult({
       name,
       samples: latencies,
       ...stats,
-      operationSize: update.byteLength,
+      operationSize: buildEdit(initialCode, mutate).update.byteLength,
     });
   });
 
-  test("Socket.IO latency for rapid edits", async () => {
+  test("WebSocket latency for rapid edits", async () => {
     const RAPID_EDIT_COUNT = 100;
-    const edits = Array.from({ length: RAPID_EDIT_COUNT }, (_, i) =>
-      buildUpdate("", (text) => text.insert(0, `${i}`))
+    // Inserts into an empty document, so no setup is needed
+    const edits = Array.from(
+      { length: RAPID_EDIT_COUNT },
+      (_, i) => buildEdit("", (text) => text.insert(0, `${i}`)).update
     );
-    const timings: number[] = [];
 
-    await Promise.all(
-      edits.map(
-        (edit) =>
-          new Promise<void>((resolve) => {
-            const startTime = performance.now();
-            receiverSocket.once(CodeServiceMsg.UPDATE_CODE, () => {
-              timings.push(performance.now() - startTime);
-              resolve();
-            });
-            senderSocket.emit(CodeServiceMsg.UPDATE_CODE, edit);
-          })
-      )
-    );
+    const timings = await Promise.all(edits.map(sendUpdate));
 
     const stats = calculateStats(timings);
     report.setRapidEditResult({

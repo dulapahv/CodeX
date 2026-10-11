@@ -9,13 +9,20 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { StreamServiceMsg } from "@codex/types/message";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import Peer from "simple-peer";
 
-import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
 import { reportWebcamError } from "./errors";
+
+type SignalSender = (userID: string, signal: Peer.SignalData) => void;
+
+// Set by the webcam's room hook while the webcam panel is mounted
+let sendSignal: SignalSender | null = null;
+
+export const setSignalSender = (sender: SignalSender | null) => {
+  sendSignal = sender;
+};
 
 // Create a new peer connection for a specific user
 export const createPeer = (
@@ -28,7 +35,6 @@ export const createPeer = (
   >,
   pendingSignalsRef: RefObject<Record<string, Peer.SignalData[]>>
 ) => {
-  const socket = getSocket();
   try {
     // Clean up existing peer if it exists
     cleanupPeer(userID, peersRef, setRemoteStreams);
@@ -44,7 +50,7 @@ export const createPeer = (
 
     // Send signals to the specific target user, not broadcast
     peer.on("signal", (signal) => {
-      socket.emit(StreamServiceMsg.SIGNAL, { signal, targetUserID: userID });
+      sendSignal?.(userID, signal);
     });
 
     peer.on("stream", (stream) => {

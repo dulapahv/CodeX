@@ -2,7 +2,7 @@
 # Features:
 # - Server unit tests (Jest) and client E2E tests (Playwright)
 # - Builds and deploys the client to Cloudflare Workers only after tests pass
-# - Triggers the Render deploy hook for the server
+# - Deploys the realtime server Worker (Durable Objects) to Cloudflare
 #
 # By Dulapah Vibulsanti (https://dulapahv.dev)
 
@@ -238,7 +238,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-server:
-    name: Deploy server to Render
+    name: Deploy server to Cloudflare
     if: >-
       github.event_name == 'push' && github.ref == 'refs/heads/main'
       && needs.changes.outputs.server == 'true'
@@ -246,5 +246,24 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Trigger Render deploy hook
-        run: curl -fsS -X POST "${{ secrets.SERVER_DEPLOY_HOOK }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy to Cloudflare
+        working-directory: apps/server
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

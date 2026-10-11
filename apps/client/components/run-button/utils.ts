@@ -8,25 +8,27 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { CodeServiceMsg } from "@codex/types/message";
 import {
   type ExecutionResult,
   ExecutionResultType,
 } from "@codex/types/terminal";
 import type { Monaco } from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { RefObject } from "react";
 
 import { executeCode as executeCodeAction } from "@/actions/execute";
-import { getSocket } from "@/lib/socket";
 import { parseError } from "@/lib/utils";
+
+// Where a run's results and running state go: this terminal and the room
+export interface RunReporter {
+  report: (result: ExecutionResult) => void;
+  setRunning: (isRunning: boolean) => void;
+}
 
 export const cancelExecution = (
   abortControllerRef: RefObject<AbortController | null>,
-  setIsRunning: Dispatch<SetStateAction<boolean>>,
-  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>
+  reporter: RunReporter
 ) => {
-  const socket = getSocket();
   if (abortControllerRef.current) {
     abortControllerRef.current.abort();
     const endTime = new Date();
@@ -45,18 +47,15 @@ export const cancelExecution = (
       type: ExecutionResultType.WARNING,
     };
 
-    setOutput((currentOutput) => [...currentOutput, res]);
-    socket.emit(CodeServiceMsg.UPDATE_TERM, res);
-    setIsRunning(false);
-    socket.emit(CodeServiceMsg.EXEC, false);
+    reporter.report(res);
+    reporter.setRunning(false);
   }
 };
 
 export const executeCode = async (
   monaco: Monaco | null,
   editor: monaco.editor.IStandaloneCodeEditor | null,
-  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>,
-  setIsRunning: Dispatch<SetStateAction<boolean>>,
+  reporter: RunReporter,
   abortControllerRef: RefObject<AbortController | null>,
   args: string[],
   stdin: string
@@ -65,11 +64,8 @@ export const executeCode = async (
     return;
   }
 
-  const socket = getSocket();
-
   const startTime = new Date();
-  setIsRunning(true);
-  socket.emit(CodeServiceMsg.EXEC, true);
+  reporter.setRunning(true);
 
   // Create new AbortController for this execution
   abortControllerRef.current = new AbortController();
@@ -91,8 +87,7 @@ export const executeCode = async (
         timestamp: new Date(),
         type: ExecutionResultType.WARNING,
       };
-      setOutput((currentOutput) => [...currentOutput, res]);
-      socket.emit(CodeServiceMsg.UPDATE_TERM, res);
+      reporter.report(res);
       return;
     }
 
@@ -110,8 +105,7 @@ export const executeCode = async (
       type: ExecutionResultType.INFO,
     };
 
-    setOutput((currentOutput) => [...currentOutput, res]);
-    socket.emit(CodeServiceMsg.UPDATE_TERM, res);
+    reporter.report(res);
 
     const model = editor.getModel();
     const currentLanguageId = model?.getLanguageId();
@@ -144,8 +138,7 @@ export const executeCode = async (
       executionTime,
       type: ExecutionResultType.OUTPUT,
     };
-    setOutput((currentOutput) => [...currentOutput, resultWithTimestamp]);
-    socket.emit(CodeServiceMsg.UPDATE_TERM, resultWithTimestamp);
+    reporter.report(resultWithTimestamp);
   } catch (error) {
     // Don't show error message if the request was cancelled
     if (error instanceof DOMException && error.name === "AbortError") {
@@ -169,11 +162,9 @@ export const executeCode = async (
       executionTime,
       type: ExecutionResultType.ERROR,
     };
-    setOutput((currentOutput) => [...currentOutput, res]);
-    socket.emit(CodeServiceMsg.UPDATE_TERM, res);
+    reporter.report(res);
   } finally {
     abortControllerRef.current = null;
-    setIsRunning(false);
-    socket.emit(CodeServiceMsg.EXEC, false);
+    reporter.setRunning(false);
   }
 };

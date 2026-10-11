@@ -2,35 +2,31 @@
  * Custom hook for handling room-related actions.
  * Features:
  * - Room leaving handler
+ * - Room termination for everyone
  * - Navigation after leaving
- * - Error handling
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useRouter } from "next/navigation";
 
-import { leaveRoom, terminateRoom } from "@/lib/utils";
+import { useRoom } from "@/lib/realtime/room-context";
+import { storage } from "@/lib/services/storage";
 
 export const useRoomActions = () => {
   const router = useRouter();
+  const room = useRoom();
 
+  // Leaving the room page closes the connection, which others see as a leave
   const handleLeaveRoom = () => {
-    try {
-      leaveRoom();
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to leave room:", error);
-    }
+    storage.clear();
+    router.push("/");
   };
 
   const handleTerminateRoom = () => {
-    try {
-      terminateRoom();
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to terminate room:", error);
-    }
+    room.send({ type: "terminate" });
+    storage.clear();
+    router.push("/");
   };
 
   return {

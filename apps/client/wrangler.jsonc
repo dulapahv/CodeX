@@ -12,11 +12,6 @@
       "custom_domain": true
     }
   ],
-  "vars": {
-    // Workaround for opennextjs/opennextjs-cloudflare#1232 (open).
-    // https://github.com/opennextjs/opennextjs-cloudflare/issues/1232
-    "NEXT_PRIVATE_MINIMAL_MODE": "1"
-  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
