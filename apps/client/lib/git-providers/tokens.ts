@@ -18,14 +18,70 @@ const SESSION_LENGTH_MS = 30 * 24 * 60 * 60 * 1000;
 const STATE_MAX_AGE_SECONDS = 10 * 60;
 const MS_PER_SECOND = 1000;
 const STATE_COOKIE = "oauth_state";
+// Browsers silently drop a cookie over 4 KB, and Bitbucket's tokens alone are
+// larger, so a long session is split across numbered cookies
+const MAX_CHUNK_LENGTH = 3800;
+const MAX_CHUNKS = 20;
 
 interface Session extends TokenSet {
   sessionExpiresAt: number;
 }
 
+type CookieStore = Awaited<ReturnType<typeof cookies>>;
+
 const sessionCookie = (provider: ProviderId) => `git_${provider}`;
 const sessionPath = (provider: ProviderId) => `/api/${provider}`;
 const statePath = (provider: ProviderId) => `/api/${provider}/auth`;
+
+// The first piece keeps the plain name, so short sessions look as they did
+const chunkCookie = (provider: ProviderId, index: number) =>
+  index === 0 ? sessionCookie(provider) : `${sessionCookie(provider)}.${index}`;
+
+// Measured after URL-encoding, which is how the value is sent
+const splitValue = (value: string): string[] => {
+  const chunks: string[] = [];
+  let chunk = "";
+  let length = 0;
+  for (const char of value) {
+    const charLength = encodeURIComponent(char).length;
+    if (length + charLength > MAX_CHUNK_LENGTH) {
+      chunks.push(chunk);
+      chunk = "";
+      length = 0;
+    }
+    chunk += char;
+    length += charLength;
+  }
+  chunks.push(chunk);
+  return chunks;
+};
+
+const readSessionValue = (cookieStore: CookieStore, provider: ProviderId) => {
+  let value = "";
+  for (let index = 0; index < MAX_CHUNKS; index++) {
+    const chunk = cookieStore.get(chunkCookie(provider, index))?.value;
+    if (chunk === undefined) {
+      break;
+    }
+    value += chunk;
+  }
+  return value || undefined;
+};
+
+// Removes the numbered pieces from `fromIndex` on, left over from a longer
+// session
+const deleteChunks = (
+  cookieStore: CookieStore,
+  provider: ProviderId,
+  fromIndex: number
+) => {
+  for (let index = fromIndex; index < MAX_CHUNKS; index++) {
+    const name = chunkCookie(provider, index);
+    if (cookieStore.has(name)) {
+      cookieStore.delete({ name, path: sessionPath(provider) });
+    }
+  }
+};
 
 const cookieOptions = (path: string, maxAge: number) => ({
   httpOnly: true,
@@ -58,22 +114,20 @@ export const writeSession = async (
 ) => {
   const cookieStore = await cookies();
   const session: Session = { ...tokens, sessionExpiresAt };
-  cookieStore.set(
-    sessionCookie(provider),
-    JSON.stringify(session),
-    cookieOptions(
-      sessionPath(provider),
-      Math.floor((sessionExpiresAt - Date.now()) / MS_PER_SECOND)
-    )
+  const options = cookieOptions(
+    sessionPath(provider),
+    Math.floor((sessionExpiresAt - Date.now()) / MS_PER_SECOND)
   );
+  const chunks = splitValue(JSON.stringify(session));
+  for (const [index, chunk] of chunks.entries()) {
+    cookieStore.set(chunkCookie(provider, index), chunk, options);
+  }
+  deleteChunks(cookieStore, provider, chunks.length);
 };
 
 export const clearSession = async (provider: ProviderId) => {
   const cookieStore = await cookies();
-  cookieStore.delete({
-    name: sessionCookie(provider),
-    path: sessionPath(provider),
-  });
+  deleteChunks(cookieStore, provider, 0);
 };
 
 // `refreshWithin` lets the auth route refresh early, before data routes need it
@@ -83,9 +137,7 @@ export const getAccessToken = async (
   refreshWithin = 0
 ): Promise<string> => {
   const cookieStore = await cookies();
-  const session = parseSession(
-    cookieStore.get(sessionCookie(provider.id))?.value
-  );
+  const session = parseSession(readSessionValue(cookieStore, provider.id));
   if (!session) {
     throw new ProviderError(401, `Connect to ${provider.label} first.`);
   }

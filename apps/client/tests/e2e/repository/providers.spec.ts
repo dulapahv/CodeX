@@ -26,6 +26,7 @@ import { createMockProvider, type MockProvider } from "./mock-providers";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const OPEN_ITEM = /Open from repository/;
 const SAVE_ITEM = /Save to repository/;
+const SIGN_IN_SUCCESS = /\/oauth\/gitlab\?status=success/;
 
 interface SessionCookie {
   accessToken: string;
@@ -169,6 +170,43 @@ test.describe("Repository: token refresh", () => {
     expect(decodeURIComponent(session?.value ?? "")).toContain(
       "rotated-refresh-token"
     );
+  });
+
+  // Bitbucket's tokens alone are larger than the 4 KB a browser keeps in one
+  // cookie
+  test("keeps a sign-in whose tokens don't fit in one cookie", async ({
+    page,
+    context,
+    next,
+    isMobile,
+  }) => {
+    const mock = createMockProvider("gitlab");
+    mock.refresh = { accessToken: "a".repeat(5000), succeeds: true };
+    useMock(next, mock);
+
+    // The provider sending the user back after they approve the sign-in
+    await context.addCookies([
+      {
+        name: "oauth_state",
+        value: "test-state",
+        domain: "localhost",
+        path: "/api/gitlab/auth",
+        httpOnly: true,
+        sameSite: "Lax",
+      },
+    ]);
+    await page.goto("/api/gitlab/auth?code=test-code&state=test-state");
+    await expect(page).toHaveURL(SIGN_IN_SUCCESS);
+
+    await createRoom(page, "Tester");
+
+    const dialog = await openFileMenuItem(page, isMobile, OPEN_ITEM);
+    await browseTo(dialog, mock, ["demo", "main", "src", "app.py"]);
+    await dialog.getByRole("button", { name: "Open", exact: true }).click();
+
+    await expect(
+      page.locator(".monaco-editor .view-lines").first()
+    ).toContainText(`hello from ${mock.label}`);
   });
 
   test("shows the connect prompt when the refresh fails", async ({
