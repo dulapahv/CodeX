@@ -47,6 +47,7 @@
     - [Saving Notes](#saving-notes)
     - [Opening Notes](#opening-notes)
 - [Video \& Voice Communication](#video--voice-communication)
+  - [Screen Sharing](#screen-sharing)
 - [Troubleshooting](#troubleshooting)
   - [Follow Mode not working](#follow-mode-not-working)
   - [Code is not Syncing Between Users](#code-is-not-syncing-between-users)
@@ -56,14 +57,12 @@
   - [Please check the information and try again](#please-check-the-information-and-try-again)
   - [Failed to import settings. Please check the file format](#failed-to-import-settings-please-check-the-file-format)
   - [Parsing of the Following Markdown Structure Failed](#parsing-of-the-following-markdown-structure-failed)
-  - [Error accessing media devices](#error-accessing-media-devices)
+  - [Error accessing camera or microphone](#error-accessing-camera-or-microphone)
   - [Please grant `media-device` permissions to see available devices](#please-grant-media-device-permissions-to-see-available-devices)
   - [Error enumerating devices](#error-enumerating-devices)
-  - [Error toggling `media-device`](#error-toggling-media-device)
-  - [Error Setting Audio Output](#error-setting-audio-output)
-  - [No active media stream](#no-active-media-stream)
-  - [No audio track found](#no-audio-track-found)
-  - [Error creating peer connection](#error-creating-peer-connection)
+  - [Error sharing screen](#error-sharing-screen)
+  - [Connecting video… or Reconnecting video…](#connecting-video-or-reconnecting-video)
+  - [Video calls aren't set up on this server](#video-calls-arent-set-up-on-this-server)
   - [Performance Tips](#performance-tips)
 - [Security Considerations](#security-considerations)
 - [Privacy and Security](#privacy-and-security)
@@ -361,7 +360,7 @@ Empty lines are ignored. You can also use `'` and `"` in your arguments and inpu
 
 ## Shared Terminal
 
-The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room.
+The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room, and anyone who joins later sees the room's 50 most recent results.
 
 At the upper right corner of the terminal panel, you can [Download Output](#download-output) or [Clear Output](#clear-output).
 
@@ -386,7 +385,7 @@ File name will be `codex-terminal-<date>--<time>.txt`, for example `codex-termin
 
 ### Clear Output
 
-- Clear the terminal output
+- Clear the terminal output on your screen only. Other participants keep theirs, and the room's saved output is unchanged, so it comes back if you rejoin.
 
 ## GitHub Integration
 
@@ -706,16 +705,29 @@ For a list of supported file formats, refer to the [Notepad Features](#notepad-f
 
 CodeX supports video and voice communication between participants in a room. You can toggle your camera, microphone, and audio settings in the Video & Voice Communication panel.
 
-Upon joining the room, CodeX will prompt you to grant permissions to access your media devices (camera, microphone, audio).
+Video and audio travel through Cloudflare's network, so each person sends their camera once however many people are in the room, and calls work on networks that block direct connections. Nothing is recorded.
+
+Your browser asks for permission the first time you turn on your camera or microphone.
 
 <div align="center">
   <img src="docs/images/video-voice-communication.png" alt="Video & Voice Communication" width="200"/>
 </div>
 
 - To turn on camera, microphone, or audio, simply click on the respective buttons in the Video & Voice Communication panel.
-- To change devices, click on the dropdown menu next to the respective button and select the desired device.
+- To change devices, click on the dropdown menu next to the respective button and select the desired device. CodeX switches straight away and remembers your choice.
+- Turning off audio mutes everyone else for you only.
 
 For troubleshooting video and audio issues, refer to the [Troubleshooting](#troubleshooting) section.
+
+### Screen Sharing
+
+Click the `Share screen` button in the Video & Voice Communication panel, then choose a screen, window or tab in your browser's picker. Screen sharing is available in desktop browsers only.
+
+- Everyone else sees your screen in a `<your name>'s screen` tab in the Live Preview panel. The tab opens automatically, and the panel reappears if it was hidden.
+- Use the button in the corner of a shared screen to view it full screen.
+- You see `You're sharing your screen` in your own tab instead of a copy of your screen. Click `Stop sharing` there, click the `Stop sharing screen` button in the Video & Voice Communication panel, or use your browser's own stop button.
+- Several people can share at once; each share has its own tab.
+- Only the picture is shared, not your computer's sound.
 
 ## Troubleshooting
 
@@ -739,12 +751,13 @@ For troubleshooting video and audio issues, refer to the [Troubleshooting](#trou
 
 - Network connectivity problems
 
-This issue cannot be caused by idling for an extended period as Socket.IO maintains a persistent connection by pinging the server periodically.
+CodeX reconnects automatically when the connection drops and catches up on any edits made in the meantime.
 
 **To resolve this issue:**
 
 1. Save your work, either by saving to local or GitHub
-2. Leave the room and create a new room
+2. Refresh the page and rejoin the room with the same Room ID. The room keeps the code and notes that reached the server.
+3. If it still doesn't sync, leave the room and create a new room
 
 ### This language is not supported or the execution server is down
 
@@ -819,15 +832,19 @@ This issue cannot be caused by idling for an extended period as Socket.IO mainta
 2. Correct the markdown syntax or commands
 3. Switch back to `rich text` mode to see if the error disappears
 
-### Error accessing media devices
+### Error accessing camera or microphone
 
 **This issue can be caused by:**
 
 - Browser permissions are not granted
+- Another app is using the camera or microphone
+- No camera or microphone is connected
 
 **To resolve this issue:**
 
 - Grant the browser permissions to access media devices (camera, microphone, audio)
+- Close other apps that use the camera or microphone, then try again
+- Choose another device from the dropdown menu next to the button
 
 ### Please grant `media-device` permissions to see available devices
 
@@ -849,63 +866,34 @@ This issue cannot be caused by idling for an extended period as Socket.IO mainta
 
 - Grant the browser permissions to access media devices (camera, microphone, audio)
 
-### Error toggling `media-device`
+### Error sharing screen
 
 **This issue can be caused by:**
 
-- Media device is invalid
-- Browser permissions are not granted
+- The browser isn't allowed to record the screen. On macOS, this is set in `System Settings > Privacy & Security > Screen & System Audio Recording`
 
 **To resolve this issue:**
 
-- Grant the browser permissions to access media devices (camera, microphone, audio)
-- Leave the room and refresh the page then rejoin the room
-- Reopen the browser and recreate the room
+- Allow your browser to record the screen, restart the browser, then share again
 
-### Error Setting Audio Output
+Cancelling the browser's picker doesn't show an error; nothing is shared.
+
+### Connecting video… or Reconnecting video…
 
 **This issue can be caused by:**
 
-- Audio device is invalid
+- Network connectivity problems
+- A network that blocks Cloudflare's video service
 
 **To resolve this issue:**
 
-- Leave the room and refresh the page then rejoin the room
-- Reopen the browser and recreate the room
-- Change to other audio devices
+1. Wait a few seconds; CodeX keeps retrying
+2. Check your network connection, or try another network
+3. Leave the room and refresh the page then rejoin the room
 
-### No active media stream
+### Video calls aren't set up on this server
 
-**This issue can be caused by:**
-
-- Disconnected from the server
-
-**To resolve this issue:**
-
-- Leave the room and refresh the page then rejoin the room
-- Reopen the browser and recreate the room
-
-### No audio track found
-
-**This issue can be caused by:**
-
-- Disconnected from the server
-
-**To resolve this issue:**
-
-- Leave the room and refresh the page then rejoin the room
-- Reopen the browser and recreate the room
-
-### Error creating peer connection
-
-**This issue can be caused by:**
-
-- Disconnected from the server
-
-**To resolve this issue:**
-
-- Leave the room and refresh the page then rejoin the room
-- Reopen the browser and recreate the room
+This appears in place of the video controls when the server CodeX connects to has no video service configured, for example a copy of CodeX running locally. Everything else in the room works as usual.
 
 ### Performance Tips
 
@@ -931,10 +919,13 @@ CodeX does not store any user data on the server except for:
 - Display names
 - User IDs
 - Room IDs
-- Code
+- Code and the selected language
 - Notes
+- Terminal output (the 50 most recent results)
 
-All of which are stored temporarily during a session and is cleared once the session ends. When all users leave the room, a 5-minute grace period begins. If someone rejoins within that time, the room and all its data are preserved. If no one rejoins, the room and its data are permanently deleted. Users can also choose to **Terminate Room** from the leave dialog to immediately delete the room and all its data without waiting for the grace period.
+Video, audio and shared screens pass through Cloudflare's servers during a call and are never recorded or stored.
+
+Display names and user IDs are kept only while you are connected. The room's code, notes and terminal output are saved with the room, so they survive server restarts, and are deleted with it. When all users leave the room, a 5-minute grace period begins. If someone rejoins within that time, the room and all its data are preserved. If no one rejoins, the room and its data are permanently deleted. Users can also choose to **Terminate Room** from the leave dialog to immediately delete the room and all its data without waiting for the grace period.
 
 ### User Privacy
 

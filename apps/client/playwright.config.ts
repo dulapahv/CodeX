@@ -19,6 +19,9 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  // Video calls need the Realtime SFU, so they run only when the server has
+  // dev SFU credentials in apps/server/.dev.vars
+  testIgnore: process.env.E2E_SFU ? [] : ["**/media.spec.ts"],
   fullyParallel: true, // Run tests in files in parallel
   forbidOnly: !!process.env.CI, // Fail the build on CI if you accidentally left test.only in the source code
   retries: process.env.CI ? 2 : 0, // Retry on CI only
@@ -43,6 +46,8 @@ export default defineConfig({
     {
       name: "Mobile Chrome",
       use: { ...devices["Pixel 5"] },
+      // Mobile browsers can't share a screen
+      testIgnore: ["**/media.spec.ts"],
     },
   ],
 

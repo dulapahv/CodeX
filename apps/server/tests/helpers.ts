@@ -69,7 +69,7 @@ export const connectPeer = async (
   });
   provider.awareness.setLocalState({
     user: { name },
-    media: { camera: false, mic: false, speaker: true },
+    media: { camera: false, mic: false, screen: false, speaker: true },
   } satisfies Presence);
 
   const messages: ServerMessage[] = [];

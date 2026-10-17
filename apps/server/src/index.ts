@@ -1,11 +1,18 @@
 /**
  * Realtime Worker for CodeX: creates rooms, checks they exist, answers the
- * latency probe, and routes room WebSockets to their Durable Object.
+ * latency probe, routes room WebSockets to their Durable Object, and proxies
+ * room members' calls to the Realtime SFU.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import {
+  MEDIA_TOKEN_HEADER,
+  ROOM_ID_HEADER,
+  SFU_PROXY_PATH,
+} from "@codex/types/realtime";
 import { getServerByName, routePartykitRequest } from "partyserver";
+import { routePartyTracksRequest } from "partytracks/server";
 
 import { corsHeaders, isAllowedOrigin } from "./cors";
 import { generateRoomID } from "./utils/generate-room-id";
@@ -16,9 +23,13 @@ export { Room } from "./room";
 
 const ROOM_PATH = /^\/rooms\/([^/]+)$/;
 const MAX_CREATE_ATTEMPTS = 5;
+const TURN_CREDENTIAL_TTL_SECONDS = 86_400;
 
 const json = (body: unknown, origin: string | null, status = 200) =>
   Response.json(body, { status, headers: corsHeaders(origin) });
+
+const text = (body: string, origin: string | null, status: number) =>
+  new Response(body, { status, headers: corsHeaders(origin) });
 
 const roomStub = (env: Env, roomId: string) =>
   getServerByName(env.Room, roomId);
@@ -41,6 +52,54 @@ const checkRoom = async (env: Env, rawId: string, origin: string | null) => {
   return exists
     ? json({ roomId }, origin)
     : json({ error: "Room not found" }, origin, 404);
+};
+
+const isSfuProxyPath = (pathname: string) =>
+  pathname === SFU_PROXY_PATH || pathname.startsWith(`${SFU_PROXY_PATH}/`);
+
+// The token comes from the room's `media` message, so only someone currently
+// connected to the room can use the SFU app
+const isRoomMember = async (env: Env, request: Request) => {
+  const roomId = normalizeRoomId(request.headers.get(ROOM_ID_HEADER) ?? "");
+  const token = request.headers.get(MEDIA_TOKEN_HEADER);
+  if (roomId === null || token === null) {
+    return false;
+  }
+  return (await roomStub(env, roomId)).hasMediaToken(token);
+};
+
+const proxySfu = async (request: Request, env: Env, origin: string | null) => {
+  if (!isAllowedOrigin(origin)) {
+    return text("Forbidden", origin, 403);
+  }
+  if (!(await isRoomMember(env, request))) {
+    return text("Unauthorized", origin, 401);
+  }
+  if (!(env.SFU_APP_ID && env.SFU_APP_TOKEN)) {
+    return text("Video calls aren't set up on this server", origin, 503);
+  }
+
+  const headers = new Headers(request.headers);
+  headers.delete(ROOM_ID_HEADER);
+  headers.delete(MEDIA_TOKEN_HEADER);
+  const response = await routePartyTracksRequest({
+    appId: env.SFU_APP_ID,
+    token: env.SFU_APP_TOKEN,
+    prefix: SFU_PROXY_PATH,
+    request: new Request(request, { headers }),
+    // Its cookie lock can't work across origins, and room members can
+    // already change everything in a room
+    lockSessionToInitiator: false,
+    turnServerAppId: env.TURN_KEY_ID || undefined,
+    turnServerAppToken: env.TURN_KEY_API_TOKEN || undefined,
+    turnServerCredentialTTL: TURN_CREDENTIAL_TTL_SECONDS,
+  });
+
+  const proxied = new Response(response.body, response);
+  for (const [name, value] of new Headers(corsHeaders(origin))) {
+    proxied.headers.set(name, value);
+  }
+  return proxied;
 };
 
 // Measures the client's round trip to Cloudflare for the latency page
@@ -78,6 +137,10 @@ export default {
     const roomPath = ROOM_PATH.exec(url.pathname);
     if (roomPath && request.method === "GET") {
       return checkRoom(env, roomPath[1], origin);
+    }
+
+    if (isSfuProxyPath(url.pathname)) {
+      return proxySfu(request, env, origin);
     }
 
     if (url.pathname === "/ping") {

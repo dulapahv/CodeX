@@ -1,8 +1,8 @@
 /**
  * One Durable Object per room. Holds the room's Yjs document (code, language,
- * notes), relays presence, keeps recent terminal output, routes WebRTC
- * signals, and wipes itself once the room has been empty for the grace
- * period or someone terminates it.
+ * notes), relays presence, keeps recent terminal output, vouches for its
+ * connections' use of the Realtime SFU proxy, and wipes itself once the room
+ * has been empty for the grace period or someone terminates it.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -36,11 +36,14 @@ const MESSAGE_QUERY_AWARENESS = 3;
 // y-partyserver records each connection's awareness client IDs under this
 // key in the connection state, which survives hibernation
 const AWARENESS_IDS_KEY = "__ypsAwarenessIds";
+const MEDIA_TOKEN_KEY = "mediaToken";
+
+type ConnectionState = Record<string, unknown> | null;
+
+const stateOf = (connection: Connection) => connection.state as ConnectionState;
 
 const awarenessIdsOf = (connection: Connection): number[] => {
-  const ids = (connection.state as Record<string, unknown> | null)?.[
-    AWARENESS_IDS_KEY
-  ];
+  const ids = stateOf(connection)?.[AWARENESS_IDS_KEY];
   return Array.isArray(ids) ? ids : [];
 };
 
@@ -62,6 +65,10 @@ export class Room extends YServer {
     return Number(this.env.ROOM_GRACE_MS) || DEFAULT_GRACE_MS;
   }
 
+  private get mediaEnabled() {
+    return Boolean(this.env.SFU_APP_ID && this.env.SFU_APP_TOKEN);
+  }
+
   // RPC from the Worker: claim this room ID, false if it is already taken
   async create(): Promise<boolean> {
     if (await this.exists()) {
@@ -76,6 +83,16 @@ export class Room extends YServer {
   // RPC from the Worker
   async exists(): Promise<boolean> {
     return (await this.ctx.storage.get(CREATED_AT_KEY)) !== undefined;
+  }
+
+  // RPC from the Worker's SFU proxy: true while an open connection holds it
+  hasMediaToken(token: string): boolean {
+    for (const connection of this.getConnections()) {
+      if (stateOf(connection)?.[MEDIA_TOKEN_KEY] === token) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async onLoad() {
@@ -138,6 +155,19 @@ export class Room extends YServer {
     await this.ctx.storage.deleteAlarm();
 
     super.onConnect(connection, ctx);
+
+    // Connection state is persisted with the WebSocket, so the token
+    // survives hibernation. y-partyserver merges its own keys into it.
+    const token = crypto.randomUUID();
+    connection.setState((previous: ConnectionState) => ({
+      ...previous,
+      [MEDIA_TOKEN_KEY]: token,
+    }));
+    this.sendCustomMessage(
+      connection,
+      serialize({ type: "media", enabled: this.mediaEnabled, token })
+    );
+
     this.sendCustomMessage(
       connection,
       serialize({
@@ -222,9 +252,6 @@ export class Room extends YServer {
           console.error("Failed to store terminal output:", error);
         });
         break;
-      case "signal":
-        this.routeSignal(connection, message.to, message.signal);
-        break;
       case "terminate":
         this.terminate().catch((error: unknown) => {
           console.error("Failed to terminate room:", error);
@@ -245,24 +272,6 @@ export class Room extends YServer {
       }
     }
     return false;
-  }
-
-  private routeSignal(sender: Connection, to: number, signal: unknown) {
-    const from = awarenessIdsOf(sender)[0];
-    if (from === undefined) {
-      return;
-    }
-    for (const connection of this.getConnections()) {
-      if (
-        connection.id !== sender.id &&
-        awarenessIdsOf(connection).includes(to)
-      ) {
-        this.sendCustomMessage(
-          connection,
-          serialize({ type: "signal", from, signal })
-        );
-      }
-    }
   }
 
   private async terminate() {

@@ -32,8 +32,12 @@ export const RoomProvider = ({
   <RoomContext.Provider value={connection}>{children}</RoomContext.Provider>
 );
 
+// Null until the room connects
+export const useRoomConnection = (): RoomConnection | null =>
+  useContext(RoomContext);
+
 export const useRoom = (): RoomConnection => {
-  const connection = useContext(RoomContext);
+  const connection = useRoomConnection();
   if (!connection) {
     throw new Error("useRoom must be used inside a connected RoomProvider");
   }

@@ -21,6 +21,13 @@ import { BASE_SERVER_URL } from "@/lib/constants";
 
 export type EndReason = "not-found" | "terminated";
 
+// From the room's `media` message: whether video is set up, and the token
+// that lets this connection use the SFU proxy
+export interface MediaAccess {
+  enabled: boolean;
+  token: string;
+}
+
 type MessageOf<T extends ServerMessage["type"]> = Extract<
   ServerMessage,
   { type: T }
@@ -31,6 +38,8 @@ export interface RoomConnection {
   readonly clientId: number;
   destroy: () => void;
   readonly doc: Y.Doc;
+  // Null until the server's first `media` message; replaced on reconnect
+  getMediaAccess: () => MediaAccess | null;
   // Everyone's presence keyed by Yjs client ID; a new Map after each change
   getPresence: () => Map<number, Presence>;
   isSynced: () => boolean;
@@ -40,8 +49,10 @@ export interface RoomConnection {
     handler: (message: MessageOf<T>) => void
   ) => () => void;
   onSynced: (handler: () => void) => () => void;
+  readonly roomId: string;
   send: (message: ClientMessage) => void;
   setPresence: (patch: Partial<Presence>) => void;
+  subscribeMediaAccess: (listener: () => void) => () => void;
   subscribePresence: (listener: () => void) => () => void;
 }
 
@@ -72,13 +83,15 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
 
   const presence: Presence = {
     user: { name },
-    media: { camera: false, mic: false, speaker: true },
+    media: { camera: false, mic: false, screen: false, speaker: true },
   };
   provider.awareness.setLocalState(presence);
 
   const messageHandlers = new Set<(message: ServerMessage) => void>();
   const endHandlers = new Set<(reason: EndReason) => void>();
   const presenceListeners = new Set<() => void>();
+  const mediaAccessListeners = new Set<() => void>();
+  let mediaAccess: MediaAccess | null = null;
 
   const readStates = () =>
     new Map(provider.awareness.getStates()) as Map<number, Presence>;
@@ -92,10 +105,19 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
 
   provider.on("custom-message", (raw: string) => {
     const message = parseServerMessage(raw);
-    if (message) {
-      for (const handler of messageHandlers) {
-        handler(message);
+    if (!message) {
+      return;
+    }
+    // Kept rather than only dispatched, since it arrives before most
+    // components subscribe
+    if (message.type === "media") {
+      mediaAccess = { enabled: message.enabled, token: message.token };
+      for (const listener of mediaAccessListeners) {
+        listener();
       }
+    }
+    for (const handler of messageHandlers) {
+      handler(message);
     }
   });
 
@@ -112,6 +134,7 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
 
   return {
     doc,
+    roomId,
     awareness: provider.awareness,
     clientId: doc.clientID,
 
@@ -141,6 +164,13 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
       return () => presenceListeners.delete(listener);
     },
 
+    getMediaAccess: () => mediaAccess,
+
+    subscribeMediaAccess: (listener) => {
+      mediaAccessListeners.add(listener);
+      return () => mediaAccessListeners.delete(listener);
+    },
+
     onSynced: (handler) => {
       const listener = (isSynced: boolean) => {
         if (isSynced) {
@@ -160,6 +190,7 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
       messageHandlers.clear();
       endHandlers.clear();
       presenceListeners.clear();
+      mediaAccessListeners.clear();
       provider.destroy();
       doc.destroy();
     },

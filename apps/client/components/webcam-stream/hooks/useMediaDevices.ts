@@ -1,37 +1,34 @@
 /**
- * Custom hook for managing media devices (camera, microphone, speaker).
- * Handles device enumeration, selection, and permission management.
+ * Custom hook for listing media devices (camera, microphone, speaker).
+ * The active camera and microphone are chosen by the call; this only keeps
+ * the lists current.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
 import { useCallback, useEffect, useState } from "react";
 
-import type { MediaDevice } from "../types";
-import { enumerateDevices } from "../utils/device";
+import { parseError } from "@/lib/utils";
+
+import { type DeviceLists, listDevices } from "../utils/device";
+import { reportWebcamError } from "../utils/errors";
+
+const NO_DEVICES: DeviceLists = {
+  audioInputDevices: [],
+  audioOutputDevices: [],
+  videoDevices: [],
+};
 
 export const useMediaDevices = () => {
-  const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
-  const [audioInputDevices, setAudioInputDevices] = useState<MediaDevice[]>([]);
-  const [audioOutputDevices, setAudioOutputDevices] = useState<MediaDevice[]>(
-    []
-  );
-  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>("");
-  const [selectedAudioInput, setSelectedAudioInput] = useState<string>("");
-  const [selectedAudioOutput, setSelectedAudioOutput] = useState<string>("");
+  const [devices, setDevices] = useState<DeviceLists>(NO_DEVICES);
 
-  const refreshDevices = useCallback(
-    () =>
-      enumerateDevices(
-        setVideoDevices,
-        setAudioInputDevices,
-        setAudioOutputDevices,
-        setSelectedVideoDevice,
-        setSelectedAudioInput,
-        setSelectedAudioOutput
-      ),
-    []
-  );
+  const refreshDevices = useCallback(async () => {
+    try {
+      setDevices(await listDevices());
+    } catch (error) {
+      reportWebcamError(`Error enumerating devices: ${parseError(error)}`);
+    }
+  }, []);
 
   // Enumerate only (no getUserMedia) so the camera light stays off
   useEffect(() => {
@@ -45,16 +42,5 @@ export const useMediaDevices = () => {
     };
   }, [refreshDevices]);
 
-  return {
-    videoDevices,
-    audioInputDevices,
-    audioOutputDevices,
-    selectedVideoDevice,
-    selectedAudioInput,
-    selectedAudioOutput,
-    setSelectedVideoDevice,
-    setSelectedAudioInput,
-    setSelectedAudioOutput,
-    refreshDevices,
-  };
+  return { ...devices, refreshDevices };
 };

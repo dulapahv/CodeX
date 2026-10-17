@@ -38,10 +38,6 @@ export const parseClientMessage = (raw: string): ClientMessage | null => {
       return isRecord(message.result) && isRecord(message.result.run)
         ? (message as ClientMessage)
         : null;
-    case "signal":
-      return typeof message.to === "number" && isRecord(message.signal)
-        ? (message as ClientMessage)
-        : null;
     case "terminate":
       return { type: "terminate" };
     default:

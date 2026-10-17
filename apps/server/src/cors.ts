@@ -5,6 +5,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import { MEDIA_TOKEN_HEADER, ROOM_ID_HEADER } from "@codex/types/realtime";
+
 const ALLOWED_ORIGINS = new Set([
   "https://codex.dulapahv.dev",
   "https://dev-codex.dulapahv.dev",
@@ -21,6 +23,8 @@ export const isAllowedOrigin = (origin: string | null) =>
 export const corsHeaders = (origin: string | null): HeadersInit => ({
   "Access-Control-Allow-Origin":
     origin && ALLOWED_ORIGINS.has(origin) ? origin : DEFAULT_ORIGIN,
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  // PUT and the custom headers are for the SFU proxy
+  "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
+  "Access-Control-Allow-Headers": `Content-Type, ${ROOM_ID_HEADER}, ${MEDIA_TOKEN_HEADER}`,
   Vary: "Origin",
 });

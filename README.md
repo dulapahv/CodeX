@@ -31,7 +31,7 @@ For detailed usage instructions and feature documentation, please see the **[Use
 - **Live Preview** - Preview UI changes instantly with loaded libraries like Tailwind CSS, and more
 - **GitHub Integrated** - Save your work and open files from your repositories
 - **Shared Notepad** - Take notes together in real-time with rich text and markdown support
-- **Video & Voice** - Communicate with your team using video and voice chat
+- **Video, Voice & Screen Sharing** - Communicate with your team using video and voice chat, and share your screen
 
 ## Table of Contents
 
@@ -68,9 +68,8 @@ CodeX
 │   │   │   ├── hooks/      # Custom React hooks
 │   │   │   └── lib/        # Utility functions and services
 │   │   └── tests/          # Frontend tests (Playwright)
-│   └── server/             # Backend Socket.IO server
+│   └── server/             # Realtime server (Cloudflare Worker with a Durable Object per room)
 │       ├── src/            # Source code
-│       │   ├── service/    # Backend services
 │       │   └── utils/      # Utility functions
 │       └── tests/          # Backend tests (Jest)
 ├── docs/                   # Documentation assets
@@ -132,6 +131,17 @@ After checking the [prerequisites](#prerequisites) above, follow these steps to 
 
     > Note: This is a personal project and the required API keys and secrets are not publicly shared. For local development, you'll need to set up your own credentials for GitHub OAuth, Sentry, etc.
 
+    The backend runs locally with `wrangler dev`, without a Cloudflare account. Video calls are the exception as they need a [Cloudflare Realtime](https://developers.cloudflare.com/realtime/) SFU app and TURN key. Create them in the Cloudflare dashboard, preferably separate from production, and put their values in `apps/server/.dev.vars`:
+
+    ```bash
+    SFU_APP_ID=
+    SFU_APP_TOKEN=
+    TURN_KEY_ID=
+    TURN_KEY_API_TOKEN=
+    ```
+
+    Without them, everything except video calls works.
+
 ## Development
 
 To start the development server for both the frontend and backend applications:
@@ -174,9 +184,15 @@ pnpm test:client:report     # View frontend test report
 pnpm --filter client test:client
 ```
 
+The video call tests need the SFU credentials in `apps/server/.dev.vars` (see [Getting Started](#getting-started)), so they only run when asked for:
+
+```bash
+E2E_SFU=1 pnpm test:client
+```
+
 ### Backend Test
 
-The backend server will start automatically. To run the backend tests:
+The backend server will start automatically with `wrangler dev`. Stop `pnpm dev` first, as both use port 3001. To run the backend tests:
 
 ```bash
 # In root directory or server workspace
@@ -206,16 +222,26 @@ pnpm build:client
 pnpm build:server
 ```
 
-The build artifacts of the frontend will be available in the `apps/client/.next` directory, and the backend will be available in the `apps/server/dist` directory.
+The build artifacts of the frontend will be available in the `apps/client/.next` directory. The backend build is a dry run of `wrangler deploy` that writes the bundled Worker to `apps/server/dist` without uploading it.
 
 ## Deployment
 
 Deployment runs from the GitHub Actions pipeline (`.github/workflows/ci.yml`) on every push to `main`, and only after both the server and client test jobs pass:
 
 - Frontend (client): built with the [OpenNext](https://opennext.js.org/cloudflare) adapter and deployed straight to [Cloudflare Workers](https://cloudflare.com) by the workflow
-- Backend (server): deployed to [Render](https://render.com) via a Deploy Hook
+- Backend (server): deployed to [Cloudflare Workers](https://cloudflare.com) with `wrangler deploy` by the workflow. Each room runs in its own [Durable Object](https://developers.cloudflare.com/durable-objects/), which keeps the room's code, notes and recent terminal output until it has been empty for 5 minutes
 
-The deploy job needs these repository secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `SENTRY_AUTH_TOKEN` (source map upload), and `SERVER_DEPLOY_HOOK`.
+The deploy jobs need these repository secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (both deploys), and `SENTRY_AUTH_TOKEN` (source map upload).
+
+The server also needs its video secrets set once on the Worker, where they persist across deploys. `wrangler deploy` fails until all four are set:
+
+```bash
+cd apps/server
+pnpm exec wrangler secret put SFU_APP_ID
+pnpm exec wrangler secret put SFU_APP_TOKEN
+pnpm exec wrangler secret put TURN_KEY_ID
+pnpm exec wrangler secret put TURN_KEY_API_TOKEN
+```
 
 ## Scripts
 
@@ -268,18 +294,19 @@ pnpm --filter server test:socket
   - [shadcn/ui](https://ui.shadcn.com/)
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
   - [Yjs](https://yjs.dev) (CRDT for conflict-free code synchronization)
-  - [Socket.IO Client](https://socket.io)
+  - [y-partyserver](https://github.com/cloudflare/partykit/tree/main/packages/y-partyserver) (Yjs provider for the realtime connection)
   - [MDXEditor](https://mdxeditor.dev/) (notepad)
-  - [simple-peer](https://github.com/feross/simple-peer) (WebRTC)
+  - [PartyTracks](https://github.com/cloudflare/partykit/tree/main/packages/partytracks) (video, voice and screen sharing)
   - [Radix Form](https://www.radix-ui.com/primitives/docs/components/form) (form validation)
 - **Backend:**
-  - [Node.js](https://nodejs.org)
+  - [Cloudflare Workers](https://workers.cloudflare.com) and [Durable Objects](https://developers.cloudflare.com/durable-objects/) (one Durable Object per room)
   - [TypeScript](https://www.typescriptlang.org)
-  - [Socket.IO](https://socket.io) (binded to [µWebSockets.js](https://github.com/uNetworking/uWebSockets.js) server)
-  - [Yjs](https://yjs.dev) (per-room CRDT document that merges and relays edits)
+  - [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) and [y-partyserver](https://github.com/cloudflare/partykit/tree/main/packages/y-partyserver) (WebSocket rooms and Yjs sync)
+  - [Cloudflare Realtime](https://developers.cloudflare.com/realtime/) SFU and TURN (video and voice relay)
+  - [Yjs](https://yjs.dev) (per-room CRDT document that merges, relays and stores edits)
 - **Testing:**
   - [Playwright](https://playwright.dev) (end-to-end testing for frontend)
-  - [Jest](https://jestjs.io) (unit testing for backend)
+  - [Jest](https://jestjs.io) (backend tests against a local Worker)
   - [CodeQL](https://codeql.github.com/) (security analysis)
 - **Code Quality:**
   - [Ultracite](https://ultracite.js.org/) + [Biome](https://biomejs.dev/) (linting and formatting)
@@ -288,10 +315,10 @@ pnpm --filter server test:socket
 - **Build & DevOps:**
   - [Turborepo](https://turbo.build/repo/docs) (monorepo build system)
   - [GitHub Actions](https://github.com/features/actions) (CI/CD)
-  - [Cloudflare](https://cloudflare.com) (frontend deployment)
-  - [Render](https://render.com) (backend deployment)
+  - [Cloudflare](https://cloudflare.com) (frontend and backend deployment)
 - **Monitoring & Analytics:**
   - [Sentry](https://sentry.io) (error tracking)
+  - [Cloudflare Workers Observability](https://developers.cloudflare.com/workers/observability/) (Worker logs, traces and error grouping)
   - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) (web analytics)
   - [Better Stack](https://betterstack.com/) (uptime monitoring and status page)
 - **External Services:**

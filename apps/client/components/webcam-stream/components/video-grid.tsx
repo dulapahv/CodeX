@@ -5,79 +5,94 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import type { PresenceMedia } from "@codex/types/realtime";
 import type { User } from "@codex/types/user";
-import { type RefObject, useEffect, useRef } from "react";
+
 import { Avatar } from "@/components/avatar";
 import { useCurrentUserId } from "@/hooks/use-current-user-id";
 import { storage } from "@/lib/services/storage";
-import { parseError } from "@/lib/utils";
 
-import { reportWebcamError } from "../utils/errors";
+import { useRemoteTrack } from "../call-provider";
+import { TrackVideo } from "./track-video";
 import { VideoControls } from "./video-controls";
 
-interface RemoteVideoProps {
-  audioOutput: string;
-  muted: boolean;
-  stream: MediaStream;
+const VIDEO_CLASS = "size-full scale-x-[-1] object-cover";
+
+interface RemoteTileProps {
+  media: PresenceMedia | undefined;
+  micOn: boolean;
+  remoteMicStates: Record<string, boolean>;
+  remoteSpeakerStates: Record<string, boolean>;
+  speakerOn: boolean;
+  user: User;
 }
 
-const RemoteVideo = ({ audioOutput, muted, stream }: RemoteVideoProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [stream]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (audioOutput && video && "setSinkId" in video) {
-      video.setSinkId(audioOutput).catch((error: unknown) => {
-        reportWebcamError(`Error setting audio output: ${parseError(error)}`);
-      });
-    }
-  }, [audioOutput]);
+const RemoteTile = ({
+  media,
+  micOn,
+  remoteMicStates,
+  remoteSpeakerStates,
+  speakerOn,
+  user,
+}: RemoteTileProps) => {
+  const cameraOn = media?.camera ?? false;
+  const track = useRemoteTrack(media?.tracks?.video);
 
   return (
-    <video
-      autoPlay
-      className="size-full scale-x-[-1] object-cover"
-      muted={muted}
-      playsInline
-      ref={videoRef}
-    />
+    <div className="relative">
+      <div className="relative aspect-video bg-black/10 dark:bg-black/30">
+        {cameraOn && track ? (
+          <TrackVideo className={VIDEO_CLASS} track={track} />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Avatar showTooltip={false} size="lg" user={user} />
+          </div>
+        )}
+        <VideoControls
+          isLocal={false}
+          micOn={micOn}
+          remoteMicStates={remoteMicStates}
+          remoteSpeakerStates={remoteSpeakerStates}
+          speakersOn={speakerOn}
+          userId={user.id}
+        />
+        <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
+          {user.username}
+        </div>
+      </div>
+    </div>
   );
 };
 
 interface VideoGridProps {
-  audioOutput: string;
   cameraOn: boolean;
+  localTrack: MediaStreamTrack | undefined;
+  media: Record<string, PresenceMedia>;
   micOn: boolean;
-  remoteMicStates: Record<string, boolean>;
-  remoteSpeakerStates: Record<string, boolean>;
-  remoteStreams: Record<string, MediaStream | null>;
   speakerOn: boolean;
   users: User[];
-  videoRef: RefObject<HTMLVideoElement | null>;
 }
 
 export const VideoGrid = ({
-  audioOutput,
-  users,
   cameraOn,
+  localTrack,
+  media,
   micOn,
   speakerOn,
-  videoRef,
-  remoteStreams,
-  remoteMicStates,
-  remoteSpeakerStates,
+  users,
 }: VideoGridProps) => {
   const currentUserId = useCurrentUserId() ?? "";
   const currentUsername =
     users.find((user) => user.id === currentUserId)?.username ??
     storage.getUsername() ??
     "";
+
+  const remoteMicStates = Object.fromEntries(
+    Object.entries(media).map(([id, state]) => [id, state.mic])
+  );
+  const remoteSpeakerStates = Object.fromEntries(
+    Object.entries(media).map(([id, state]) => [id, state.speaker])
+  );
 
   return (
     <div
@@ -89,14 +104,9 @@ export const VideoGrid = ({
       {/* Local video */}
       <div className="relative">
         <div className="relative aspect-video bg-black/10 dark:bg-black/30">
-          <video
-            autoPlay
-            className="size-full scale-x-[-1] object-cover"
-            muted
-            playsInline
-            ref={videoRef}
-          />
-          {!cameraOn && (
+          {cameraOn && localTrack ? (
+            <TrackVideo className={VIDEO_CLASS} track={localTrack} />
+          ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <Avatar
                 showTooltip={false}
@@ -125,39 +135,17 @@ export const VideoGrid = ({
       {/* Remote videos */}
       {users
         .filter((user) => user.id !== currentUserId)
-        .map((user) => {
-          const stream = remoteStreams[user.id];
-          const hasVideo = Boolean(stream?.getVideoTracks().length);
-          return (
-            <div className="relative" key={user.id}>
-              <div className="relative aspect-video bg-black/10 dark:bg-black/30">
-                {stream && (
-                  <RemoteVideo
-                    audioOutput={audioOutput}
-                    muted={!speakerOn}
-                    stream={stream}
-                  />
-                )}
-                {!hasVideo && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Avatar showTooltip={false} size="lg" user={user} />
-                  </div>
-                )}
-                <VideoControls
-                  isLocal={false}
-                  micOn={micOn}
-                  remoteMicStates={remoteMicStates}
-                  remoteSpeakerStates={remoteSpeakerStates}
-                  speakersOn={speakerOn}
-                  userId={user.id}
-                />
-                <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-black/50 px-2 py-1 text-sm text-white">
-                  {user.username}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        .map((user) => (
+          <RemoteTile
+            key={user.id}
+            media={media[user.id]}
+            micOn={micOn}
+            remoteMicStates={remoteMicStates}
+            remoteSpeakerStates={remoteSpeakerStates}
+            speakerOn={speakerOn}
+            user={user}
+          />
+        ))}
     </div>
   );
 };

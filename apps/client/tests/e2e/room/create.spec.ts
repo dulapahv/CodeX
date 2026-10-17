@@ -12,15 +12,12 @@ import { expect, test } from "@playwright/test";
 
 import { createRoom } from "@/tests/utils/setup";
 
-const SHARE_BUTTON_PATTERN = /share/i;
-
 test.describe("Room Creation", () => {
   test("should create a new room", async ({ page }) => {
     await createRoom(page, "TestUser");
 
-    await expect(
-      page.getByRole("button", { name: SHARE_BUTTON_PATTERN })
-    ).toBeVisible();
+    // Not a /share/i pattern: that also matches the "Share screen" button
+    await expect(page.getByLabel("Share this coding room")).toBeVisible();
   });
 
   test("should not allow empty name", async ({ page }) => {
