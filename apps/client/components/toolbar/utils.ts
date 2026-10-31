@@ -9,16 +9,18 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 
 import { parseError } from "@/lib/utils";
 
-const IOS_DEVICE_PATTERN = /iPad|iPhone|iPod/;
-const ANDROID_PATTERN = /Android/;
-const WINDOWS_PATTERN = /Win/;
-const MAC_PATTERN = /Mac/;
-const LINUX_PATTERN = /Linux/;
-const LEADING_DOT_PATTERN = /^\./;
+import type { ShortcutPlatform } from "./types";
+
+const IOS_DEVICE_PATTERN = /iPad|iPhone|iPod/u;
+const ANDROID_PATTERN = /Android/u;
+const WINDOWS_PATTERN = /Win/u;
+const MAC_PATTERN = /Mac/u;
+const LINUX_PATTERN = /Linux/u;
+const LEADING_DOT_PATTERN = /^\./u;
 
 /**
  * Get the current operating system
@@ -31,8 +33,7 @@ export const getOS = ():
   | "Mac OS"
   | "Linux"
   | "Unknown" => {
-  const userAgent = navigator.userAgent;
-  const platform = navigator.platform;
+  const { platform, userAgent } = navigator;
   // Detect iOS devices (iPhone, iPad, iPod)
   if (IOS_DEVICE_PATTERN.test(userAgent)) {
     return "iOS";
@@ -60,6 +61,19 @@ export const getOS = ():
   return "Unknown";
 };
 
+/**
+ * Get the platform Monaco resolves keybindings for. Like Monaco, anything
+ * neither Apple nor Windows (Android included) counts as Linux.
+ * @returns The keybinding platform
+ */
+export const getShortcutPlatform = (): ShortcutPlatform => {
+  const os = getOS();
+  if (os === "Mac OS" || os === "iOS") {
+    return "mac";
+  }
+  return os === "Windows" ? "windows" : "linux";
+};
+
 interface Language {
   alias: string;
   extensions: readonly string[];
@@ -79,10 +93,10 @@ let languagesCache: Language[] | null = null;
 function getFileExtension(languageId: string, monaco: Monaco): string {
   if (!languagesCache) {
     languagesCache = monaco.languages.getLanguages().map(
-      (language): Language => ({
-        alias: language.aliases?.[0] ?? "Unknown",
-        extensions: language.extensions ?? [],
-        id: language.id,
+      (entry): Language => ({
+        alias: entry.aliases?.[0] ?? "Unknown",
+        extensions: entry.extensions ?? [],
+        id: entry.id,
       })
     );
   }
@@ -101,7 +115,7 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
  */
 export const openLocal = (
   monaco: Monaco,
-  editor: monaco.editor.IStandaloneCodeEditor | null
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null
 ): void => {
   // Create input element
   const input = document.createElement("input");
@@ -154,8 +168,8 @@ export const openLocal = (
  */
 export const saveLocal = (
   monaco: Monaco,
-  editor: monaco.editor.IStandaloneCodeEditor | null,
-  filename = `codex-${new Date().toLocaleString("en-GB").replace(/[/:, ]/g, "-")}`
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null,
+  filename = `codex-${new Date().toLocaleString("en-GB").replace(/[/:, ]/gu, "-")}`
 ): void => {
   if (!editor) {
     throw new Error("Editor instance is required");
@@ -186,6 +200,8 @@ export const saveLocal = (
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   } catch (error) {
-    throw new Error(`Failed to save file: ${parseError(error)}`);
+    throw new Error(`Failed to save file: ${parseError(error)}`, {
+      cause: error,
+    });
   }
 };

@@ -23,17 +23,21 @@ interface SharedMenuItemProps {
   actions: ToolbarActions;
   hideShortcut?: boolean;
   item: MenuItem | "separator";
+  /** Runs an item's action once its menu has closed */
+  onSelect: (action: keyof ToolbarActions) => void;
 }
 
 export const SharedMenuItem = ({
   item,
   actions,
+  onSelect,
   hideShortcut,
 }: SharedMenuItemProps) => {
   if (item === "separator") {
     return <MenubarSeparator />;
   }
 
+  // Panel toggles don't need the editor's focus, so they run straight away
   if (item.type === "checkbox") {
     return (
       <MenubarCheckboxItem
@@ -48,7 +52,7 @@ export const SharedMenuItem = ({
   }
 
   return (
-    <MenubarItem onClick={() => actions[item.action]()}>
+    <MenubarItem onClick={() => onSelect(item.action)}>
       {item.icon}
       {item.label}
       {!hideShortcut && item.shortcut && (

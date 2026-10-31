@@ -10,9 +10,13 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 import { AboutDialog, type AboutDialogRef } from "@/components/about-dialog";
+import {
+  COLLABORATIVE_REDO_ACTION_ID,
+  COLLABORATIVE_UNDO_ACTION_ID,
+} from "@/components/code-editor/service/monaco-binding";
 import { LeaveDialog, type LeaveDialogRef } from "@/components/leave-dialog";
 import {
   OpenFromRepositoryDialog,
@@ -36,10 +40,10 @@ import { REPO_URL } from "@/lib/constants";
 import { DesktopMenu } from "./components/desktop-menu";
 import { MobileMenu } from "./components/mobile-menu";
 import type { ToolbarActions } from "./types";
-import { getOS, openLocal, saveLocal } from "./utils";
+import { getShortcutPlatform, openLocal, saveLocal } from "./utils";
 
 interface ToolbarProps {
-  editor: monaco.editor.IStandaloneCodeEditor | null;
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
   monaco: Monaco | null;
   setShowLivePreview: Dispatch<SetStateAction<boolean>>;
   setShowNotepad: Dispatch<SetStateAction<boolean>>;
@@ -73,7 +77,7 @@ const Toolbar = ({
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
   const aboutDialogRef = useRef<AboutDialogRef>(null);
 
-  const modKey = getOS() === "Mac OS" || getOS() === "iOS" ? "⌘" : "Ctrl";
+  const platform = getShortcutPlatform();
 
   useEffect(() => {
     // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard shortcut handler requires many branches
@@ -130,7 +134,57 @@ const Toolbar = ({
     return null;
   }
 
+  const runEditorAction = (actionId: string) => () => {
+    editor.focus();
+    editor.trigger("keyboard", actionId, null);
+  };
+
   const toolbarActions: ToolbarActions = {
+    about: () => aboutDialogRef.current?.openDialog(),
+    addCursorAbove: runEditorAction("editor.action.insertCursorAbove"),
+    addCursorBelow: runEditorAction("editor.action.insertCursorBelow"),
+    addCursorsToLineEnds: runEditorAction(
+      "editor.action.insertCursorAtEndOfEachLineSelected"
+    ),
+    addLineComment: runEditorAction("editor.action.addCommentLine"),
+    addNextOccurrence: runEditorAction(
+      "editor.action.addSelectionToNextFindMatch"
+    ),
+    changeAllOccurrences: runEditorAction("editor.action.changeAll"),
+    commandPalette: runEditorAction("editor.action.quickCommand"),
+    copy: runEditorAction("editor.action.clipboardCopyAction"),
+    copyLineDown: runEditorAction("editor.action.copyLinesDownAction"),
+    copyLineUp: runEditorAction("editor.action.copyLinesUpAction"),
+    cursorUndo: runEditorAction("cursorUndo"),
+    cut: runEditorAction("editor.action.clipboardCutAction"),
+    deleteLine: runEditorAction("editor.action.deleteLines"),
+    duplicateSelection: runEditorAction("editor.action.duplicateSelection"),
+    expandLineSelection: runEditorAction("expandLineSelection"),
+    expandSelection: runEditorAction("editor.action.smartSelect.expand"),
+    find: runEditorAction("actions.find"),
+    findNext: runEditorAction("editor.action.nextMatchFindAction"),
+    findPrevious: runEditorAction("editor.action.previousMatchFindAction"),
+    fold: runEditorAction("editor.fold"),
+    foldAll: runEditorAction("editor.foldAll"),
+    foldRecursively: runEditorAction("editor.foldRecursively"),
+    formatDocument: runEditorAction("editor.action.formatDocument"),
+    formatSelection: runEditorAction("editor.action.formatSelection"),
+    goToBracket: runEditorAction("editor.action.jumpToBracket"),
+    goToDefinition: runEditorAction("editor.action.revealDefinition"),
+    goToLine: runEditorAction("editor.action.gotoLine"),
+    goToReferences: runEditorAction("editor.action.goToReferences"),
+    goToSymbol: runEditorAction("editor.action.quickOutline"),
+    indentLine: runEditorAction("editor.action.indentLines"),
+    insertLineAbove: runEditorAction("editor.action.insertLineBefore"),
+    insertLineBelow: runEditorAction("editor.action.insertLineAfter"),
+    leaveRoom: () => leaveDialogRef.current?.openDialog(),
+    lowercase: runEditorAction("editor.action.transformToLowercase"),
+    manual: () => {
+      window.open(`${REPO_URL}/blob/main/manual.md`, "_blank");
+    },
+    moveLineDown: runEditorAction("editor.action.moveLinesDownAction"),
+    moveLineUp: runEditorAction("editor.action.moveLinesUpAction"),
+    nextProblem: runEditorAction("editor.action.marker.nextInFiles"),
     openLocal: () => {
       if (editor.getModel()?.getValue()) {
         openPromptDialogRef1.current?.openDialog();
@@ -145,146 +199,51 @@ const Toolbar = ({
         openFromRepositoryDialogRef.current?.openDialog();
       }
     },
+    organizeImports: runEditorAction("editor.action.organizeImports"),
+    outdentLine: runEditorAction("editor.action.outdentLines"),
+    paste: runEditorAction("editor.action.clipboardPasteAction"),
+    peekDefinition: runEditorAction("editor.action.peekDefinition"),
+    previousProblem: runEditorAction("editor.action.marker.prevInFiles"),
+    quickFix: runEditorAction("editor.action.quickFix"),
+    redo: runEditorAction(COLLABORATIVE_REDO_ACTION_ID),
+    refactor: runEditorAction("editor.action.refactor"),
+    removeBrackets: runEditorAction("editor.action.removeBrackets"),
+    removeLineComment: runEditorAction("editor.action.removeCommentLine"),
+    renameSymbol: runEditorAction("editor.action.rename"),
+    replace: runEditorAction("editor.action.startFindReplaceAction"),
     saveLocal: () => saveLocal(monaco, editor),
     saveRepository: () => saveToRepositoryDialogRef.current?.openDialog(),
-    leaveRoom: () => leaveDialogRef.current?.openDialog(),
+    selectAll: runEditorAction("editor.action.selectAll"),
+    selectHighlights: runEditorAction("editor.action.selectHighlights"),
+    selectToBracket: runEditorAction("editor.action.selectToBracket"),
     settings: () => settingsSheetRef.current?.openDialog(),
-    undo: () => {
-      editor.focus();
-      editor.trigger("keyboard", "undo", null);
-    },
-    redo: () => {
-      editor.focus();
-      editor.trigger("keyboard", "redo", null);
-    },
-    cut: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.clipboardCutAction", null);
-    },
-    copy: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.clipboardCopyAction", null);
-    },
-    paste: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.clipboardPasteAction", null);
-    },
-    find: () => editor.trigger("keyboard", "actions.find", null),
-    replace: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.startFindReplaceAction", null);
-    },
-    toggleLineComment: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.commentLine", null);
-    },
-    toggleBlockComment: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.blockComment", null);
-    },
-    uppercase: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.transformToUppercase", null);
-    },
-    lowercase: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.transformToLowercase", null);
-    },
-    titleCase: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.transformToTitlecase", null);
-    },
-    sortLinesAscending: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.sortLinesAscending", null);
-    },
-    sortLinesDescending: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.sortLinesDescending", null);
-    },
-    selectAll: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.selectAll", null);
-    },
-    copyLineUp: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.copyLinesUpAction", null);
-    },
-    copyLineDown: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.copyLinesDownAction", null);
-    },
-    moveLineUp: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.moveLinesUpAction", null);
-    },
-    moveLineDown: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.moveLinesDownAction", null);
-    },
-    duplicateSelection: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.duplicateSelection", null);
-    },
-    addCursorAbove: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.insertCursorAbove", null);
-    },
-    addCursorBelow: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.insertCursorBelow", null);
-    },
-    selectToBracket: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.smartSelect.expand", null);
-    },
-    selectHighlights: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.selectHighlights", null);
-    },
-    expandSelection: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.smartSelect.expand", null);
-    },
-    shrinkSelection: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.smartSelect.shrink", null);
-    },
-    commandPalette: () => {
-      // Timeout to prevent command palette triggering before editor is focussed
-      editor.focus();
-      setTimeout(() => {
-        editor.trigger("keyboard", "editor.action.quickCommand", null);
-      }, 1);
-    },
-    zoomIn: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.fontZoomIn", null);
-    },
-    zoomOut: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.action.fontZoomOut", null);
-    },
-    foldAll: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.foldAll", null);
-    },
-    unfoldAll: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.unfoldAll", null);
-    },
-    toggleFold: () => {
-      editor.focus();
-      editor.trigger("keyboard", "editor.fold", null);
-    },
+    showHover: runEditorAction("editor.action.showHover"),
+    shrinkSelection: runEditorAction("editor.action.smartSelect.shrink"),
+    sortLinesAscending: runEditorAction("editor.action.sortLinesAscending"),
+    sortLinesDescending: runEditorAction("editor.action.sortLinesDescending"),
+    titleCase: runEditorAction("editor.action.transformToTitlecase"),
+    toggleBlockComment: runEditorAction("editor.action.blockComment"),
+    toggleFold: runEditorAction("editor.toggleFold"),
+    toggleLineComment: runEditorAction("editor.action.commentLine"),
     toggleNotepadPanel: () => setShowNotepad((show) => !show),
+    toggleSandpackPanel: () => setShowLivePreview((show) => !show),
+    toggleTabFocusMode: runEditorAction("editor.action.toggleTabFocusMode"),
     toggleTerminalPanel: () => setShowTerminal((show) => !show),
     toggleWebcamPanel: () => setShowWebcam((show) => !show),
-    toggleSandpackPanel: () => setShowLivePreview((show) => !show),
-    manual: () => {
-      window.open(`${REPO_URL}/blob/main/manual.md`, "_blank");
-    },
-    about: () => aboutDialogRef.current?.openDialog(),
+    triggerParameterHints: runEditorAction(
+      "editor.action.triggerParameterHints"
+    ),
+    triggerSuggest: runEditorAction("editor.action.triggerSuggest"),
+    trimTrailingWhitespace: runEditorAction(
+      "editor.action.trimTrailingWhitespace"
+    ),
+    undo: runEditorAction(COLLABORATIVE_UNDO_ACTION_ID),
+    unfold: runEditorAction("editor.unfold"),
+    unfoldAll: runEditorAction("editor.unfoldAll"),
+    unfoldRecursively: runEditorAction("editor.unfoldRecursively"),
+    uppercase: runEditorAction("editor.action.transformToUppercase"),
+    zoomIn: runEditorAction("editor.action.fontZoomIn"),
+    zoomOut: runEditorAction("editor.action.fontZoomOut"),
   };
 
   return (
@@ -293,8 +252,8 @@ const Toolbar = ({
         <DesktopMenu
           actions={toolbarActions}
           livePreview={showLivePreview}
-          modKey={modKey}
           notepad={showNotepad}
+          platform={platform}
           terminal={showTerminal}
           webcam={showWebcam}
         />
@@ -302,8 +261,8 @@ const Toolbar = ({
         <MobileMenu
           actions={toolbarActions}
           livePreview={showLivePreview}
-          modKey={modKey}
           notepad={showNotepad}
+          platform={platform}
           terminal={showTerminal}
           webcam={showWebcam}
         />

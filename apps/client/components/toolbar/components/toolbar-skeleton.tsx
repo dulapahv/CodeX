@@ -7,11 +7,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const MENU_WIDTHS = {
-  file: "w-6",
   edit: "w-7",
+  file: "w-6",
+  help: "w-8",
   selection: "w-14",
   view: "w-8",
-  help: "w-8",
 } as const;
 const ACTION_KEYS = ["follow", "settings", "leave"] as const;
 

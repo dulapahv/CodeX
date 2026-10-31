@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Menu } from "lucide-react";
+import { ListIcon } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 
 import {
@@ -21,12 +21,13 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 
+import { useDeferredMenuAction } from "../hooks/use-deferred-menu-action";
 import { createMenuConfig } from "../menu-config";
 import type { MenuProps } from "../types";
 import { SharedMenuItem } from "./shared-menu-item";
 
 const MobileMenu = ({
-  modKey,
+  platform,
   actions,
   notepad,
   terminal,
@@ -34,12 +35,15 @@ const MobileMenu = ({
   livePreview,
 }: MenuProps) => {
   const menuConfig = createMenuConfig(
-    modKey,
+    platform,
     notepad,
     terminal,
     webcam,
     livePreview
   );
+
+  const { restoreFocus, runPendingAction, selectAction } =
+    useDeferredMenuAction(actions);
 
   const menubarRef = useRef<HTMLDivElement>(null);
 
@@ -56,14 +60,14 @@ const MobileMenu = ({
   }, []);
   return (
     <Menubar
-      className="flex h-fit animate-fade-in border-none bg-transparent p-0 md:hidden"
+      className="animate-fade-in flex h-fit border-none bg-transparent p-0 md:hidden"
       ref={menubarRef}
     >
-      <MenubarMenu>
+      <MenubarMenu onOpenChangeComplete={runPendingAction}>
         <MenubarTrigger aria-label="Open menu" className="px-2 py-1">
-          <Menu className="size-5" />
+          <ListIcon className="size-5" />
         </MenubarTrigger>
-        <MenubarContent className="ml-1">
+        <MenubarContent className="ml-1" finalFocus={restoreFocus}>
           {menuConfig.map((group) => (
             <MenubarSub key={group.label}>
               <MenubarSubTrigger className="px-2 py-1 font-normal">
@@ -75,6 +79,7 @@ const MobileMenu = ({
                     actions={actions}
                     item={item}
                     key={typeof item === "string" ? `sep-${index}` : item.label}
+                    onSelect={selectAction}
                   />
                 ))}
               </MenubarSubContent>

@@ -21,6 +21,11 @@ const noop = (): void => {
 /** How long consecutive local edits merge into one undo step. */
 const UNDO_CAPTURE_TIMEOUT_MS = 500;
 
+// Undo and redo through these rather than Monaco's own stack, which knows
+// nothing of the CRDT
+export const COLLABORATIVE_UNDO_ACTION_ID = "codex.collaborative-undo";
+export const COLLABORATIVE_REDO_ACTION_ID = "codex.collaborative-redo";
+
 /**
  * Bind a Y.Text to the editor's model.
  *
@@ -40,7 +45,7 @@ export const bindMonacoToYText = (
   monacoInstance: Monaco
 ): (() => void) => {
   const model = editor.getModel();
-  const doc = ytext.doc;
+  const { doc } = ytext;
   if (!(model && doc)) {
     return noop;
   }
@@ -84,10 +89,10 @@ export const bindMonacoToYText = (
           model.applyEdits([
             {
               range: {
-                startLineNumber: position.lineNumber,
-                startColumn: position.column,
-                endLineNumber: position.lineNumber,
                 endColumn: position.column,
+                endLineNumber: position.lineNumber,
+                startColumn: position.column,
+                startLineNumber: position.lineNumber,
               },
               text: delta.insert,
             },
@@ -99,10 +104,10 @@ export const bindMonacoToYText = (
           model.applyEdits([
             {
               range: {
-                startLineNumber: start.lineNumber,
-                startColumn: start.column,
-                endLineNumber: end.lineNumber,
                 endColumn: end.column,
+                endLineNumber: end.lineNumber,
+                startColumn: start.column,
+                startLineNumber: start.lineNumber,
               },
               text: "",
             },
@@ -149,20 +154,19 @@ export const bindMonacoToYText = (
   // Monaco encodes a chord as a bitwise OR of its modifier and key constants;
   // there is no non-bitwise form of this API.
   const undoAction = editor.addAction({
-    id: "codex.collaborative-undo",
-    label: "Undo",
+    id: COLLABORATIVE_UNDO_ACTION_ID,
     keybindings: [
       // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
       monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyZ,
     ],
+    label: "Undo",
     run: () => {
       undoManager.undo();
     },
   });
 
   const redoAction = editor.addAction({
-    id: "codex.collaborative-redo",
-    label: "Redo",
+    id: COLLABORATIVE_REDO_ACTION_ID,
     keybindings: [
       // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
       monacoInstance.KeyMod.CtrlCmd |
@@ -171,6 +175,7 @@ export const bindMonacoToYText = (
       // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
       monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyY,
     ],
+    label: "Redo",
     run: () => {
       undoManager.redo();
     },

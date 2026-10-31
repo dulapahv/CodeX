@@ -17,12 +17,13 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 
+import { useDeferredMenuAction } from "../hooks/use-deferred-menu-action";
 import { createMenuConfig } from "../menu-config";
 import type { MenuProps } from "../types";
 import { SharedMenuItem } from "./shared-menu-item";
 
 const DesktopMenu = ({
-  modKey,
+  platform,
   actions,
   notepad,
   terminal,
@@ -30,12 +31,15 @@ const DesktopMenu = ({
   livePreview,
 }: MenuProps) => {
   const menuConfig = createMenuConfig(
-    modKey,
+    platform,
     notepad,
     terminal,
     webcam,
     livePreview
   );
+
+  const { restoreFocus, runPendingAction, selectAction } =
+    useDeferredMenuAction(actions);
 
   const menubarRef = useRef<HTMLDivElement>(null);
 
@@ -57,16 +61,21 @@ const DesktopMenu = ({
       ref={menubarRef}
     >
       {menuConfig.map((group) => (
-        <MenubarMenu key={group.label} loopFocus>
-          <MenubarTrigger className="px-2 py-1 font-normal transition-colors hover:bg-accent hover:text-accent-foreground">
+        <MenubarMenu
+          key={group.label}
+          loopFocus
+          onOpenChangeComplete={runPendingAction}
+        >
+          <MenubarTrigger className="hover:bg-accent hover:text-accent-foreground px-2 py-1 font-normal transition-colors">
             {group.label}
           </MenubarTrigger>
-          <MenubarContent className="ml-1 w-auto">
+          <MenubarContent className="ml-1 w-auto" finalFocus={restoreFocus}>
             {group.items.map((item, index) => (
               <SharedMenuItem
                 actions={actions}
                 item={item}
                 key={typeof item === "string" ? `sep-${index}` : item.label}
+                onSelect={selectAction}
               />
             ))}
           </MenubarContent>
