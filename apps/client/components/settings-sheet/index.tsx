@@ -10,9 +10,8 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -32,7 +31,7 @@ interface SettingsSheetRef {
 }
 
 interface SettingsSheetProps {
-  editor: monaco.editor.IStandaloneCodeEditor;
+  editor: monacoEditor.editor.IStandaloneCodeEditor;
   monaco: Monaco;
 }
 
@@ -44,8 +43,8 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
     const closeDialog = useCallback(() => setIsOpen(false), []);
 
     useImperativeHandle(ref, () => ({
-      openDialog,
       closeDialog,
+      openDialog,
     }));
 
     return (
@@ -70,9 +69,12 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
             role="group"
           >
             <div>
-              <Label className="text-base" id="repository-section">
+              <h3
+                className="text-base leading-none select-none"
+                id="repository-section"
+              >
                 Repository connections
-              </Label>
+              </h3>
               <div className="text-muted-foreground text-sm">
                 Connect a provider to open files from and save your work to your
                 repositories.
@@ -81,14 +83,17 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
             <RepositoryConnections isOpen={isOpen} />
             <Separator />
             <div>
-              <Label className="text-base" id="editor-section">
+              <h3
+                className="text-base leading-none select-none"
+                id="editor-section"
+              >
                 Editor Settings
-              </Label>
+              </h3>
               <div className="text-muted-foreground text-sm">
                 Customize the appearance of the editor and other settings. For
                 more information on editor settings, refer to the{" "}
                 <a
-                  className="!transition-all font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
+                  className="text-foreground hover:text-muted-foreground font-medium underline underline-offset-2 !transition-all"
                   href="https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -103,7 +108,7 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               monaco={monaco}
             />
             <div className="top-16 space-y-2">
-              <Label className="font-normal">Settings</Label>
+              <h4 className="text-xs leading-none select-none">Settings</h4>
               <EditorConfig
                 aria-labelledby="editor-section"
                 editor={editor}

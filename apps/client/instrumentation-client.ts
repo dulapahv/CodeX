@@ -16,13 +16,13 @@ const isCi = process.env.NEXT_PUBLIC_CI === "true";
 
 if (!isCi) {
   Sentry.init({
+    debug: false, // Print useful information to the console while setting up Sentry
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     enabled: !IS_DEV_ENV, // Disable Sentry in development
     integrations: [Sentry.replayIntegration()], // Enable replay for client-side errors
-    tracesSampleRate: IS_DEV_ENV ? 1 : 0.1, // Sample rate for performance monitoring
-    replaysSessionSampleRate: 0.1, // Sample rate for session replay
     replaysOnErrorSampleRate: 1.0, // Sample rate for error replay
-    debug: false, // Print useful information to the console while setting up Sentry
+    replaysSessionSampleRate: 0.1, // Sample rate for session replay
+    tracesSampleRate: IS_DEV_ENV ? 1 : 0.1, // Sample rate for performance monitoring
   });
 }
 

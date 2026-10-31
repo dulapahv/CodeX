@@ -20,8 +20,8 @@ import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 import staticAssetsIncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache";
 
 export default defineCloudflareConfig({
-  incrementalCache: staticAssetsIncrementalCache,
   // Serve cached SSG routes straight from the incremental cache, skipping the
   // Next.js server on cache hits. Not compatible with PPR (not used here).
   enableCacheInterception: true,
+  incrementalCache: staticAssetsIncrementalCache,
 });

@@ -18,25 +18,11 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 export default defineConfig({
-  testDir: "./tests/e2e",
-  // Video calls need the Realtime SFU, so they run only when the server has
-  // dev SFU credentials in apps/server/.dev.vars
-  testIgnore: process.env.E2E_SFU ? [] : ["**/media.spec.ts"],
-  fullyParallel: true, // Run tests in files in parallel
-  forbidOnly: !!process.env.CI, // Fail the build on CI if you accidentally left test.only in the source code
-  retries: process.env.CI ? 2 : 0, // Retry on CI only
-  workers: 8, // Number of workers to run the tests
-  reporter: process.env.CI ? [["html"], ["github"]] : "html", // Reporter to use
-  timeout: 120_000, // Timeout for each test
   expect: {
     timeout: 30_000, // Timeout for each expect
   },
-  // Shared settings for all the projects below
-  use: {
-    baseURL: "http://localhost:3000", // Base URL for all the projects
-    trace: "on-first-retry", // Collect trace when retrying the failed test
-    screenshot: "only-on-failure", // Collect screenshot after each test failure
-  },
+  forbidOnly: !!process.env.CI, // Fail the build on CI if you accidentally left test.only in the source code
+  fullyParallel: true, // Run tests in files in parallel
   // Configure projects for major browsers
   projects: [
     {
@@ -45,11 +31,24 @@ export default defineConfig({
     },
     {
       name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
       // Mobile browsers can't share a screen
       testIgnore: ["**/media.spec.ts"],
+      use: { ...devices["Pixel 5"] },
     },
   ],
+  reporter: process.env.CI ? [["html"], ["github"]] : "html", // Reporter to use
+  retries: process.env.CI ? 2 : 0, // Retry on CI only
+  testDir: "./tests/e2e",
+  // Video calls need the Realtime SFU, so they run only when the server has
+  // dev SFU credentials in apps/server/.dev.vars
+  testIgnore: process.env.E2E_SFU ? [] : ["**/media.spec.ts"],
+  timeout: 120_000, // Timeout for each test
+  // Shared settings for all the projects below
+  use: {
+    baseURL: "http://localhost:3000", // Base URL for all the projects
+    screenshot: "only-on-failure", // Collect screenshot after each test failure
+    trace: "on-first-retry", // Collect trace when retrying the failed test
+  },
 
   // Configure the web server for the test
   webServer: [
@@ -57,30 +56,31 @@ export default defineConfig({
       command: process.env.CI
         ? "cd ../server && pnpm start"
         : "cd ../server && pnpm dev",
-      url: "http://localhost:3001",
       reuseExistingServer: !process.env.CI,
-      stdout: "pipe",
       stderr: "pipe",
+      stdout: "pipe",
+      url: "http://localhost:3001",
     },
     {
       command: process.env.CI ? "pnpm start" : "pnpm dev",
-      url: "http://localhost:3000",
-      reuseExistingServer: !process.env.CI,
-      stdout: "pipe",
-      stderr: "pipe",
       // Fake OAuth apps plus the test proxy, so repository tests can answer
       // the server's provider API calls (see tests/e2e/repository)
       env: {
-        NEXT_TEST_PROXY: "true",
-        GITHUB_CLIENT_SECRET_DEV: "test-secret",
-        GITHUB_CLIENT_SECRET_PROD: "test-secret",
-        GITLAB_CLIENT_ID: "test-client",
-        GITLAB_CLIENT_SECRET: "test-secret",
         BITBUCKET_CLIENT_ID: "test-client",
         BITBUCKET_CLIENT_SECRET: "test-secret",
         CODEBERG_CLIENT_ID: "test-client",
         CODEBERG_CLIENT_SECRET: "test-secret",
+        GITHUB_CLIENT_SECRET_DEV: "test-secret",
+        GITHUB_CLIENT_SECRET_PROD: "test-secret",
+        GITLAB_CLIENT_ID: "test-client",
+        GITLAB_CLIENT_SECRET: "test-secret",
+        NEXT_TEST_PROXY: "true",
       },
+      reuseExistingServer: !process.env.CI,
+      stderr: "pipe",
+      stdout: "pipe",
+      url: "http://localhost:3000",
     },
   ],
+  workers: 8, // Number of workers to run the tests
 });

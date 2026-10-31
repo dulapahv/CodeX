@@ -69,9 +69,9 @@ export interface Call {
 }
 
 const CAMERA_CONSTRAINTS = {
-  width: { ideal: 1280 },
-  height: { ideal: 720 },
   aspectRatio: { ideal: 16 / 9 },
+  height: { ideal: 720 },
+  width: { ideal: 1280 },
 };
 const CAMERA_ENCODINGS: RTCRtpEncodingParameters[] = [
   { maxBitrate: 1_000_000 },
@@ -147,9 +147,9 @@ export const createCall = ({
   // reconnect only needs setting here
   const headers = accessHeaders(access);
   const partyTracks = new PartyTracks({
-    prefix: SFU_PROXY_URL,
     headers,
     iceServers,
+    prefix: SFU_PROXY_URL,
   });
 
   const camera = getCamera({ constraints: CAMERA_CONSTRAINTS });
@@ -159,29 +159,29 @@ export const createCall = ({
 
   const sources = {
     camera: {
-      track$: camera.broadcastTrack$,
       encodings: CAMERA_ENCODINGS,
       isOn$: camera.isBroadcasting$,
       start: camera.startBroadcasting,
       stop: camera.stopBroadcasting,
+      track$: camera.broadcastTrack$,
     },
     mic: {
-      track$: mic.broadcastTrack$,
       encodings: undefined,
       isOn$: mic.isBroadcasting$,
       start: mic.startBroadcasting,
       stop: mic.stopBroadcasting,
+      track$: mic.broadcastTrack$,
     },
     screen: {
+      encodings: SCREEN_ENCODINGS,
+      isOn$: screenshare.video.isBroadcasting$,
+      start: screenshare.startBroadcasting,
+      stop: screenshare.stopBroadcasting,
       track$: screenshare.video.broadcastTrack$.pipe(
         tap((track) => {
           track.contentHint = "detail";
         })
       ),
-      encodings: SCREEN_ENCODINGS,
-      isOn$: screenshare.video.isBroadcasting$,
-      start: screenshare.startBroadcasting,
-      stop: screenshare.stopBroadcasting,
     },
   } satisfies Record<CallSource, unknown>;
 
@@ -204,15 +204,15 @@ export const createCall = ({
       partyTracks
         .push(track$, encodings ? { sendEncodings$: of(encodings) } : {})
         .subscribe({
+          error: (error: unknown) =>
+            pushErrors$.next(
+              `Couldn't send your ${source}: ${parseError(error)}`
+            ),
           next: (metadata) =>
             published$.next({
               ...published$.value,
               [PUBLISHED_KEY[source]]: toTrackRef(metadata),
             }),
-          error: (error: unknown) =>
-            pushErrors$.next(
-              `Couldn't send your ${source}: ${parseError(error)}`
-            ),
         })
     );
   };
@@ -280,29 +280,6 @@ export const createCall = ({
 
   return {
     camera,
-    mic,
-    published$: published$.asObservable(),
-    isOn$: {
-      camera: sources.camera.isOn$,
-      mic: sources.mic.isOn$,
-      screen: sources.screen.isOn$,
-    },
-    isReconnecting$,
-    error$,
-
-    // Publishing starts inside the click handler, since Safari only allows
-    // screen capture as a direct response to a click
-    start: (source) => {
-      activate();
-      publish(source);
-      sources[source].start();
-    },
-
-    stop: (source) => sources[source].stop(),
-
-    pull: pullShared,
-
-    setToken: (next) => headers.set(MEDIA_TOKEN_HEADER, next),
 
     destroy: () => {
       for (const source of Object.values(sources)) {
@@ -313,5 +290,28 @@ export const createCall = ({
       isActive$.complete();
       pushErrors$.complete();
     },
+    error$,
+    isOn$: {
+      camera: sources.camera.isOn$,
+      mic: sources.mic.isOn$,
+      screen: sources.screen.isOn$,
+    },
+    isReconnecting$,
+    mic,
+    published$: published$.asObservable(),
+
+    pull: pullShared,
+
+    setToken: (next) => headers.set(MEDIA_TOKEN_HEADER, next),
+
+    // Publishing starts inside the click handler, since Safari only allows
+    // screen capture as a direct response to a click
+    start: (source) => {
+      activate();
+      publish(source);
+      sources[source].start();
+    },
+
+    stop: (source) => sources[source].stop(),
   };
 };

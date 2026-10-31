@@ -15,10 +15,10 @@ export const PROVIDER_IDS = [
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 
 export const PROVIDER_LABELS: Record<ProviderId, string> = {
-  github: "GitHub",
-  gitlab: "GitLab",
   bitbucket: "Bitbucket",
   codeberg: "Codeberg",
+  github: "GitHub",
+  gitlab: "GitLab",
 };
 
 export const isProviderId = (value: string): value is ProviderId =>

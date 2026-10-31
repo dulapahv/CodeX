@@ -39,9 +39,9 @@ export const useDialogState = (
   }, [options]);
 
   useImperativeHandle(ref, () => ({
-    openDialog,
     closeDialog,
+    openDialog,
   }));
 
-  return { isOpen, setIsOpen, openDialog, closeDialog };
+  return { closeDialog, isOpen, openDialog, setIsOpen };
 };

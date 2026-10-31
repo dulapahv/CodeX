@@ -59,7 +59,7 @@ const serialize = (message: ServerMessage) => JSON.stringify(message);
 
 export class Room extends YServer {
   static options = { hibernate: true };
-  static callbackOptions = { debounceWait: 2000, debounceMaxWait: 10_000 };
+  static callbackOptions = { debounceMaxWait: 10_000, debounceWait: 2000 };
 
   private get graceMs() {
     return Number(this.env.ROOM_GRACE_MS) || DEFAULT_GRACE_MS;
@@ -125,7 +125,7 @@ export class Room extends YServer {
     const state = Y.encodeStateAsUpdate(this.document);
     const count = Math.max(1, Math.ceil(state.length / DOC_CHUNK_SIZE));
     const entries: Record<string, unknown> = { [DOC_CHUNKS_KEY]: count };
-    for (let index = 0; index < count; index++) {
+    for (let index = 0; index < count; index += 1) {
       entries[`${DOC_CHUNK_PREFIX}${index}`] = state.slice(
         index * DOC_CHUNK_SIZE,
         (index + 1) * DOC_CHUNK_SIZE
@@ -165,14 +165,14 @@ export class Room extends YServer {
     }));
     this.sendCustomMessage(
       connection,
-      serialize({ type: "media", enabled: this.mediaEnabled, token })
+      serialize({ enabled: this.mediaEnabled, token, type: "media" })
     );
 
     this.sendCustomMessage(
       connection,
       serialize({
-        type: "terminal-history",
         results: await this.readTerminalHistory(),
+        type: "terminal-history",
       })
     );
 

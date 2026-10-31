@@ -21,22 +21,23 @@ import { normalizeRoomId } from "./utils/normalize-room-id";
 // biome-ignore lint/performance/noBarrelFile: Wrangler needs the Durable Object class exported from the entry module
 export { Room } from "./room";
 
-const ROOM_PATH = /^\/rooms\/([^/]+)$/;
+const ROOM_PATH = /^\/rooms\/(?<roomId>[^/]+)$/u;
 const MAX_CREATE_ATTEMPTS = 5;
 const TURN_CREDENTIAL_TTL_SECONDS = 86_400;
 
 const json = (body: unknown, origin: string | null, status = 200) =>
-  Response.json(body, { status, headers: corsHeaders(origin) });
+  Response.json(body, { headers: corsHeaders(origin), status });
 
 const text = (body: string, origin: string | null, status: number) =>
-  new Response(body, { status, headers: corsHeaders(origin) });
+  new Response(body, { headers: corsHeaders(origin), status });
 
 const roomStub = (env: Env, roomId: string) =>
   getServerByName(env.Room, roomId);
 
 const createRoom = async (env: Env, origin: string | null) => {
-  for (let attempt = 0; attempt < MAX_CREATE_ATTEMPTS; attempt++) {
+  for (let attempt = 0; attempt < MAX_CREATE_ATTEMPTS; attempt += 1) {
     const roomId = generateRoomID();
+    // biome-ignore lint/performance/noAwaitInLoops: only retries after a collision
     const room = await roomStub(env, roomId);
     if (await room.create()) {
       return json({ roomId }, origin, 201);
@@ -84,12 +85,12 @@ const proxySfu = async (request: Request, env: Env, origin: string | null) => {
   headers.delete(MEDIA_TOKEN_HEADER);
   const response = await routePartyTracksRequest({
     appId: env.SFU_APP_ID,
-    token: env.SFU_APP_TOKEN,
-    prefix: SFU_PROXY_PATH,
-    request: new Request(request, { headers }),
     // Its cookie lock can't work across origins, and room members can
     // already change everything in a room
     lockSessionToInitiator: false,
+    prefix: SFU_PROXY_PATH,
+    request: new Request(request, { headers }),
+    token: env.SFU_APP_TOKEN,
     turnServerAppId: env.TURN_KEY_ID || undefined,
     turnServerAppToken: env.TURN_KEY_API_TOKEN || undefined,
     turnServerCredentialTTL: TURN_CREDENTIAL_TTL_SECONDS,
@@ -116,7 +117,7 @@ export default {
     const origin = request.headers.get("Origin");
 
     if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      return new Response(null, { headers: corsHeaders(origin), status: 204 });
     }
 
     // Readiness checks such as start-server-and-test probe with HEAD
@@ -134,9 +135,9 @@ export default {
       return createRoom(env, origin);
     }
 
-    const roomPath = ROOM_PATH.exec(url.pathname);
-    if (roomPath && request.method === "GET") {
-      return checkRoom(env, roomPath[1], origin);
+    const roomId = ROOM_PATH.exec(url.pathname)?.groups?.roomId;
+    if (roomId !== undefined && request.method === "GET") {
+      return checkRoom(env, roomId, origin);
     }
 
     if (isSfuProxyPath(url.pathname)) {
@@ -150,8 +151,6 @@ export default {
     }
 
     const response = await routePartykitRequest(request, env, {
-      // Rooms are only reachable over WebSocket
-      onBeforeRequest: () => new Response("Not found", { status: 404 }),
       onBeforeConnect: (_request, lobby) => {
         const isRoom =
           lobby.className === "Room" &&
@@ -163,6 +162,8 @@ export default {
           return new Response("Not found", { status: 404 });
         }
       },
+      // Rooms are only reachable over WebSocket
+      onBeforeRequest: () => new Response("Not found", { status: 404 }),
     });
     return response ?? new Response("Not found", { status: 404 });
   },

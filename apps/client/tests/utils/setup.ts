@@ -10,7 +10,7 @@
 
 import { expect, type Page } from "@playwright/test";
 
-const ROOM_URL_PATTERN = /\/room\/.*/;
+const ROOM_URL_PATTERN = /\/room\/.*/u;
 
 export async function createRoom(page: Page, name: string) {
   await page.goto("/");
@@ -42,7 +42,7 @@ export async function joinRoom(page: Page, roomUrl: string, name: string) {
 
   // Fill name and join room
   await page.getByPlaceholder("Enter your name").fill(name);
-  await page.getByRole("button", { name: "Join Room", exact: true }).click();
+  await page.getByRole("button", { exact: true, name: "Join Room" }).click();
 
   // Verify room joining
   const hasJoined = await hasJoinedRoom(page);

@@ -12,10 +12,10 @@ import type { GitProvider } from "./provider";
 import type { ProviderId } from "./types";
 
 const PROVIDERS: Record<ProviderId, GitProvider> = {
-  github,
-  gitlab,
   bitbucket,
   codeberg,
+  github,
+  gitlab,
 };
 
 export const getProvider = (id: ProviderId): GitProvider => PROVIDERS[id];

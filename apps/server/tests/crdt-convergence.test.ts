@@ -37,7 +37,7 @@ describe("CRDT convergence", () => {
     peers.length = 0;
   });
 
-  test("propagates an edit to every peer in the room", async () => {
+  it("propagates an edit to every peer in the room", async () => {
     const [author, roomId] = await createRoom("Author");
     track(author);
     const reader = track(await joinRoom(roomId, "Reader"));
@@ -49,7 +49,7 @@ describe("CRDT convergence", () => {
     expect(reader.text.toString()).toBe("hello world");
   });
 
-  test("converges when peers edit concurrently at different offsets", async () => {
+  it("converges when peers edit concurrently at different offsets", async () => {
     const [alice, roomId] = await createRoom("Alice");
     track(alice);
     const bob = track(await joinRoom(roomId, "Bob"));
@@ -76,7 +76,7 @@ describe("CRDT convergence", () => {
     expect(result).toHaveLength("0123456789AAABBBCCC".length);
   });
 
-  test("converges when peers insert at the same offset", async () => {
+  it("converges when peers insert at the same offset", async () => {
     const [alice, roomId] = await createRoom("Alice");
     track(alice);
     const bob = track(await joinRoom(roomId, "Bob"));
@@ -90,7 +90,7 @@ describe("CRDT convergence", () => {
     expect(alice.text.toString()).toHaveLength("leftright".length);
   });
 
-  test("gives a late joiner the current document", async () => {
+  it("gives a late joiner the current document", async () => {
     const [author, roomId] = await createRoom("Author");
     track(author);
     await settle();

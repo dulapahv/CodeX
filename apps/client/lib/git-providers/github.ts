@@ -40,9 +40,9 @@ interface GithubContent {
 }
 
 const headers = (token: string, accept = "application/vnd.github+json") => ({
+  Accept: accept,
   Authorization: `Bearer ${token}`,
   "User-Agent": GITHUB_USER_AGENT,
-  Accept: accept,
   "X-GitHub-Api-Version": "2022-11-28",
 });
 
@@ -52,17 +52,12 @@ const contentsUrl = (repo: string, path: string, ref?: string) => {
 };
 
 const toRepo = (repo: GithubRepo): GitRepo => ({
+  fullName: repo.full_name,
   id: String(repo.id),
   name: repo.name,
-  fullName: repo.full_name,
 });
 
 export const github: GitProvider = {
-  id: "github",
-  label: LABEL,
-
-  isConfigured: () => Boolean(GITHUB_CLIENT_ID && GITHUB_CLIENT_SECRET),
-
   // The callback comes from the OAuth app's settings, so redirect_uri is omitted
   authorizeUrl: (state) =>
     `${GITHUB_OAUTH_URL}/authorize?${new URLSearchParams({
@@ -70,6 +65,33 @@ export const github: GitProvider = {
       scope: "repo",
       state,
     })}`,
+
+  commitFile: async (token, { repo, branch, path, content, message }) => {
+    const current = await sendIfExists(
+      contentsUrl(repo, path, branch),
+      { headers: headers(token) },
+      LABEL
+    );
+    const sha = current
+      ? ((await current.json()) as GithubContent).sha
+      : undefined;
+
+    const result = await sendJson<{ content: { html_url: string } }>(
+      contentsUrl(repo, path),
+      {
+        body: JSON.stringify({
+          branch,
+          content: toBase64(content),
+          message,
+          ...(sha && { sha }),
+        }),
+        headers: { ...headers(token), "Content-Type": "application/json" },
+        method: "PUT",
+      },
+      LABEL
+    );
+    return { url: result.content.html_url };
+  },
 
   exchangeCode: (code) =>
     requestToken(
@@ -82,35 +104,18 @@ export const github: GitProvider = {
       LABEL
     ),
 
-  refresh: () => {
-    throw new ProviderError(401, "Connect to GitHub again.");
-  },
-
   getUser: async (token) => {
     const user = await sendJson<{ avatar_url: string; login: string }>(
       `${GITHUB_API_URL}/user`,
       { headers: headers(token) },
       LABEL
     );
-    return { username: user.login, avatarUrl: user.avatar_url };
+    return { avatarUrl: user.avatar_url, username: user.login };
   },
+  id: "github",
 
-  listRepos: async (token, query) => {
-    if (query) {
-      const data = await sendJson<{ items: GithubRepo[] }>(
-        `${GITHUB_API_URL}/search/repositories?q=${encodeURIComponent(query)}+in:name+user:@me&sort=updated&order=desc&per_page=100`,
-        { headers: headers(token) },
-        LABEL
-      );
-      return data.items.map(toRepo);
-    }
-    const repos = await sendJson<GithubRepo[]>(
-      `${GITHUB_API_URL}/user/repos?sort=updated&per_page=100`,
-      { headers: headers(token) },
-      LABEL
-    );
-    return repos.map(toRepo);
-  },
+  isConfigured: () => Boolean(GITHUB_CLIENT_ID && GITHUB_CLIENT_SECRET),
+  label: LABEL,
 
   listBranches: async (token, repo) => {
     const branches = await sendJson<{ name: string }[]>(
@@ -141,6 +146,23 @@ export const github: GitProvider = {
       );
   },
 
+  listRepos: async (token, query) => {
+    if (query) {
+      const data = await sendJson<{ items: GithubRepo[] }>(
+        `${GITHUB_API_URL}/search/repositories?q=${encodeURIComponent(query)}+in:name+user:@me&sort=updated&order=desc&per_page=100`,
+        { headers: headers(token) },
+        LABEL
+      );
+      return data.items.map(toRepo);
+    }
+    const repos = await sendJson<GithubRepo[]>(
+      `${GITHUB_API_URL}/user/repos?sort=updated&per_page=100`,
+      { headers: headers(token) },
+      LABEL
+    );
+    return repos.map(toRepo);
+  },
+
   readFile: async (token, repo, ref, path) => {
     const response = await send(
       contentsUrl(repo, path, ref),
@@ -150,30 +172,7 @@ export const github: GitProvider = {
     return response.text();
   },
 
-  commitFile: async (token, { repo, branch, path, content, message }) => {
-    const current = await sendIfExists(
-      contentsUrl(repo, path, branch),
-      { headers: headers(token) },
-      LABEL
-    );
-    const sha = current
-      ? ((await current.json()) as GithubContent).sha
-      : undefined;
-
-    const result = await sendJson<{ content: { html_url: string } }>(
-      contentsUrl(repo, path),
-      {
-        method: "PUT",
-        headers: { ...headers(token), "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          content: toBase64(content),
-          branch,
-          ...(sha && { sha }),
-        }),
-      },
-      LABEL
-    );
-    return { url: result.content.html_url };
+  refresh: () => {
+    throw new ProviderError(401, "Connect to GitHub again.");
   },
 };

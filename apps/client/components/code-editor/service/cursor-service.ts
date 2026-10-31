@@ -11,7 +11,7 @@
 import type { Cursor } from "@codex/types/operation";
 
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import type { RefObject } from "react";
 
 import { storage } from "@/lib/services/storage";
@@ -27,7 +27,7 @@ const CARET_HOVER_TOLERANCE = 4;
  */
 const isLineInViewport = (
   monaco: Monaco,
-  editor: monaco.editor.IStandaloneCodeEditor,
+  editor: monacoEditor.editor.IStandaloneCodeEditor,
   lineNumber: number,
   padding: number = VIEWPORT_PADDING
 ): boolean => {
@@ -63,10 +63,10 @@ export const updateCursor = (
   userID: string,
   name: string,
   cursor: Cursor,
-  editorInstanceRef: RefObject<monaco.editor.IStandaloneCodeEditor | null>,
+  editorInstanceRef: RefObject<monacoEditor.editor.IStandaloneCodeEditor | null>,
   monacoInstanceRef: RefObject<Monaco | null>,
   cursorDecorationsRef: RefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
+    Record<string, monacoEditor.editor.IEditorDecorationsCollection>
   >
 ): void => {
   const editor = editorInstanceRef.current;
@@ -77,7 +77,7 @@ export const updateCursor = (
 
   // Prevent duplicate cursor events
   if (storage.getFollowUserId() === userID) {
-    const cursorLine = cursor[0];
+    const [cursorLine] = cursor;
     // Only center the line if it's outside the viewport
     if (!isLineInViewport(monacoInstance, editor, cursorLine)) {
       editor.revealLineInCenter(cursorLine);
@@ -91,22 +91,22 @@ export const updateCursor = (
   const color = getTextColor(backgroundColor);
   const isFirstLine = cursor[0] === 1;
 
-  const decorations: monaco.editor.IModelDeltaDecoration[] = [];
+  const decorations: monacoEditor.editor.IModelDeltaDecoration[] = [];
 
   // Add cursor decoration
   decorations.push({
-    range: {
-      startLineNumber: cursor[0],
-      startColumn: cursor[1],
-      endLineNumber: cursor[0],
-      endColumn: cursor[1],
-    },
     options: {
-      className: `cursor-${userID}`,
       beforeContentClassName: "cursor-widget",
+      className: `cursor-${userID}`,
       stickiness:
         monacoInstance.editor.TrackedRangeStickiness
           .NeverGrowsWhenTypingAtEdges,
+    },
+    range: {
+      endColumn: cursor[1],
+      endLineNumber: cursor[0],
+      startColumn: cursor[1],
+      startLineNumber: cursor[0],
     },
   });
 
@@ -120,12 +120,6 @@ export const updateCursor = (
 
   if (hasSelection) {
     decorations.push({
-      range: {
-        startLineNumber: cursor[2] ?? 1,
-        startColumn: cursor[3] ?? 1,
-        endLineNumber: cursor[4] ?? 1,
-        endColumn: cursor[5] ?? 1,
-      },
       options: {
         className: `cursor-${userID}-selection`,
         minimap: {
@@ -137,6 +131,12 @@ export const updateCursor = (
           position: monacoInstance.editor.OverviewRulerLane.Center,
         },
       },
+      range: {
+        endColumn: cursor[5] ?? 1,
+        endLineNumber: cursor[4] ?? 1,
+        startColumn: cursor[3] ?? 1,
+        startLineNumber: cursor[2] ?? 1,
+      },
     });
   }
 
@@ -145,7 +145,9 @@ export const updateCursor = (
 
   // Update styles
   const styleId = `cursor-style-${userID}`;
-  let styleElement = document.getElementById(styleId);
+  let styleElement = document.querySelector<HTMLStyleElement>(
+    `#${CSS.escape(styleId)}`
+  );
   if (!styleElement) {
     styleElement = document.createElement("style");
     styleElement.id = styleId;
@@ -170,11 +172,11 @@ export const updateCursor = (
  * @param cursorDecorationsRef Cursor decorations reference
  */
 export const showLabelOnHover = (
-  editor: monaco.editor.IStandaloneCodeEditor,
+  editor: monacoEditor.editor.IStandaloneCodeEditor,
   cursorDecorationsRef: RefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
+    Record<string, monacoEditor.editor.IEditorDecorationsCollection>
   >
-): monaco.IDisposable => {
+): monacoEditor.IDisposable => {
   const root = editor.getDomNode();
 
   const setHovered = (userID?: string) => {
@@ -189,7 +191,7 @@ export const showLabelOnHover = (
   };
 
   const isOverCaret = (
-    range: monaco.IRange | null | undefined,
+    range: monacoEditor.IRange | null | undefined,
     x: number,
     y: number
   ) => {
@@ -197,8 +199,8 @@ export const showLabelOnHover = (
       return false;
     }
     const caret = editor.getScrolledVisiblePosition({
-      lineNumber: range.startLineNumber,
       column: range.startColumn,
+      lineNumber: range.startLineNumber,
     });
     return (
       caret !== null &&
@@ -240,10 +242,10 @@ export const showLabelOnHover = (
 export const removeCursor = (
   userID: string,
   cursorDecorationsRef: RefObject<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
+    Record<string, monacoEditor.editor.IEditorDecorationsCollection>
   >
 ): void => {
   cursorDecorationsRef.current[userID]?.clear();
   delete cursorDecorationsRef.current[userID];
-  document.getElementById(`cursor-style-${userID}`)?.remove();
+  document.querySelector(`#${CSS.escape(`cursor-style-${userID}`)}`)?.remove();
 };

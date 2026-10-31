@@ -23,20 +23,20 @@ export const replaceText = (text: Y.Text, next: string) => {
   let start = 0;
   const maxStart = Math.min(current.length, next.length);
   while (start < maxStart && current[start] === next[start]) {
-    start++;
+    start += 1;
   }
   // Never split a surrogate pair
   if (start > 0 && isHighSurrogate(current.charCodeAt(start - 1))) {
-    start--;
+    start -= 1;
   }
 
   let end = 0;
   const maxEnd = Math.min(current.length, next.length) - start;
   while (end < maxEnd && current.at(-1 - end) === next.at(-1 - end)) {
-    end++;
+    end += 1;
   }
   if (end > 0 && isLowSurrogate(current.charCodeAt(current.length - end))) {
-    end--;
+    end -= 1;
   }
 
   text.doc?.transact(() => {

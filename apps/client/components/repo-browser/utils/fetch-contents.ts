@@ -123,17 +123,17 @@ export const fetchContents = async (
 
   try {
     const params = new URLSearchParams({
-      repo: repo.fullName,
-      ref: branch.name,
       path,
+      ref: branch.name,
+      repo: repo.fullName,
     });
     const contents = await requestJson<GitEntry[]>(
       `/api/${provider}/tree?${params}`
     );
     const contentData = transformContentsToTreeData(branch.id, contents);
 
-    setTreeData((prevData) => {
-      return prevData.map((repoItem) => {
+    setTreeData((prevData) =>
+      prevData.map((repoItem) => {
         if (repoItem.id === repo.id) {
           return {
             ...repoItem,
@@ -155,8 +155,8 @@ export const fetchContents = async (
           };
         }
         return repoItem;
-      });
-    });
+      })
+    );
   } catch (err) {
     setError(parseError(err));
   } finally {

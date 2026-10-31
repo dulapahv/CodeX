@@ -29,9 +29,9 @@ const AnimatedGridBackground = () => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const [gridConfig, setGridConfig] = useState<GridConfig>({
-    rows: isDesktop ? 20 : 10,
-    cols: isDesktop ? 24 : 8,
     cellSize: isDesktop ? 50 : 40,
+    cols: isDesktop ? 24 : 8,
+    rows: isDesktop ? 20 : 10,
   });
 
   const [lights, setLights] = useState<Light[]>([]);
@@ -72,17 +72,17 @@ const AnimatedGridBackground = () => {
 
     if (isHorizontal) {
       return {
-        type: "horizontal",
-        position: Math.floor(Math.random() * gridConfig.rows),
-        key: Date.now() + Math.random(),
         duration,
+        key: Date.now() + Math.random(),
+        position: Math.floor(Math.random() * gridConfig.rows),
+        type: "horizontal",
       };
     }
     return {
-      type: "vertical",
-      position: Math.floor(Math.random() * gridConfig.cols),
-      key: Date.now() + Math.random(),
       duration,
+      key: Date.now() + Math.random(),
+      position: Math.floor(Math.random() * gridConfig.cols),
+      type: "vertical",
     };
   }, [gridConfig.rows, gridConfig.cols, isDesktop]);
 
@@ -121,9 +121,9 @@ const AnimatedGridBackground = () => {
       const newRows = Math.max(10, Math.floor(height / newCellSize) + 2);
 
       setGridConfig({
-        rows: newRows,
-        cols: newCols,
         cellSize: newCellSize,
+        cols: newCols,
+        rows: newRows,
       });
     };
 
@@ -156,41 +156,41 @@ const AnimatedGridBackground = () => {
   // Light styles with parallax offset
   const lightStyles: LightStyles = {
     horizontal: {
-      trail: {
-        width: trailWidth,
-        background:
-          "linear-gradient(90deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
-      },
       glow: {
+        background: "rgba(103, 172, 245, 1)",
+        boxShadow: `
+          0 0 8px 1px rgba(103, 172, 245, 0.6),
+          0 0 16px 2px rgba(103, 172, 245, 0.4),
+          0 0 24px 3px rgba(103, 172, 245, 0.2)
+        `,
+        height: "1px",
         position: "absolute",
         right: "-2px",
         width: glowSize,
-        height: "1px",
-        background: "rgba(103, 172, 245, 1)",
-        boxShadow: `
-          0 0 8px 1px rgba(103, 172, 245, 0.6),
-          0 0 16px 2px rgba(103, 172, 245, 0.4),
-          0 0 24px 3px rgba(103, 172, 245, 0.2)
-        `,
+      },
+      trail: {
+        background:
+          "linear-gradient(90deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
+        width: trailWidth,
       },
     },
     vertical: {
-      trail: {
-        height: trailHeight,
-        background:
-          "linear-gradient(180deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
-      },
       glow: {
-        position: "absolute",
-        bottom: "-2px",
-        width: "1px",
-        height: glowSize,
         background: "rgba(103, 172, 245, 1)",
+        bottom: "-2px",
         boxShadow: `
           0 0 8px 1px rgba(103, 172, 245, 0.6),
           0 0 16px 2px rgba(103, 172, 245, 0.4),
           0 0 24px 3px rgba(103, 172, 245, 0.2)
         `,
+        height: glowSize,
+        position: "absolute",
+        width: "1px",
+      },
+      trail: {
+        background:
+          "linear-gradient(180deg, transparent 0%, rgba(103, 172, 245, 0.4) 100%)",
+        height: trailHeight,
       },
     },
   };
@@ -215,7 +215,6 @@ const AnimatedGridBackground = () => {
             animate="visible"
             className="absolute top-0 h-full w-px bg-white/80 dark:bg-gray-300/40"
             initial="hidden"
-            // biome-ignore lint/suspicious/noArrayIndexKey: static grid lines never reorder
             key={`v-${i}`}
             style={{
               left: `${(i * 100) / gridConfig.cols}%`,
@@ -230,7 +229,6 @@ const AnimatedGridBackground = () => {
             animate="visible"
             className="absolute left-0 h-px w-full bg-white/80 dark:bg-gray-300/40"
             initial="hidden"
-            // biome-ignore lint/suspicious/noArrayIndexKey: static grid lines never reorder
             key={`h-${i}`}
             style={{
               top: `${(i * 100) / gridConfig.rows}%`,

@@ -13,8 +13,8 @@ import { Suspense } from "react";
 import { OAUTH_DESCRIPTION, OAUTH_TITLE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: OAUTH_TITLE,
   description: OAUTH_DESCRIPTION,
+  title: OAUTH_TITLE,
 };
 
 export default function RootLayout({

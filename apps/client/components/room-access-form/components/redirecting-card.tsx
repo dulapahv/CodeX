@@ -12,16 +12,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 
 export const RedirectingCard = () => (
-  // biome-ignore lint/a11y/useSemanticElements: status div for redirect loading indicator
   <div
     aria-live="polite"
-    className="w-full max-w-md animate-fade-in backdrop-blur-xs"
+    className="animate-fade-in w-full max-w-md backdrop-blur-xs"
     role="status"
   >
     <Alert
       aria-describedby="redirect-description"
       aria-labelledby="redirect-title"
-      className="flex gap-x-2 bg-background/50"
+      className="bg-background/50 flex gap-x-2"
     >
       <Spinner className="size-6" />
       <div>

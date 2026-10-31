@@ -76,14 +76,14 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
   const server = new URL(BASE_SERVER_URL);
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
+    disableBc: true,
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
-    disableBc: true,
   });
 
   const presence: Presence = {
-    user: { name },
     media: { camera: false, mic: false, screen: false, speaker: true },
+    user: { name },
   };
   provider.awareness.setLocalState(presence);
 
@@ -133,12 +133,29 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
   });
 
   return {
-    doc,
-    roomId,
     awareness: provider.awareness,
     clientId: doc.clientID,
 
-    send: (message) => provider.sendMessage(JSON.stringify(message)),
+    destroy: () => {
+      messageHandlers.clear();
+      endHandlers.clear();
+      presenceListeners.clear();
+      mediaAccessListeners.clear();
+      provider.destroy();
+      doc.destroy();
+    },
+    doc,
+
+    getMediaAccess: () => mediaAccess,
+
+    getPresence: () => presenceSnapshot,
+
+    isSynced: () => provider.synced,
+
+    onEnd: (handler) => {
+      endHandlers.add(handler);
+      return () => endHandlers.delete(handler);
+    },
 
     onMessage: (type, handler) => {
       const listener = (message: ServerMessage) => {
@@ -150,27 +167,6 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
       return () => messageHandlers.delete(listener);
     },
 
-    onEnd: (handler) => {
-      endHandlers.add(handler);
-      return () => endHandlers.delete(handler);
-    },
-
-    isSynced: () => provider.synced,
-
-    getPresence: () => presenceSnapshot,
-
-    subscribePresence: (listener) => {
-      presenceListeners.add(listener);
-      return () => presenceListeners.delete(listener);
-    },
-
-    getMediaAccess: () => mediaAccess,
-
-    subscribeMediaAccess: (listener) => {
-      mediaAccessListeners.add(listener);
-      return () => mediaAccessListeners.delete(listener);
-    },
-
     onSynced: (handler) => {
       const listener = (isSynced: boolean) => {
         if (isSynced) {
@@ -180,19 +176,23 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
       provider.on("sync", listener);
       return () => provider.off("sync", listener);
     },
+    roomId,
+
+    send: (message) => provider.sendMessage(JSON.stringify(message)),
 
     setPresence: (patch) => {
       const current = provider.awareness.getLocalState() as Presence | null;
       provider.awareness.setLocalState({ ...(current ?? presence), ...patch });
     },
 
-    destroy: () => {
-      messageHandlers.clear();
-      endHandlers.clear();
-      presenceListeners.clear();
-      mediaAccessListeners.clear();
-      provider.destroy();
-      doc.destroy();
+    subscribeMediaAccess: (listener) => {
+      mediaAccessListeners.add(listener);
+      return () => mediaAccessListeners.delete(listener);
+    },
+
+    subscribePresence: (listener) => {
+      presenceListeners.add(listener);
+      return () => presenceListeners.delete(listener);
     },
   };
 };

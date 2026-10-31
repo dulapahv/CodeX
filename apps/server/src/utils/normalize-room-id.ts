@@ -5,8 +5,8 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-const DASH_PATTERN = /-/g;
-const ROOM_ID_PATTERN = /^[A-Z0-9]{8}$/;
+const DASH_PATTERN = /-/gu;
+const ROOM_ID_PATTERN = /^[A-Z0-9]{8}$/u;
 
 export const normalizeRoomId = (roomId: string): string | null => {
   const normalized = roomId.replace(DASH_PATTERN, "").toUpperCase();

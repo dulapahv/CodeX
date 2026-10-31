@@ -5,7 +5,7 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import { forwardRef, useState } from "react";
 import { RepoBrowser } from "@/components/repo-browser";
 import {
@@ -29,7 +29,7 @@ import { PROVIDER_LABELS, type ProviderId } from "@/lib/git-providers/types";
 import { parseError } from "@/lib/utils";
 
 interface OpenFromRepositoryDialogProps {
-  editor: monaco.editor.IStandaloneCodeEditor | null;
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
   monaco: Monaco | null;
 }
 
@@ -81,7 +81,7 @@ const OpenFromRepositoryDialog = forwardRef<
       setIsFetchingContent(true);
 
       const { content } = await requestJson<{ content: string }>(
-        `/api/${provider}/file?${new URLSearchParams({ repo, ref: branch, path })}`
+        `/api/${provider}/file?${new URLSearchParams({ path, ref: branch, repo })}`
       );
 
       // Try to detect language from file extension
@@ -100,8 +100,8 @@ const OpenFromRepositoryDialog = forwardRef<
       }
 
       closeDialog();
-    } catch (error) {
-      setError(parseError(error));
+    } catch (fetchError) {
+      setError(parseError(fetchError));
     } finally {
       setIsFetchingContent(false);
     }

@@ -39,8 +39,8 @@ const toMediaDevices = (
 export const listDevices = async (): Promise<DeviceLists> => {
   const devices = await navigator.mediaDevices.enumerateDevices();
   return {
-    videoDevices: toMediaDevices(devices, "videoinput", "Camera"),
     audioInputDevices: toMediaDevices(devices, "audioinput", "Microphone"),
     audioOutputDevices: toMediaDevices(devices, "audiooutput", "Speaker"),
+    videoDevices: toMediaDevices(devices, "videoinput", "Camera"),
   };
 };

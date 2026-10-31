@@ -8,15 +8,15 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { expect, test } from "@playwright/test";
+import { expect, test as it, test } from "@playwright/test";
 
 import { createRoom, joinRoom } from "@/tests/utils/setup";
 
 const EXECUTION_RESULT_PATTERN =
-  /Hello from Python!|HTTP error! status:|Process exited with code/;
+  /Hello from Python!|HTTP error! status:|Process exited with code/u;
 
 test.describe("Room Lifecycle", () => {
-  test("should keep the room's code after everyone leaves", async ({
+  it("should keep the room's code after everyone leaves", async ({
     browser,
   }) => {
     const userAContext = await browser.newContext();
@@ -37,7 +37,7 @@ test.describe("Room Lifecycle", () => {
     await expect(userBPage.getByText("kept_code = 1")).toBeVisible();
   });
 
-  test("should send everyone home when the room is terminated", async ({
+  it("should send everyone home when the room is terminated", async ({
     browser,
   }) => {
     const userAContext = await browser.newContext();
@@ -62,12 +62,12 @@ test.describe("Room Lifecycle", () => {
     await userBPage.goto(`/?room=${roomId}`);
     await userBPage.getByPlaceholder("Enter your name").fill("User B");
     await userBPage
-      .getByRole("button", { name: "Join Room", exact: true })
+      .getByRole("button", { exact: true, name: "Join Room" })
       .click();
     await expect(userBPage.getByText("Room does not exist.")).toBeVisible();
   });
 
-  test("should show earlier terminal output to someone who joins later", async ({
+  it("should show earlier terminal output to someone who joins later", async ({
     browser,
   }) => {
     const userAContext = await browser.newContext();

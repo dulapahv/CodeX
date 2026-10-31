@@ -13,26 +13,26 @@ import type { Monaco } from "@monaco-editor/react";
 import themeList from "monaco-themes/themes/themelist.json";
 
 const DEFAULT_THEMES = {
-  "vs-dark": {
-    name: "Dark (Visual Studio)",
-    variables: {
-      "--toolbar-bg-secondary": "#3c3c3c",
-      "--panel-background": "#1e1e1e",
-      "--toolbar-foreground": "#fff",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-accent": "#2678ca",
-      "--panel-text-accent": "#fff",
-    },
-  },
   light: {
     name: "Light (Visual Studio)",
     variables: {
-      "--toolbar-bg-secondary": "#dddddd",
       "--panel-background": "#fffffe",
-      "--toolbar-foreground": "#000",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-accent": "#2678ca",
       "--panel-text-accent": "#fff",
+      "--toolbar-accent": "#2678ca",
+      "--toolbar-bg-primary": "#2678ca",
+      "--toolbar-bg-secondary": "#dddddd",
+      "--toolbar-foreground": "#000",
+    },
+  },
+  "vs-dark": {
+    name: "Dark (Visual Studio)",
+    variables: {
+      "--panel-background": "#1e1e1e",
+      "--panel-text-accent": "#fff",
+      "--toolbar-accent": "#2678ca",
+      "--toolbar-bg-primary": "#2678ca",
+      "--toolbar-bg-secondary": "#3c3c3c",
+      "--toolbar-foreground": "#fff",
     },
   },
 };
@@ -57,9 +57,9 @@ export const registerMonaco = (monaco: Monaco) => {
 
   // Apply the current theme to Monaco if it exists
   const savedTheme =
-    typeof localStorage !== "undefined"
-      ? localStorage.getItem("editorTheme")
-      : null;
+    typeof localStorage === "undefined"
+      ? null
+      : localStorage.getItem("editorTheme");
   if (savedTheme && globalMonaco) {
     globalMonaco.editor.setTheme(savedTheme);
   } else if (globalMonaco) {
@@ -128,6 +128,19 @@ export const initEditorTheme = () => {
         }
 
         setCSSVariables({
+          "--panel-background": themeData.colors["editor.background"].slice(
+            0,
+            7
+          ),
+          "--panel-text-accent": themeData.colors["editor.background"].slice(
+            0,
+            7
+          ),
+          "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
+          "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
+            0,
+            7
+          ),
           "--toolbar-bg-primary": themeData.colors[
             "editor.selectionBackground"
           ].slice(0, 7),
@@ -138,19 +151,6 @@ export const initEditorTheme = () => {
             0,
             7
           ),
-          "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
-            0,
-            7
-          ),
-          "--panel-text-accent": themeData.colors["editor.background"].slice(
-            0,
-            7
-          ),
-          "--panel-background": themeData.colors["editor.background"].slice(
-            0,
-            7
-          ),
-          "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
         });
       } catch (error) {
         console.error("Failed to load theme:", error);
@@ -227,6 +227,16 @@ export const applyEditorTheme = (key: string, value: string) => {
       }
 
       setCSSVariables({
+        "--panel-background": themeData.colors["editor.background"].slice(0, 7),
+        "--panel-text-accent": themeData.colors["editor.background"].slice(
+          0,
+          7
+        ),
+        "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
+        "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
+          0,
+          7
+        ),
         "--toolbar-bg-primary": themeData.colors[
           "editor.selectionBackground"
         ].slice(0, 7),
@@ -237,16 +247,6 @@ export const applyEditorTheme = (key: string, value: string) => {
           0,
           7
         ),
-        "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
-          0,
-          7
-        ),
-        "--panel-text-accent": themeData.colors["editor.background"].slice(
-          0,
-          7
-        ),
-        "--panel-background": themeData.colors["editor.background"].slice(0, 7),
-        "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
       });
     } catch (error) {
       console.error("Failed to load theme:", error);

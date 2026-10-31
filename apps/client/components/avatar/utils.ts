@@ -8,7 +8,7 @@
 
 import type { User } from "@codex/types/user";
 
-const WHITESPACE_PATTERN = /\s+/;
+const WHITESPACE_PATTERN = /\s+/u;
 
 /**
  * Generates initials from a name
@@ -41,6 +41,5 @@ export const getInitials = (name: string): string => {
  * getDisplayName({id: "456", username: "Alice"}, "123") // "Alice"
  * ```
  */
-export const getDisplayName = (user: User, currentUserId: string) => {
-  return user.id === currentUserId ? `${user.username} (you)` : user.username;
-};
+export const getDisplayName = (user: User, currentUserId: string) =>
+  user.id === currentUserId ? `${user.username} (you)` : user.username;

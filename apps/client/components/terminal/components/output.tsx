@@ -30,7 +30,7 @@ const Output = ({ result }: OutputProps) => {
   return (
     <div>
       <div className="flex">
-        <span className="mr-4 text-muted-foreground">
+        <span className="text-muted-foreground mr-4">
           [{formatTimestamp(timestamp)}]
         </span>
         <div className="flex-1">
@@ -41,13 +41,13 @@ const Output = ({ result }: OutputProps) => {
           )}
 
           {result.run.stdout && (
-            <div className={cn("whitespace-pre-wrap break-all", messageColor)}>
+            <div className={cn("break-all whitespace-pre-wrap", messageColor)}>
               {result.run.stdout}
             </div>
           )}
 
           {result.run.stderr && (
-            <div className="whitespace-pre-wrap break-all text-red-500">
+            <div className="break-all whitespace-pre-wrap text-red-500">
               Error: {result.run.stderr}
             </div>
           )}

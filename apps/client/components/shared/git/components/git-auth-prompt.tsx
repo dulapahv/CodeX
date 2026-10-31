@@ -27,7 +27,6 @@ export const GitAuthPrompt = ({
   const label = PROVIDER_LABELS[provider];
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: status div for auth loading/prompt state
     <div
       className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-8 md:px-0"
       role="status"
@@ -37,7 +36,7 @@ export const GitAuthPrompt = ({
       ) : (
         <>
           <p
-            className="text-center text-muted-foreground text-sm"
+            className="text-muted-foreground text-center text-sm"
             id="login-prompt"
           >
             {configured ? promptText : `${label} isn't available yet.`}

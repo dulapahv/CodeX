@@ -26,7 +26,7 @@ export default function Page() {
 
   useEffect(() => {
     window.opener?.postMessage(
-      { type: "git-oauth", provider, success: isSuccessful },
+      { provider, success: isSuccessful, type: "git-oauth" },
       window.location.origin
     );
   }, [provider, isSuccessful]);
@@ -34,7 +34,7 @@ export default function Page() {
   return (
     <main className="fixed top-0 left-0 flex size-full items-center justify-center p-2">
       {isSuccessful ? (
-        <Alert className="flex max-w-md gap-x-2 bg-background/50 backdrop-blur">
+        <Alert className="bg-background/50 flex max-w-md gap-x-2 backdrop-blur">
           <Spinner className="size-6" />
           <div>
             <AlertTitle>Processing authentication...</AlertTitle>

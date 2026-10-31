@@ -20,15 +20,14 @@ export const formatExecutionTime = (ms: number) => {
   return `${(ms / 1000).toFixed(2)}s`;
 };
 
-export const formatTimestamp = (date: Date) => {
-  return date.toLocaleTimeString("en-US", {
-    hour12: false,
+export const formatTimestamp = (date: Date) =>
+  date.toLocaleTimeString("en-US", {
+    fractionalSecondDigits: 3,
     hour: "2-digit",
+    hour12: false,
     minute: "2-digit",
     second: "2-digit",
-    fractionalSecondDigits: 3,
   });
-};
 
 export const getMessageColor = (type?: ExecutionResultType) => {
   switch (type) {

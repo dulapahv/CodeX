@@ -76,8 +76,8 @@ const DeviceControls = ({
 
       if (deviceKind === "audiooutput") {
         // For speakers, we need to handle them differently
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasOutputDevices = devices.some(
+        const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+        const hasOutputDevices = mediaDevices.some(
           (device) =>
             device.kind === "audiooutput" && device.deviceId && device.label
         );
@@ -180,7 +180,7 @@ const DeviceControls = ({
               <SelectTrigger
                 aria-label={`Select ${label} device`}
                 className={cn(
-                  "w-5 border-0 p-0 transition-all hover:bg-foreground/20 [&>svg]:w-full [&>svg]:rotate-180",
+                  "hover:bg-foreground/20 w-5 border-0 p-0 transition-all [&>svg]:w-full [&>svg]:rotate-180",
                   disabled && "cursor-not-allowed opacity-50"
                 )}
               />

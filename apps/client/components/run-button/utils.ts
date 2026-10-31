@@ -13,7 +13,7 @@ import {
   ExecutionResultType,
 } from "@codex/types/terminal";
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import type { RefObject } from "react";
 
 import { executeCode as executeCodeAction } from "@/actions/execute";
@@ -35,16 +35,16 @@ export const cancelExecution = (
 
     const res = {
       language: "system",
-      version: "1.0.0",
       run: {
-        stdout: "🛑 Code execution cancelled",
-        stderr: "",
         code: 0,
-        signal: null,
         output: "",
+        signal: null,
+        stderr: "",
+        stdout: "🛑 Code execution cancelled",
       },
       timestamp: endTime,
       type: ExecutionResultType.WARNING,
+      version: "1.0.0",
     };
 
     reporter.report(res);
@@ -54,7 +54,7 @@ export const cancelExecution = (
 
 export const executeCode = async (
   monaco: Monaco | null,
-  editor: monaco.editor.IStandaloneCodeEditor | null,
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null,
   reporter: RunReporter,
   abortControllerRef: RefObject<AbortController | null>,
   args: string[],
@@ -76,16 +76,16 @@ export const executeCode = async (
     if (!code.trim()) {
       const res = {
         language: "system",
-        version: "1.0.0",
         run: {
-          stdout: "⚠️ No code to execute",
-          stderr: "",
           code: 0,
-          signal: null,
           output: "",
+          signal: null,
+          stderr: "",
+          stdout: "⚠️ No code to execute",
         },
         timestamp: new Date(),
         type: ExecutionResultType.WARNING,
+        version: "1.0.0",
       };
       reporter.report(res);
       return;
@@ -93,16 +93,16 @@ export const executeCode = async (
 
     const res = {
       language: "system",
-      version: "1.0.0",
       run: {
-        stdout: "🚀 Executing code...",
-        stderr: "",
         code: 0,
-        signal: null,
         output: "",
+        signal: null,
+        stderr: "",
+        stdout: "🚀 Executing code...",
       },
       timestamp: startTime,
       type: ExecutionResultType.INFO,
+      version: "1.0.0",
     };
 
     reporter.report(res);
@@ -121,9 +121,9 @@ export const executeCode = async (
 
     const result: ExecutionResult = await Promise.race([
       executeCodeAction({
+        args,
         code,
         language: language?.id ?? "",
-        args,
         stdin,
       }),
       abortPromise,
@@ -134,8 +134,8 @@ export const executeCode = async (
 
     const resultWithTimestamp: ExecutionResult = {
       ...result,
-      timestamp: endTime,
       executionTime,
+      timestamp: endTime,
       type: ExecutionResultType.OUTPUT,
     };
     reporter.report(resultWithTimestamp);
@@ -149,18 +149,18 @@ export const executeCode = async (
     const executionTime = endTime.getTime() - startTime.getTime();
 
     const res = {
+      executionTime,
       language: "error",
-      version: "1.0.0",
       run: {
-        stdout: "",
-        stderr: parseError(error),
         code: 1,
-        signal: null,
         output: parseError(error),
+        signal: null,
+        stderr: parseError(error),
+        stdout: "",
       },
       timestamp: endTime,
-      executionTime,
       type: ExecutionResultType.ERROR,
+      version: "1.0.0",
     };
     reporter.report(res);
   } finally {

@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       />
       <div
         aria-hidden="true"
-        className="fixed inset-0 -z-10 bg-linear-to-tr/srgb from-[#fb568a]/50 via-45% via-[#c240ff]/50 to-90% to-[#3b77fd]/50"
+        className="bg-linear-to-tr/srgb fixed inset-0 -z-10 from-[#fb568a]/50 via-[#c240ff]/50 via-45% to-[#3b77fd]/50 to-90%"
         role="presentation"
       />
       <div className="dark fixed inset-0 -z-10">
@@ -40,10 +40,10 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       </div>
       <main className="dark relative flex min-h-full w-full flex-col overflow-hidden min-[1189px]:flex-row">
         {/* Left Section - Form */}
-        <div className="my-2 flex min-h-[700px] w-full flex-col justify-center p-4 min-[1189px]:w-5/12 min-[1189px]:items-center min-[560px]:p-8">
+        <div className="my-2 flex min-h-[700px] w-full flex-col justify-center p-4 min-[560px]:p-8 min-[1189px]:w-5/12 min-[1189px]:items-center">
           <div className="w-full max-w-xl">
             <div className="mb-6 space-y-6">
-              <h1 className="flex flex-row items-start gap-2 font-bold text-4xl text-foreground tracking-tight sm:text-5xl">
+              <h1 className="text-foreground flex flex-row items-start gap-2 text-4xl font-bold tracking-tight sm:text-5xl">
                 <Image
                   alt="CodeX Logo"
                   className="size-20 min-[1189px]:size-24"
@@ -63,7 +63,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
                   </span>
                 </div>
               </h1>
-              <p className="w-full whitespace-pre-line text-foreground/90 text-lg sm:w-[93%] sm:text-xl">
+              <p className="text-foreground/90 w-full text-lg whitespace-pre-line sm:w-[93%] sm:text-xl">
                 Your collaborative coding space, reimagined. Start now, no
                 sign-up required.
               </p>

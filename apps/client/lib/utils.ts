@@ -76,7 +76,7 @@ export const getBackgroundColor = (name: string): string => {
 
   // Simple hash function for consistent color generation
   let hash = 0;
-  for (let i = 0; i < name.length; i++) {
+  for (let i = 0; i < name.length; i += 1) {
     const char = name.charCodeAt(i);
     // biome-ignore lint/suspicious/noBitwiseOperators: intentional hash computation
     hash = ((hash << 5) - hash + char) >>> 0;
@@ -145,9 +145,9 @@ const getLuminance = (hexColor: string): number => {
     return vNorm <= 0.039_28 ? vNorm / 12.92 : ((vNorm + 0.055) / 1.055) ** 2.4;
   };
 
-  const r = toLinear(Number.parseInt(hex.substring(0, 2), 16));
-  const g = toLinear(Number.parseInt(hex.substring(2, 4), 16));
-  const b = toLinear(Number.parseInt(hex.substring(4, 6), 16));
+  const r = toLinear(Number.parseInt(hex.slice(0, 2), 16));
+  const g = toLinear(Number.parseInt(hex.slice(2, 4), 16));
+  const b = toLinear(Number.parseInt(hex.slice(4, 6), 16));
 
   // Use precise sRGB luminance coefficients
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;

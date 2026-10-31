@@ -65,8 +65,8 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
 
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
-      openDialog,
       closeDialog,
+      openDialog,
     }));
 
     useEffect(() => {
@@ -83,7 +83,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
       return (
         <Dialog onOpenChange={setIsOpen} open={isOpen}>
           <DialogContent className={cn("sm:max-w-2xl", forceDark && "dark")}>
-            <DialogHeader className="text-left text-foreground">
+            <DialogHeader className="text-foreground text-left">
               <DialogTitle>{SITE_NAME}</DialogTitle>
               <DialogDescription className="pt-2 text-base">
                 This project is part of the course &quot;COMPSCI4025P Level 4
@@ -117,7 +117,7 @@ const AboutDialog = forwardRef<AboutDialogRef, AboutDialogProps>(
 
             <Separator />
 
-            <div className="space-y-2 text-foreground">
+            <div className="text-foreground space-y-2">
               <p className="text-center">
                 Made with 💕 by <span className="font-medium">dulapahv</span>
               </p>

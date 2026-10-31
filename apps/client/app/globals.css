@@ -95,42 +95,42 @@
   }
   @keyframes fade-in-top {
     0% {
-      transform: translateY(-25px);
       opacity: 0;
+      transform: translateY(-25px);
     }
     to {
-      transform: translateY(0);
       opacity: 1;
+      transform: translateY(0);
     }
   }
   @keyframes fade-in-bottom {
     0% {
-      transform: translateY(25px);
       opacity: 0;
+      transform: translateY(25px);
     }
     to {
-      transform: translateY(0);
       opacity: 1;
+      transform: translateY(0);
     }
   }
   @keyframes fade-in-left {
     0% {
-      transform: translateX(-25px);
       opacity: 0;
+      transform: translateX(-25px);
     }
     to {
-      transform: translateX(0);
       opacity: 1;
+      transform: translateX(0);
     }
   }
   @keyframes fade-in-right {
     0% {
-      transform: translateX(25px);
       opacity: 0;
+      transform: translateX(25px);
     }
     to {
-      transform: translateX(0);
       opacity: 1;
+      transform: translateX(0);
     }
   }
 }
@@ -329,8 +329,8 @@
     opacity: 1;
   }
   to {
-    opacity: 0;
     visibility: hidden;
+    opacity: 0;
   }
 }
 
@@ -348,10 +348,6 @@
 
 [class*="_secondaryButton_"] {
   @apply bg-secondary! text-foreground! cursor-pointer! border-0! transition-all! hover:brightness-90;
-}
-
-[class*="_imageWrapper_"] [class*="_editImageToolbar_"] {
-  @apply bg-transparent;
 }
 
 [class*="_toolbarButton_"] {
@@ -375,7 +371,7 @@
 }
 
 [class*="_imageWrapper_"] [class*="_editImageToolbar_"] {
-  @apply hidden;
+  @apply hidden bg-transparent;
 }
 
 [class*="_imageWrapper_"]:hover [class*="_editImageToolbar_"] {
@@ -383,7 +379,7 @@
 }
 
 [class*="_codeMirrorWrapper_"] {
-  @apply my-1!;
+  @apply my-1! p-0!;
 }
 
 .mdxeditor-popup-container > div {
@@ -405,10 +401,6 @@
   --radius-medium: 0px;
   --radius-large: 0px;
   --radius-full: 0px;
-}
-
-[class*="_codeMirrorWrapper_"] {
-  @apply p-0!;
 }
 
 [class*="_codeMirrorToolbar_"] {
@@ -514,13 +506,9 @@
 }
 
 [class*="_linkDialogPreviewAnchor_"] {
-  @apply px-2;
+  @apply px-2 transition-all!;
 }
 
 [class*="_tableColumnEditorToolbar_"] button:not([data-state="on"]) {
   @apply hover:bg-foreground/10! transition-all!;
-}
-
-[class*="_linkDialogPreviewAnchor_"] {
-  @apply transition-all!;
 }

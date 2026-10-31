@@ -62,14 +62,14 @@ export const connectPeer = async (
   const server = new URL(SERVER_URL);
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
+    disableBc: true,
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
     WebSocketPolyfill: WebSocket as unknown as typeof globalThis.WebSocket,
-    disableBc: true,
   });
   provider.awareness.setLocalState({
-    user: { name },
     media: { camera: false, mic: false, screen: false, speaker: true },
+    user: { name },
   } satisfies Presence);
 
   const messages: ServerMessage[] = [];
@@ -113,20 +113,14 @@ export const connectPeer = async (
 
   return {
     clientId: doc.clientID,
-    doc,
-    text: doc.getText(ROOM_DOC.code),
-    messages,
     closeCodes,
+    doc,
 
-    send: (message) => provider.sendMessage(JSON.stringify(message)),
-
-    setPresence: (patch) => {
-      const current = provider.awareness.getLocalState() as Presence;
-      provider.awareness.setLocalState({ ...current, ...patch });
+    leave: () => {
+      provider.destroy();
+      doc.destroy();
     },
-
-    presenceOf: (clientId) =>
-      provider.awareness.getStates().get(clientId) as Presence | undefined,
+    messages,
 
     nextDocUpdate: () =>
       new Promise((resolve) => {
@@ -135,17 +129,6 @@ export const connectPeer = async (
           resolve();
         };
         doc.on("update", handleUpdate);
-      }),
-
-    nextPresenceUpdate: (fromClientId) =>
-      new Promise((resolve) => {
-        const handleUpdate = ({ added, updated }: AwarenessChange) => {
-          if ([...added, ...updated].includes(fromClientId)) {
-            provider.awareness.off("update", handleUpdate);
-            resolve();
-          }
-        };
-        provider.awareness.on("update", handleUpdate);
       }),
 
     nextMessage: (type) =>
@@ -159,6 +142,28 @@ export const connectPeer = async (
         messageWaiters.add(waiter);
       }),
 
+    nextPresenceUpdate: (fromClientId) =>
+      new Promise((resolve) => {
+        const handleUpdate = ({ added, updated }: AwarenessChange) => {
+          if ([...added, ...updated].includes(fromClientId)) {
+            provider.awareness.off("update", handleUpdate);
+            resolve();
+          }
+        };
+        provider.awareness.on("update", handleUpdate);
+      }),
+
+    presenceOf: (clientId) =>
+      provider.awareness.getStates().get(clientId) as Presence | undefined,
+
+    send: (message) => provider.sendMessage(JSON.stringify(message)),
+
+    setPresence: (patch) => {
+      const current = provider.awareness.getLocalState() as Presence;
+      provider.awareness.setLocalState({ ...current, ...patch });
+    },
+    text: doc.getText(ROOM_DOC.code),
+
     waitForClose: () =>
       new Promise((resolve) => {
         const waiter = (code: number) => {
@@ -167,11 +172,6 @@ export const connectPeer = async (
         };
         closeWaiters.add(waiter);
       }),
-
-    leave: () => {
-      provider.destroy();
-      doc.destroy();
-    },
   };
 };
 
@@ -189,8 +189,8 @@ export const calculateStats = (samples: number[]) => {
   );
   return {
     average,
-    standardDeviation,
-    minimum: Math.min(...samples),
     maximum: Math.max(...samples),
+    minimum: Math.min(...samples),
+    standardDeviation,
   };
 };

@@ -20,8 +20,8 @@ export const setItemLoading = (
   setTreeData((prevData) => {
     const updateChildren = (
       items: ExtendedTreeDataItem[]
-    ): ExtendedTreeDataItem[] => {
-      return items.map((item) => {
+    ): ExtendedTreeDataItem[] =>
+      items.map((item) => {
         if (item.id === itemId) {
           return { ...item, isLoading };
         }
@@ -34,7 +34,6 @@ export const setItemLoading = (
         }
         return item;
       });
-    };
     return updateChildren(prevData);
   });
 };

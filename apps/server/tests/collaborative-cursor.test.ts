@@ -25,29 +25,29 @@ const RESET_CURSOR: Cursor = [0, 0];
 
 const testCases = [
   {
-    name: "Simple cursor movement",
     cursor: [1, 1] as Cursor,
     description: "Basic cursor position update at start of document",
+    name: "Simple cursor movement",
   },
   {
-    name: "Long-distance cursor jump",
     cursor: [100, 50] as Cursor,
     description: "Cursor movement to a distant position",
+    name: "Long-distance cursor jump",
   },
   {
-    name: "Simple text selection",
     cursor: [1, 1, 1, 1, 1, 10] as Cursor,
     description: "Selection within a single line",
+    name: "Simple text selection",
   },
   {
-    name: "Multi-line selection",
     cursor: [1, 1, 1, 1, 5, 10] as Cursor,
     description: "Selection spanning multiple lines",
+    name: "Multi-line selection",
   },
   {
-    name: "Large text selection",
     cursor: [1, 1, 1, 1, 100, 100] as Cursor,
     description: "Selection of a large portion of text",
+    name: "Large text selection",
   },
 ];
 
@@ -61,6 +61,22 @@ interface TestResult {
   standardDeviation: number;
 }
 
+const formatNumber = (num: number): string => num.toFixed(2);
+
+const generateTestCaseReport = (
+  result: TestResult
+): string => `Test Case: ${result.name}
+─────────────────────────────────────────────────────
+Description: ${result.description}
+Samples: ${result.samples.map((s) => formatNumber(s)).join(", ")} ms
+
+Statistics:
+• Average Latency:      ${formatNumber(result.average)} ms
+• Standard Deviation:   ${formatNumber(result.standardDeviation)} ms
+• Minimum Latency:      ${formatNumber(result.minimum)} ms
+• Maximum Latency:      ${formatNumber(result.maximum)} ms
+`;
+
 class CursorLatencyReport {
   private readonly results: TestResult[] = [];
   private rapidMovementResults: TestResult | null = null;
@@ -71,24 +87,6 @@ class CursorLatencyReport {
 
   setRapidMovementResult(result: TestResult) {
     this.rapidMovementResults = result;
-  }
-
-  private formatNumber(num: number): string {
-    return num.toFixed(2);
-  }
-
-  private generateTestCaseReport(result: TestResult): string {
-    return `Test Case: ${result.name}
-─────────────────────────────────────────────────────
-Description: ${result.description}
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(", ")} ms
-
-Statistics:
-• Average Latency:      ${this.formatNumber(result.average)} ms
-• Standard Deviation:   ${this.formatNumber(result.standardDeviation)} ms
-• Minimum Latency:      ${this.formatNumber(result.minimum)} ms
-• Maximum Latency:      ${this.formatNumber(result.maximum)} ms
-`;
   }
 
   generateReport(): string {
@@ -102,22 +100,22 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join("\n")}
+${this.results.map((r) => generateTestCaseReport(r)).join("\n")}
 
-${this.rapidMovementResults ? this.generateTestCaseReport(this.rapidMovementResults) : ""}
+${this.rapidMovementResults ? generateTestCaseReport(this.rapidMovementResults) : ""}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
-Overall Average Latency: ${this.formatNumber(
+Overall Average Latency: ${formatNumber(
       this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
-Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
+Best Performance: ${formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
+Worst Performance: ${formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
 `;
   }
 
   saveToFile() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestamp = new Date().toISOString().replace(/[:.]/gu, "-");
     const reportDir = path.join(process.cwd(), "test-results");
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir);
@@ -160,7 +158,8 @@ describe("Cursor Synchronization Latency Tests", () => {
   const measureLatency = async (cursor: Cursor): Promise<number[]> => {
     const latencies: number[] = [];
 
-    for (let i = 0; i < SAMPLES_PER_TEST; i++) {
+    for (let i = 0; i < SAMPLES_PER_TEST; i += 1) {
+      // biome-ignore lint/performance/noAwaitInLoops: samples are spaced out so each latency is measured alone
       await settle(100); // Delay between samples
       await sendCursor(RESET_CURSOR);
       latencies.push(await sendCursor(cursor));
@@ -169,23 +168,22 @@ describe("Cursor Synchronization Latency Tests", () => {
     return latencies;
   };
 
-  test.each(testCases)("Cursor latency for $name", async ({
-    name,
-    cursor,
-    description,
-  }) => {
-    const latencies = await measureLatency(cursor);
-    const stats = calculateStats(latencies);
+  it.each(testCases)(
+    "Cursor latency for $name",
+    async ({ name, cursor, description }) => {
+      const latencies = await measureLatency(cursor);
+      const stats = calculateStats(latencies);
 
-    report.addResult({
-      name,
-      samples: latencies,
-      description,
-      ...stats,
-    });
-  });
+      report.addResult({
+        description,
+        name,
+        samples: latencies,
+        ...stats,
+      });
+    }
+  );
 
-  test("Rapid cursor movements", async () => {
+  it("Rapid cursor movements", async () => {
     const movements = 100;
 
     const timings = await Promise.all(
@@ -194,11 +192,13 @@ describe("Cursor Synchronization Latency Tests", () => {
       )
     );
 
+    expect(timings).toHaveLength(movements);
+
     const stats = calculateStats(timings);
     report.setRapidMovementResult({
+      description: `${movements} rapid sequential cursor position updates`,
       name: "Rapid Cursor Movements",
       samples: timings,
-      description: `${movements} rapid sequential cursor position updates`,
       ...stats,
     });
   });

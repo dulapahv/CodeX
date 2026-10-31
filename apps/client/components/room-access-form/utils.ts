@@ -14,9 +14,9 @@ import type { ChangeEvent } from "react";
 import { createRoomId, roomExists } from "@/lib/realtime/rooms";
 import { storage } from "@/lib/services/storage";
 
-const DASH_PATTERN = /-/g;
-const NON_ALPHANUMERIC_PATTERN = /[^A-Z0-9]/g;
-const ROOM_ID_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+const DASH_PATTERN = /-/gu;
+const NON_ALPHANUMERIC_PATTERN = /[^A-Z0-9]/gu;
+const ROOM_ID_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{4}$/u;
 
 // Creates a room and returns its ID formatted for display ("ABCD-EFGH")
 export const createRoom = async (name: string): Promise<string> => {

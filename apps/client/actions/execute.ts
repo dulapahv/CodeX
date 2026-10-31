@@ -2,7 +2,7 @@
 
 import { PISTON_API_URL } from "@/lib/constants";
 
-const PISTON_API_KEY = process.env.PISTON_API_KEY;
+const { PISTON_API_KEY } = process.env;
 
 interface ExecuteInput {
   args?: string[];
@@ -21,20 +21,20 @@ export async function executeCode(input: ExecuteInput) {
   }
 
   const response = await fetch(PISTON_API_URL, {
-    method: "POST",
+    body: JSON.stringify({
+      args: Array.isArray(input.args) ? input.args : [],
+      compile_timeout: 30_000,
+      files: [{ content: input.code }],
+      language: input.language.toLowerCase(),
+      run_timeout: 30_000,
+      stdin: input.stdin || "",
+      version: "*",
+    }),
     headers: {
       "Content-Type": "application/json",
       ...(PISTON_API_KEY && { Authorization: PISTON_API_KEY }),
     },
-    body: JSON.stringify({
-      language: input.language.toLowerCase(),
-      version: "*",
-      files: [{ content: input.code }],
-      stdin: input.stdin || "",
-      args: Array.isArray(input.args) ? input.args : [],
-      run_timeout: 30_000,
-      compile_timeout: 30_000,
-    }),
+    method: "POST",
   });
 
   if (!response.ok) {
@@ -58,19 +58,19 @@ export async function executeCode(input: ExecuteInput) {
 
     return {
       language: input.language,
-      version: "*",
-      run: {
-        stdout: "",
-        stderr: message,
-        code: 1,
-        signal: null,
-        output: message,
-      },
       metadata: {
         args: input.args || [],
         stdin: input.stdin || "",
         timestamp: new Date().toISOString(),
       },
+      run: {
+        code: 1,
+        output: message,
+        signal: null,
+        stderr: message,
+        stdout: "",
+      },
+      version: "*",
     };
   }
 

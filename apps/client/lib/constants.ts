@@ -37,16 +37,16 @@ export const GITHUB_CLIENT_SECRET = IS_DEV_ENV
 // listed but unavailable
 export const GITLAB_URL = "https://gitlab.com";
 export const GITLAB_CLIENT_ID = process.env.GITLAB_CLIENT_ID ?? "";
-export const GITLAB_CLIENT_SECRET = process.env.GITLAB_CLIENT_SECRET;
+export const { GITLAB_CLIENT_SECRET } = process.env;
 
 export const BITBUCKET_URL = "https://bitbucket.org";
 export const BITBUCKET_API_URL = "https://api.bitbucket.org/2.0";
 export const BITBUCKET_CLIENT_ID = process.env.BITBUCKET_CLIENT_ID ?? "";
-export const BITBUCKET_CLIENT_SECRET = process.env.BITBUCKET_CLIENT_SECRET;
+export const { BITBUCKET_CLIENT_SECRET } = process.env;
 
 export const CODEBERG_URL = "https://codeberg.org";
 export const CODEBERG_CLIENT_ID = process.env.CODEBERG_CLIENT_ID ?? "";
-export const CODEBERG_CLIENT_SECRET = process.env.CODEBERG_CLIENT_SECRET;
+export const { CODEBERG_CLIENT_SECRET } = process.env;
 
 export const PISTON_API_URL = "https://emkc.org/api/v2/piston/execute";
 

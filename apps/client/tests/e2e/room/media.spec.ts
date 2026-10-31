@@ -12,6 +12,7 @@
 import {
   type Browser,
   expect,
+  test as it,
   type Locator,
   type Page,
   test,
@@ -81,7 +82,8 @@ const peakCallVolume = (page: Page) =>
     context.createMediaStreamSource(stream).connect(analyser);
     const samples = new Float32Array(analyser.fftSize);
     let peak = 0;
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 30; i += 1) {
+      // biome-ignore lint/performance/noAwaitInLoops: samples the audio level over time
       await new Promise((resolve) => setTimeout(resolve, 100));
       analyser.getFloatTimeDomainData(samples);
       const power =
@@ -94,7 +96,7 @@ const peakCallVolume = (page: Page) =>
   });
 
 test.describe("Video Calls", () => {
-  test("should show a camera to another user, also after turning it off and on", async ({
+  it("should show a camera to another user, also after turning it off and on", async ({
     browser,
   }) => {
     const { userAPage, userBPage } = await openTwoUsers(browser);
@@ -112,7 +114,7 @@ test.describe("Video Calls", () => {
     await expectPlaying(remoteVideos(userBPage));
   });
 
-  test("should show a camera from someone who left and rejoined", async ({
+  it("should show a camera from someone who left and rejoined", async ({
     browser,
   }) => {
     const { roomUrl, userAPage, userBPage } = await openTwoUsers(browser);
@@ -130,7 +132,7 @@ test.describe("Video Calls", () => {
     await expectPlaying(remoteVideos(userBPage));
   });
 
-  test("should play a microphone to another user", async ({ browser }) => {
+  it("should play a microphone to another user", async ({ browser }) => {
     const { userAPage, userBPage } = await openTwoUsers(browser);
 
     await userAPage.getByLabel("Toggle microphone").click();
@@ -138,7 +140,7 @@ test.describe("Video Calls", () => {
     await expect.poll(() => peakCallVolume(userBPage)).toBeGreaterThan(0.05);
   });
 
-  test("should share a screen into the other user's preview panel", async ({
+  it("should share a screen into the other user's preview panel", async ({
     browser,
   }) => {
     const { userAPage, userBPage } = await openTwoUsers(browser);
@@ -159,7 +161,7 @@ test.describe("Video Calls", () => {
     await expectPlaying(sharedScreen);
 
     await userAPage
-      .getByRole("button", { name: "Stop sharing", exact: true })
+      .getByRole("button", { exact: true, name: "Stop sharing" })
       .click();
 
     await expect(screenTab).toBeHidden();

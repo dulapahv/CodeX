@@ -70,9 +70,9 @@ import {
 import { storage } from "@/lib/services/storage";
 import { cn } from "@/lib/utils";
 
-const DASH_PATTERN = /-/g;
+const DASH_PATTERN = /-/gu;
 
-const MemoizedToolbar = memo(function MemoizedToolbar({
+const MemoizedToolbar = memo(function MemoizedToolbarComponent({
   monaco,
   editor,
   roomId,
@@ -136,11 +136,11 @@ const MemoizedToolbar = memo(function MemoizedToolbar({
   );
 });
 
-const MemoizedNotepad = memo(function MemoizedNotepad() {
+const MemoizedNotepad = memo(function MemoizedNotepadComponent() {
   return <Notepad />;
 });
 
-const MemoizedTerminal = memo(function MemoizedTerminal({
+const MemoizedTerminal = memo(function MemoizedTerminalComponent({
   results,
   setResults,
 }: {
@@ -150,7 +150,7 @@ const MemoizedTerminal = memo(function MemoizedTerminal({
   return <Terminal results={results} setResults={setResults} />;
 });
 
-const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
+const MemoizedWebcamStream = memo(function MemoizedWebcamStreamComponent({
   users,
 }: {
   users: User[];
@@ -158,7 +158,7 @@ const MemoizedWebcamStream = memo(function MemoizedWebcamStream({
   return <WebcamStream users={users} />;
 });
 
-const MemoizedLivePreview = memo(function MemoizedLivePreview({
+const MemoizedLivePreview = memo(function MemoizedLivePreviewComponent({
   value,
 }: {
   value: string;
@@ -166,7 +166,7 @@ const MemoizedLivePreview = memo(function MemoizedLivePreview({
   return <LivePreview value={value} />;
 });
 
-const MemoizedStatusBar = memo(function MemoizedStatusBar({
+const MemoizedStatusBar = memo(function MemoizedStatusBarComponent({
   monaco,
   editor,
   cursorPosition,
@@ -258,8 +258,8 @@ const RoomWorkspace = ({
     useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
   const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
     {
-      line: 1,
       column: 1,
+      line: 1,
       selected: 0,
     }
   );
@@ -357,7 +357,7 @@ const RoomWorkspace = ({
             <ResizablePanelGroup orientation="vertical">
               <ResizablePanel
                 aria-label="Code Editor"
-                className="z-[1] animate-fade-in"
+                className="animate-fade-in z-[1]"
                 defaultSize="75%"
                 minSize="10%"
                 role="region"

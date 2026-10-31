@@ -56,11 +56,11 @@ export function POST(
     );
     return Response.json(
       await provider.commitFile(token, {
-        repo,
         branch,
-        path,
         content,
         message: message.trim(),
+        path,
+        repo,
       })
     );
   });

@@ -21,10 +21,10 @@ export const isAllowedOrigin = (origin: string | null) =>
   origin === null || ALLOWED_ORIGINS.has(origin);
 
 export const corsHeaders = (origin: string | null): HeadersInit => ({
-  "Access-Control-Allow-Origin":
-    origin && ALLOWED_ORIGINS.has(origin) ? origin : DEFAULT_ORIGIN,
+  "Access-Control-Allow-Headers": `Content-Type, ${ROOM_ID_HEADER}, ${MEDIA_TOKEN_HEADER}`,
   // PUT and the custom headers are for the SFU proxy
   "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
-  "Access-Control-Allow-Headers": `Content-Type, ${ROOM_ID_HEADER}, ${MEDIA_TOKEN_HEADER}`,
+  "Access-Control-Allow-Origin":
+    origin && ALLOWED_ORIGINS.has(origin) ? origin : DEFAULT_ORIGIN,
   Vary: "Origin",
 });

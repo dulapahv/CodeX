@@ -13,15 +13,14 @@ import type { ChangeEvent } from "react";
 
 import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 
-const CAMEL_CASE_BOUNDARY_PATTERN = /([A-Z])/g;
-const FIRST_CHARACTER_PATTERN = /^./;
+const CAMEL_CASE_BOUNDARY_PATTERN = /[A-Z]/gu;
+const FIRST_CHARACTER_PATTERN = /^./u;
 
 // Convert camelCase to Title Case
-export const formatTitle = (key: string): string => {
-  return key
-    .replace(CAMEL_CASE_BOUNDARY_PATTERN, " $1")
+export const formatTitle = (key: string): string =>
+  key
+    .replace(CAMEL_CASE_BOUNDARY_PATTERN, " $&")
     .replace(FIRST_CHARACTER_PATTERN, (str) => str.toUpperCase());
-};
 
 export const exportSettings = (settings: Record<string, unknown>) => {
   try {

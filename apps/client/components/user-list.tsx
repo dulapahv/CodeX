@@ -20,7 +20,7 @@ const UserList = ({ users }: UserListProps) => (
     {/* biome-ignore lint/a11y/useSemanticElements: labelled group of avatars, not a fieldset */}
     <div
       aria-label={`${users.length} active users in this session`}
-      className="max-w-8 overflow-x-auto overflow-y-hidden sm:max-w-28 lg:max-w-52 min-[375px]:max-w-16"
+      className="max-w-8 overflow-x-auto overflow-y-hidden min-[375px]:max-w-16 sm:max-w-28 lg:max-w-52"
       role="group"
     >
       <ul className="flex -space-x-2">

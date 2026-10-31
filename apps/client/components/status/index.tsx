@@ -26,8 +26,8 @@ const getServerStatus = (status: MonitorStatus | null): ServiceStatus => {
   if (!status) {
     return {
       color: "bg-muted-foreground",
-      label: "Unknown Server Status",
       description: "Unable to fetch server status",
+      label: "Unknown Server Status",
     };
   }
 
@@ -37,37 +37,37 @@ const getServerStatus = (status: MonitorStatus | null): ServiceStatus => {
     case "paused":
       return {
         color: "bg-blue-600",
-        label: "Server Maintenance",
         description: "Server under maintenance",
+        label: "Server Maintenance",
       };
 
     case "down":
       return {
         color: "bg-red-600",
-        label: "Server Offline",
         description: "Server is offline",
+        label: "Server Offline",
       };
 
     case "validating":
     case "pending":
       return {
         color: "bg-yellow-600",
-        label: "Server Connecting",
         description: "Server is connecting",
+        label: "Server Connecting",
       };
 
     case "up":
       return {
         color: "bg-green-600",
-        label: "Server Online",
         description: "Server is online",
+        label: "Server Online",
       };
 
     default:
       return {
         color: "bg-yellow-600",
-        label: "Server Issues",
         description: "Server experiencing issues",
+        label: "Server Issues",
       };
   }
 };
@@ -75,8 +75,8 @@ const getServerStatus = (status: MonitorStatus | null): ServiceStatus => {
 const Status = () => {
   const [systemStatus, setSystemStatus] = useState<ServiceStatus>({
     color: "bg-muted-foreground",
-    label: "Unknown Server Status",
     description: "Unable to fetch server status",
+    label: "Unknown Server Status",
   });
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -99,8 +99,8 @@ const Status = () => {
       console.error("Error fetching server status:", error);
       setSystemStatus({
         color: "bg-muted-foreground",
-        label: "Error Fetching Server Status",
         description: "Failed to fetch server status",
+        label: "Error Fetching Server Status",
       });
     } finally {
       setIsInitialLoad(false);
@@ -126,7 +126,7 @@ const Status = () => {
     <a
       aria-label={`Server Status: ${systemStatus.description}`}
       className={cn(
-        "flex items-center gap-x-2 text-foreground/70 text-sm underline-offset-2 transition-all hover:text-foreground/50 hover:underline",
+        "text-foreground/70 hover:text-foreground/50 flex items-center gap-x-2 text-sm underline-offset-2 transition-all hover:underline",
         isInitialLoad && "cursor-wait"
       )}
       href={STATUS_URL}
@@ -140,7 +140,6 @@ const Status = () => {
         </>
       ) : (
         <>
-          {/* biome-ignore lint/a11y/useSemanticElements: status indicator dot */}
           <span
             aria-label={systemStatus.label}
             className="relative flex size-2"

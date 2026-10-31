@@ -8,8 +8,8 @@
 export class ProviderError extends Error {
   readonly status: number;
 
-  constructor(status: number, message: string) {
-    super(message);
+  constructor(status: number, message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = "ProviderError";
     this.status = status;
   }
@@ -37,7 +37,7 @@ const extractMessage = (body: unknown): string | null => {
   }
   const nested = record.error;
   if (typeof nested === "object" && nested !== null) {
-    const message = (nested as Record<string, unknown>).message;
+    const { message } = nested as Record<string, unknown>;
     return typeof message === "string" ? message : null;
   }
   return typeof nested === "string" ? nested : null;
@@ -92,8 +92,9 @@ export const send = async (
   let response: Response;
   try {
     response = await fetch(url, init);
-  } catch {
-    throw new ProviderError(502, `Couldn't reach ${label}.`);
+  } catch (error) {
+    // biome-ignore lint/style/useErrorCause: ProviderError takes the cause as its third argument
+    throw new ProviderError(502, `Couldn't reach ${label}.`, { cause: error });
   }
   if (!response.ok) {
     throw await toProviderError(response, label);
@@ -137,12 +138,13 @@ export const requestToken = async (
   let response: Response;
   try {
     response = await fetch(url, {
-      method: "POST",
-      headers,
       body: new URLSearchParams(params),
+      headers,
+      method: "POST",
     });
-  } catch {
-    throw new ProviderError(502, `Couldn't reach ${label}.`);
+  } catch (error) {
+    // biome-ignore lint/style/useErrorCause: ProviderError takes the cause as its third argument
+    throw new ProviderError(502, `Couldn't reach ${label}.`, { cause: error });
   }
 
   const data = (await response.json().catch(() => null)) as Record<
@@ -158,12 +160,12 @@ export const requestToken = async (
 
   return {
     accessToken: data.access_token,
-    refreshToken:
-      typeof data.refresh_token === "string" ? data.refresh_token : undefined,
     expiresAt:
       typeof data.expires_in === "number"
         ? Date.now() + data.expires_in * MS_PER_SECOND
         : undefined,
+    refreshToken:
+      typeof data.refresh_token === "string" ? data.refresh_token : undefined,
   };
 };
 

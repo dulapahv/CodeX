@@ -61,11 +61,6 @@ const tokenParams = () => ({
 });
 
 export const codeberg: GitProvider = {
-  id: "codeberg",
-  label: LABEL,
-
-  isConfigured: () => Boolean(CODEBERG_CLIENT_ID && CODEBERG_CLIENT_SECRET),
-
   authorizeUrl: (state, redirectUri) =>
     `${CODEBERG_URL}/login/oauth/authorize?${new URLSearchParams({
       client_id: CODEBERG_CLIENT_ID,
@@ -73,6 +68,33 @@ export const codeberg: GitProvider = {
       response_type: "code",
       state,
     })}`,
+
+  commitFile: async (token, { repo, branch, path, content, message }) => {
+    const current = await sendIfExists(
+      contentsUrl(repo, path, branch),
+      { headers: headers(token) },
+      LABEL
+    );
+    const sha = current
+      ? ((await current.json()) as CodebergContent).sha
+      : undefined;
+
+    const result = await sendJson<{ content: { html_url: string } }>(
+      contentsUrl(repo, path),
+      {
+        body: JSON.stringify({
+          branch,
+          content: toBase64(content),
+          message,
+          ...(sha && { sha }),
+        }),
+        headers: { ...headers(token), "Content-Type": "application/json" },
+        method: sha ? "PUT" : "POST",
+      },
+      LABEL
+    );
+    return { url: result.content.html_url };
+  },
 
   exchangeCode: (code, redirectUri) =>
     requestToken(
@@ -86,48 +108,18 @@ export const codeberg: GitProvider = {
       LABEL
     ),
 
-  refresh: (refreshToken) =>
-    requestToken(
-      `${CODEBERG_URL}/login/oauth/access_token`,
-      {
-        ...tokenParams(),
-        refresh_token: refreshToken,
-        grant_type: "refresh_token",
-      },
-      LABEL
-    ),
-
   getUser: async (token) => {
     const user = await sendJson<{ avatar_url: string; login: string }>(
       `${API_URL}/user`,
       { headers: headers(token) },
       LABEL
     );
-    return { username: user.login, avatarUrl: user.avatar_url };
+    return { avatarUrl: user.avatar_url, username: user.login };
   },
+  id: "codeberg",
 
-  // The search API doesn't cover repos shared with the user, so filter here
-  listRepos: async (token, query) => {
-    const pages = await Promise.all(
-      REPO_PAGES.map((page) =>
-        sendJson<CodebergRepo[]>(
-          `${API_URL}/user/repos?limit=${REPO_PAGE_SIZE}&page=${page}`,
-          { headers: headers(token) },
-          LABEL
-        )
-      )
-    );
-    const needle = query?.toLowerCase();
-    return pages
-      .flat()
-      .filter((repo) => !needle || repo.name.toLowerCase().includes(needle))
-      .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
-      .map((repo) => ({
-        id: String(repo.id),
-        name: repo.name,
-        fullName: repo.full_name,
-      }));
-  },
+  isConfigured: () => Boolean(CODEBERG_CLIENT_ID && CODEBERG_CLIENT_SECRET),
+  label: LABEL,
 
   listBranches: async (token, repo) => {
     const branches = await sendJson<{ name: string }[]>(
@@ -158,6 +150,29 @@ export const codeberg: GitProvider = {
       );
   },
 
+  // The search API doesn't cover repos shared with the user, so filter here
+  listRepos: async (token, query) => {
+    const pages = await Promise.all(
+      REPO_PAGES.map((page) =>
+        sendJson<CodebergRepo[]>(
+          `${API_URL}/user/repos?limit=${REPO_PAGE_SIZE}&page=${page}`,
+          { headers: headers(token) },
+          LABEL
+        )
+      )
+    );
+    const needle = query?.toLowerCase();
+    return pages
+      .flat()
+      .filter((repo) => !needle || repo.name.toLowerCase().includes(needle))
+      .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
+      .map((repo) => ({
+        fullName: repo.full_name,
+        id: String(repo.id),
+        name: repo.name,
+      }));
+  },
+
   readFile: async (token, repo, ref, path) => {
     const response = await send(
       `${repoUrl(repo)}/raw/${encodePath(path)}?ref=${encodeURIComponent(ref)}`,
@@ -167,30 +182,14 @@ export const codeberg: GitProvider = {
     return response.text();
   },
 
-  commitFile: async (token, { repo, branch, path, content, message }) => {
-    const current = await sendIfExists(
-      contentsUrl(repo, path, branch),
-      { headers: headers(token) },
-      LABEL
-    );
-    const sha = current
-      ? ((await current.json()) as CodebergContent).sha
-      : undefined;
-
-    const result = await sendJson<{ content: { html_url: string } }>(
-      contentsUrl(repo, path),
+  refresh: (refreshToken) =>
+    requestToken(
+      `${CODEBERG_URL}/login/oauth/access_token`,
       {
-        method: sha ? "PUT" : "POST",
-        headers: { ...headers(token), "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          content: toBase64(content),
-          branch,
-          ...(sha && { sha }),
-        }),
+        ...tokenParams(),
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
       },
       LABEL
-    );
-    return { url: result.content.html_url };
-  },
+    ),
 };

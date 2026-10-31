@@ -70,9 +70,9 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
     setIsCreating(true);
     setCreateError(null);
     try {
-      const roomId = await createRoom(data.name);
-      router.push(`/room/${roomId}`);
-      navigator.clipboard.writeText(roomId).catch(() => undefined);
+      const newRoomId = await createRoom(data.name);
+      router.push(`/room/${newRoomId}`);
+      navigator.clipboard.writeText(newRoomId).catch(() => undefined);
       setIsSuccessful(true);
     } catch (error) {
       setCreateError(`Failed to create room. ${parseError(error)}`);
@@ -107,7 +107,6 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
             if (roomId && isRoomIdValid(roomId)) {
               return (
                 <>
-                  {/* biome-ignore lint/a11y/useSemanticElements: status div for invitation message */}
                   <div
                     aria-live="polite"
                     className="space-y-2 text-center"
@@ -118,7 +117,7 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
                     </p>
                     <p className="text-base sm:text-lg">
                       Room:{" "}
-                      <span className="font-bold font-mono">{roomId}</span>
+                      <span className="font-mono font-bold">{roomId}</span>
                     </p>
                   </div>
                   <InvitedSection
@@ -137,20 +136,19 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
             }
             if (roomId) {
               return (
-                // biome-ignore lint/a11y/useSemanticElements: status div for invalid room message
                 <div
                   aria-live="polite"
                   className="flex flex-col space-y-4 text-center"
                   role="status"
                 >
-                  <p className="font-medium text-lg sm:text-xl">
+                  <p className="text-lg font-medium sm:text-xl">
                     Invalid room ID
                   </p>
                   <p>
                     Please check the invite link and try again.
                     <br />
                     Room ID should look like this:{" "}
-                    <span className="font-bold font-mono">XXXX-XXXX</span>
+                    <span className="font-mono font-bold">XXXX-XXXX</span>
                   </p>
                   <BackButton
                     disabled={isJoining}

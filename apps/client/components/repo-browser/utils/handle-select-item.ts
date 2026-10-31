@@ -47,12 +47,12 @@ const findParents = (
 
       // Check if the item exists in this branch's contents
       if (branch.children && findInContents(branch.children)) {
-        return { parentRepo: repo, parentBranch: branch };
+        return { parentBranch: branch, parentRepo: repo };
       }
     }
   }
 
-  return { parentRepo: undefined, parentBranch: undefined };
+  return { parentBranch: undefined, parentRepo: undefined };
 };
 
 export const handleSelectItem = async (

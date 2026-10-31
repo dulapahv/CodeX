@@ -15,34 +15,27 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(import.meta.dirname, "../../"),
-  reactCompiler: true,
-  poweredByHeader: false,
-  typedRoutes: true,
-  logging: {
-    browserToTerminal: true,
-  },
   experimental: {
-    // Lets e2e tests answer the server's outgoing fetches. Never enable in
-    // production: requests could then steer those fetches.
-    testProxy: process.env.NEXT_TEST_PROXY === "true",
-    typedEnv: true,
     // inlineCss: true,
     cssChunking: "graph",
-    turbopackRustReactCompiler: true,
-    turbopackFileSystemCacheForBuild: true,
-    turbopackServerSideNestedAsyncChunking: true,
-    turbopackSharedRuntime: true,
-    turbopackCjsTreeShaking: true,
-    turbopackChunking: {
-      generateComponentChunks: true,
-    },
+    externalDir: true,
     optimizePackageImports: [
       "@mdxeditor/editor",
       "@monaco-editor/react",
       "monaco-editor",
     ],
-    externalDir: true,
+    // Lets e2e tests answer the server's outgoing fetches. Never enable in
+    // production: requests could then steer those fetches.
+    testProxy: process.env.NEXT_TEST_PROXY === "true",
+    turbopackChunking: {
+      generateComponentChunks: true,
+    },
+    turbopackCjsTreeShaking: true,
+    turbopackFileSystemCacheForBuild: true,
+    turbopackRustReactCompiler: true,
+    turbopackServerSideNestedAsyncChunking: true,
+    turbopackSharedRuntime: true,
+    typedEnv: true,
   },
   // Cloudflare generates/validates etags at the edge, skipping Next's
   // etag hashing saves per-request CPU on CF Workers.
@@ -53,23 +46,26 @@ const nextConfig: NextConfig = {
     qualities: [75, 100],
     remotePatterns: [
       {
-        protocol: "https",
         hostname: "avatars.githubusercontent.com",
-        port: "",
         pathname: "/**",
+        port: "",
+        protocol: "https",
       },
     ],
   },
+  logging: {
+    browserToTerminal: true,
+  },
+  outputFileTracingRoot: path.join(import.meta.dirname, "../../"),
+  poweredByHeader: false,
+  reactCompiler: true,
   transpilePackages: ["monaco-themes"],
+  typedRoutes: true,
 };
 
 const isCi = process.env.CI === "true";
 
 export default withSentryConfig(nextConfig, {
-  org: "dulapahv",
-  project: "codex",
-  silent: !process.env.CI, // Only print logs for uploading source maps in CI
-  widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   // Automatically annotate React components to show their full name in breadcrumbs
   // and session replay
   _experimental: {
@@ -77,7 +73,9 @@ export default withSentryConfig(nextConfig, {
       enabled: true,
     },
   },
-  tunnelRoute: "/monitoring", // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+  org: "dulapahv",
+  project: "codex",
+  silent: !process.env.CI, // Only print logs for uploading source maps in CI
   // On Turbopack builds the SDK enables `productionBrowserSourceMaps` itself and
   // uploads via `compiler.runAfterProductionCompile`. Always delete afterwards:
   // OpenNext copies whatever is left in `.next/static` into `.open-next/assets`,
@@ -87,6 +85,8 @@ export default withSentryConfig(nextConfig, {
     deleteSourcemapsAfterUpload: true,
   },
   telemetry: !isCi, // Disable Sentry telemetry in CI
+  tunnelRoute: "/monitoring", // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+  widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
 });
 
 initOpenNextCloudflareForDev();

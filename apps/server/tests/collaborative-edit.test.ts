@@ -43,52 +43,52 @@ const buildEdit = (
 
 const testCases: TestCase[] = [
   {
-    name: "Simple insertion at start",
     initialCode: "world",
     mutate: (text) => text.insert(0, "hello "),
+    name: "Simple insertion at start",
   },
   {
-    name: "Replace word in middle",
     initialCode: "The quick brown fox",
     mutate: (text) => {
       text.delete(4, 5);
       text.insert(4, "lazy");
     },
+    name: "Replace word in middle",
   },
   {
-    name: "Add new line",
     initialCode: "First line",
     mutate: (text) => text.insert(10, "\nSecond line"),
+    name: "Add new line",
   },
   {
-    name: "Delete empty lines",
     initialCode: "First\n\n\nLast",
     mutate: (text) => text.delete(6, 2),
+    name: "Delete empty lines",
   },
   {
-    name: "Append after a trailing newline",
     initialCode: "Line 1",
     mutate: (text) => text.insert(6, "\n\nLine 3"),
+    name: "Append after a trailing newline",
   },
   {
-    name: "Multi-line insertion",
     initialCode: "Start\nEnd",
     mutate: (text) => text.insert(6, "Middle\nLine"),
+    name: "Multi-line insertion",
   },
   {
-    name: "Delete partial line",
     initialCode: "Hello beautiful world",
     mutate: (text) => text.delete(5, 10),
+    name: "Delete partial line",
   },
   {
-    name: "Handle very long line",
     initialCode: "x".repeat(1000),
     mutate: (text) => text.insert(499, "test"),
+    name: "Handle very long line",
   },
   {
-    name: "Multiple consecutive newlines",
     initialCode: "Start",
     mutate: (text) => text.insert(5, "\n\n\n\n"),
+    name: "Multiple consecutive newlines",
   },
 ];
 
@@ -108,6 +108,22 @@ interface TestCase {
   name: string;
 }
 
+const formatNumber = (num: number): string => num.toFixed(2);
+
+const generateTestCaseReport = (
+  result: TestResult
+): string => `Test Case: ${result.name}
+─────────────────────────────────────────────────────
+Update Size: ${result.operationSize} bytes
+Samples: ${result.samples.map((s) => formatNumber(s)).join(", ")} ms
+
+Statistics:
+• Average Latency:      ${formatNumber(result.average)} ms
+• Standard Deviation:   ${formatNumber(result.standardDeviation)} ms
+• Minimum Latency:      ${formatNumber(result.minimum)} ms
+• Maximum Latency:      ${formatNumber(result.maximum)} ms
+`;
+
 class LatencyReport {
   private readonly results: TestResult[] = [];
   private rapidEditResults: TestResult | null = null;
@@ -120,24 +136,6 @@ class LatencyReport {
     this.rapidEditResults = result;
   }
 
-  private formatNumber(num: number): string {
-    return num.toFixed(2);
-  }
-
-  private generateTestCaseReport(result: TestResult): string {
-    return `Test Case: ${result.name}
-─────────────────────────────────────────────────────
-Update Size: ${result.operationSize} bytes
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(", ")} ms
-
-Statistics:
-• Average Latency:      ${this.formatNumber(result.average)} ms
-• Standard Deviation:   ${this.formatNumber(result.standardDeviation)} ms
-• Minimum Latency:      ${this.formatNumber(result.minimum)} ms
-• Maximum Latency:      ${this.formatNumber(result.maximum)} ms
-`;
-  }
-
   private generateRapidEditsReport(): string {
     if (!this.rapidEditResults) {
       return "";
@@ -148,10 +146,10 @@ Number of Operations: 100
 Operation Interval: Concurrent
 
 Statistics:
-• Average Latency:      ${this.formatNumber(this.rapidEditResults.average)} ms
-• Standard Deviation:   ${this.formatNumber(this.rapidEditResults.standardDeviation)} ms
-• Minimum Latency:      ${this.formatNumber(this.rapidEditResults.minimum)} ms
-• Maximum Latency:      ${this.formatNumber(this.rapidEditResults.maximum)} ms
+• Average Latency:      ${formatNumber(this.rapidEditResults.average)} ms
+• Standard Deviation:   ${formatNumber(this.rapidEditResults.standardDeviation)} ms
+• Minimum Latency:      ${formatNumber(this.rapidEditResults.minimum)} ms
+• Maximum Latency:      ${formatNumber(this.rapidEditResults.maximum)} ms
 `;
   }
 
@@ -166,24 +164,24 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join("\n")}
+${this.results.map((r) => generateTestCaseReport(r)).join("\n")}
 
 ${this.generateRapidEditsReport()}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
-Overall Average Latency: ${this.formatNumber(
+Overall Average Latency: ${formatNumber(
       this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
-Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
+Best Performance: ${formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
+Worst Performance: ${formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
 `;
 
     return summary;
   }
 
   saveToFile() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestamp = new Date().toISOString().replace(/[:.]/gu, "-");
     const reportDir = path.join(process.cwd(), "test-results");
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir);
@@ -231,7 +229,8 @@ describe("WebSocket Latency Tests", () => {
   ): Promise<number[]> => {
     const latencies: number[] = [];
 
-    for (let i = 0; i < SAMPLES_PER_TEST; i++) {
+    for (let i = 0; i < SAMPLES_PER_TEST; i += 1) {
+      // biome-ignore lint/performance/noAwaitInLoops: samples are spaced out so each latency is measured alone
       await settle(100); // Delay between samples
       const { setup, update } = buildEdit(initialCode, mutate);
       await sendUpdate(setup);
@@ -241,23 +240,22 @@ describe("WebSocket Latency Tests", () => {
     return latencies;
   };
 
-  test.each(testCases)("WebSocket latency for $name", async ({
-    name,
-    initialCode,
-    mutate,
-  }) => {
-    const latencies = await measureLatency(initialCode, mutate);
-    const stats = calculateStats(latencies);
+  it.each(testCases)(
+    "WebSocket latency for $name",
+    async ({ name, initialCode, mutate }) => {
+      const latencies = await measureLatency(initialCode, mutate);
+      const stats = calculateStats(latencies);
 
-    report.addResult({
-      name,
-      samples: latencies,
-      ...stats,
-      operationSize: buildEdit(initialCode, mutate).update.byteLength,
-    });
-  });
+      report.addResult({
+        name,
+        samples: latencies,
+        ...stats,
+        operationSize: buildEdit(initialCode, mutate).update.byteLength,
+      });
+    }
+  );
 
-  test("WebSocket latency for rapid edits", async () => {
+  it("WebSocket latency for rapid edits", async () => {
     const RAPID_EDIT_COUNT = 100;
     // Inserts into an empty document, so no setup is needed
     const edits = Array.from(
@@ -266,6 +264,8 @@ describe("WebSocket Latency Tests", () => {
     );
 
     const timings = await Promise.all(edits.map(sendUpdate));
+
+    expect(timings).toHaveLength(RAPID_EDIT_COUNT);
 
     const stats = calculateStats(timings);
     report.setRapidEditResult({

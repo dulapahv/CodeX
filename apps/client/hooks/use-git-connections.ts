@@ -80,8 +80,8 @@ export const useGitConnections = (isActive: boolean) => {
 
   const disconnect = useCallback(async (provider: ProviderId) => {
     const response = await fetch(`/api/${provider}/auth`, {
-      method: "DELETE",
       credentials: "include",
+      method: "DELETE",
     });
     if (response.ok) {
       setConnections((previous) =>
@@ -93,9 +93,9 @@ export const useGitConnections = (isActive: boolean) => {
   }, []);
 
   return {
-    connections,
-    isLoading: connections === null,
     connect: connectProvider,
+    connections,
     disconnect,
+    isLoading: connections === null,
   };
 };

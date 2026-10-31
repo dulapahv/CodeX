@@ -25,7 +25,7 @@ const FILES = new Set(["README.md", "src/app.py"]);
 const COMMIT_HASH = "abc123";
 const NOT_FOUND = 404;
 const CREATED = 201;
-const TRAILING_SLASH = /\/$/;
+const TRAILING_SLASH = /\/$/u;
 
 const entriesAt = (path: string) =>
   (TREE[path] ?? []).map((entry) => ({
@@ -62,9 +62,9 @@ type Router = (
 
 const record = async (mock: MockProvider, request: Request) => {
   mock.commits.push({
+    body: await request.text(),
     method: request.method,
     url: request.url,
-    body: await request.text(),
   });
 };
 
@@ -72,21 +72,21 @@ const refreshResponse = (mock: MockProvider) =>
   mock.refresh.succeeds
     ? json({
         access_token: mock.refresh.accessToken,
-        refresh_token: "rotated-refresh-token",
         expires_in: 7200,
+        refresh_token: "rotated-refresh-token",
       })
     : json({ error: "invalid_grant" }, 400);
 
 const githubRouter: Router = async (url, request, mock) => {
   if (url.host !== "api.github.com") {
-    return undefined;
+    return;
   }
   const path = url.pathname;
   if (path === "/user") {
-    return json({ login: "octo", avatar_url: null });
+    return json({ avatar_url: null, login: "octo" });
   }
   if (path === "/user/repos") {
-    return json([{ id: 1, name: "demo", full_name: "octo/demo" }]);
+    return json([{ full_name: "octo/demo", id: 1, name: "demo" }]);
   }
   if (path === "/repos/octo/demo/branches") {
     return json([{ name: "main" }]);
@@ -117,7 +117,7 @@ const githubRouter: Router = async (url, request, mock) => {
 
 const gitlabRouter: Router = async (url, request, mock) => {
   if (url.host !== "gitlab.com") {
-    return undefined;
+    return;
   }
   const path = url.pathname;
   if (path === "/oauth/token") {
@@ -131,7 +131,7 @@ const gitlabRouter: Router = async (url, request, mock) => {
     return json({ message: "401 Unauthorized" }, 401);
   }
   if (path === "/api/v4/user") {
-    return json({ username: "octo", avatar_url: null });
+    return json({ avatar_url: null, username: "octo" });
   }
   if (path === "/api/v4/projects") {
     return json([{ id: 1, name: "demo", path_with_namespace: "octo/demo" }]);
@@ -162,7 +162,7 @@ const gitlabRouter: Router = async (url, request, mock) => {
     return FILES.has(filePath) ? new Response(null) : notFound();
   }
   await record(mock, request);
-  return json({ file_path: filePath, branch: "main" }, CREATED);
+  return json({ branch: "main", file_path: filePath }, CREATED);
 };
 
 const bitbucketRouter: Router = async (url, request, mock) => {
@@ -173,15 +173,15 @@ const bitbucketRouter: Router = async (url, request, mock) => {
     return refreshResponse(mock);
   }
   if (url.host !== "api.bitbucket.org") {
-    return undefined;
+    return;
   }
   const path = url.pathname;
   if (path === "/2.0/user") {
-    return json({ display_name: "Octo", nickname: "octo", links: {} });
+    return json({ display_name: "Octo", links: {}, nickname: "octo" });
   }
   if (path === "/2.0/repositories") {
     return json({
-      values: [{ uuid: "{1}", name: "demo", full_name: "octo/demo" }],
+      values: [{ full_name: "octo/demo", name: "demo", uuid: "{1}" }],
     });
   }
   const repo = "/2.0/repositories/octo/demo";
@@ -214,23 +214,23 @@ const bitbucketRouter: Router = async (url, request, mock) => {
 
 const codebergRouter: Router = async (url, request, mock) => {
   if (url.host !== "codeberg.org") {
-    return undefined;
+    return;
   }
   const path = url.pathname;
   if (path === "/login/oauth/access_token") {
     return refreshResponse(mock);
   }
   if (path === "/api/v1/user") {
-    return json({ login: "octo", avatar_url: null });
+    return json({ avatar_url: null, login: "octo" });
   }
   if (path === "/api/v1/user/repos") {
     return json(
       url.searchParams.get("page") === "1"
         ? [
             {
+              full_name: "octo/demo",
               id: 1,
               name: "demo",
-              full_name: "octo/demo",
               updated_at: "2026-10-01T00:00:00Z",
             },
           ]
@@ -272,46 +272,46 @@ const codebergRouter: Router = async (url, request, mock) => {
 };
 
 const ROUTERS: Record<ProviderId, Router> = {
-  github: githubRouter,
-  gitlab: gitlabRouter,
   bitbucket: bitbucketRouter,
   codeberg: codebergRouter,
+  github: githubRouter,
+  gitlab: gitlabRouter,
 };
 
 const LABELS: Record<ProviderId, string> = {
-  github: "GitHub",
-  gitlab: "GitLab",
   bitbucket: "Bitbucket",
   codeberg: "Codeberg",
+  github: "GitHub",
+  gitlab: "GitLab",
 };
 
 // How each provider's API distinguishes creating a file from updating one
 const CREATE_CHECKS: Record<ProviderId, (commit: RecordedCommit) => boolean> = {
-  github: (commit) => commit.method === "PUT" && !commit.body.includes('"sha"'),
-  gitlab: (commit) => commit.method === "POST",
   bitbucket: (commit) => commit.body.includes("src/new.py"),
   codeberg: (commit) => commit.method === "POST",
+  github: (commit) => commit.method === "PUT" && !commit.body.includes('"sha"'),
+  gitlab: (commit) => commit.method === "POST",
 };
 
 const UPDATE_CHECKS: Record<ProviderId, (commit: RecordedCommit) => boolean> = {
-  github: (commit) => commit.method === "PUT" && commit.body.includes('"sha"'),
-  gitlab: (commit) => commit.method === "PUT",
   bitbucket: (commit) => commit.body.includes("src/app.py"),
   codeberg: (commit) =>
     commit.method === "PUT" && commit.body.includes('"sha"'),
+  github: (commit) => commit.method === "PUT" && commit.body.includes('"sha"'),
+  gitlab: (commit) => commit.method === "PUT",
 };
 
 export const createMockProvider = (id: ProviderId): MockProvider => {
   const mock: MockProvider = {
-    id,
-    label: LABELS[id],
-    fileContent: `print("hello from ${LABELS[id]}")`,
     commits: [],
-    refresh: { accessToken: "test-token", succeeds: true },
-    isCreate: CREATE_CHECKS[id],
-    isUpdate: UPDATE_CHECKS[id],
+    fileContent: `print("hello from ${LABELS[id]}")`,
     handle: async (request) =>
       await ROUTERS[id](new URL(request.url), request, mock),
+    id,
+    isCreate: CREATE_CHECKS[id],
+    isUpdate: UPDATE_CHECKS[id],
+    label: LABELS[id],
+    refresh: { accessToken: "test-token", succeeds: true },
   };
   return mock;
 };

@@ -22,8 +22,8 @@ const DynamicNotepadMain = dynamic(
   () =>
     import("./components/notepad-main").then((mod) => mod.MarkdownEditorMain),
   {
-    ssr: false,
     loading: () => <EditorSkeleton />,
+    ssr: false,
   }
 );
 

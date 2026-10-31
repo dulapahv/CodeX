@@ -14,6 +14,7 @@ const isCi = process.env.CI === "true";
 
 if (!isCi) {
   Sentry.init({
+    debug: false, // Print useful information to the console while setting up Sentry
     // NEXT_PUBLIC_ so one build-time value covers both bundles. The DSN is public
     // by design, and inlining it avoids needing a separate Worker var at runtime.
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -21,6 +22,5 @@ if (!isCi) {
     // Sample rate for performance monitoring. Every Worker request becomes a
     // transaction, so sample in production rather than sending all of them.
     tracesSampleRate: IS_DEV_ENV ? 1 : 0.1,
-    debug: false, // Print useful information to the console while setting up Sentry
   });
 }

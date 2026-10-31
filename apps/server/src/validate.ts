@@ -65,7 +65,7 @@ export const filterAwarenessUpdate = (
   try {
     const decoder = decoding.createDecoder(update);
     const count = decoding.readVarUint(decoder);
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i += 1) {
       const clientID = decoding.readVarUint(decoder);
       const clock = decoding.readVarUint(decoder);
       const json = decoding.readVarString(decoder);

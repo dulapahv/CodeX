@@ -8,15 +8,15 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { expect, test } from "@playwright/test";
+import { expect, test as it, test } from "@playwright/test";
 
 import { createRoom, joinRoom } from "@/tests/utils/setup";
 
 const EXECUTION_RESULT_PATTERN =
-  /Hello from Python!|HTTP error! status:|Process exited with code/;
+  /Hello from Python!|HTTP error! status:|Process exited with code/u;
 
 test.describe("Collaborative Features", () => {
-  test("should sync code changes between users in real-time", async ({
+  it("should sync code changes between users in real-time", async ({
     browser,
   }) => {
     // Create two browser contexts for different users
@@ -54,7 +54,7 @@ test.describe("Collaborative Features", () => {
     await expect(userBPage.getByText(EXPECTED_CODE)).toBeVisible();
   });
 
-  test("should execute code and show output in shared terminal", async ({
+  it("should execute code and show output in shared terminal", async ({
     browser,
   }) => {
     const userAContext = await browser.newContext();
@@ -99,7 +99,7 @@ test.describe("Collaborative Features", () => {
     ).toBeVisible();
   });
 
-  test("should sync notepad edits between users", async ({ browser }) => {
+  it("should sync notepad edits between users", async ({ browser }) => {
     const userAContext = await browser.newContext();
     const userBContext = await browser.newContext();
 
@@ -168,7 +168,7 @@ test.describe("Collaborative Features", () => {
     ).toBeVisible();
   });
 
-  test("undo should revert the local user's text after a peer inserts ahead of it", async ({
+  it("undo should revert the local user's text after a peer inserts ahead of it", async ({
     browser,
   }) => {
     const userAContext = await browser.newContext();

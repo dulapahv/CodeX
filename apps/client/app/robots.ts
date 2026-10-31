@@ -16,13 +16,13 @@ import { BASE_CLIENT_URL } from "@/lib/constants";
 
 export default function robots(): MetadataRoute.Robots {
   return {
+    host: BASE_CLIENT_URL,
     rules: [
       {
-        userAgent: "*",
         allow: "/",
         disallow: ["/room/*", "/oauth/*", "/test/*", "/api/*"],
+        userAgent: "*",
       },
     ],
-    host: BASE_CLIENT_URL,
   };
 }

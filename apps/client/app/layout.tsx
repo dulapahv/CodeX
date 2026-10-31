@@ -27,67 +27,67 @@ import "./globals.css";
 // export const runtime = 'edge';
 
 const SOCIAL_IMAGE = {
+  alt: `${SITE_NAME}. ${SITE_DESCRIPTION}`,
+  height: 630,
   url: "/opengraph-image.png",
   width: 1200,
-  height: 630,
-  alt: `${SITE_NAME}. ${SITE_DESCRIPTION}`,
 } as const;
 
 export const metadata: Metadata = {
-  title: {
-    default: SITE_NAME,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: SITE_DESCRIPTION,
-  applicationName: SITE_NAME,
-  referrer: "origin-when-cross-origin",
-  keywords:
-    "codex, code collaboration, real-time coding, pair programming, remote collaboration, live coding, code sharing, collaborative editor, monaco editor, cursor sharing, live preview, video chat, collaborative terminal, shared terminal, code execution, GitHub integration, web IDE, online IDE, collaborative development, coding platform, programming tools",
-  creator: NAME,
-  publisher: NAME,
-  authors: {
-    name: NAME,
-    url: PORTFOLIO_URL,
-  },
-  metadataBase: new URL(BASE_CLIENT_URL),
-  formatDetection: {
-    telephone: false,
+  alternates: {
+    canonical: BASE_CLIENT_URL,
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
   },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/apple-icon.png",
+  applicationName: SITE_NAME,
+  authors: {
+    name: NAME,
+    url: PORTFOLIO_URL,
   },
+  creator: NAME,
+  description: SITE_DESCRIPTION,
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    apple: "/apple-icon.png",
+    icon: [
+      { sizes: "any", url: "/favicon.ico" },
+      { type: "image/svg+xml", url: "/icon.svg" },
+    ],
+  },
+  keywords:
+    "codex, code collaboration, real-time coding, pair programming, remote collaboration, live coding, code sharing, collaborative editor, monaco editor, cursor sharing, live preview, video chat, collaborative terminal, shared terminal, code execution, GitHub integration, web IDE, online IDE, collaborative development, coding platform, programming tools",
+  metadataBase: new URL(BASE_CLIENT_URL),
   openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    locale: "en_US",
-    url: BASE_CLIENT_URL,
     images: [SOCIAL_IMAGE],
+    locale: "en_US",
+    siteName: SITE_NAME,
+    type: "website",
+    url: BASE_CLIENT_URL,
+  },
+  publisher: NAME,
+  referrer: "origin-when-cross-origin",
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@dulapahv",
     images: [SOCIAL_IMAGE],
   },
-  alternates: {
-    canonical: BASE_CLIENT_URL,
-  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
-  width: "device-width",
   initialScale: 1,
-  userScalable: false,
   maximumScale: 1,
+  themeColor: "#0a0a0a",
+  userScalable: false,
   viewportFit: "cover",
+  width: "device-width",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

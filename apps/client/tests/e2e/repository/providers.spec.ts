@@ -13,6 +13,7 @@
 import {
   type BrowserContext,
   expect,
+  test as it,
   type NextFixture,
   type Page,
   test,
@@ -24,9 +25,9 @@ import { createRoom } from "@/tests/utils/setup";
 import { createMockProvider, type MockProvider } from "./mock-providers";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const OPEN_ITEM = /Open from repository/;
-const SAVE_ITEM = /Save to repository/;
-const SIGN_IN_SUCCESS = /\/oauth\/gitlab\?status=success/;
+const OPEN_ITEM = /Open from repository/u;
+const SAVE_ITEM = /Save to repository/u;
+const SIGN_IN_SUCCESS = /\/oauth\/gitlab\?status=success/u;
 
 interface SessionCookie {
   accessToken: string;
@@ -41,14 +42,14 @@ const connect = (
 ) =>
   context.addCookies([
     {
+      domain: "localhost",
+      httpOnly: true,
       name: `git_${provider}`,
+      path: `/api/${provider}`,
+      sameSite: "Lax",
       value: encodeURIComponent(
         JSON.stringify({ ...session, sessionExpiresAt: Date.now() + DAY_MS })
       ),
-      domain: "localhost",
-      path: `/api/${provider}`,
-      httpOnly: true,
-      sameSite: "Lax",
     },
   ]);
 
@@ -62,7 +63,7 @@ const openFileMenuItem = async (
     await page.getByRole("menuitem", { name: "File" }).tap();
     await page.getByRole("menuitem", { name: item }).tap();
   } else {
-    await page.getByRole("menuitem", { name: "File", exact: true }).click();
+    await page.getByRole("menuitem", { exact: true, name: "File" }).click();
     await page.getByRole("menuitem", { name: item }).click();
   }
   const dialog = page.getByRole("dialog");
@@ -77,6 +78,7 @@ const browseTo = async (
 ) => {
   await dialog.getByRole("tab", { name: mock.label }).click();
   for (const name of names) {
+    // biome-ignore lint/performance/noAwaitInLoops: each click opens the next level of the tree
     await dialog.getByText(name, { exact: true }).click();
   }
 };
@@ -87,7 +89,7 @@ const useMock = (next: NextFixture, mock: MockProvider) => {
 
 for (const provider of PROVIDER_IDS) {
   test.describe(`Repository: ${provider}`, () => {
-    test("opens a file from the repository", async ({
+    it("opens a file from the repository", async ({
       page,
       context,
       next,
@@ -100,7 +102,7 @@ for (const provider of PROVIDER_IDS) {
 
       const dialog = await openFileMenuItem(page, isMobile, OPEN_ITEM);
       await browseTo(dialog, mock, ["demo", "main", "src", "app.py"]);
-      await dialog.getByRole("button", { name: "Open", exact: true }).click();
+      await dialog.getByRole("button", { exact: true, name: "Open" }).click();
 
       await expect(dialog).not.toBeVisible();
       await expect(
@@ -108,7 +110,7 @@ for (const provider of PROVIDER_IDS) {
       ).toContainText(`hello from ${mock.label}`);
     });
 
-    test("saves a new file and updates an existing one", async ({
+    it("saves a new file and updates an existing one", async ({
       page,
       context,
       next,
@@ -123,7 +125,7 @@ for (const provider of PROVIDER_IDS) {
       await browseTo(dialog, mock, ["demo", "main", "src"]);
       await dialog.getByPlaceholder("Filename (e.g., hello.js)").fill("new.py");
       await dialog.getByPlaceholder("Commit summary").fill("Add new file");
-      await dialog.getByRole("button", { name: "Save", exact: true }).click();
+      await dialog.getByRole("button", { exact: true, name: "Save" }).click();
 
       const savedLink = dialog.getByRole("link", {
         name: `Saved · View on ${mock.label}`,
@@ -136,7 +138,7 @@ for (const provider of PROVIDER_IDS) {
       await expect(
         dialog.getByPlaceholder("Filename (e.g., hello.js)")
       ).toHaveValue("app.py");
-      await dialog.getByRole("button", { name: "Save", exact: true }).click();
+      await dialog.getByRole("button", { exact: true, name: "Save" }).click();
 
       await expect.poll(() => mock.commits.length).toBe(2);
       expect(mock.isUpdate(mock.commits[1])).toBe(true);
@@ -145,7 +147,7 @@ for (const provider of PROVIDER_IDS) {
 }
 
 test.describe("Repository: token refresh", () => {
-  test("refreshes an expired token without asking to connect", async ({
+  it("refreshes an expired token without asking to connect", async ({
     page,
     context,
     next,
@@ -174,7 +176,7 @@ test.describe("Repository: token refresh", () => {
 
   // Bitbucket's tokens alone are larger than the 4 KB a browser keeps in one
   // cookie
-  test("keeps a sign-in whose tokens don't fit in one cookie", async ({
+  it("keeps a sign-in whose tokens don't fit in one cookie", async ({
     page,
     context,
     next,
@@ -187,12 +189,12 @@ test.describe("Repository: token refresh", () => {
     // The provider sending the user back after they approve the sign-in
     await context.addCookies([
       {
-        name: "oauth_state",
-        value: "test-state",
         domain: "localhost",
-        path: "/api/gitlab/auth",
         httpOnly: true,
+        name: "oauth_state",
+        path: "/api/gitlab/auth",
         sameSite: "Lax",
+        value: "test-state",
       },
     ]);
     await page.goto("/api/gitlab/auth?code=test-code&state=test-state");
@@ -202,14 +204,14 @@ test.describe("Repository: token refresh", () => {
 
     const dialog = await openFileMenuItem(page, isMobile, OPEN_ITEM);
     await browseTo(dialog, mock, ["demo", "main", "src", "app.py"]);
-    await dialog.getByRole("button", { name: "Open", exact: true }).click();
+    await dialog.getByRole("button", { exact: true, name: "Open" }).click();
 
     await expect(
       page.locator(".monaco-editor .view-lines").first()
     ).toContainText(`hello from ${mock.label}`);
   });
 
-  test("shows the connect prompt when the refresh fails", async ({
+  it("shows the connect prompt when the refresh fails", async ({
     page,
     context,
     next,

@@ -58,7 +58,7 @@ const splitValue = (value: string): string[] => {
 
 const readSessionValue = (cookieStore: CookieStore, provider: ProviderId) => {
   let value = "";
-  for (let index = 0; index < MAX_CHUNKS; index++) {
+  for (let index = 0; index < MAX_CHUNKS; index += 1) {
     const chunk = cookieStore.get(chunkCookie(provider, index))?.value;
     if (chunk === undefined) {
       break;
@@ -75,7 +75,7 @@ const deleteChunks = (
   provider: ProviderId,
   fromIndex: number
 ) => {
-  for (let index = fromIndex; index < MAX_CHUNKS; index++) {
+  for (let index = fromIndex; index < MAX_CHUNKS; index += 1) {
     const name = chunkCookie(provider, index);
     if (cookieStore.has(name)) {
       cookieStore.delete({ name, path: sessionPath(provider) });
@@ -85,10 +85,10 @@ const deleteChunks = (
 
 const cookieOptions = (path: string, maxAge: number) => ({
   httpOnly: true,
-  secure: !IS_DEV_ENV,
-  sameSite: "lax" as const,
-  path,
   maxAge,
+  path,
+  sameSite: "lax" as const,
+  secure: !IS_DEV_ENV,
 });
 
 const parseSession = (value: string | undefined): Session | null => {
@@ -160,11 +160,13 @@ export const getAccessToken = async (
       session.sessionExpiresAt
     );
     return tokens.accessToken;
-  } catch {
+  } catch (error) {
     await clearSession(provider.id);
+    // biome-ignore lint/style/useErrorCause: ProviderError takes the cause as its third argument
     throw new ProviderError(
       401,
-      `Your ${provider.label} connection has expired. Connect again.`
+      `Your ${provider.label} connection has expired. Connect again.`,
+      { cause: error }
     );
   }
 };

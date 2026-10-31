@@ -64,7 +64,7 @@ function killProcesses() {
       default:
         break;
     }
-  } catch (_err) {
+  } catch {
     // Ignore if no processes found
   }
 }
@@ -78,7 +78,7 @@ async function removePath(filepath) {
           execSync(`rd /s /q "${filepath}"`, { stdio: "ignore" });
           console.log(`✅ Removed using rd: ${filepath}`);
           return true;
-        } catch (_err) {
+        } catch {
           // Fall back to Node.js fs
         }
       } else {
@@ -86,11 +86,11 @@ async function removePath(filepath) {
           execSync(`rm -rf "${filepath}"`, { stdio: "ignore" });
           console.log(`✅ Removed using rm: ${filepath}`);
           return true;
-        } catch (_err) {
+        } catch {
           // Fall back to Node.js fs
         }
       }
-      await fs.rm(filepath, { recursive: true, force: true });
+      await fs.rm(filepath, { force: true, recursive: true });
       console.log(`✅ Removed: ${filepath}`);
       return true;
     }
@@ -134,11 +134,12 @@ async function clean() {
   for (const dir of dirsToClean) {
     const fullPath = path.join(import.meta.dirname, "..", dir);
     console.log(`🗑️ Cleaning: ${dir}`);
+    // biome-ignore lint/performance/noAwaitInLoops: keeps the log in step with each removal
     const wasRemoved = await removePath(fullPath);
     if (wasRemoved) {
-      cleanedCount++;
+      cleanedCount += 1;
     } else {
-      skippedCount++;
+      skippedCount += 1;
     }
   }
 

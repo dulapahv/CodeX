@@ -54,8 +54,8 @@ const OpenPromptDialog = forwardRef<OpenPromptDialogRef, PromptSaveDialogProps>(
 
     // Expose openDialog and closeDialog to the parent component
     useImperativeHandle(ref, () => ({
-      openDialog,
       closeDialog,
+      openDialog,
     }));
 
     if (isDesktop) {

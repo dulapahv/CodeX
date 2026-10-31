@@ -8,12 +8,12 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { expect, test } from "@playwright/test";
+import { expect, test as it, test } from "@playwright/test";
 
 import { createRoom, joinRoom } from "@/tests/utils/setup";
 
 test.describe("Room Sharing", () => {
-  test("should handle room sharing functionality", async ({ page }) => {
+  it("should handle room sharing functionality", async ({ page }) => {
     // Create a room and wait for navigation to complete
     await createRoom(page, "TestUser");
 
@@ -55,7 +55,7 @@ test.describe("Room Sharing", () => {
     await expect(dialog).not.toBeVisible();
   });
 
-  test("should allow multiple users to join same room", async ({ browser }) => {
+  it("should allow multiple users to join same room", async ({ browser }) => {
     const userAContext = await browser.newContext();
     const userBContext = await browser.newContext();
 

@@ -19,10 +19,10 @@ export const calculateStats = (values: number[]): Stats => {
   const stdDev = Math.round(Math.sqrt(avgSquareDiff));
 
   return {
-    min: sorted[0],
-    max: sorted.at(-1) ?? 0,
     avg: Math.round(avg),
+    max: sorted.at(-1) ?? 0,
     median: sorted[Math.floor(sorted.length / 2)],
+    min: sorted[0],
     stdDev,
   };
 };

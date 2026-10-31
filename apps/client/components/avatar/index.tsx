@@ -35,9 +35,9 @@ interface AvatarProps {
 }
 
 const sizeClasses = {
-  sm: "size-6 text-xs",
-  md: "size-7 text-sm",
   lg: "size-12 text-lg",
+  md: "size-7 text-sm",
+  sm: "size-6 text-xs",
 };
 
 const Avatar = ({
@@ -84,7 +84,7 @@ const Avatar = ({
           render={AvatarContent}
         />
         <PopoverContent
-          className="w-fit max-w-xs bg-foreground px-3 py-1.5 text-background shadow-none ring-0"
+          className="bg-foreground text-background w-fit max-w-xs px-3 py-1.5 shadow-none ring-0"
           role="tooltip"
           side="top"
           sideOffset={8}

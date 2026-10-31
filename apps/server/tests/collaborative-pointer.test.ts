@@ -23,34 +23,34 @@ const SAMPLES_PER_TEST = 50;
 
 const testCases = [
   {
+    description: "Small diagonal pointer movement (10px)",
+    end: [110, 110] as Pointer,
     name: "Small movement",
     start: [100, 100] as Pointer,
-    end: [110, 110] as Pointer,
-    description: "Small diagonal pointer movement (10px)",
   },
   {
+    description: "Medium horizontal movement (200px)",
+    end: [300, 100] as Pointer,
     name: "Medium horizontal movement",
     start: [100, 100] as Pointer,
-    end: [300, 100] as Pointer,
-    description: "Medium horizontal movement (200px)",
   },
   {
+    description: "Medium vertical movement (200px)",
+    end: [100, 300] as Pointer,
     name: "Medium vertical movement",
     start: [100, 100] as Pointer,
-    end: [100, 300] as Pointer,
-    description: "Medium vertical movement (200px)",
   },
   {
+    description: "Large diagonal movement (~565px)",
+    end: [500, 500] as Pointer,
     name: "Large diagonal movement",
     start: [100, 100] as Pointer,
-    end: [500, 500] as Pointer,
-    description: "Large diagonal movement (~565px)",
   },
   {
+    description: "Movement across typical screen dimensions",
+    end: [1920, 1080] as Pointer,
     name: "Screen corner movement",
     start: [0, 0] as Pointer,
-    end: [1920, 1080] as Pointer,
-    description: "Movement across typical screen dimensions",
   },
 ];
 
@@ -68,6 +68,29 @@ interface TestResult {
   standardDeviation: number;
 }
 
+const formatNumber = (num: number): string => num.toFixed(2);
+
+const generateTestCaseReport = (
+  result: TestResult
+): string => `Test Case: ${result.name}
+─────────────────────────────────────────────────────
+Description: ${result.description}
+${
+  result.movement
+    ? `Movement Distance: ${formatNumber(result.movement.distance)} pixels
+${result.movement.speed ? `Movement Speed: ${formatNumber(result.movement.speed)} pixels/sec` : ""}
+`
+    : ""
+}
+Samples: ${result.samples.map((s) => formatNumber(s)).join(", ")} ms
+
+Statistics:
+• Average Latency:      ${formatNumber(result.average)} ms
+• Standard Deviation:   ${formatNumber(result.standardDeviation)} ms
+• Minimum Latency:      ${formatNumber(result.minimum)} ms
+• Maximum Latency:      ${formatNumber(result.maximum)} ms
+`;
+
 class PointerLatencyReport {
   private readonly results: TestResult[] = [];
   private rapidMovementResults: TestResult | null = null;
@@ -78,31 +101,6 @@ class PointerLatencyReport {
 
   setRapidMovementResult(result: TestResult) {
     this.rapidMovementResults = result;
-  }
-
-  private formatNumber(num: number): string {
-    return num.toFixed(2);
-  }
-
-  private generateTestCaseReport(result: TestResult): string {
-    return `Test Case: ${result.name}
-─────────────────────────────────────────────────────
-Description: ${result.description}
-${
-  result.movement
-    ? `Movement Distance: ${this.formatNumber(result.movement.distance)} pixels
-${result.movement.speed ? `Movement Speed: ${this.formatNumber(result.movement.speed)} pixels/sec` : ""}
-`
-    : ""
-}
-Samples: ${result.samples.map((s) => this.formatNumber(s)).join(", ")} ms
-
-Statistics:
-• Average Latency:      ${this.formatNumber(result.average)} ms
-• Standard Deviation:   ${this.formatNumber(result.standardDeviation)} ms
-• Minimum Latency:      ${this.formatNumber(result.minimum)} ms
-• Maximum Latency:      ${this.formatNumber(result.maximum)} ms
-`;
   }
 
   generateReport(): string {
@@ -116,22 +114,22 @@ Samples per Test: ${SAMPLES_PER_TEST}
 
 Individual Test Results
 ═══════════════════════════════════════════════════════════════
-${this.results.map((r) => this.generateTestCaseReport(r)).join("\n")}
+${this.results.map((r) => generateTestCaseReport(r)).join("\n")}
 
-${this.rapidMovementResults ? this.generateTestCaseReport(this.rapidMovementResults) : ""}
+${this.rapidMovementResults ? generateTestCaseReport(this.rapidMovementResults) : ""}
 
 Summary Statistics
 ═══════════════════════════════════════════════════════════════
-Overall Average Latency: ${this.formatNumber(
+Overall Average Latency: ${formatNumber(
       this.results.reduce((acc, r) => acc + r.average, 0) / this.results.length
     )} ms
-Best Performance: ${this.formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
-Worst Performance: ${this.formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
+Best Performance: ${formatNumber(Math.min(...this.results.map((r) => r.minimum)))} ms
+Worst Performance: ${formatNumber(Math.max(...this.results.map((r) => r.maximum)))} ms
 `;
   }
 
   saveToFile() {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestamp = new Date().toISOString().replace(/[:.]/gu, "-");
     const reportDir = path.join(process.cwd(), "test-results");
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir);
@@ -183,7 +181,8 @@ describe("Pointer Tracking Latency Tests", () => {
   ): Promise<number[]> => {
     const latencies: number[] = [];
 
-    for (let i = 0; i < SAMPLES_PER_TEST; i++) {
+    for (let i = 0; i < SAMPLES_PER_TEST; i += 1) {
+      // biome-ignore lint/performance/noAwaitInLoops: samples are spaced out so each latency is measured alone
       await settle(100); // Delay between samples
 
       // First movement to start position, then measure the move to the end
@@ -194,29 +193,27 @@ describe("Pointer Tracking Latency Tests", () => {
     return latencies;
   };
 
-  test.each(testCases)("Pointer latency for $name", async ({
-    name,
-    start,
-    end,
-    description,
-  }) => {
-    const latencies = await measureLatency(start, end);
-    const stats = calculateStats(latencies);
-    const distance = calculateDistance(start, end);
+  it.each(testCases)(
+    "Pointer latency for $name",
+    async ({ name, start, end, description }) => {
+      const latencies = await measureLatency(start, end);
+      const stats = calculateStats(latencies);
+      const distance = calculateDistance(start, end);
 
-    report.addResult({
-      name,
-      samples: latencies,
-      description,
-      movement: {
-        distance,
-        speed: distance / (stats.average / 1000), // pixels per second
-      },
-      ...stats,
-    });
-  });
+      report.addResult({
+        description,
+        movement: {
+          distance,
+          speed: distance / (stats.average / 1000), // pixels per second
+        },
+        name,
+        samples: latencies,
+        ...stats,
+      });
+    }
+  );
 
-  test("Rapid pointer movements", async () => {
+  it("Rapid pointer movements", async () => {
     const movements = 100;
     let totalDistance = 0;
     let lastPosition: Pointer = [0, 0];
@@ -233,15 +230,17 @@ describe("Pointer Tracking Latency Tests", () => {
 
     const timings = await Promise.all(positions.map(sendPointer));
 
+    expect(timings).toHaveLength(movements);
+
     const stats = calculateStats(timings);
     report.setRapidMovementResult({
-      name: "Rapid Pointer Movements",
-      samples: timings,
       description: `${movements} rapid circular pointer movements`,
       movement: {
         distance: totalDistance,
         speed: totalDistance / ((stats.average * movements) / 1000),
       },
+      name: "Rapid Pointer Movements",
+      samples: timings,
       ...stats,
     });
   });

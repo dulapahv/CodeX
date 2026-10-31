@@ -20,9 +20,9 @@ export class Storage {
 
   constructor() {
     this.data = {
+      followUserId: null,
       userId: null,
       username: null,
-      followUserId: null,
     };
   }
 
@@ -79,9 +79,9 @@ export class Storage {
   // Clear all storage data
   clear(): void {
     this.data = {
+      followUserId: null,
       userId: null,
       username: null,
-      followUserId: null,
     };
     this.notify();
   }

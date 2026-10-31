@@ -4,7 +4,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-const REPO_SEGMENT_RE = /^[a-zA-Z0-9._-]+$/;
+const REPO_SEGMENT_RE = /^[a-zA-Z0-9._-]+$/u;
 
 // git check-ref-format forbids these in a ref name, alongside control characters.
 const REF_ILLEGAL_CHARS = new Set([" ", "~", "^", ":", "?", "*", "[", "\\"]);

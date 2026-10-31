@@ -51,20 +51,20 @@ export const useProviderChoice = (isOpen: boolean) => {
     }
   }, [isOpen]);
 
-  const choose = useCallback((provider: ProviderId) => {
-    setChosen(provider);
-    rememberProvider(provider);
+  const choose = useCallback((providerId: ProviderId) => {
+    setChosen(providerId);
+    rememberProvider(providerId);
   }, []);
 
   const provider = chosen ?? getPreferredProvider(connections);
   const connection = connections?.[provider];
 
   return {
+    choose,
+    configured: connection?.configured ?? true,
     connections,
     isLoading,
     provider,
-    choose,
     user: connection?.user ?? null,
-    configured: connection?.configured ?? true,
   };
 };

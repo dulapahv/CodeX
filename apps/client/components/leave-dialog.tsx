@@ -51,8 +51,8 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
 
   // Expose openDialog and closeDialog to the parent component
   useImperativeHandle(ref, () => ({
-    openDialog,
     closeDialog,
+    openDialog,
   }));
 
   if (isDesktop) {
