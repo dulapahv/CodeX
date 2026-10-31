@@ -10,8 +10,8 @@
  */
 
 import { type Presence, ROOM_DOC } from "@codex/types/realtime";
-import Editor, { type Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import Editor, { loader, type Monaco } from "@monaco-editor/react";
+import type * as monacoEditor from "monaco-editor";
 import { useTheme } from "next-themes";
 import {
   type Dispatch,
@@ -30,6 +30,16 @@ import * as editorService from "./service/editor-service";
 import { bindMonacoToYText } from "./service/monaco-binding";
 import * as scrollService from "./service/scroll-service";
 
+// The editor is fetched from this CDN, while the monaco-editor package only
+// supplies types, so keep the two versions in step
+const MONACO_VERSION = "0.57.0";
+
+loader.config({
+  paths: {
+    vs: `https://cdn.jsdelivr.net/npm/monaco-editor@${MONACO_VERSION}/min/vs`,
+  },
+});
+
 interface AwarenessChange {
   added: number[];
   removed: number[];
@@ -38,12 +48,12 @@ interface AwarenessChange {
 
 interface CodeEditorProps {
   cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
-  editorRef: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  editorRef: (editor: monacoEditor.editor.IStandaloneCodeEditor) => void;
   monacoRef: (monaco: Monaco) => void;
   setCode: (code: string) => void;
 }
 
-const CodeEditor = memo(function CodeEditor({
+const CodeEditor = memo(function CodeEditorComponent({
   monacoRef,
   editorRef,
   cursorPosition,
@@ -57,14 +67,13 @@ const CodeEditor = memo(function CodeEditor({
 
   const [isMonacoReady, setIsMonacoReady] = useState(false);
 
-  const editorInstanceRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
-    null
-  );
+  const editorInstanceRef =
+    useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
   const monacoInstanceRef = useRef<Monaco | null>(null);
   const cursorDecorationsRef = useRef<
-    Record<string, monaco.editor.IEditorDecorationsCollection>
+    Record<string, monacoEditor.editor.IEditorDecorationsCollection>
   >({});
-  const disposablesRef = useRef<monaco.IDisposable[]>([]);
+  const disposablesRef = useRef<monacoEditor.IDisposable[]>([]);
 
   // Initialize editor theme
   useEffect(() => {
@@ -131,8 +140,8 @@ const CodeEditor = memo(function CodeEditor({
     room.awareness.on("change", handleChange);
     handleChange({
       added: [...room.awareness.getStates().keys()],
-      updated: [],
       removed: [],
+      updated: [],
     });
     const labelHover = cursorService.showLabelOnHover(
       editor,
@@ -175,7 +184,7 @@ const CodeEditor = memo(function CodeEditor({
   }, []);
 
   const handleEditorMount = (
-    editor: monaco.editor.IStandaloneCodeEditor,
+    editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
     // Set up refs first

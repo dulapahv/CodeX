@@ -13,7 +13,7 @@ import type { Cursor } from "@codex/types/operation";
 import type { Presence } from "@codex/types/realtime";
 import type { Scroll } from "@codex/types/scroll";
 import type { Monaco } from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import type * as monacoEditor from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { StatusBarCursorPosition } from "@/components/status-bar";
@@ -21,6 +21,92 @@ import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
 
 const SCROLL_EMIT_INTERVAL = 50;
+
+// Piston runs JavaScript and TypeScript on Node, so these exist at runtime
+const NODE_GLOBALS = `declare var process: any;
+declare var Buffer: any;
+declare var __dirname: string;
+declare var __filename: string;
+declare var module: any;
+declare var exports: any;
+declare function require(id: string): any;
+`;
+
+// ts.ModuleDetectionKind.Force, which Monaco doesn't export
+const MODULE_DETECTION_FORCE = 3;
+
+// The editor holds a single file, so imports and their types never resolve
+const SINGLE_FILE_DIAGNOSTICS = [
+  2307, // Cannot find module or its type declarations
+  2792, // Cannot find module
+  7016, // Could not find a declaration file for module
+  80_001, // File is a CommonJS module; it may be converted to an ES module
+  80_005, // 'require' call may be converted to an import
+];
+
+// Without annotations these are type opinions, not errors JavaScript hits
+const UNTYPED_JAVASCRIPT_DIAGNOSTICS = [
+  2322, // Type is not assignable to type
+  2339, // Property does not exist on type
+  2345, // Argument is not assignable to parameter
+  2362, // Left-hand side of an arithmetic operation must be a number
+  2363, // Right-hand side of an arithmetic operation must be a number
+];
+
+/**
+ * Tune diagnostics for a lone file: hide errors that only come from having no
+ * project around it, keep the ones the code would really fail on.
+ * @param monaco Monaco instance.
+ */
+const configureDiagnostics = (monaco: Monaco): void => {
+  const { css, typescript } = monaco;
+  const scriptLanguages = [
+    {
+      checkJs: false,
+      defaults: typescript.typescriptDefaults,
+      ignored: SINGLE_FILE_DIAGNOSTICS,
+    },
+    {
+      // Catches undeclared names and typos before the code is run
+      checkJs: true,
+      defaults: typescript.javascriptDefaults,
+      ignored: [...SINGLE_FILE_DIAGNOSTICS, ...UNTYPED_JAVASCRIPT_DIAGNOSTICS],
+    },
+  ];
+
+  for (const { checkJs, defaults, ignored } of scriptLanguages) {
+    defaults.setCompilerOptions({
+      ...defaults.getCompilerOptions(),
+      checkJs,
+      module: typescript.ModuleKind.ESNext,
+      // As a module the file allows top-level await, and names like `name`
+      // stop clashing with DOM globals
+      moduleDetection: MODULE_DETECTION_FORCE,
+    });
+    defaults.addExtraLib(NODE_GLOBALS, "ts:codex/node-globals.d.ts");
+    defaults.setDiagnosticsOptions({
+      diagnosticCodesToIgnore: ignored,
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+    });
+  }
+
+  // Live Preview loads Tailwind, whose directives such as @apply aren't CSS.
+  // The language service supports this lint rule; Monaco's types omit it.
+  for (const defaults of [
+    css.cssDefaults,
+    css.scssDefaults,
+    css.lessDefaults,
+  ]) {
+    defaults.setOptions({
+      ...defaults.options,
+      lint: {
+        ...defaults.options.lint,
+        unknownAtRules: "ignore",
+      } as typeof defaults.options.lint,
+    });
+  }
+};
 
 /**
  * Handle the Monaco editor before mounting.
@@ -32,6 +118,7 @@ export const handleBeforeMount = (monaco: Monaco): void => {
     const themeData = require(`monaco-themes/themes/${value}.json`);
     monaco.editor.defineTheme(key, themeData);
   }
+  configureDiagnostics(monaco);
 };
 
 /**
@@ -46,9 +133,9 @@ export const handleBeforeMount = (monaco: Monaco): void => {
  * Initial content is not set here. The CRDT binding owns the model's text.
  */
 export const handleOnMount = (
-  editor: monaco.editor.IStandaloneCodeEditor,
+  editor: monacoEditor.editor.IStandaloneCodeEditor,
   monaco: Monaco,
-  disposablesRef: RefObject<monaco.IDisposable[]>,
+  disposablesRef: RefObject<monacoEditor.IDisposable[]>,
   setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
   publish: (patch: Partial<Presence>) => void
 ): void => {
@@ -72,19 +159,10 @@ export const handleOnMount = (
 
   editor.getModel()?.setEOL(monaco.editor.EndOfLineSequence.LF);
 
-  // Disable unwanted validations
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [
-      // 2304, // Ignore "Cannot find name" error
-      // 2339, // Ignore "Property does not exist" error
-      2792, // Ignore "Cannot find module" error
-    ],
-  });
-
   const cursorSelectionDisposable = editor.onDidChangeCursorSelection((e) => {
     setCursorPosition({
-      line: e.selection.positionLineNumber,
       column: e.selection.positionColumn,
+      line: e.selection.positionLineNumber,
       selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0,
     });
 
