@@ -32,7 +32,6 @@ export interface ExecutionStage {
 export interface ExecutionResult {
   /** Only for compiled languages. When it fails, run is a copy of it */
   compile?: ExecutionStage;
-  executionTime?: number;
   language: string;
   run: ExecutionStage;
   timestamp?: Date;

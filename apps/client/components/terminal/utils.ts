@@ -28,16 +28,27 @@ const formatMemory = (bytes: number) => {
   return `${(bytes / 1_000_000).toFixed(1)} MB`;
 };
 
+// Piston runs programs from a Bash script, which reports a crash as exit
+// code 128 plus the signal number
+const SIGNALS_BY_EXIT_CODE = new Map([
+  [132, "SIGILL"],
+  [134, "SIGABRT"],
+  [135, "SIGBUS"],
+  [136, "SIGFPE"],
+  [137, "SIGKILL"],
+  [139, "SIGSEGV"],
+]);
+
 // Piston skips the run stage when compiling fails
 const didCompileFail = (result: ExecutionResult) =>
   result.compile !== undefined && result.compile.code !== 0;
 
 export const formatExecutionDetails = (result: ExecutionResult) => {
-  const details = [`${formatExecutionTime(result.executionTime ?? 0)} total`];
   if (didCompileFail(result)) {
-    return details.join(", ");
+    return "";
   }
 
+  const details: string[] = [];
   const compileTime = result.compile?.wall_time;
   if (typeof compileTime === "number") {
     details.push(`compiled in ${formatExecutionTime(compileTime)}`);
@@ -50,7 +61,7 @@ export const formatExecutionDetails = (result: ExecutionResult) => {
     details.push(`ran in ${formatExecutionTime(runTime)}${usage}`);
   }
 
-  return details.join(", ");
+  return details.length > 0 ? ` (${details.join(", ")})` : "";
 };
 
 export const describeExit = (result: ExecutionResult) => {
@@ -71,8 +82,11 @@ export const describeExit = (result: ExecutionResult) => {
       break;
   }
 
-  if (signal) {
-    return `${stage} was killed by ${signal}`;
+  const crashSignal =
+    code === null ? undefined : SIGNALS_BY_EXIT_CODE.get(code);
+  const killedBy = signal ?? crashSignal;
+  if (killedBy) {
+    return `${stage} was killed by ${killedBy}`;
   }
   if (code === null || code === 0) {
     return null;
@@ -109,8 +123,8 @@ const formatLogEntry = (result: ExecutionResult): string => {
 
   // Add execution details if available
   const executionDetails =
-    result.language && result.version && result.executionTime
-      ? ` - ${result.language} v${result.version} (${formatExecutionDetails(result)})`
+    result.type === ExecutionResultType.OUTPUT
+      ? ` - ${result.language} v${result.version}${formatExecutionDetails(result)}`
       : "";
 
   const exit = describeExit(result);

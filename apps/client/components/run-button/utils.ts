@@ -129,13 +129,9 @@ export const executeCode = async (
       abortPromise,
     ]);
 
-    const endTime = new Date();
-    const executionTime = endTime.getTime() - startTime.getTime();
-
     const resultWithTimestamp: ExecutionResult = {
       ...result,
-      executionTime,
-      timestamp: endTime,
+      timestamp: new Date(),
       type: ExecutionResultType.OUTPUT,
     };
     reporter.report(resultWithTimestamp);
@@ -145,11 +141,7 @@ export const executeCode = async (
       return;
     }
 
-    const endTime = new Date();
-    const executionTime = endTime.getTime() - startTime.getTime();
-
     const res = {
-      executionTime,
       language: "error",
       run: {
         code: 1,
@@ -158,7 +150,7 @@ export const executeCode = async (
         stderr: parseError(error),
         stdout: "",
       },
-      timestamp: endTime,
+      timestamp: new Date(),
       type: ExecutionResultType.ERROR,
       version: "1.0.0",
     };

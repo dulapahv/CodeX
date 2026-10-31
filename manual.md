@@ -370,9 +370,8 @@ Empty lines are ignored. You can also use `'` and `"` in your arguments and inpu
 
 ### Reading the Output
 
-Each result in the [Shared Terminal](#shared-terminal) starts with the language, its version, and how long the run took, for example `Python v3.10.0 (700ms total, ran in 43ms using 7.6 MB)`.
+Each result in the [Shared Terminal](#shared-terminal) starts with the language, its version, and how long the run took, for example `Python v3.10.0 (ran in 43ms using 7.6 MB)`.
 
-- `total` is the time from clicking `Run Code` until the result arrived, including the trip to the execution server
 - `compiled in` appears for compiled languages such as C, C++, and Rust
 - `ran in` is how long your program itself ran, and `using` is the most memory it used
 
@@ -408,7 +407,7 @@ File name will be `codex-terminal-<date>--<time>.txt`, for example `codex-termin
     [18:35:33.060]
     🚀 Executing code...
 
-    [18:35:33.760] - python v3.10.0 (700ms total, ran in 43ms using 7.6 MB)
+    [18:35:33.760] - python v3.10.0 (ran in 43ms using 7.6 MB)
     Hello World
     ```
 

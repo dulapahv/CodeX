@@ -39,7 +39,7 @@ const Output = ({ result }: OutputProps) => {
         <div className="flex-1">
           {result.type === "output" && (
             <div className="text-muted-foreground">
-              {`${language.charAt(0).toUpperCase()}${language.slice(1)} v${result.version} (${formatExecutionDetails(result)})`}
+              {`${language.charAt(0).toUpperCase()}${language.slice(1)} v${result.version}${formatExecutionDetails(result)}`}
             </div>
           )}
 
