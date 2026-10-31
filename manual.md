@@ -74,6 +74,12 @@
   - [Supported Editor Languages](#supported-editor-languages)
   - [Supported Execution Languages](#supported-execution-languages)
   - [Keyboard Shortcuts in Menu Bar](#keyboard-shortcuts-in-menu-bar)
+    - [File](#file)
+    - [Edit](#edit)
+    - [Selection](#selection)
+    - [View](#view)
+    - [Go](#go)
+    - [Code](#code)
   - [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview)
   - [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax)
 
@@ -157,7 +163,7 @@ The interface is divided into several sections, each section contains multiple p
 </div>
 
 1. **Menu Bar**
-   - Contains File, Edit, Selection, View, and Help menus
+   - Contains File, Edit, Selection, View, Go, Code, and Help menus
 2. **Run Code Button**
    - Execute your code directly from the editor
    - For list of supported execution languages, refer to the [Supported Execution Languages](#supported-execution-languages) section
@@ -1109,33 +1115,112 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 ### Keyboard Shortcuts in Menu Bar
 
-| Action               | Shortcut           |
-| -------------------- | ------------------ |
-| Command Palette      | `F1`               |
-| Open from Local      | `Ctrl + O`         |
-| Open from GitHub     | `Ctrl + Shift + O` |
-| Save to Local        | `Ctrl + S`         |
-| Save to GitHub       | `Ctrl + Shift + S` |
-| Settings             | `Ctrl + ,`         |
-| Leave Room           | `Ctrl + Q`         |
-| Undo                 | `Ctrl + Z`         |
-| Redo                 | `Ctrl + Y`         |
-| Cut                  | `Ctrl + X`         |
-| Copy                 | `Ctrl + C`         |
-| Paste                | `Ctrl + V`         |
-| Find                 | `Ctrl + F`         |
-| Replace              | `Ctrl + H`         |
-| Toggle Line Comment  | `Ctrl + /`         |
-| Toggle Block Comment | `Shift + Alt + A`  |
-| Select All           | `Ctrl + A`         |
-| Copy Line Up         | `Shift + Alt + ↑`  |
-| Copy Line Down       | `Shift + Alt + ↓`  |
-| Move Line Up         | `Alt + ↑`          |
-| Move Line Down       | `Alt + ↓`          |
-| Add Cursor Above     | `Ctrl + Alt + ↑`   |
-| Add Cursor Below     | `Ctrl + Alt + ↓`   |
-| Zoom In              | `Ctrl + =`         |
-| Zoom Out             | `Ctrl + -`         |
+The menu bar shows the shortcuts for your operating system. Some of them differ between Windows, macOS, and Linux.
+
+- On macOS, `Alt` is the Option (`⌥`) key
+- A shortcut with a comma, such as `Ctrl + K, Ctrl + C`, is a sequence: press `Ctrl + K`, release, then press `Ctrl + C`
+- Inside the code editor, `Ctrl + Shift + O` (`⌘ + Shift + O` on macOS) goes to a symbol. Anywhere else, it opens a file from a repository
+
+Menu items not listed here, such as `UPPERCASE` or `Sort Lines Ascending`, have no shortcut but can be run from the menu bar or the [Command Palette](#view).
+
+#### File
+
+| Action                | Windows            | macOS           | Linux              |
+| --------------------- | ------------------ | --------------- | ------------------ |
+| Open from Local       | `Ctrl + O`         | `⌘ + O`         | `Ctrl + O`         |
+| Open from repository… | `Ctrl + Shift + O` | `⌘ + Shift + O` | `Ctrl + Shift + O` |
+| Save to Local         | `Ctrl + S`         | `⌘ + S`         | `Ctrl + S`         |
+| Save to repository…   | `Ctrl + Shift + S` | `⌘ + Shift + S` | `Ctrl + Shift + S` |
+| Settings              | `Ctrl + ,`         | `⌘ + ,`         | `Ctrl + ,`         |
+| Leave Room            | `Ctrl + Q`         | `⌘ + Q`         | `Ctrl + Q`         |
+
+#### Edit
+
+| Action               | Windows                          | macOS                      | Linux                            |
+| -------------------- | -------------------------------- | -------------------------- | -------------------------------- |
+| Undo                 | `Ctrl + Z`                       | `⌘ + Z`                    | `Ctrl + Z`                       |
+| Redo                 | `Ctrl + Y` or `Ctrl + Shift + Z` | `⌘ + Shift + Z` or `⌘ + Y` | `Ctrl + Y` or `Ctrl + Shift + Z` |
+| Cut                  | `Ctrl + X`                       | `⌘ + X`                    | `Ctrl + X`                       |
+| Copy                 | `Ctrl + C`                       | `⌘ + C`                    | `Ctrl + C`                       |
+| Paste                | `Ctrl + V`                       | `⌘ + V`                    | `Ctrl + V`                       |
+| Find                 | `Ctrl + F`                       | `⌘ + F`                    | `Ctrl + F`                       |
+| Replace              | `Ctrl + H`                       | `⌘ + Alt + F`              | `Ctrl + H`                       |
+| Find Next            | `F3`                             | `⌘ + G`                    | `F3`                             |
+| Find Previous        | `Shift + F3`                     | `⌘ + Shift + G`            | `Shift + F3`                     |
+| Toggle Line Comment  | `Ctrl + /`                       | `⌘ + /`                    | `Ctrl + /`                       |
+| Toggle Block Comment | `Shift + Alt + A`                | `Shift + Alt + A`          | `Ctrl + Shift + A`               |
+| Add Line Comment     | `Ctrl + K, Ctrl + C`             | `⌘ + K, ⌘ + C`             | `Ctrl + K, Ctrl + C`             |
+| Remove Line Comment  | `Ctrl + K, Ctrl + U`             | `⌘ + K, ⌘ + U`             | `Ctrl + K, Ctrl + U`             |
+
+#### Selection
+
+| Action                   | Windows                | macOS                  | Linux                    |
+| ------------------------ | ---------------------- | ---------------------- | ------------------------ |
+| Select All               | `Ctrl + A`             | `⌘ + A`                | `Ctrl + A`               |
+| Expand Line Selection    | `Ctrl + L`             | `⌘ + L`                | `Ctrl + L`               |
+| Select Highlights        | `Ctrl + Shift + L`     | `⌘ + Shift + L`        | `Ctrl + Shift + L`       |
+| Copy Line Up             | `Shift + Alt + ↑`      | `Shift + Alt + ↑`      | `Ctrl + Shift + Alt + ↑` |
+| Copy Line Down           | `Shift + Alt + ↓`      | `Shift + Alt + ↓`      | `Ctrl + Shift + Alt + ↓` |
+| Move Line Up             | `Alt + ↑`              | `Alt + ↑`              | `Alt + ↑`                |
+| Move Line Down           | `Alt + ↓`              | `Alt + ↓`              | `Alt + ↓`                |
+| Insert Line Above        | `Ctrl + Shift + Enter` | `⌘ + Shift + Enter`    | `Ctrl + Shift + Enter`   |
+| Insert Line Below        | `Ctrl + Enter`         | `⌘ + Enter`            | `Ctrl + Enter`           |
+| Delete Line              | `Ctrl + Shift + K`     | `⌘ + Shift + K`        | `Ctrl + Shift + K`       |
+| Indent Line              | `Ctrl + ]`             | `⌘ + ]`                | `Ctrl + ]`               |
+| Outdent Line             | `Ctrl + [`             | `⌘ + [`                | `Ctrl + [`               |
+| Add Cursor Above         | `Ctrl + Alt + ↑`       | `⌘ + Alt + ↑`          | `Shift + Alt + ↑`        |
+| Add Cursor Below         | `Ctrl + Alt + ↓`       | `⌘ + Alt + ↓`          | `Shift + Alt + ↓`        |
+| Add Cursors to Line Ends | `Shift + Alt + I`      | `Shift + Alt + I`      | `Shift + Alt + I`        |
+| Add Next Occurrence      | `Ctrl + D`             | `⌘ + D`                | `Ctrl + D`               |
+| Cursor Undo              | `Ctrl + U`             | `⌘ + U`                | `Ctrl + U`               |
+| Expand Selection         | `Shift + Alt + →`      | `Ctrl + Shift + ⌘ + →` | `Shift + Alt + →`        |
+| Shrink Selection         | `Shift + Alt + ←`      | `Ctrl + Shift + ⌘ + ←` | `Shift + Alt + ←`        |
+
+#### View
+
+| Action                     | Windows              | macOS              | Linux                |
+| -------------------------- | -------------------- | ------------------ | -------------------- |
+| Command Palette            | `F1`                 | `F1`               | `F1`                 |
+| Zoom In                    | `Ctrl + =`           | `⌘ + =`            | `Ctrl + =`           |
+| Zoom Out                   | `Ctrl + -`           | `⌘ + -`            | `Ctrl + -`           |
+| Fold                       | `Ctrl + Shift + [`   | `⌘ + Alt + [`      | `Ctrl + Shift + [`   |
+| Unfold                     | `Ctrl + Shift + ]`   | `⌘ + Alt + ]`      | `Ctrl + Shift + ]`   |
+| Toggle Fold                | `Ctrl + K, Ctrl + L` | `⌘ + K, ⌘ + L`     | `Ctrl + K, Ctrl + L` |
+| Fold Recursively           | `Ctrl + K, Ctrl + [` | `⌘ + K, ⌘ + [`     | `Ctrl + K, Ctrl + [` |
+| Unfold Recursively         | `Ctrl + K, Ctrl + ]` | `⌘ + K, ⌘ + ]`     | `Ctrl + K, Ctrl + ]` |
+| Fold All                   | `Ctrl + K, Ctrl + 0` | `⌘ + K, ⌘ + 0`     | `Ctrl + K, Ctrl + 0` |
+| Unfold All                 | `Ctrl + K, Ctrl + J` | `⌘ + K, ⌘ + J`     | `Ctrl + K, Ctrl + J` |
+| Toggle Tab Key Moves Focus | `Ctrl + M`           | `Ctrl + Shift + M` | `Ctrl + M`           |
+
+#### Go
+
+| Action             | Windows            | macOS           | Linux                |
+| ------------------ | ------------------ | --------------- | -------------------- |
+| Go to Line/Column… | `Ctrl + G`         | `Ctrl + G`      | `Ctrl + G`           |
+| Go to Symbol…      | `Ctrl + Shift + O` | `⌘ + Shift + O` | `Ctrl + Shift + O`   |
+| Go to Bracket      | `Ctrl + Shift + \` | `⌘ + Shift + \` | `Ctrl + Shift + \`   |
+| Go to Definition   | `Ctrl + F12`       | `⌘ + F12`       | `Ctrl + F12`         |
+| Peek Definition    | `Alt + F12`        | `Alt + F12`     | `Ctrl + Shift + F10` |
+| Go to References   | `Shift + F12`      | `Shift + F12`   | `Shift + F12`        |
+| Next Problem       | `F8`               | `F8`            | `F8`                 |
+| Previous Problem   | `Shift + F8`       | `Shift + F8`    | `Shift + F8`         |
+
+#### Code
+
+| Action                   | Windows                  | macOS                 | Linux                    |
+| ------------------------ | ------------------------ | --------------------- | ------------------------ |
+| Format Document          | `Shift + Alt + F`        | `Shift + Alt + F`     | `Ctrl + Shift + I`       |
+| Format Selection         | `Ctrl + K, Ctrl + F`     | `⌘ + K, ⌘ + F`        | `Ctrl + K, Ctrl + F`     |
+| Trim Trailing Whitespace | `Ctrl + K, Ctrl + X`     | `⌘ + K, ⌘ + X`        | `Ctrl + K, Ctrl + X`     |
+| Rename Symbol            | `F2`                     | `F2`                  | `F2`                     |
+| Change All Occurrences   | `Ctrl + F2`              | `⌘ + F2`              | `Ctrl + F2`              |
+| Refactor…                | `Ctrl + Shift + R`       | `Ctrl + Shift + R`    | `Ctrl + Shift + R`       |
+| Quick Fix…               | `Ctrl + .`               | `⌘ + .`               | `Ctrl + .`               |
+| Organize Imports         | `Shift + Alt + O`        | `Shift + Alt + O`     | `Shift + Alt + O`        |
+| Remove Brackets          | `Ctrl + Alt + Backspace` | `⌘ + Alt + Backspace` | `Ctrl + Alt + Backspace` |
+| Trigger Suggest          | `Ctrl + Space`           | `Ctrl + Space`        | `Ctrl + Space`           |
+| Trigger Parameter Hints  | `Ctrl + Shift + Space`   | `⌘ + Shift + Space`   | `Ctrl + Shift + Space`   |
+| Show Hover               | `Ctrl + K, Ctrl + I`     | `⌘ + K, ⌘ + I`        | `Ctrl + K, Ctrl + I`     |
 
 ### Pre-Installed Libraries for Live Preview
 
