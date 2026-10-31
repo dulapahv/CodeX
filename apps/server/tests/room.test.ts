@@ -31,12 +31,13 @@ import {
 
 // test:socket runs the Worker with ROOM_GRACE_MS=10000
 const GRACE_MS = 10_000;
-const ROOM_ID_PATTERN = /^[A-Z0-9]{8}$/;
+// Generated IDs leave out the look-alikes I, L, O, 0 and 1
+const ROOM_ID_PATTERN = /^[A-HJKMNP-Z2-9]{8}$/u;
 
 const result = (stdout: string): ExecutionResult => ({
   language: "python",
+  run: { code: 0, output: stdout, signal: null, stderr: "", stdout },
   version: "3.12",
-  run: { stdout, stderr: "", code: 0, signal: null, output: stdout },
 });
 
 const mediaOf = (peer: TestPeer) => {
@@ -54,8 +55,8 @@ const isMediaEnabled = (peer: TestPeer) => mediaOf(peer)?.enabled === true;
 const openSfuSession = async (headers: Record<string, string>) =>
   (
     await fetch(`${SERVER_URL}${SFU_PROXY_PATH}/sessions/new`, {
-      method: "POST",
       headers,
+      method: "POST",
     })
   ).status;
 
@@ -74,7 +75,7 @@ describe("Room lifecycle", () => {
     peers.length = 0;
   });
 
-  test("creates a room that can be looked up with or without the dash", async () => {
+  it("creates a room that can be looked up with or without the dash", async () => {
     const roomId = await createRoomId();
 
     expect(roomId).toMatch(ROOM_ID_PATTERN);
@@ -85,7 +86,7 @@ describe("Room lifecycle", () => {
     expect(await roomStatus("ZZZZ-ZZZZ")).toBe(404);
   });
 
-  test("closes connections to a room that doesn't exist", async () => {
+  it("closes connections to a room that doesn't exist", async () => {
     const peer = track(
       await connectPeer("ZZZZZZZZ", "Ghost", { waitForSync: false })
     );
@@ -93,7 +94,7 @@ describe("Room lifecycle", () => {
     expect(await peer.waitForClose()).toBe(CloseCode.ROOM_NOT_FOUND);
   });
 
-  test("ignores presence with an invalid name", async () => {
+  it("ignores presence with an invalid name", async () => {
     const [alice, roomId] = await createRoomPeer("Alice");
     track(alice);
     const bob = track(await connectPeer(roomId, "Bob"));
@@ -105,7 +106,7 @@ describe("Room lifecycle", () => {
     expect(alice.presenceOf(bob.clientId)?.user.name).toBe("Bob");
   });
 
-  test("gives each connection its own media token", async () => {
+  it("gives each connection its own media token", async () => {
     const [alice, roomId] = await createRoomPeer("Alice");
     track(alice);
     const bob = track(await connectPeer(roomId, "Bob"));
@@ -116,7 +117,7 @@ describe("Room lifecycle", () => {
     expect(mediaTokenOf(bob)).not.toBe(mediaTokenOf(alice));
   });
 
-  test("only lets current room members through the SFU proxy", async () => {
+  it("only lets current room members through the SFU proxy", async () => {
     const [alice, roomId] = await createRoomPeer("Alice");
     track(alice);
     const [bob, otherRoomId] = await createRoomPeer("Bob");
@@ -140,18 +141,16 @@ describe("Room lifecycle", () => {
     // A member gets through: the SFU opens a session, or the Worker says
     // video isn't set up when it has no credentials
     const memberStatus = await openSfuSession(member);
-    if (isMediaEnabled(alice)) {
-      expect(memberStatus).toBeLessThan(400);
-    } else {
-      expect(memberStatus).toBe(503);
-    }
+    expect(memberStatus < 400 ? "opened" : memberStatus).toBe(
+      isMediaEnabled(alice) ? "opened" : 503
+    );
 
     alice.leave();
     await settle();
     expect(await openSfuSession(member)).toBe(401);
   });
 
-  test("relays the tracks someone publishes", async () => {
+  it("relays the tracks someone publishes", async () => {
     const [alice, roomId] = await createRoomPeer("Alice");
     track(alice);
     const bob = track(await connectPeer(roomId, "Bob"));
@@ -172,12 +171,12 @@ describe("Room lifecycle", () => {
     expect(alice.presenceOf(bob.clientId)?.media.tracks?.video).toEqual(video);
   });
 
-  test("gives a late joiner the room's recent terminal output", async () => {
+  it("gives a late joiner the room's recent terminal output", async () => {
     const [author, roomId] = await createRoomPeer("Author");
     track(author);
     const total = TERMINAL_HISTORY_LIMIT + 5;
-    for (let i = 1; i <= total; i++) {
-      author.send({ type: "terminal", result: result(`run ${i}`) });
+    for (let i = 1; i <= total; i += 1) {
+      author.send({ result: result(`run ${i}`), type: "terminal" });
     }
     await settle(2000);
 
@@ -196,7 +195,7 @@ describe("Room lifecycle", () => {
     expect(outputs.at(-1)).toBe(`run ${total}`);
   });
 
-  test("terminating closes everyone and deletes the room", async () => {
+  it("terminating closes everyone and deletes the room", async () => {
     const [alice, roomId] = await createRoomPeer("Alice");
     track(alice);
     const bob = track(await connectPeer(roomId, "Bob"));
@@ -210,7 +209,7 @@ describe("Room lifecycle", () => {
     expect(await roomStatus(roomId)).toBe(404);
   });
 
-  test("keeps an empty room through the grace period, then deletes it", async () => {
+  it("keeps an empty room through the grace period, then deletes it", async () => {
     const [author, roomId] = await createRoomPeer("Author");
     author.text.insert(0, "kept for a while");
     await settle();
