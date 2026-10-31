@@ -25,6 +25,7 @@
   - [Limitations](#limitations)
 - [Code Execution](#code-execution)
   - [Passing Arguments and Input (stdin)](#passing-arguments-and-input-stdin)
+  - [Reading the Output](#reading-the-output)
 - [Shared Terminal](#shared-terminal)
   - [Download Output](#download-output)
   - [Clear Output](#clear-output)
@@ -53,6 +54,8 @@
   - [Follow Mode not working](#follow-mode-not-working)
   - [Code is not Syncing Between Users](#code-is-not-syncing-between-users)
   - [This language is not supported or the execution server is down](#this-language-is-not-supported-or-the-execution-server-is-down)
+  - [Process timed out](#process-timed-out)
+  - [Process stopped because its output was too long](#process-stopped-because-its-output-was-too-long)
   - [No code to execute](#no-code-to-execute)
   - [Error parsing markdown](#error-parsing-markdown)
   - [Please check the information and try again](#please-check-the-information-and-try-again)
@@ -365,6 +368,25 @@ input1
 
 Empty lines are ignored. You can also use `'` and `"` in your arguments and input.
 
+### Reading the Output
+
+Each result in the [Shared Terminal](#shared-terminal) starts with the language, its version, and how long the run took, for example `Python v3.10.0 (700ms total, ran in 43ms using 7.6 MB)`.
+
+- `total` is the time from clicking `Run Code` until the result arrived, including the trip to the execution server
+- `compiled in` appears for compiled languages such as C, C++, and Rust
+- `ran in` is how long your program itself ran, and `using` is the most memory it used
+
+If your program doesn't finish normally, the last line says why:
+
+| Message                                                 | Meaning                                                                          |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `Process exited with code <n>`                          | Your program exited with a non-zero code, usually because of an error            |
+| `Compilation failed with code <n>`                      | Your code didn't compile, so it never ran. The compiler's errors are shown above |
+| `Process timed out` or `Compilation timed out`          | It ran longer than the execution server allows                                   |
+| `Process stopped because its output was too long`       | Your program printed more than the execution server allows                       |
+| `Process stopped because its error output was too long` | Your program printed more errors than the execution server allows                |
+| `Process was killed by <signal>`                        | Your program crashed, for example `SIGSEGV` for a segmentation fault             |
+
 ## Shared Terminal
 
 The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room, and anyone who joins later sees the room's 50 most recent results.
@@ -386,7 +408,7 @@ File name will be `codex-terminal-<date>--<time>.txt`, for example `codex-termin
     [18:35:33.060]
     🚀 Executing code...
 
-    [18:35:33.760] - python v3.10.0 (700ms)
+    [18:35:33.760] - python v3.10.0 (700ms total, ran in 43ms using 7.6 MB)
     Hello World
     ```
 
@@ -831,8 +853,30 @@ CodeX reconnects automatically when the connection drops and catches up on any e
 
 **To resolve this issue:**
 
-- Check the list of [supported execution languages](<[#supported-execution-languages](https://github.com/engineer-man/piston?tab=readme-ov-file#supported-languages)>)
+- Check the list of [supported execution languages](#supported-execution-languages)
 - Wait for the [execution server](https://github.com/engineer-man/piston) to come back online
+
+### Process timed out
+
+**This issue can be caused by:**
+
+- An infinite loop
+- A program that does too much work or sleeps for too long
+
+**To resolve this issue:**
+
+- Check that every loop in your code ends
+- Run your program on a smaller input
+
+### Process stopped because its output was too long
+
+**This issue can be caused by:**
+
+- A program that prints more than the execution server allows, often from a loop that prints on every pass
+
+**To resolve this issue:**
+
+- Print less, for example only the final result or a summary
 
 ### No code to execute
 
@@ -1109,9 +1153,39 @@ Learn more about [GitHub's Scopes for OAuth apps](https://docs.github.com/en/app
 
 ### Supported Execution Languages
 
-Referenced from the [Piston documentation](https://github.com/engineer-man/piston#Supported-Languages).
+Code runs on [Piston](https://github.com/engineer-man/piston). These are the editor languages you can run and the runtime each one uses. Other editor languages can be edited but not run. The terminal shows the version used for each run.
 
-`awk`, `bash`, `befunge93`, `brachylog`, `brainfuck`, `bqn`, `c`, `c++`, `cjam`, `clojure`, `cobol`, `coffeescript`, `cow`, `crystal`, `csharp`, `csharp.net`, `d`, `dart`, `dash`, `dragon`, `elixir`, `emacs`, `emojicode`, `erlang`, `file`, `forte`, `forth`, `fortran`, `freebasic`, `fsharp.net`, `fsi`, `go`, `golfscript`, `groovy`, `haskell`, `husk`, `iverilog`, `japt`, `java`, `javascript`, `jelly`, `julia`, `kotlin`, `lisp`, `llvm_ir`, `lolcode`, `lua`, `matl`, `nasm`, `nasm64`, `nim`, `ocaml`, `octave`, `osabie`, `paradoc`, `pascal`, `perl`, `php`, `ponylang`, `powershell`, `prolog`, `pure`, `pyth`, `python`, `python2`, `racket`, `raku`, `retina`, `rockstar`, `rscript`, `ruby`, `rust`, `samarium`, `scala`, `smalltalk`, `sqlite3`, `swift`, `typescript`, `basic`, `basic.net`, `vlang`, `vyxal`, `yeethon`, `zig`,
+| Language     | Runs with             |
+| ------------ | --------------------- |
+| C            | GCC 10.2.0            |
+| C++          | GCC 10.2.0            |
+| C#           | Mono 6.12.0           |
+| clojure      | Clojure 1.10.3        |
+| CoffeeScript | CoffeeScript 2.5.1    |
+| Dart         | Dart 2.19.6           |
+| Elixir       | Elixir 1.11.3         |
+| F#           | .NET 5.0.201          |
+| Go           | Go 1.16.2             |
+| Java         | Java 15.0.2           |
+| JavaScript   | Node.js 18.15.0       |
+| julia        | Julia 1.8.5           |
+| Kotlin       | Kotlin 1.8.20         |
+| Lua          | Lua 5.4.4             |
+| Pascal       | Free Pascal 3.2.2     |
+| Perl         | Perl 5.36.0           |
+| PHP          | PHP 8.2.3             |
+| PowerShell   | PowerShell 7.1.4      |
+| Python       | Python 3.10.0         |
+| R            | R 4.1.1               |
+| Ruby         | Ruby 3.0.1            |
+| Rust         | Rust 1.68.2           |
+| Scala        | Scala 3.2.2           |
+| Shell        | Bash 5.2.0            |
+| SQL          | SQLite 3.36.0         |
+| Swift        | Swift 5.3.3           |
+| TypeScript   | TypeScript 5.0.3      |
+| V            | Icarus Verilog 11.0.0 |
+| Visual Basic | Mono 6.12.0           |
 
 ### Keyboard Shortcuts in Menu Bar
 

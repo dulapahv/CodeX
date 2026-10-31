@@ -1,7 +1,8 @@
 /**
  * Utility functions for formatting terminal output.
  * Features:
- * - Execution time formatting
+ * - Execution time and memory formatting
+ * - Exit reason descriptions
  * - Timestamp formatting
  * - Message type coloring
  *
@@ -13,11 +14,72 @@ import {
   ExecutionResultType,
 } from "@codex/types/terminal";
 
-export const formatExecutionTime = (ms: number) => {
+const formatExecutionTime = (ms: number) => {
   if (ms < 1000) {
-    return `${ms}ms`;
+    return `${Math.round(ms)}ms`;
   }
   return `${(ms / 1000).toFixed(2)}s`;
+};
+
+const formatMemory = (bytes: number) => {
+  if (bytes < 1_000_000) {
+    return `${Math.round(bytes / 1000)} KB`;
+  }
+  return `${(bytes / 1_000_000).toFixed(1)} MB`;
+};
+
+// Piston skips the run stage when compiling fails
+const didCompileFail = (result: ExecutionResult) =>
+  result.compile !== undefined && result.compile.code !== 0;
+
+export const formatExecutionDetails = (result: ExecutionResult) => {
+  const details = [`${formatExecutionTime(result.executionTime ?? 0)} total`];
+  if (didCompileFail(result)) {
+    return details.join(", ");
+  }
+
+  const compileTime = result.compile?.wall_time;
+  if (typeof compileTime === "number") {
+    details.push(`compiled in ${formatExecutionTime(compileTime)}`);
+  }
+
+  const { memory, wall_time: runTime } = result.run;
+  if (typeof runTime === "number") {
+    const usage =
+      typeof memory === "number" ? ` using ${formatMemory(memory)}` : "";
+    details.push(`ran in ${formatExecutionTime(runTime)}${usage}`);
+  }
+
+  return details.join(", ");
+};
+
+export const describeExit = (result: ExecutionResult) => {
+  const { code, signal, status } = result.run;
+  const compileFailed = didCompileFail(result);
+  const stage = compileFailed ? "Compilation" : "Process";
+
+  switch (status) {
+    case "TO":
+      return `${stage} timed out`;
+    case "OL":
+      return `${stage} stopped because its output was too long`;
+    case "EL":
+      return `${stage} stopped because its error output was too long`;
+    case "XX":
+      return "The execution server failed to run the code";
+    default:
+      break;
+  }
+
+  if (signal) {
+    return `${stage} was killed by ${signal}`;
+  }
+  if (code === null || code === 0) {
+    return null;
+  }
+  return compileFailed
+    ? `Compilation failed with code ${code}`
+    : `Process exited with code ${code}`;
 };
 
 export const formatTimestamp = (date: Date) =>
@@ -48,20 +110,21 @@ const formatLogEntry = (result: ExecutionResult): string => {
   // Add execution details if available
   const executionDetails =
     result.language && result.version && result.executionTime
-      ? ` - ${result.language} v${result.version} (${result.executionTime}ms)`
+      ? ` - ${result.language} v${result.version} (${formatExecutionDetails(result)})`
       : "";
+
+  const exit = describeExit(result);
+  const exitLine = exit ? `\n${exit}` : "";
 
   // For error messages
   if (result.run.stderr) {
-    return `[${timestamp}]${executionDetails}\n${result.run.stdout || "Error:"} ${result.run.stderr}${
-      result.run.code ? `\nProcess exited with code ${result.run.code}` : ""
-    }`;
+    return `[${timestamp}]${executionDetails}\n${result.run.stdout || "Error:"} ${result.run.stderr}${exitLine}`;
   }
 
   // For regular output
   const message = result.run.stdout ? result.run.stdout.trimEnd() : "No output";
 
-  return `[${timestamp}]${executionDetails}\n${message}`;
+  return `[${timestamp}]${executionDetails}\n${message}${exitLine}`;
 };
 
 export const handleDownloadLogs = (results: ExecutionResult[]) => {

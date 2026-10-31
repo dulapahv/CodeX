@@ -3,7 +3,7 @@
  * Features:
  * - Timestamped output
  * - Color-coded messages
- * - Execution time display
+ * - Execution time and memory display
  * - Error output handling
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -14,7 +14,8 @@ import type { ExecutionResult } from "@codex/types/terminal";
 import { cn } from "@/lib/utils";
 
 import {
-  formatExecutionTime,
+  describeExit,
+  formatExecutionDetails,
   formatTimestamp,
   getMessageColor,
 } from "../utils";
@@ -26,6 +27,8 @@ interface OutputProps {
 const Output = ({ result }: OutputProps) => {
   const timestamp = new Date(result.timestamp ?? Date.now());
   const messageColor = getMessageColor(result.type);
+  const language = String(result.language);
+  const exit = describeExit(result);
 
   return (
     <div>
@@ -36,7 +39,7 @@ const Output = ({ result }: OutputProps) => {
         <div className="flex-1">
           {result.type === "output" && (
             <div className="text-muted-foreground">
-              {`${String(result.language).charAt(0).toUpperCase() + String(result.language).slice(1)} v${result.version} (${"executionTime" in result && formatExecutionTime(result.executionTime ?? 0)})`}
+              {`${language.charAt(0).toUpperCase()}${language.slice(1)} v${result.version} (${formatExecutionDetails(result)})`}
             </div>
           )}
 
@@ -52,11 +55,7 @@ const Output = ({ result }: OutputProps) => {
             </div>
           )}
 
-          {result.run.code !== 0 && (
-            <div className="text-red-500">
-              Process exited with code {result.run.code}
-            </div>
-          )}
+          {exit && <div className="text-red-500">{exit}</div>}
         </div>
       </div>
     </div>
