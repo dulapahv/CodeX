@@ -9,8 +9,8 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import { Settings } from "lucide-react";
-import type * as monaco from "monaco-editor";
+import { GearIcon } from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
 import { useRef } from "react";
 import {
   SettingsSheet,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 
 interface SettingsButtonProps {
-  editor: monaco.editor.IStandaloneCodeEditor;
+  editor: monacoEditor.editor.IStandaloneCodeEditor;
   monaco: Monaco;
 }
 
@@ -43,12 +43,12 @@ const SettingsButton = ({ monaco, editor }: SettingsButtonProps) => {
             <Button
               aria-haspopup="dialog"
               aria-label="Open Settings"
-              className="hover:!text-foreground size-7 animate-fade-in-top p-0 text-[color:var(--toolbar-foreground)]"
+              className="hover:!text-foreground animate-fade-in-top size-7 p-0 text-[color:var(--toolbar-foreground)]"
               onClick={handleButtonClick}
               size="icon"
               variant="ghost"
             >
-              <Settings aria-hidden="true" className="size-4" />
+              <GearIcon aria-hidden="true" className="size-4" />
             </Button>
           }
         />

@@ -4,7 +4,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Settings } from "lucide-react";
+import { GearIcon } from "@phosphor-icons/react";
 
 import { PROVIDER_LABELS, type ProviderId } from "@/lib/git-providers/types";
 
@@ -20,13 +20,13 @@ export const GitFooterInfo = ({
   provider,
 }: GitFooterInfoProps) => (
   <div className="w-full">
-    <p className="break-all text-muted-foreground text-xs">
+    <p className="text-muted-foreground text-xs break-all">
       {actionLabel} <span className="font-semibold">{displayPath}</span>
     </p>
-    <div className="flex flex-wrap items-center text-muted-foreground text-xs">
+    <div className="text-muted-foreground flex flex-wrap items-center text-xs">
       <span>To disconnect {PROVIDER_LABELS[provider]}, go to</span>
       <span className="flex items-center font-semibold">
-        <Settings aria-hidden="true" className="mx-1 inline size-3" />
+        <GearIcon aria-hidden="true" className="mx-1 inline size-3" />
         Settings
       </span>
       .

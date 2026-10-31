@@ -9,13 +9,13 @@
  */
 
 import {
-  Code2,
-  GitPullRequestCreateArrow,
-  LayoutTemplate,
-  NotebookPen,
-  Terminal,
-  Video,
-} from "lucide-react";
+  CodeIcon,
+  GitPullRequestIcon,
+  LayoutIcon,
+  NotebookIcon,
+  TerminalWindowIcon,
+  VideoCameraIcon,
+} from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -29,50 +29,50 @@ interface ShowcaseImage {
 
 const showcaseImages: ShowcaseImage[] = [
   {
-    src: "/images/showcase/collaborate.png",
     alt: "Real-time collaboration",
-    title: "Real-time Collaboration",
     description:
       "Code together in real-time with cursor sharing, highlighting, and follow mode",
-    icon: <Code2 className="size-4" />,
+    icon: <CodeIcon className="size-4" />,
+    src: "/images/showcase/collaborate.png",
+    title: "Real-time Collaboration",
   },
   {
-    src: "/images/showcase/terminal.png",
     alt: "Shared terminal",
-    title: "Shared Terminal",
     description:
       "Execute code and see results together with over 80 supported languages",
-    icon: <Terminal className="size-4" />,
+    icon: <TerminalWindowIcon className="size-4" />,
+    src: "/images/showcase/terminal.png",
+    title: "Shared Terminal",
   },
   {
-    src: "/images/showcase/live-preview.png",
     alt: "Live preview",
-    title: "Live Preview",
     description:
       "Preview UI changes instantly with loaded libraries like Tailwind CSS, and more",
-    icon: <LayoutTemplate className="size-4" />,
+    icon: <LayoutIcon className="size-4" />,
+    src: "/images/showcase/live-preview.png",
+    title: "Live Preview",
   },
   {
-    src: "/images/showcase/github.png",
     alt: "GitHub integrated",
-    title: "GitHub Integrated",
     description: "Save your work and open files from your repositories",
-    icon: <GitPullRequestCreateArrow className="size-4" />,
+    icon: <GitPullRequestIcon className="size-4" />,
+    src: "/images/showcase/github.png",
+    title: "GitHub Integrated",
   },
   {
-    src: "/images/showcase/notepad.png",
     alt: "Shared notepad",
-    title: "Shared Notepad",
     description:
       "Take notes together in real-time with rich text and markdown support",
-    icon: <NotebookPen className="size-4" />,
+    icon: <NotebookIcon className="size-4" />,
+    src: "/images/showcase/notepad.png",
+    title: "Shared Notepad",
   },
   {
-    src: "/images/showcase/video.png",
     alt: "Video and voice",
-    title: "Video & Voice",
     description: "Communicate with your team using video and voice chat",
-    icon: <Video className="size-4" />,
+    icon: <VideoCameraIcon className="size-4" />,
+    src: "/images/showcase/video.png",
+    title: "Video & Voice",
   },
 ];
 
@@ -91,7 +91,7 @@ const ShowcaseCard = ({ image }: { image: ShowcaseImage }) => (
     <div className="min-h-28 p-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="bg-[#f6d84f]/10 p-2 text-[#f6d84f]">{image.icon}</span>
-        <h1 className="font-semibold text-base text-foreground tracking-tight">
+        <h1 className="text-foreground text-base font-semibold tracking-tight">
           {image.title}
         </h1>
       </div>

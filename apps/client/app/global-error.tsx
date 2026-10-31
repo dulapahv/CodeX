@@ -10,10 +10,10 @@
 
 "use client";
 
+import { ArrowCounterClockwiseIcon, BugIcon } from "@phosphor-icons/react";
 import * as Sentry from "@sentry/nextjs";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import { Bug, RefreshCcw } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -50,13 +50,13 @@ URL: ${window.location.href}`;
       <body>
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
           <Alert className="max-w-lg">
-            <AlertTitle className="font-semibold text-xl">
+            <AlertTitle className="text-xl font-semibold">
               Critical Error
             </AlertTitle>
             <AlertDescription className="text-muted-foreground">
               A critical error has occurred. We apologize for the inconvenience.
               {error.digest && (
-                <p className="mt-2 text-muted-foreground text-sm">
+                <p className="text-muted-foreground mt-2 text-sm">
                   Error ID: {error.digest}
                 </p>
               )}
@@ -64,12 +64,12 @@ URL: ${window.location.href}`;
             <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
               <Link
                 className={cn(
-                  buttonVariants({ variant: "outline", className: "gap-2" })
+                  buttonVariants({ className: "gap-2", variant: "outline" })
                 )}
                 href={generateErrorReport() as Route}
                 target="_blank"
               >
-                <Bug className="size-4" />
+                <BugIcon className="size-4" />
                 Report Issue
               </Link>
               <Button
@@ -77,7 +77,7 @@ URL: ${window.location.href}`;
                 onClick={() => reset()}
                 variant="default"
               >
-                <RefreshCcw className="size-4" />
+                <ArrowCounterClockwiseIcon className="size-4" />
                 Reload Application
               </Button>
             </div>

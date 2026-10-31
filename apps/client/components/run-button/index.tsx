@@ -11,8 +11,8 @@
 
 import type { ExecutionResult } from "@codex/types/terminal";
 import type { Monaco } from "@monaco-editor/react";
-import { OctagonX, Play } from "lucide-react";
-import type * as monaco from "monaco-editor";
+import { PlayIcon, StopCircleIcon } from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePresenceSelector, useRoom } from "@/lib/realtime/room-context";
@@ -24,7 +24,7 @@ import { cancelExecution, executeCode, type RunReporter } from "./utils";
 
 interface RunButtonProps {
   className?: string;
-  editor: monaco.editor.IStandaloneCodeEditor | null;
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
   monaco: Monaco | null;
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
 }
@@ -54,7 +54,7 @@ const RunButton = ({
   const reporter: RunReporter = {
     report: (result) => {
       setOutput((previous) => [...previous, result]);
-      room.send({ type: "terminal", result });
+      room.send({ result, type: "terminal" });
     },
     setRunning: (running) => {
       setIsLocalRunning(running);
@@ -74,7 +74,7 @@ const RunButton = ({
             return isOtherRunning ? "Code is running" : "Run code";
           })()}
           className={cn(
-            "hover:!opacity-80 disabled:!opacity-50 h-7 bg-[color:var(--toolbar-accent)] bg-clip-border px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)]",
+            "h-7 bg-[color:var(--toolbar-accent)] bg-clip-border px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50",
             isRunning && "bg-red-600 hover:bg-red-700",
             className
           )}
@@ -95,12 +95,16 @@ const RunButton = ({
         >
           {isRunning ? (
             <>
-              <OctagonX aria-hidden="true" className="size-4" />
+              <StopCircleIcon aria-hidden="true" className="size-4" />
               <span className="hidden sm:flex">Cancel</span>
             </>
           ) : (
             <>
-              <Play aria-hidden="true" className="size-4 fill-green-600" />
+              <PlayIcon
+                aria-hidden="true"
+                className="size-4 text-green-600"
+                weight="fill"
+              />
               <span className="hidden sm:flex">Run Code</span>
             </>
           )}

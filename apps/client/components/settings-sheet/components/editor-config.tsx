@@ -10,8 +10,12 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import { Download, Folder, Search } from "lucide-react";
-import type * as monaco from "monaco-editor";
+import {
+  DownloadSimpleIcon,
+  FolderIcon,
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +47,7 @@ import { exportSettings, formatTitle, importSettings } from "../utils";
 
 interface EditorConfigProps {
   className?: string;
-  editor: monaco.editor.IStandaloneCodeEditor;
+  editor: monacoEditor.editor.IStandaloneCodeEditor;
   monaco: Monaco;
 }
 
@@ -51,7 +55,8 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   const [search, setSearch] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [settings, setSettings] = useState<
-    monaco.editor.IEditorOptions & monaco.editor.IGlobalEditorOptions
+    monacoEditor.editor.IEditorOptions &
+      monacoEditor.editor.IGlobalEditorOptions
   >(() => {
     try {
       const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
@@ -63,7 +68,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  interface EditorOptionsInternal extends monaco.editor.IEditorOptions {
+  interface EditorOptionsInternal extends monacoEditor.editor.IEditorOptions {
     _values: unknown[];
   }
 
@@ -134,9 +139,9 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         // Handle objects with 'enabled' property (like minimap)
         if (typeof value === "object" && value !== null && "enabled" in value) {
           options[`${key}.enabled`] = {
+            currentValue: value.enabled,
             title: formatTitle(key),
             type: "boolean",
-            currentValue: value.enabled,
           };
           return;
         }
@@ -175,13 +180,13 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         };
 
         options[key] = {
-          title: formatTitle(key),
-          type: resolveOptionType(),
           currentValue: value,
           options:
             type !== "boolean" && type !== "number"
               ? SELECT_OPTIONS[key] || ["on", "off"]
               : undefined,
+          title: formatTitle(key),
+          type: resolveOptionType(),
         };
       });
 
@@ -236,9 +241,9 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
       const id = `setting-${key}`;
 
       // Helper to get boolean value regardless of format
-      const getBooleanValue = (key: string) => {
+      const getBooleanValue = (settingKey: string) => {
         // @ts-expect-error - Monaco editor internal API
-        const setting = settings[key.replace(".enabled", "")];
+        const setting = settings[settingKey.replace(".enabled", "")];
         if (typeof setting === "object" && setting !== null) {
           return setting.enabled;
         }
@@ -263,7 +268,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
               className="flex items-center justify-between gap-4 pt-4 pb-3"
               key={key}
             >
-              <Label className="font-medium text-sm" htmlFor={id}>
+              <Label className="text-sm font-medium" htmlFor={id}>
                 {option.title}
               </Label>
               <Switch
@@ -278,11 +283,11 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         case "select":
           return (
             <div className="space-y-2 py-4" key={key}>
-              <Label className="font-medium text-sm" htmlFor={id}>
+              <Label className="text-sm font-medium" htmlFor={id}>
                 {option.title}
               </Label>
               <Select
-                onValueChange={(value) => updateSetting(key, value)} // Ensure string value with fallback
+                onValueChange={(selected) => updateSetting(key, selected)} // Ensure string value with fallback
                 value={value ? String(value) : null}
               >
                 <SelectTrigger className="w-full" id={id}>
@@ -302,7 +307,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         case "number":
           return (
             <div className="space-y-2 py-4" key={key}>
-              <Label className="font-medium text-sm" htmlFor={id}>
+              <Label className="text-sm font-medium" htmlFor={id}>
                 {option.title}
               </Label>
               <Input
@@ -319,7 +324,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         default:
           return (
             <div className="space-y-2 py-4" key={key}>
-              <Label className="font-medium text-sm" htmlFor={id}>
+              <Label className="text-sm font-medium" htmlFor={id}>
                 {option.title}
               </Label>
               <Input
@@ -353,7 +358,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             value={search}
           />
           <InputGroupAddon>
-            <Search aria-hidden="true" />
+            <MagnifyingGlassIcon aria-hidden="true" />
           </InputGroupAddon>
         </InputGroup>
         <Tooltip>
@@ -365,7 +370,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
                 size="icon"
                 variant="outline"
               >
-                <Folder className="size-4" />
+                <FolderIcon className="size-4" />
               </Button>
             }
           />
@@ -382,7 +387,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
                 size="icon"
                 variant="outline"
               >
-                <Download className="size-4" />
+                <DownloadSimpleIcon className="size-4" />
               </Button>
             }
           />
@@ -410,7 +415,6 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         {filteredSettings.length > 0 ? (
           filteredSettings.map(renderSetting)
         ) : (
-          // biome-ignore lint/a11y/useSemanticElements: status div for empty state
           <div
             aria-live="polite"
             className="flex items-center justify-center py-8 text-center"

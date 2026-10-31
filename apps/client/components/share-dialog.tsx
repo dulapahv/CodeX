@@ -9,7 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Check, Copy } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { QRCodeCanvas } from "qrcode.react";
 import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -62,9 +62,9 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
       <Label className="text-sm" htmlFor="room-id">
         Room ID
       </Label>
-      <div className="flex w-full items-center gap-2 bg-secondary p-2 md:p-3">
+      <div className="bg-secondary flex w-full items-center gap-2 p-2 md:p-3">
         <code
-          className="flex-1 break-all font-medium text-md sm:text-lg md:text-2xl"
+          className="text-md flex-1 font-medium break-all sm:text-lg md:text-2xl"
           data-testid="room-id-text"
           id="room-id"
         >
@@ -72,19 +72,19 @@ const RoomIdSection = ({ roomId }: { roomId: string }) => {
         </code>
         <Button
           aria-label={copied ? "Room ID copied" : "Copy Room ID"}
-          className="size-6 shrink-0 hover:bg-secondary-foreground/10 md:size-10"
+          className="hover:bg-secondary-foreground/10 size-6 shrink-0 md:size-10"
           data-testid="room-id-copy-button"
           onClick={handleCopy}
           size="icon"
           variant="ghost"
         >
           {copied ? (
-            <Check
+            <CheckIcon
               aria-hidden="true"
-              className="size-4 animate-scale-up-center"
+              className="animate-scale-up-center size-4"
             />
           ) : (
-            <Copy aria-hidden="true" className="size-4 animate-fade-in" />
+            <CopyIcon aria-hidden="true" className="animate-fade-in size-4" />
           )}
         </Button>
       </div>
@@ -112,9 +112,9 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
       <Label className="text-sm" htmlFor="invite-link">
         Invite Link
       </Label>
-      <div className="flex w-full items-center gap-2 bg-secondary p-2 md:p-3">
+      <div className="bg-secondary flex w-full items-center gap-2 p-2 md:p-3">
         <code
-          className="flex-1 break-all font-medium text-md sm:text-lg md:text-2xl"
+          className="text-md flex-1 font-medium break-all sm:text-lg md:text-2xl"
           data-testid="invite-link-text"
           id="invite-link"
         >
@@ -122,19 +122,19 @@ const InviteLinkSection = ({ roomId }: { roomId: string }) => {
         </code>
         <Button
           aria-label={copied ? "Invite link copied" : "Copy invite link"}
-          className="size-6 shrink-0 hover:bg-secondary-foreground/10 md:size-10"
+          className="hover:bg-secondary-foreground/10 size-6 shrink-0 md:size-10"
           data-testid="invite-link-copy-button"
           onClick={handleCopy}
           size="icon"
           variant="ghost"
         >
           {copied ? (
-            <Check
+            <CheckIcon
               aria-hidden="true"
-              className="size-4 animate-scale-up-center"
+              className="animate-scale-up-center size-4"
             />
           ) : (
-            <Copy aria-hidden="true" className="size-4 animate-fade-in" />
+            <CopyIcon aria-hidden="true" className="animate-fade-in size-4" />
           )}
         </Button>
       </div>
@@ -151,8 +151,8 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
     const closeDialog = useCallback(() => setIsOpen(false), []);
 
     useImperativeHandle(ref, () => ({
-      openDialog,
       closeDialog,
+      openDialog,
     }));
 
     const content = (
@@ -164,10 +164,10 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
         >
           <QRCodeCanvas
             imageSettings={{
-              src: "/images/codex-logo.svg",
-              height: 48,
-              width: 48,
               excavate: true,
+              height: 48,
+              src: "/images/codex-logo.svg",
+              width: 48,
             }}
             marginSize={2}
             size={Math.min(256, window.innerWidth - 96)}

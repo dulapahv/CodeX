@@ -11,7 +11,7 @@
 
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -114,8 +114,9 @@ const LatencyTest = () => {
     setTestCount(0);
 
     try {
-      for (let i = 0; i < iterations; i++) {
+      for (let i = 0; i < iterations; i += 1) {
         if (i > 0) {
+          // biome-ignore lint/performance/noAwaitInLoops: pings run one at a time so they don't skew each other
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
@@ -123,8 +124,8 @@ const LatencyTest = () => {
         setResults((prev) => [
           ...prev,
           {
-            id: i + 1,
             http: result.http,
+            id: i + 1,
             socket: result.socket,
             timestamp: new Date().toISOString(),
           },
@@ -151,13 +152,13 @@ const LatencyTest = () => {
       <Link
         className={cn(
           buttonVariants({
-            variant: "link",
             className: "self-start text-foreground",
+            variant: "link",
           })
         )}
         href={BASE_CLIENT_URL}
       >
-        <ArrowLeft className="size-4" />
+        <ArrowLeftIcon className="size-4" />
         Go back
       </Link>
       <CardHeader>
@@ -208,7 +209,7 @@ const LatencyTest = () => {
           </div>
 
           {error && (
-            <div className="mt-2 text-destructive text-sm">Error: {error}</div>
+            <div className="text-destructive mt-2 text-sm">Error: {error}</div>
           )}
 
           {results.length > 0 && (

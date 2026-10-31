@@ -9,7 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { FileCode, Folder } from "lucide-react";
+import { FileCodeIcon, FolderIcon } from "@phosphor-icons/react";
 
 import type { GitEntry } from "@/lib/git-providers/types";
 
@@ -20,9 +20,9 @@ export const transformContentsToTreeData = (
   entries: GitEntry[]
 ): ExtendedTreeDataItem[] =>
   entries.map((entry) => ({
+    icon: entry.type === "dir" ? FolderIcon : FileCodeIcon,
     id: `${branchID}:${entry.path}`,
     name: entry.name,
     path: entry.path,
-    icon: entry.type === "dir" ? Folder : FileCode,
     type: entry.type === "dir" ? itemType.DIR : itemType.FILE,
   }));

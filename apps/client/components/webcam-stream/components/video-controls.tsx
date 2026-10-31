@@ -8,7 +8,12 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Mic, MicOff, Volume2, VolumeOff } from "lucide-react";
+import {
+  MicrophoneIcon,
+  MicrophoneSlashIcon,
+  SpeakerHighIcon,
+  SpeakerSlashIcon,
+} from "@phosphor-icons/react";
 
 import { cn } from "@/lib/utils";
 
@@ -41,9 +46,9 @@ const VideoControls = ({
         )}
       >
         {micState ? (
-          <Mic className="size-4 text-white" />
+          <MicrophoneIcon className="size-4 text-white" />
         ) : (
-          <MicOff className="size-4 text-white" />
+          <MicrophoneSlashIcon className="size-4 text-white" />
         )}
       </div>
       <div
@@ -53,9 +58,9 @@ const VideoControls = ({
         )}
       >
         {speakerState ? (
-          <Volume2 className="size-4 text-white" />
+          <SpeakerHighIcon className="size-4 text-white" />
         ) : (
-          <VolumeOff className="size-4 text-white" />
+          <SpeakerSlashIcon className="size-4 text-white" />
         )}
       </div>
     </div>

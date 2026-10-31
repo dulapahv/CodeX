@@ -11,7 +11,7 @@
 
 import type { Pointer } from "@codex/types/pointer";
 import type { Presence } from "@codex/types/realtime";
-import { MousePointer2 } from "lucide-react";
+import { CursorIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { useRoom } from "@/lib/realtime/room-context";
@@ -62,10 +62,10 @@ const applyPresenceChange = (
     }
     next.set(clientId, {
       id: clientId,
+      isVisible: true,
+      lastUpdate: Date.now(),
       name: state.user.name,
       position: pointer,
-      lastUpdate: Date.now(),
-      isVisible: true,
     });
     hasChanged = true;
   }
@@ -80,16 +80,16 @@ const RemotePointers = () => {
   );
   const lastEmitRef = useRef(0);
   const [viewport, setViewport] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
+    height: typeof window === "undefined" ? 0 : window.innerHeight,
+    width: typeof window === "undefined" ? 0 : window.innerWidth,
   });
 
   // Update viewport dimensions on resize
   useEffect(() => {
     const handleResize = () => {
       setViewport({
-        width: window.innerWidth,
         height: window.innerHeight,
+        width: window.innerWidth,
       });
     };
 
@@ -169,20 +169,18 @@ const RemotePointers = () => {
             className="pointer-events-none fixed z-[100] translate-x-[-50%] translate-y-[-50%] transform-gpu transition-all duration-100 ease-out will-change-[left,top,opacity]"
             key={pointer.id}
             style={{
-              left: `${scaledX}px`,
-              top: `${scaledY}px`,
-              opacity: pointer.isVisible ? 1 : 0,
               backfaceVisibility: "hidden",
+              left: `${scaledX}px`,
+              opacity: pointer.isVisible ? 1 : 0,
+              top: `${scaledY}px`,
               transition: `opacity ${FADE_DURATION}ms ease-out, left 100ms ease-out, top 100ms ease-out`,
             }}
           >
             <div className="relative">
-              <MousePointer2
+              <CursorIcon
                 className="absolute -top-[2px] -left-[2px] size-5 drop-shadow"
-                style={{
-                  color: backgroundColor,
-                  fill: "currentColor",
-                }}
+                style={{ color: backgroundColor }}
+                weight="fill"
               />
 
               <div
@@ -192,7 +190,7 @@ const RemotePointers = () => {
                 }}
               >
                 <span
-                  className="truncate font-medium text-xs"
+                  className="truncate text-xs font-medium"
                   style={{ color }}
                 >
                   {pointer.name}

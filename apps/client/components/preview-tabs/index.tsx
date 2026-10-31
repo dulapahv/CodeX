@@ -9,7 +9,7 @@
 "use client";
 
 import type { Presence, TrackRef } from "@codex/types/realtime";
-import { Maximize } from "lucide-react";
+import { ArrowsOutIcon } from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ const SharedScreen = ({ name, track }: { name: string; track?: TrackRef }) => {
         size="icon"
         variant="ghost"
       >
-        <Maximize className="size-4" />
+        <ArrowsOutIcon className="size-4" />
       </Button>
     </div>
   );

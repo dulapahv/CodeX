@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { GitBranch } from "lucide-react";
+import { GitBranchIcon } from "@phosphor-icons/react";
 
 import type { GitBranch as GitBranchData } from "@/lib/git-providers/types";
 
@@ -19,9 +19,9 @@ export const transformBranchesToTreeData = (
   branches: GitBranchData[]
 ): ExtendedTreeDataItem[] =>
   branches.map((branch) => ({
+    children: undefined,
+    icon: GitBranchIcon,
     id: `${repoID}/${branch.name}`,
     name: branch.name,
-    children: undefined,
-    icon: GitBranch,
     type: itemType.BRANCH,
   }));

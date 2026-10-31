@@ -10,8 +10,12 @@
 
 "use client";
 
+import {
+  ArrowCounterClockwiseIcon,
+  BugIcon,
+  HouseIcon,
+} from "@phosphor-icons/react";
 import * as Sentry from "@sentry/nextjs";
-import { Bug, Home, RefreshCcw } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -50,40 +54,40 @@ Stack: ${error.stack || "No stack trace available"}`;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <Alert className="max-w-lg">
-        <AlertTitle className="font-semibold text-xl">
+        <AlertTitle className="text-xl font-semibold">
           Something went wrong!
         </AlertTitle>
         <AlertDescription className="text-muted-foreground">
           {error.message ||
             "An unexpected error occurred. Please try again later."}
           {error.digest && (
-            <p className="mt-2 text-muted-foreground text-sm">
+            <p className="text-muted-foreground mt-2 text-sm">
               Error ID: {error.digest}
             </p>
           )}
         </AlertDescription>
         <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
           <Button className="gap-2" onClick={() => reset()} variant="outline">
-            <RefreshCcw className="size-4" />
+            <ArrowCounterClockwiseIcon className="size-4" />
             Try Again
           </Button>
           <Link
             className={cn(
-              buttonVariants({ variant: "outline", className: "gap-2" })
+              buttonVariants({ className: "gap-2", variant: "outline" })
             )}
             href={generateErrorReport() as Route}
             target="_blank"
           >
-            <Bug className="size-4" />
+            <BugIcon className="size-4" />
             Report Issue
           </Link>
           <Link
             className={cn(
-              buttonVariants({ variant: "default", className: "gap-2" })
+              buttonVariants({ className: "gap-2", variant: "default" })
             )}
             href={BASE_CLIENT_URL}
           >
-            <Home className="size-4" />
+            <HouseIcon className="size-4" />
             Return Home
           </Link>
         </div>

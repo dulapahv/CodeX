@@ -9,7 +9,7 @@
  */
 
 import type { BaseUIEvent } from "@base-ui/react/types";
-import { LogOut } from "lucide-react";
+import { SignOutIcon } from "@phosphor-icons/react";
 import { type FocusEvent, useRef } from "react";
 import { LeaveDialog, type LeaveDialogRef } from "@/components/leave-dialog";
 import { Button } from "@/components/ui/button";
@@ -44,15 +44,15 @@ const LeaveButton = ({ className }: LeaveButtonProps) => {
             <Button
               aria-haspopup="dialog"
               aria-label="Leave room"
-              className={cn("size-7 animate-fade-in-top p-0", className)}
+              className={cn("animate-fade-in-top size-7 p-0", className)}
               onClick={handleButtonClick}
               size="icon"
               variant="ghost"
             >
-              <LogOut
+              <SignOutIcon
                 aria-hidden="true"
                 className="size-4 text-red-600"
-                strokeWidth={2.5}
+                weight="bold"
               />
             </Button>
           }

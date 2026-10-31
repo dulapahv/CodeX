@@ -11,7 +11,7 @@
 
 import type { ExecutionResult } from "@codex/types/terminal";
 
-import { Download, Trash2 } from "lucide-react";
+import { DownloadSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,6 @@ interface TerminalProps {
 const Terminal = ({ results, setResults }: TerminalProps) => {
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to scroll to bottom only when results change
   useEffect(() => {
     const timer = setTimeout(() => {
       if (terminalRef.current) {
@@ -58,7 +57,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
                   size="icon"
                   variant="ghost"
                 >
-                  <Download className="size-3" />
+                  <DownloadSimpleIcon className="size-3" />
                 </Button>
               }
             />
@@ -79,7 +78,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
                   size="icon"
                   variant="ghost"
                 >
-                  <Trash2 className="size-3" />
+                  <TrashIcon className="size-3" />
                 </Button>
               }
             />
@@ -90,14 +89,10 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
         </TooltipProvider>
       </div>
       <div className="h-full overflow-y-auto p-4" ref={terminalRef}>
-        <div className="flex flex-col divide-y whitespace-pre-wrap font-mono text-sm *:border-muted-foreground/40 *:py-2">
+        <div className="*:border-muted-foreground/40 flex flex-col divide-y font-mono text-sm whitespace-pre-wrap *:py-2">
           <WelcomeMsg />
           {results.map((result, index) => (
-            <Output
-              // biome-ignore lint/suspicious/noArrayIndexKey: terminal results are append-only
-              key={index}
-              result={result}
-            />
+            <Output key={index} result={result} />
           ))}
         </div>
       </div>

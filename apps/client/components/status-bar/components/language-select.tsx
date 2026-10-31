@@ -16,8 +16,8 @@ import {
 } from "@codex/types/realtime";
 
 import type { Monaco } from "@monaco-editor/react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import type * as monaco from "monaco-editor";
+import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,7 +45,7 @@ interface Language {
 interface LanguageSelectionProps {
   className?: string;
   defaultLanguage?: string;
-  editor: monaco.editor.IStandaloneCodeEditor | null;
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
   monaco: Monaco | null;
 }
 
@@ -79,7 +79,7 @@ const LanguageSelection = memo(
 
     const handleSelect = useCallback(
       (currentValue: string) => {
-        const newLanguage = currentValue.split("$")[0];
+        const [newLanguage] = currentValue.split("$");
         setSelectedLanguage(newLanguage);
         setOpen(false);
 
@@ -169,7 +169,7 @@ const LanguageSelection = memo(
               variant="ghost"
             >
               {selectedLanguage}
-              <ChevronsUpDown className="size-4 opacity-50" />
+              <CaretUpDownIcon className="size-4 opacity-50" />
             </Button>
           }
         />
@@ -194,7 +194,7 @@ const LanguageSelection = memo(
                         </span>
                       )}
                     </div>
-                    <Check
+                    <CheckIcon
                       className={cn(
                         "ml-2 size-4 flex-shrink-0 transition-opacity",
                         selectedLanguage === language.alias

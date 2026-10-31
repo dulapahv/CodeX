@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ChevronDown, X } from "lucide-react";
+import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -71,17 +71,17 @@ const ArgsInputPopover = ({
                 <Button
                   aria-label="Program arguments and input"
                   className={cn(
-                    "hover:!opacity-80 disabled:!opacity-50 relative size-7 border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] bg-clip-border text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)]",
+                    "relative size-7 border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] bg-clip-border text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)] hover:!opacity-80 disabled:!opacity-50",
                     disabled && "bg-red-600"
                   )}
                   disabled={disabled}
                   size="icon"
                 >
-                  <ChevronDown className="size-4" />
+                  <CaretDownIcon className="size-4" />
                   {hasInput && (
                     <span
                       aria-hidden="true"
-                      className="absolute -top-0.5 -right-0.5 size-2 animate-scale-up-center rounded-full bg-red-500"
+                      className="animate-scale-up-center absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500"
                     />
                   )}
                 </Button>
@@ -116,12 +116,12 @@ const ArgsInputPopover = ({
               {argsStr && (
                 <Button
                   aria-label="Clear arguments"
-                  className="absolute top-1 right-1 size-6 text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground absolute top-1 right-1 size-6"
                   onClick={clearArgs}
                   size="icon"
                   variant="ghost"
                 >
-                  <X className="size-4" />
+                  <XIcon className="size-4" />
                 </Button>
               )}
             </div>
@@ -140,12 +140,12 @@ const ArgsInputPopover = ({
               {stdin && (
                 <Button
                   aria-label="Clear program input"
-                  className="absolute top-1 right-1 size-6 text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground absolute top-1 right-1 size-6"
                   onClick={clearStdin}
                   size="icon"
                   variant="ghost"
                 >
-                  <X className="size-4" />
+                  <XIcon className="size-4" />
                 </Button>
               )}
             </div>

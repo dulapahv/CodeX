@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Home } from "lucide-react";
+import { HouseIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <Alert className="max-w-lg">
-        <AlertTitle className="font-semibold text-xl">
+        <AlertTitle className="text-xl font-semibold">
           404 - Page Not Found
         </AlertTitle>
         <AlertDescription className="text-muted-foreground">
@@ -29,11 +29,11 @@ export default function NotFound() {
         <div className="mt-6 flex justify-end">
           <Link
             className={cn(
-              buttonVariants({ variant: "default", className: "gap-2" })
+              buttonVariants({ className: "gap-2", variant: "default" })
             )}
             href={BASE_CLIENT_URL}
           >
-            <Home className="size-4" />
+            <HouseIcon className="size-4" />
             Return Home
           </Link>
         </div>

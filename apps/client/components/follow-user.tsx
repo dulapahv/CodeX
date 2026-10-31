@@ -11,8 +11,8 @@
 
 import type { User } from "@codex/types/user";
 
-import { Check, Navigation, NavigationOff } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CheckIcon, NavigationArrowIcon } from "@phosphor-icons/react";
+import { useEffect, useId, useState } from "react";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +43,7 @@ interface UserListProps {
 
 const FollowUser = ({ users }: UserListProps) => {
   const [open, setOpen] = useState(false);
+  const searchId = useId();
   const [value, setValue] = useState<string | null>(storage.getFollowUserId());
 
   const currentUserId = useCurrentUserId();
@@ -62,7 +63,7 @@ const FollowUser = ({ users }: UserListProps) => {
   }, [users]);
 
   const handleSelect = (currentValue: string) => {
-    const newVal = currentValue.split("$")[0];
+    const [newVal] = currentValue.split("$");
     const newValue = newVal === "none" ? null : newVal;
     setValue(newValue);
     storage.setFollowUserId(newValue);
@@ -88,14 +89,17 @@ const FollowUser = ({ users }: UserListProps) => {
               render={
                 <Button
                   aria-label="Follow user"
-                  className="size-7 animate-fade-in-top p-0"
+                  className="animate-fade-in-top size-7 p-0"
                   size="icon"
                   variant="ghost"
                 >
                   {value === null ? (
-                    <NavigationOff className="size-4 text-[color:var(--panel-text)]" />
+                    <NavigationArrowIcon className="size-4 text-[color:var(--panel-text)]" />
                   ) : (
-                    <Navigation className="size-4 animate-pulse fill-[#f6d84f] text-[#f6d84f]" />
+                    <NavigationArrowIcon
+                      className="size-4 animate-pulse text-[#f6d84f]"
+                      weight="fill"
+                    />
                   )}
                 </Button>
               }
@@ -110,12 +114,15 @@ const FollowUser = ({ users }: UserListProps) => {
         sideOffset={8}
       >
         <Command>
-          <Label className="bg-input/30 px-3 pt-3 font-medium text-sm">
+          <Label
+            className="bg-input/30 px-3 pt-3 text-sm font-medium"
+            htmlFor={searchId}
+          >
             Follow user
           </Label>
-          <CommandInput placeholder="Search users..." />
+          <CommandInput id={searchId} placeholder="Search users..." />
           <CommandList>
-            <CommandEmpty className="p-3 text-muted-foreground text-sm">
+            <CommandEmpty className="text-muted-foreground p-3 text-sm">
               No users found.
             </CommandEmpty>
             <CommandGroup>
@@ -127,7 +134,9 @@ const FollowUser = ({ users }: UserListProps) => {
                 <span className="max-w-44 truncate text-ellipsis">
                   Don&apos;t follow anyone
                 </span>
-                {value === null && <Check className="size-4 flex-shrink-0" />}
+                {value === null && (
+                  <CheckIcon className="size-4 flex-shrink-0" />
+                )}
               </CommandItem>
               {filteredUsers.map((user) => (
                 <CommandItem
@@ -148,7 +157,7 @@ const FollowUser = ({ users }: UserListProps) => {
                     </span>
                   </div>
                   {value === user.id && (
-                    <Check className="size-4 flex-shrink-0" />
+                    <CheckIcon className="size-4 flex-shrink-0" />
                   )}
                 </CommandItem>
               ))}

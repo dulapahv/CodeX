@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Share } from "lucide-react";
+import { ExportIcon } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { ShareDialog, type ShareDialogRef } from "@/components/share-dialog";
 import { Button } from "@/components/ui/button";
@@ -37,12 +37,12 @@ const ShareButton = ({ roomId }: RoomProps) => {
             <Button
               aria-haspopup="dialog"
               aria-label="Share this coding room"
-              className="hover:!text-foreground aspect-square h-7 animate-fade-in-top p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
+              className="hover:!text-foreground animate-fade-in-top aspect-square h-7 p-1 text-[color:var(--toolbar-foreground)] sm:aspect-auto sm:px-1"
               onClick={handleButtonClick}
               size="sm"
               variant="ghost"
             >
-              <Share aria-hidden="true" className="size-4" />
+              <ExportIcon aria-hidden="true" className="size-4" />
               <span className="hidden sm:flex">Share</span>
             </Button>
           }

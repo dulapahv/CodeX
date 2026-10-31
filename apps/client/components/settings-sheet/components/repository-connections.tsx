@@ -5,7 +5,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Unplug } from "lucide-react";
+import { PlugsIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -57,7 +57,7 @@ const ConnectionAction = ({
         size="sm"
         variant="destructive"
       >
-        <Unplug aria-hidden="true" />
+        <PlugsIcon aria-hidden="true" />
         Disconnect
       </Button>
     );
@@ -84,9 +84,9 @@ const ConnectionRow = (props: ConnectionRowProps) => {
       <div className="flex min-w-0 items-center gap-3">
         <ProviderLogo className="size-5" provider={provider} />
         <div className="min-w-0">
-          <p className="font-medium text-sm">{PROVIDER_LABELS[provider]}</p>
+          <p className="text-sm font-medium">{PROVIDER_LABELS[provider]}</p>
           {user && (
-            <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+            <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
               {user.avatarUrl && hasAvatar && (
                 <Image
                   alt=""

@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Send } from "lucide-react";
+import { PaperPlaneTiltIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { buttonVariants } from "@/components/ui/button";
@@ -81,7 +81,7 @@ const ExternalLink = ({ forceDark = false }: ExternalLinkProps) => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Send className="size-4" />
+        <PaperPlaneTiltIcon className="size-4" />
         Contact Me
       </a>
     </>

@@ -10,7 +10,7 @@
 
 "use client";
 
-import { Gauge } from "lucide-react";
+import { GaugeIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -30,12 +30,12 @@ const LatencyTestButton = () => {
         <TooltipTrigger
           render={
             <Button
-              className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+              className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
               onClick={() => router.push("/test/latency")}
               size="icon"
               variant="ghost"
             >
-              <Gauge className="size-5" />
+              <GaugeIcon className="size-5" />
               <span className="sr-only">Test Latency</span>
             </Button>
           }

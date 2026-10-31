@@ -9,7 +9,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Search } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import {
   type ChangeEvent,
   type Dispatch,
@@ -80,7 +80,7 @@ const RepoBrowser = memo(
     const memoizedTree = useMemo(
       () => (
         <Tree
-          className="min-h-0 flex-1 animate-fade-in"
+          className="animate-fade-in min-h-0 flex-1"
           data={treeData}
           onSelectChange={handleSelectChangeCallback}
         />
@@ -94,14 +94,14 @@ const RepoBrowser = memo(
         className="flex h-full flex-col border"
       >
         <div className="relative border-b">
-          <Search
+          <MagnifyingGlassIcon
             aria-hidden="true"
-            className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground absolute top-1/2 left-4 size-4 -translate-y-1/2"
           />
           <Input
             aria-busy={loading}
             aria-label="Search repositories"
-            className="border-transparent pl-10 focus-visible:border-input"
+            className="focus-visible:border-input border-transparent pl-10"
             onChange={handleSearchChange}
             placeholder="Search repositories..."
             ref={searchInputRef}

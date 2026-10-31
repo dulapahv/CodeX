@@ -9,8 +9,8 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import { Languages } from "lucide-react";
-import type * as monaco from "monaco-editor";
+import { TranslateIcon } from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
 import { memo } from "react";
 
 import { cn } from "@/lib/utils";
@@ -26,14 +26,14 @@ interface StatusBarCursorPosition {
 interface StatusBarProps {
   className?: string;
   readonly cursorPosition: StatusBarCursorPosition;
-  editor: monaco.editor.IStandaloneCodeEditor | null;
+  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
   monaco: Monaco | null;
 }
 
 const MemoizedLanguageLabel = memo(function MemoizedLanguagesIcon() {
   return (
     <span className="flex items-center gap-x-1">
-      <Languages aria-hidden="true" className="size-4" />
+      <TranslateIcon aria-hidden="true" className="size-4" />
       <span className="sr-only">Current language:</span>
       Language:
     </span>
@@ -49,7 +49,7 @@ function formatCursorPosition({
   return selected ? `${basePosition} (${selected} selected)` : basePosition;
 }
 
-const StatusBar = memo(function StatusBar({
+const StatusBar = memo(function StatusBarComponent({
   monaco,
   editor,
   cursorPosition,
@@ -60,18 +60,17 @@ const StatusBar = memo(function StatusBar({
   }
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: status bar is both a section and live status region
     <section
       aria-label="Editor status bar"
       className={cn(
-        "fixed inset-x-0 bottom-0 h-6 animate-fade-in bg-[color:var(--toolbar-bg-primary)] py-1",
+        "animate-fade-in fixed inset-x-0 bottom-0 h-6 bg-[color:var(--toolbar-bg-primary)] py-1",
         className
       )}
       role="status"
     >
       <div
         className={
-          "flex items-center justify-end gap-x-2 px-2 text-[color:var(--status-bar-text)] text-xs"
+          "flex items-center justify-end gap-x-2 px-2 text-xs text-[color:var(--status-bar-text)]"
         }
       >
         <div className="flex items-center">

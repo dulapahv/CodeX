@@ -7,7 +7,7 @@
 
 import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
-import { ExternalLink } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import type * as monaco from "monaco-editor";
 import { type FormEvent, forwardRef, useEffect, useState } from "react";
 import { RepoBrowser } from "@/components/repo-browser";
@@ -118,20 +118,20 @@ const SaveToRepositoryDialog = forwardRef<
       const result = await requestJson<CommitResult>(
         `/api/${provider}/commit`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            repo,
             branch,
-            path: folder ? `${folder}/${name}` : name,
-            message: commitSummary.trim(),
             content: editor?.getModel()?.getValue() ?? "",
+            message: commitSummary.trim(),
+            path: folder ? `${folder}/${name}` : name,
+            repo,
           }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
         }
       );
       setCommitUrl(result.url);
-    } catch (error) {
-      setError(`Failed to commit changes. ${parseError(error)}`);
+    } catch (commitError) {
+      setError(`Failed to commit changes. ${parseError(commitError)}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -172,13 +172,13 @@ const SaveToRepositoryDialog = forwardRef<
                 value={fileName}
               />
               <Field.Error
-                className="text-red-500 text-sm"
+                className="text-sm text-red-500"
                 match="valueMissing"
               >
                 File name is required
               </Field.Error>
               <Field.Error
-                className="text-red-500 text-sm"
+                className="text-sm text-red-500"
                 match="customError"
               />
             </Field.Root>
@@ -198,13 +198,13 @@ const SaveToRepositoryDialog = forwardRef<
                 value={commitSummary}
               />
               <Field.Error
-                className="text-red-500 text-sm"
+                className="text-sm text-red-500"
                 match="valueMissing"
               >
                 Commit summary is required
               </Field.Error>
               <Field.Error
-                className="text-red-500 text-sm"
+                className="text-sm text-red-500"
                 match="customError"
               />
             </Field.Root>
@@ -291,7 +291,7 @@ const SaveToRepositoryDialog = forwardRef<
               target="_blank"
             >
               Saved · View on {label}
-              <ExternalLink className="size-3" />
+              <ArrowSquareOutIcon className="size-3" />
             </a>
           )
         )

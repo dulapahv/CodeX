@@ -8,16 +8,16 @@ import type { PresenceMedia } from "@codex/types/realtime";
 import type { User } from "@codex/types/user";
 
 import {
-  Mic,
-  MicOff,
-  RefreshCw,
-  ScreenShare,
-  ScreenShareOff,
-  Video,
-  VideoOff,
-  Volume2,
-  VolumeOff,
-} from "lucide-react";
+  ArrowsClockwiseIcon,
+  MicrophoneIcon,
+  MicrophoneSlashIcon,
+  MonitorArrowUpIcon,
+  MonitorIcon,
+  SpeakerHighIcon,
+  SpeakerSlashIcon,
+  VideoCameraIcon,
+  VideoCameraSlashIcon,
+} from "@phosphor-icons/react";
 import type { MediaDevice as CallDevice } from "partytracks/client";
 import { useObservableAsValue } from "partytracks/react";
 import { useMemo } from "react";
@@ -152,7 +152,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
       {(error || notice) && (
         <p
-          className="max-w-full self-center bg-destructive/10 px-2 py-1 text-center text-destructive text-xs"
+          className="bg-destructive/10 text-destructive max-w-full self-center px-2 py-1 text-center text-xs"
           role="alert"
         >
           {error ?? notice}
@@ -160,7 +160,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
       )}
 
       {status === "unavailable" ? (
-        <p className="text-center text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-center text-xs">
           Video calls aren't set up on this server.
         </p>
       ) : (
@@ -170,7 +170,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
             <DeviceControls
               devices={videoDevices}
               disabled={isDisabled}
-              icon={cameraOn ? Video : VideoOff}
+              icon={cameraOn ? VideoCameraIcon : VideoCameraSlashIcon}
               isEnabled={cameraOn}
               label="camera"
               onDeviceSelect={(deviceId) =>
@@ -192,7 +192,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                 size="icon"
                 variant="ghost"
               >
-                <RefreshCw className="size-5" />
+                <ArrowsClockwiseIcon className="size-5" />
               </Button>
             )}
           </div>
@@ -200,7 +200,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
           <DeviceControls
             devices={audioInputDevices}
             disabled={isDisabled}
-            icon={micOn ? Mic : MicOff}
+            icon={micOn ? MicrophoneIcon : MicrophoneSlashIcon}
             isEnabled={micOn}
             label="microphone"
             onDeviceSelect={(deviceId) =>
@@ -213,7 +213,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
 
           <DeviceControls
             devices={audioOutputDevices}
-            icon={speakerOn ? Volume2 : VolumeOff}
+            icon={speakerOn ? SpeakerHighIcon : SpeakerSlashIcon}
             isEnabled={speakerOn}
             label="speaker"
             onDeviceSelect={setAudioOutput}
@@ -245,9 +245,9 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
                     type="button"
                   >
                     {screenOn ? (
-                      <ScreenShareOff className="size-5" />
+                      <MonitorIcon className="size-5" />
                     ) : (
-                      <ScreenShare className="size-5" />
+                      <MonitorArrowUpIcon className="size-5" />
                     )}
                   </Button>
                 }

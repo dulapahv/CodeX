@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Folder } from "lucide-react";
+import { FolderIcon } from "@phosphor-icons/react";
 
 import type { GitRepo } from "@/lib/git-providers/types";
 
@@ -18,10 +18,10 @@ export const transformReposToTreeData = (
   repos: GitRepo[]
 ): ExtendedTreeDataItem[] =>
   repos.map((repo) => ({
+    children: undefined,
+    fullName: repo.fullName,
+    icon: FolderIcon,
     id: repo.id,
     name: repo.name,
-    fullName: repo.fullName,
-    children: undefined,
-    icon: Folder,
     type: itemType.REPO,
   }));

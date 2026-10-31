@@ -10,7 +10,7 @@
 
 "use client";
 
-import { Info } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { AboutDialog, type AboutDialogRef } from "@/components/about-dialog";
 import { Button } from "@/components/ui/button";
@@ -32,13 +32,13 @@ const AboutButton = () => {
             <Button
               aria-haspopup="dialog"
               aria-label="About"
-              className="size-5 text-white hover:bg-transparent hover:text-muted-foreground"
+              className="hover:text-muted-foreground size-5 text-white hover:bg-transparent"
               onClick={() => aboutDialogRef.current?.openDialog()}
               size="icon"
               type="button"
               variant="ghost"
             >
-              <Info className="size-5" />
+              <InfoIcon className="size-5" />
             </Button>
           }
         />

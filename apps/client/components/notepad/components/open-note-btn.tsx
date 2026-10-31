@@ -10,7 +10,7 @@
 
 import { ROOM_DOC } from "@codex/types/realtime";
 import { ButtonWithTooltip, type MDXEditorMethods } from "@mdxeditor/editor";
-import { Folder } from "lucide-react";
+import { FolderIcon } from "@phosphor-icons/react";
 import type { RefObject } from "react";
 
 import { useRoom } from "@/lib/realtime/room-context";
@@ -49,7 +49,7 @@ const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
       }}
       title="Open note"
     >
-      <Folder className="size-[18px]" />
+      <FolderIcon className="size-[18px]" />
     </ButtonWithTooltip>
   );
 };

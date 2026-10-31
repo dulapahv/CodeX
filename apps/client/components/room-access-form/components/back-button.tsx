@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 
@@ -20,13 +20,13 @@ interface BackButtonProps {
 const BackButton = ({ onClick, disabled }: BackButtonProps) => (
   <Button
     aria-label="Back to create or join room page"
-    className="size-fit p-0 text-foreground"
+    className="text-foreground size-fit p-0"
     disabled={disabled}
     onClick={onClick}
     size="sm"
     variant="link"
   >
-    <ArrowLeft aria-hidden="true" className="size-4" />
+    <ArrowLeftIcon aria-hidden="true" className="size-4" />
     <span>Back to create/join room</span>
   </Button>
 );

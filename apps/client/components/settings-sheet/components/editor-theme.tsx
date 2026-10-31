@@ -9,10 +9,10 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import themeList from "monaco-themes/themes/themelist.json";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -40,26 +40,26 @@ interface EditorThemeSettingsProps {
 }
 
 const DEFAULT_THEMES = {
-  "vs-dark": {
-    name: "Dark (Visual Studio)",
-    variables: {
-      "--toolbar-bg-secondary": "#3c3c3c",
-      "--panel-background": "#1e1e1e",
-      "--toolbar-foreground": "#fff",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-accent": "#2678ca",
-      "--panel-text-accent": "#fff",
-    },
-  },
   light: {
     name: "Light (Visual Studio)",
     variables: {
-      "--toolbar-bg-secondary": "#dddddd",
       "--panel-background": "#fffffe",
-      "--toolbar-foreground": "#000",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-accent": "#2678ca",
       "--panel-text-accent": "#fff",
+      "--toolbar-accent": "#2678ca",
+      "--toolbar-bg-primary": "#2678ca",
+      "--toolbar-bg-secondary": "#dddddd",
+      "--toolbar-foreground": "#000",
+    },
+  },
+  "vs-dark": {
+    name: "Dark (Visual Studio)",
+    variables: {
+      "--panel-background": "#1e1e1e",
+      "--panel-text-accent": "#fff",
+      "--toolbar-accent": "#2678ca",
+      "--toolbar-bg-primary": "#2678ca",
+      "--toolbar-bg-secondary": "#3c3c3c",
+      "--toolbar-foreground": "#fff",
     },
   },
 };
@@ -78,12 +78,13 @@ const getSystemTheme = (): "vs-dark" | "light" => {
 const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const triggerId = useId();
 
   // Initialize with system preference if no saved theme
   const savedTheme =
-    typeof localStorage !== "undefined"
-      ? localStorage.getItem("editorTheme")
-      : null;
+    typeof localStorage === "undefined"
+      ? null
+      : localStorage.getItem("editorTheme");
   const initialTheme = savedTheme || getSystemTheme();
 
   const [editorTheme, setEditorTheme] = useState(initialTheme);
@@ -101,20 +102,20 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
     initEditorTheme();
 
     // Load saved theme to update the UI
-    const savedTheme = localStorage.getItem("editorTheme");
-    if (savedTheme) {
-      setEditorTheme(savedTheme);
+    const storedTheme = localStorage.getItem("editorTheme");
+    if (storedTheme) {
+      setEditorTheme(storedTheme);
 
       // Also sync with next-themes
-      if (savedTheme === "vs-dark") {
+      if (storedTheme === "vs-dark") {
         setTheme("dark");
-      } else if (savedTheme in DEFAULT_THEMES) {
+      } else if (storedTheme in DEFAULT_THEMES) {
         setTheme("light");
       } else {
         try {
           // eslint-disable-next-line @typescript-eslint/no-require-imports
           const themeData = require(
-            `monaco-themes/themes/${themeList[savedTheme as keyof typeof themeList]}.json`
+            `monaco-themes/themes/${themeList[storedTheme as keyof typeof themeList]}.json`
           );
           setTheme(themeData.base === "vs-dark" ? "dark" : "light");
         } catch (error) {
@@ -150,19 +151,22 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <Label className="font-normal">Theme</Label>
+      <Label className="font-normal" htmlFor={triggerId}>
+        Theme
+      </Label>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger
           render={
             <Button
               aria-expanded={open}
               className="justify-between"
+              id={triggerId}
               role="combobox"
               variant="outline"
             >
               {themes.find(([key]) => key === editorTheme)?.[1].name ||
                 "Dark (Visual Studio)"}
-              <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+              <CaretUpDownIcon className="size-4 shrink-0 opacity-50" />
             </Button>
           }
         />
@@ -178,7 +182,7 @@ const EditorThemeSettings = ({ monaco }: EditorThemeSettingsProps) => {
                     onSelect={() => handleThemeChange(key, themeData.name)}
                     value={key}
                   >
-                    <Check
+                    <CheckIcon
                       className={cn(
                         "mr-2 size-4",
                         key === editorTheme ? "opacity-100" : "opacity-0"
