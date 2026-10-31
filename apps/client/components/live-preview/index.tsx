@@ -4,20 +4,39 @@
  * - Real-time preview updates
  * - Tailwind CSS support
  * - Theme-aware rendering
- * - Pre-installed CDN libraries cached by the browser
+ * - Pre-installed CDN libraries loaded when the code uses them
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
-import { DISABLE_TAILWIND_CDN_WARN, PREVIEW_CDN } from "@/lib/constants";
+import { useEffect, useState } from "react";
+
+import { DISABLE_TAILWIND_CDN_WARN } from "@/lib/constants";
 
 import { HelpPopover } from "./components/help-popover";
+import { buildPreviewHead } from "./utils";
 
 interface LivePreviewProps {
   value: string;
 }
 
 const LivePreview = ({ value }: LivePreviewProps) => {
-  const srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${DISABLE_TAILWIND_CDN_WARN}${PREVIEW_CDN}</head><body class="h-screen">${value}</body></html>`;
+  const [srcdoc, setSrcdoc] = useState<string>();
+
+  useEffect(() => {
+    let isCurrent = true;
+    const render = async () => {
+      const head = await buildPreviewHead(value);
+      if (isCurrent) {
+        setSrcdoc(
+          `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${DISABLE_TAILWIND_CDN_WARN}${head}</head><body class="h-screen">${value}</body></html>`
+        );
+      }
+    };
+    render();
+    return () => {
+      isCurrent = false;
+    };
+  }, [value]);
 
   return (
     <div className="relative size-full bg-white">

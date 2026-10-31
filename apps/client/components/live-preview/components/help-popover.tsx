@@ -20,7 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PRE_INSTALLED_LIBS } from "@/lib/constants";
+import { PREVIEW_LIBS } from "@/lib/constants";
 
 const HelpPopover = () => (
   <Popover>
@@ -85,9 +85,14 @@ const HelpPopover = () => (
 
             <div>
               <h5 className="mb-2 font-medium">Pre-installed Libraries</h5>
+              <p className="mb-2">
+                Each library loads only when your code mentions it, such as{" "}
+                <code className="bg-muted px-1 text-xs">gsap</code> or{" "}
+                <code className="bg-muted px-1 text-xs">x-data</code>
+              </p>
               <div className="border-border overflow-y-auto border p-2">
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                  {PRE_INSTALLED_LIBS.map((lib) => (
+                  {PREVIEW_LIBS.map((lib) => (
                     <li
                       className="flex items-center justify-between"
                       key={lib.name}

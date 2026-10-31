@@ -39,6 +39,7 @@
   - [Live Preview Example](#live-preview-example)
     - [Example 1: HTML with Tailwind CSS](#example-1-html-with-tailwind-css)
     - [Example 2: HTML with Alpine.js, GSAP, and Chart.js](#example-2-html-with-alpinejs-gsap-and-chartjs)
+    - [Example 3: React with htm, Recharts, and canvas-confetti](#example-3-react-with-htm-recharts-and-canvas-confetti)
 - [Notepad](#notepad)
   - [Notepad Features](#notepad-features)
   - [Markdown Support](#markdown-support)
@@ -472,11 +473,12 @@ The Live Preview panel allows you to see real-time updates of your code output. 
 </div>
 
 - Tailwind CSS utility classes are available
+- Pre-installed libraries load automatically when your code mentions them, such as `gsap` or `x-data`
 - Add custom styles with `<style>` tags
 - Add custom scripts with `<script>` tags
 - Add external libraries in `<head>` tags
 
-For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview) section.
+For a list of pre-installed libraries and what loads each one, refer to the [Pre-Installed Libraries for Live Preview](#pre-installed-libraries-for-live-preview) section.
 
 ### Enabling/Disabling Live Preview
 
@@ -490,6 +492,8 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 ### Limitations of Live Preview
 
 - Only HTML code is supported
+- External libraries you add yourself are downloaded again on every update because the preview runs in an isolated sandbox, while pre-installed libraries are downloaded once per session
+- React is loaded as v18 because React 19 no longer ships a build that works in a `<script>` tag. JSX needs a build step, so use [htm](https://github.com/developit/htm) or `React.createElement` instead (see [Example 3](#example-3-react-with-htm-recharts-and-canvas-confetti))
 
 ### Live Preview Example
 
@@ -652,6 +656,59 @@ For a list of pre-installed libraries, refer to the [Pre-Installed Libraries for
 <div align="center">
   <img src="docs/images/live-preview_example_2.png" alt="Live preview example 2" width="400"/>
 </div>
+
+#### Example 3: React with htm, Recharts, and canvas-confetti
+
+```html
+<div id="root" class="p-4"></div>
+
+<script>
+  // htm gives React a JSX-like syntax without a build step
+  const html = htm.bind(React.createElement);
+  const { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } =
+    Recharts;
+
+  const data = [
+    { month: 'Jan', sales: 4000 },
+    { month: 'Feb', sales: 3000 },
+    { month: 'Mar', sales: 5000 },
+    { month: 'Apr', sales: 4780 },
+    { month: 'May', sales: 5890 },
+  ];
+
+  const App = () => {
+    const [count, setCount] = React.useState(0);
+
+    const celebrate = () => {
+      setCount(count + 1);
+      confetti({ particleCount: 100, spread: 70 });
+    };
+
+    return html`
+      <div className="space-y-4">
+        <button
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          onClick=${celebrate}
+        >
+          Celebrate (${count})
+        </button>
+        <div className="h-64">
+          <${ResponsiveContainer} width="100%" height="100%">
+            <${LineChart} data=${data}>
+              <${XAxis} dataKey="month" />
+              <${YAxis} />
+              <${Tooltip} />
+              <${Line} type="monotone" dataKey="sales" stroke="#3b82f6" />
+            <//>
+          <//>
+        </div>
+      </div>
+    `;
+  };
+
+  ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+</script>
+```
 
 ## Notepad
 
@@ -951,98 +1008,98 @@ Learn more about [GitHub's Scopes for OAuth apps](https://docs.github.com/en/app
 
 ### Supported Editor Languages
 
-| Language | File Extensions |
-|----------|----------------|
-| Plain Text | `txt` |
-| abap | `abap` |
-| Apex | `cls` |
-| Azure CLI | `azcli` |
-| Batch | `bat`, `cmd` |
-| Bicep | `bicep` |
-| Cameligo | `mligo` |
-| clojure | `clj`, `cljs`, `cljc`, `edn` |
-| CoffeeScript | `coffee` |
-| C | `c`, `h` |
-| C++ | `cpp`, `cc`, `cxx`, `hpp`, `hh`, `hxx` |
-| C# | `cs`, `csx`, `cake` |
-| CSP | - |
-| CSS | `css` |
-| Cypher | `cypher`, `cyp` |
-| Dart | `dart` |
-| Dockerfile | `dockerfile` |
-| ECL | `ecl` |
-| Elixir | `ex`, `exs` |
-| Flow9 | `flow` |
-| F# | `fs`, `fsi`, `ml`, `mli`, `fsx`, `fsscript` |
-| FreeMarker2 | `ftl`, `ftlh`, `ftlx` |
-| FreeMarker2 | `Angle/Dollar` |
-| FreeMarker2 | `Bracket/Dollar` |
-| FreeMarker2 | `Angle/Bracket` |
-| FreeMarker2 | `Bracket/Bracket` |
-| FreeMarker2 | `Auto/Dollar` |
-| FreeMarker2 | `Auto/Bracket` |
-| Go | `go` |
-| GraphQL | `graphql`, `gql` |
-| Handlebars | `handlebars`, `hbs` |
-| Terraform | `tf`, `tfvars`, `hcl` |
-| HTML | `html`, `htm`, `shtml`, `xhtml`, `mdoc`, `jsp`, `asp`, `aspx`, `jshtm` |
-| Ini | `ini`, `properties`, `gitconfig` |
-| Java | `java`, `jav` |
-| JavaScript | `js`, `es6`, `jsx`, `mjs`, `cjs` |
-| julia | `jl` |
-| Kotlin | `kt`, `kts` |
-| Less | `less` |
-| Lexon | `lex` |
-| Lua | `lua` |
-| Liquid | `liquid`, `html.liquid` |
-| Modula-3 | `m3`, `i3`, `mg`, `ig` |
-| Markdown | `md`, `markdown`, `mdown`, `mkdn`, `mkd`, `mdwn`, `mdtxt`, `mdtext` |
-| MDX | `mdx` |
-| MIPS | `s` |
-| DAX | `dax`, `msdax` |
-| MySQL | - |
-| Objective-C | `m` |
-| Pascal | `pas`, `p`, `pp` |
-| Pascaligo | `ligo` |
-| Perl | `pl`, `pm` |
-| PostgreSQL | - |
-| PHP | `php`, `php4`, `php5`, `phtml`, `ctp` |
-| Unknown | `pla` |
-| ATS | `dats`, `sats`, `hats` |
-| PQ | `pq`, `pqm` |
-| PowerShell | `ps1`, `psm1`, `psd1` |
-| protobuf | `proto` |
-| Pug | `jade`, `pug` |
-| Python | `py`, `rpy`, `pyw`, `cpy`, `gyp`, `gypi` |
-| Q# | `qs` |
-| R | `r`, `rhistory`, `rmd`, `rprofile`, `rt` |
-| Razor | `cshtml` |
-| redis | `redis` |
-| Redshift | - |
-| reStructuredText | `rst` |
-| Ruby | `rb`, `rbx`, `rjs`, `gemspec`, `pp` |
-| Rust | `rs`, `rlib` |
-| Small Basic | `sb` |
-| Scala | `scala`, `sc`, `sbt` |
-| scheme | `scm`, `ss`, `sch`, `rkt` |
-| Sass | `scss` |
-| Shell | `sh`, `bash` |
-| sol | `sol` |
-| aes | `aes` |
-| sparql | `rq` |
-| SQL | `sql` |
-| StructuredText | `st`, `iecst`, `iecplc`, `lc3lib`, `TcPOU`, `TcDUT`, `TcGVL`, `TcIO` |
-| Swift | `swift` |
-| SV | `sv`, `svh` |
-| V | `v`, `vh` |
-| tcl | `tcl` |
-| Twig | `twig` |
-| TypeScript | `ts`, `tsx`, `cts`, `mts` |
-| Visual Basic | `vb` |
-| WebGPU Shading Language | `wgsl` |
-| XML | `xml`, `xsd`, `dtd`, `ascx`, `csproj`, `config`, `props`, `targets`, `wxi`, `wxl`, `wxs`, `xaml`, `svg`, `svgz`, `opf`, `xslt`, `xsl` |
-| YAML | `yaml`, `yml` |
-| JSON | `json`, `bowerrc`, `jshintrc`, `jscsrc`, `eslintrc`, `babelrc`, `har` |
+| Language                | File Extensions                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain Text              | `txt`                                                                                                                                 |
+| abap                    | `abap`                                                                                                                                |
+| Apex                    | `cls`                                                                                                                                 |
+| Azure CLI               | `azcli`                                                                                                                               |
+| Batch                   | `bat`, `cmd`                                                                                                                          |
+| Bicep                   | `bicep`                                                                                                                               |
+| Cameligo                | `mligo`                                                                                                                               |
+| clojure                 | `clj`, `cljs`, `cljc`, `edn`                                                                                                          |
+| CoffeeScript            | `coffee`                                                                                                                              |
+| C                       | `c`, `h`                                                                                                                              |
+| C++                     | `cpp`, `cc`, `cxx`, `hpp`, `hh`, `hxx`                                                                                                |
+| C#                      | `cs`, `csx`, `cake`                                                                                                                   |
+| CSP                     | -                                                                                                                                     |
+| CSS                     | `css`                                                                                                                                 |
+| Cypher                  | `cypher`, `cyp`                                                                                                                       |
+| Dart                    | `dart`                                                                                                                                |
+| Dockerfile              | `dockerfile`                                                                                                                          |
+| ECL                     | `ecl`                                                                                                                                 |
+| Elixir                  | `ex`, `exs`                                                                                                                           |
+| Flow9                   | `flow`                                                                                                                                |
+| F#                      | `fs`, `fsi`, `ml`, `mli`, `fsx`, `fsscript`                                                                                           |
+| FreeMarker2             | `ftl`, `ftlh`, `ftlx`                                                                                                                 |
+| FreeMarker2             | `Angle/Dollar`                                                                                                                        |
+| FreeMarker2             | `Bracket/Dollar`                                                                                                                      |
+| FreeMarker2             | `Angle/Bracket`                                                                                                                       |
+| FreeMarker2             | `Bracket/Bracket`                                                                                                                     |
+| FreeMarker2             | `Auto/Dollar`                                                                                                                         |
+| FreeMarker2             | `Auto/Bracket`                                                                                                                        |
+| Go                      | `go`                                                                                                                                  |
+| GraphQL                 | `graphql`, `gql`                                                                                                                      |
+| Handlebars              | `handlebars`, `hbs`                                                                                                                   |
+| Terraform               | `tf`, `tfvars`, `hcl`                                                                                                                 |
+| HTML                    | `html`, `htm`, `shtml`, `xhtml`, `mdoc`, `jsp`, `asp`, `aspx`, `jshtm`                                                                |
+| Ini                     | `ini`, `properties`, `gitconfig`                                                                                                      |
+| Java                    | `java`, `jav`                                                                                                                         |
+| JavaScript              | `js`, `es6`, `jsx`, `mjs`, `cjs`                                                                                                      |
+| julia                   | `jl`                                                                                                                                  |
+| Kotlin                  | `kt`, `kts`                                                                                                                           |
+| Less                    | `less`                                                                                                                                |
+| Lexon                   | `lex`                                                                                                                                 |
+| Lua                     | `lua`                                                                                                                                 |
+| Liquid                  | `liquid`, `html.liquid`                                                                                                               |
+| Modula-3                | `m3`, `i3`, `mg`, `ig`                                                                                                                |
+| Markdown                | `md`, `markdown`, `mdown`, `mkdn`, `mkd`, `mdwn`, `mdtxt`, `mdtext`                                                                   |
+| MDX                     | `mdx`                                                                                                                                 |
+| MIPS                    | `s`                                                                                                                                   |
+| DAX                     | `dax`, `msdax`                                                                                                                        |
+| MySQL                   | -                                                                                                                                     |
+| Objective-C             | `m`                                                                                                                                   |
+| Pascal                  | `pas`, `p`, `pp`                                                                                                                      |
+| Pascaligo               | `ligo`                                                                                                                                |
+| Perl                    | `pl`, `pm`                                                                                                                            |
+| PostgreSQL              | -                                                                                                                                     |
+| PHP                     | `php`, `php4`, `php5`, `phtml`, `ctp`                                                                                                 |
+| Unknown                 | `pla`                                                                                                                                 |
+| ATS                     | `dats`, `sats`, `hats`                                                                                                                |
+| PQ                      | `pq`, `pqm`                                                                                                                           |
+| PowerShell              | `ps1`, `psm1`, `psd1`                                                                                                                 |
+| protobuf                | `proto`                                                                                                                               |
+| Pug                     | `jade`, `pug`                                                                                                                         |
+| Python                  | `py`, `rpy`, `pyw`, `cpy`, `gyp`, `gypi`                                                                                              |
+| Q#                      | `qs`                                                                                                                                  |
+| R                       | `r`, `rhistory`, `rmd`, `rprofile`, `rt`                                                                                              |
+| Razor                   | `cshtml`                                                                                                                              |
+| redis                   | `redis`                                                                                                                               |
+| Redshift                | -                                                                                                                                     |
+| reStructuredText        | `rst`                                                                                                                                 |
+| Ruby                    | `rb`, `rbx`, `rjs`, `gemspec`, `pp`                                                                                                   |
+| Rust                    | `rs`, `rlib`                                                                                                                          |
+| Small Basic             | `sb`                                                                                                                                  |
+| Scala                   | `scala`, `sc`, `sbt`                                                                                                                  |
+| scheme                  | `scm`, `ss`, `sch`, `rkt`                                                                                                             |
+| Sass                    | `scss`                                                                                                                                |
+| Shell                   | `sh`, `bash`                                                                                                                          |
+| sol                     | `sol`                                                                                                                                 |
+| aes                     | `aes`                                                                                                                                 |
+| sparql                  | `rq`                                                                                                                                  |
+| SQL                     | `sql`                                                                                                                                 |
+| StructuredText          | `st`, `iecst`, `iecplc`, `lc3lib`, `TcPOU`, `TcDUT`, `TcGVL`, `TcIO`                                                                  |
+| Swift                   | `swift`                                                                                                                               |
+| SV                      | `sv`, `svh`                                                                                                                           |
+| V                       | `v`, `vh`                                                                                                                             |
+| tcl                     | `tcl`                                                                                                                                 |
+| Twig                    | `twig`                                                                                                                                |
+| TypeScript              | `ts`, `tsx`, `cts`, `mts`                                                                                                             |
+| Visual Basic            | `vb`                                                                                                                                  |
+| WebGPU Shading Language | `wgsl`                                                                                                                                |
+| XML                     | `xml`, `xsd`, `dtd`, `ascx`, `csproj`, `config`, `props`, `targets`, `wxi`, `wxl`, `wxs`, `xaml`, `svg`, `svgz`, `opf`, `xslt`, `xsl` |
+| YAML                    | `yaml`, `yml`                                                                                                                         |
+| JSON                    | `json`, `bowerrc`, `jshintrc`, `jscsrc`, `eslintrc`, `babelrc`, `har`                                                                 |
 
 ### Supported Execution Languages
 
@@ -1052,81 +1109,85 @@ Referenced from the [Piston documentation](https://github.com/engineer-man/pisto
 
 ### Keyboard Shortcuts in Menu Bar
 
-| Action | Shortcut |
-|--------|----------|
-| Command Palette | `F1` |
-| Open from Local | `Ctrl + O` |
-| Open from GitHub | `Ctrl + Shift + O` |
-| Save to Local | `Ctrl + S` |
-| Save to GitHub | `Ctrl + Shift + S` |
-| Settings | `Ctrl + ,` |
-| Leave Room | `Ctrl + Q` |
-| Undo | `Ctrl + Z` |
-| Redo | `Ctrl + Y` |
-| Cut | `Ctrl + X` |
-| Copy | `Ctrl + C` |
-| Paste | `Ctrl + V` |
-| Find | `Ctrl + F` |
-| Replace | `Ctrl + H` |
-| Toggle Line Comment | `Ctrl + /` |
-| Toggle Block Comment | `Shift + Alt + A` |
-| Select All | `Ctrl + A` |
-| Copy Line Up | `Shift + Alt + ↑` |
-| Copy Line Down | `Shift + Alt + ↓` |
-| Move Line Up | `Alt + ↑` |
-| Move Line Down | `Alt + ↓` |
-| Add Cursor Above | `Ctrl + Alt + ↑` |
-| Add Cursor Below | `Ctrl + Alt + ↓` |
-| Zoom In | `Ctrl + =` |
-| Zoom Out | `Ctrl + -` |
+| Action               | Shortcut           |
+| -------------------- | ------------------ |
+| Command Palette      | `F1`               |
+| Open from Local      | `Ctrl + O`         |
+| Open from GitHub     | `Ctrl + Shift + O` |
+| Save to Local        | `Ctrl + S`         |
+| Save to GitHub       | `Ctrl + Shift + S` |
+| Settings             | `Ctrl + ,`         |
+| Leave Room           | `Ctrl + Q`         |
+| Undo                 | `Ctrl + Z`         |
+| Redo                 | `Ctrl + Y`         |
+| Cut                  | `Ctrl + X`         |
+| Copy                 | `Ctrl + C`         |
+| Paste                | `Ctrl + V`         |
+| Find                 | `Ctrl + F`         |
+| Replace              | `Ctrl + H`         |
+| Toggle Line Comment  | `Ctrl + /`         |
+| Toggle Block Comment | `Shift + Alt + A`  |
+| Select All           | `Ctrl + A`         |
+| Copy Line Up         | `Shift + Alt + ↑`  |
+| Copy Line Down       | `Shift + Alt + ↓`  |
+| Move Line Up         | `Alt + ↑`          |
+| Move Line Down       | `Alt + ↓`          |
+| Add Cursor Above     | `Ctrl + Alt + ↑`   |
+| Add Cursor Below     | `Ctrl + Alt + ↓`   |
+| Zoom In              | `Ctrl + =`         |
+| Zoom Out             | `Ctrl + -`         |
 
 ### Pre-Installed Libraries for Live Preview
 
-| Library | Version |
-|---------|---------|
-| Tailwind CSS | v4.x |
-| Animate.css | v4.x |
-| AOS | v2.x |
-| Swiper | v11.x |
-| HTMX | v2.x |
-| Lucide Icons | v0.x |
-| Alpine.js | v3.x |
-| GSAP | v3.x |
-| Popper | v2.x |
-| Tippy.js | v6.x |
-| React | v18.x |
-| React DOM | v18.x |
-| PropTypes | v15.x |
-| Recharts | v2.x |
-| Chart.js | v4.x |
-| Lodash | v4.x |
-| Day.js | v1.x |
-| Sortable.js | v1.x |
+Each library loads only when your code contains one of the words in the last column, so pages that use fewer libraries update faster.
+
+| Library            | Version | Loads when your code contains     |
+| ------------------ | ------- | --------------------------------- |
+| Tailwind CSS       | v4.x    | Always loaded                     |
+| Animate.css        | v4.x    | `animate__`                       |
+| AOS                | v2.x    | `AOS` or `data-aos`               |
+| Swiper             | v14.x   | `swiper`                          |
+| HTMX               | v2.x    | `hx-` or `htmx`                   |
+| Lucide Icons       | v1.x    | `lucide`                          |
+| Alpine.js          | v3.x    | `x-data`, `x-init` or `alpine`    |
+| GSAP               | v3.x    | `gsap` or `ScrollTrigger`         |
+| GSAP ScrollTrigger | v3.x    | `ScrollTrigger`                   |
+| Popper             | v2.x    | `Popper` or `tippy`               |
+| Tippy.js           | v6.x    | `tippy`                           |
+| React              | v18.x   | `React`, `ReactDOM` or `Recharts` |
+| React DOM          | v18.x   | `ReactDOM` or `Recharts`          |
+| Recharts           | v3.x    | `Recharts`                        |
+| htm                | v3.x    | `htm`                             |
+| Chart.js           | v4.x    | `Chart`                           |
+| Lodash             | v4.x    | `_.`, `_(` or `lodash`            |
+| Day.js             | v1.x    | `dayjs`                           |
+| Sortable.js        | v1.x    | `Sortable`                        |
+| canvas-confetti    | v1.x    | `confetti`                        |
 
 ### Notepad Features and Markdown Syntax
 
-| Feature | Description | Shortcut / Markdown Code |
-|---------|-------------|---------------|
-| Open Note | Open a text file in the Notepad. Supports `txt`, `md`, `mdx`, `xbl`, `xsl`, `vtt`, `text`, `xslt`, `ehtml`, `sh`, `html`, `ics`, `mjs`, `js`, `shtml`, `xml`, `csv`, `css`, `shtm`, `htm` | |
-| Save Note | Save the current note as a markdown (`md`) file | |
-| Undo | Undo the last action | `ctrl + z` |
-| Redo | Redo the last undone action | `ctrl + y` or `ctrl + shift + z` |
-| Bold | Make selected text bold | `ctrl + b` or `**text**` |
-| Italic | Make selected text italic | `ctrl + i` or `*text*` |
-| Underline | Underline selected text | `ctrl + u` or `<u>text</u>` |
-| Inline code format | Format selected text as inline code | \`text\` |
-| Strikethrough | Strike through selected text | `~~text~~` |
-| Superscript | Format selected text as superscript | `<sup>text</sup>` |
-| Subscript | Format selected text as subscript | `<sub>text</sub>` |
-| Bulletted list | Create a bulletted list | `* List item` |
-| Numbered list | Create a numbered list | `1. List item` |
-| Check list | Create a checklist | `* [ ] List item` |
-| Select block type | Select block type for selected text. Supports paragraphs (`p`), headings (`h1` to `h6`), and blockquote (`blockquote`) | `# Heading 1`, `## Heading 2`, `### Heading 3`, `#### Heading 4`, `##### Heading 5`, `###### Heading 6`, `> Blockquote` |
-| Create link | Create a hyperlink | `[Hyperlink Text](url "Title")` |
-| Insert image | Insert an image. Supports only image URLs | `![Alt Text](image-url "title")` or `<img height="..." width="..." alt="..." src="...">` |
-| Insert table | Insert a table | |
-| Insert thematic break | Insert a thematic break | `***` |
-| Insert code block | Insert a code block. Supports languages: `apl`, `asn1`, `asterisk`, `brainfuck`, `c`, `cpp`, `csharp`, `ceylon`, `clojure`, `gss`, `cmake`, `cobol`, `coffeescript`, `commonlisp`, `crystal`, `css`, `cypher`, `cython`, `d`, `dart`, `django`, `dockerfile`, `diff`, `dtd`, `dylan`, `ebnf`, `ecl`, `eiffel`, `elixir`, `elm`, `erlang`, `factor`, `fcl`, `forth`, `fortran`, `fsharp`, `gas`, `gherkin`, `go`, `groovy`, `haml`, `handlebars`, `haskell`, `haxe`, `html`, `http`, `idl`, `java`, `js`, `jsx`, `jinja2`, `julia`, `kotlin`, `less`, `livescript`, `lua`, `md`, `mathematica`, `mbox`, `mirc`, `modelica`, `mscgen`, `mumps`, `nginx`, `nsis`, `ntriples`, `objc`, `ocaml`, `octave`, `oz`, `pascal`, `pegjs`, `perl`, `pgp`, `php`, `pig`, `powershell`, `properties`, `protobuf`, `pug`, `puppet`, `python`, `q`, `r`, `rpm`, `rst`, `ruby`, `rust`, `sas`, `sass`, `spreadsheet`, `scala`, `scheme`, `scss`, `shell`, `sieve`, `slim`, `smalltalk`, `smarty`, `solr`, `soy`, `stylus`, `sql`, `sparql`, `squirrel`, `swift`, `stex`, `tcl`, `textile`, `tiddlywiki`, `tiki`, `toml`, `tornado`, `troff`, `tsx`, `ttcn`, `turtle`, `twig`, `vb`, `vbscript`, `velocity`, `verilog`, `vhdl`, `vue`, `webidl`, `wast`, `xml`, `xquery`, `yacas`, `yaml`, `z80` | \`\`\`[language] [code]\`\`\` |
-| Insert admonition | Insert an admonition. Supports `note`, `tip`, `danger`, `info`, `caution` | `:::note [text] :::` |
-| Rich text mode| Switch to rich text mode | |
-| Source mode | Switch to source mode (markdown) | |
+| Feature               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Shortcut / Markdown Code                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Open Note             | Open a text file in the Notepad. Supports `txt`, `md`, `mdx`, `xbl`, `xsl`, `vtt`, `text`, `xslt`, `ehtml`, `sh`, `html`, `ics`, `mjs`, `js`, `shtml`, `xml`, `csv`, `css`, `shtm`, `htm`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |                                                                                                                         |
+| Save Note             | Save the current note as a markdown (`md`) file                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                         |
+| Undo                  | Undo the last action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `ctrl + z`                                                                                                              |
+| Redo                  | Redo the last undone action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `ctrl + y` or `ctrl + shift + z`                                                                                        |
+| Bold                  | Make selected text bold                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `ctrl + b` or `**text**`                                                                                                |
+| Italic                | Make selected text italic                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `ctrl + i` or `*text*`                                                                                                  |
+| Underline             | Underline selected text                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `ctrl + u` or `<u>text</u>`                                                                                             |
+| Inline code format    | Format selected text as inline code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | \`text\`                                                                                                                |
+| Strikethrough         | Strike through selected text                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `~~text~~`                                                                                                              |
+| Superscript           | Format selected text as superscript                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `<sup>text</sup>`                                                                                                       |
+| Subscript             | Format selected text as subscript                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `<sub>text</sub>`                                                                                                       |
+| Bulletted list        | Create a bulletted list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `* List item`                                                                                                           |
+| Numbered list         | Create a numbered list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `1. List item`                                                                                                          |
+| Check list            | Create a checklist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `* [ ] List item`                                                                                                       |
+| Select block type     | Select block type for selected text. Supports paragraphs (`p`), headings (`h1` to `h6`), and blockquote (`blockquote`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `# Heading 1`, `## Heading 2`, `### Heading 3`, `#### Heading 4`, `##### Heading 5`, `###### Heading 6`, `> Blockquote` |
+| Create link           | Create a hyperlink                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `[Hyperlink Text](url "Title")`                                                                                         |
+| Insert image          | Insert an image. Supports only image URLs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `![Alt Text](image-url "title")` or `<img height="..." width="..." alt="..." src="...">`                                |
+| Insert table          | Insert a table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                         |
+| Insert thematic break | Insert a thematic break                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `***`                                                                                                                   |
+| Insert code block     | Insert a code block. Supports languages: `apl`, `asn1`, `asterisk`, `brainfuck`, `c`, `cpp`, `csharp`, `ceylon`, `clojure`, `gss`, `cmake`, `cobol`, `coffeescript`, `commonlisp`, `crystal`, `css`, `cypher`, `cython`, `d`, `dart`, `django`, `dockerfile`, `diff`, `dtd`, `dylan`, `ebnf`, `ecl`, `eiffel`, `elixir`, `elm`, `erlang`, `factor`, `fcl`, `forth`, `fortran`, `fsharp`, `gas`, `gherkin`, `go`, `groovy`, `haml`, `handlebars`, `haskell`, `haxe`, `html`, `http`, `idl`, `java`, `js`, `jsx`, `jinja2`, `julia`, `kotlin`, `less`, `livescript`, `lua`, `md`, `mathematica`, `mbox`, `mirc`, `modelica`, `mscgen`, `mumps`, `nginx`, `nsis`, `ntriples`, `objc`, `ocaml`, `octave`, `oz`, `pascal`, `pegjs`, `perl`, `pgp`, `php`, `pig`, `powershell`, `properties`, `protobuf`, `pug`, `puppet`, `python`, `q`, `r`, `rpm`, `rst`, `ruby`, `rust`, `sas`, `sass`, `spreadsheet`, `scala`, `scheme`, `scss`, `shell`, `sieve`, `slim`, `smalltalk`, `smarty`, `solr`, `soy`, `stylus`, `sql`, `sparql`, `squirrel`, `swift`, `stex`, `tcl`, `textile`, `tiddlywiki`, `tiki`, `toml`, `tornado`, `troff`, `tsx`, `ttcn`, `turtle`, `twig`, `vb`, `vbscript`, `velocity`, `verilog`, `vhdl`, `vue`, `webidl`, `wast`, `xml`, `xquery`, `yacas`, `yaml`, `z80` | \`\`\`[language] [code]\`\`\`                                                                                           |
+| Insert admonition     | Insert an admonition. Supports `note`, `tip`, `danger`, `info`, `caution`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `:::note [text] :::`                                                                                                    |
+| Rich text mode        | Switch to rich text mode                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                                                                                                         |
+| Source mode           | Switch to source mode (markdown)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |                                                                                                                         |

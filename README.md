@@ -28,7 +28,7 @@ For detailed usage instructions and feature documentation, please see the **[Use
 
 - **Real-time Collaboration** - Code together in real-time with cursor sharing, highlighting, and follow mode
 - **Shared Terminal** - Execute code and see results together with over 80 supported languages
-- **Live Preview** - Preview UI changes instantly with loaded libraries like Tailwind CSS, and more
+- **Live Preview** - Preview UI changes instantly with 20 pre-installed libraries like Tailwind CSS, Alpine.js, GSAP and React that load when your code uses them
 - **GitHub Integrated** - Save your work and open files from your repositories
 - **Shared Notepad** - Take notes together in real-time with rich text and markdown support
 - **Video, Voice & Screen Sharing** - Communicate with your team using video and voice chat, and share your screen
