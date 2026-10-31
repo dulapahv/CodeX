@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/biome/core", "ultracite/biome/next"],
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/next",
+    "ultracite/biome/jest"
+  ],
   // shadcn registry output, kept unmodified so `shadcn add --overwrite` upgrades stay clean
   "files": {
     "includes": ["!**/components/ui"]
@@ -20,11 +24,24 @@
       },
       "suspicious": {
         // @tailwind is a valid Tailwind CSS v3 directive
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        // Biome's type inference misses nullable refs, env fallbacks and flags
+        // set in callbacks, so every hit here was a false positive
+        "noUnnecessaryConditions": "off",
+        "useBaseline": {
+          "level": "error",
+          "options": {
+            // Progressive enhancements: unsupported browsers keep the default look
+            "allowProperties": ["backdrop-filter", "scrollbar-width"],
+            "allowSelectors": ["selection"]
+          }
+        }
       },
       "performance": {
         // Some libraries (monaco-editor, Sentry) genuinely need namespace imports
-        "noNamespaceImport": "off"
+        "noNamespaceImport": "off",
+        // The React Compiler already memoises inline handlers
+        "noJsxPropsBind": "off"
       }
     }
   },
@@ -39,6 +56,18 @@
       "includes": ["apps/server/src/**"],
       "javascript": {
         "globals": ["WebSocketPair"]
+      }
+    },
+    {
+      // Playwright has no it(), so its tests can't follow the Jest preset's
+      // it() inside describe()
+      "includes": ["apps/client/tests/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentTestIt": "off"
+          }
+        }
       }
     }
   ]

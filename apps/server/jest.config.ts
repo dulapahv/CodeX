@@ -12,7 +12,30 @@
 import type { Config } from "jest";
 
 const config: Config = {
+  clearMocks: true,
+  detectOpenHandles: true,
+  forceExit: true,
+  reporters: [
+    "default",
+    [
+      "jest-junit",
+      {
+        ancestorSeparator: " › ",
+        classNameTemplate: "{classname}",
+        outputDirectory: "./test-results",
+        outputName: "junit.xml",
+        suiteNameTemplate: "{filepath}",
+        titleTemplate: "{title}",
+        uniqueOutputName: false,
+      },
+    ],
+  ],
+  resetMocks: true,
+  restoreMocks: true,
+  setupFiles: ["./jest.setup.ts"],
   testEnvironment: "node",
+  testMatch: ["**/*.test.ts"],
+  testTimeout: 300_000,
   // Tests run in Node; src/ is compiled for the Workers runtime instead
   transform: {
     "^.+\\.ts$": ["ts-jest", { tsconfig: "tests/tsconfig.json" }],
@@ -23,30 +46,7 @@ const config: Config = {
     ],
   },
   transformIgnorePatterns: ["node_modules[/\\\\](?!(\\.pnpm[/\\\\])?nanoid)"],
-  testMatch: ["**/*.test.ts"],
-  setupFiles: ["./jest.setup.ts"],
   verbose: true,
-  forceExit: true,
-  clearMocks: true,
-  resetMocks: true,
-  restoreMocks: true,
-  detectOpenHandles: true,
-  testTimeout: 300_000,
-  reporters: [
-    "default",
-    [
-      "jest-junit",
-      {
-        outputDirectory: "./test-results",
-        outputName: "junit.xml",
-        ancestorSeparator: " › ",
-        uniqueOutputName: false,
-        suiteNameTemplate: "{filepath}",
-        classNameTemplate: "{classname}",
-        titleTemplate: "{title}",
-      },
-    ],
-  ],
 };
 
 export default config;

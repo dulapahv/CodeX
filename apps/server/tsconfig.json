@@ -10,7 +10,6 @@
     "noEmit": true,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "paths": {
       "@codex/types/*": ["../../packages/types/*"]
     }

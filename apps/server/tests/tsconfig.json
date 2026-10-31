@@ -10,9 +10,8 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "..",
     "paths": {
-      "@codex/types/*": ["../../packages/types/*"]
+      "@codex/types/*": ["../../../packages/types/*"]
     }
   },
   "include": ["./**/*.ts", "../jest.setup.ts"]

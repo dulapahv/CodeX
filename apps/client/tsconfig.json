@@ -20,7 +20,13 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/tests/*": ["./tests/*"]
+      "@/tests/*": ["./tests/*"],
+      // @monaco-editor/react types the loaded editor with this deep import,
+      // which monaco-editor's exports map no longer resolves. The CDN build
+      // it loads exposes the full package API, so type it as that.
+      "monaco-editor/esm/vs/editor/editor.api": [
+        "./node_modules/monaco-editor/esm/vs/index.d.ts"
+      ]
     }
   },
   "include": [
