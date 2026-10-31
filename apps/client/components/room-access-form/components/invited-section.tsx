@@ -9,15 +9,13 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { NAME_MAX_LENGTH } from "@/lib/constants";
 
 import type { JoinRoomForm } from "../types";
+import { NameField } from "./name-field";
 
 interface InvitedSectionProps {
   error: string | null;
@@ -47,34 +45,11 @@ export const InvitedSection = ({
           onSubmit({ name, roomId });
         }}
       >
-        <Field.Root
-          className="flex flex-col space-y-1.5"
-          name="name"
-          validate={(value) =>
-            String(value).trim().length > NAME_MAX_LENGTH
-              ? `Name must not exceed ${NAME_MAX_LENGTH} characters`
-              : null
-          }
-        >
-          <Field.Label className="text-sm sm:text-base">Name</Field.Label>
-          <Input
-            autoComplete="name"
-            autoFocus
-            className="text-sm sm:text-base"
-            disabled={isDisabled}
-            maxLength={NAME_MAX_LENGTH}
-            placeholder="Enter your name"
-            required
-          />
-          <Field.Error className="text-red-500 text-sm" match="valueMissing">
-            Name is required
-          </Field.Error>
-          <Field.Error className="text-red-500 text-sm" match="customError" />
-        </Field.Root>
+        <NameField autoFocus disabled={isDisabled} />
         <Button aria-busy={isSubmitting} disabled={isDisabled} type="submit">
           {isSubmitting && <Spinner />}
           {isSubmitting ? "Joining..." : "Join Room"}
-          {!isSubmitting && <ArrowRight aria-hidden="true" />}
+          {!isSubmitting && <ArrowRightIcon aria-hidden="true" />}
         </Button>
         {error && (
           <p className="text-destructive text-xs" role="alert">

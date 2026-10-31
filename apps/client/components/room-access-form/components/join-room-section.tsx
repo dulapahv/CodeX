@@ -11,14 +11,14 @@
 
 import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { NAME_MAX_LENGTH } from "@/lib/constants";
 
 import type { JoinRoomForm } from "../types";
 import { onRoomIdChange } from "../utils";
+import { NameField } from "./name-field";
 
 interface JoinRoomSectionProps {
   defaultRoomId: string;
@@ -49,10 +49,11 @@ export const JoinRoomSection = ({
           onSubmit({ name, roomId });
         }}
       >
-        <h1 className="font-medium text-lg sm:text-xl" id="join-room-heading">
+        <h1 className="text-lg font-medium sm:text-xl" id="join-room-heading">
           Join a Room
         </h1>
         <Field.Root className="flex flex-col space-y-1.5" name="roomId">
+          {/* biome-ignore lint/a11y/noLabelWithoutControl: Base UI ties Field.Label to the field's control */}
           <Field.Label className="text-sm sm:text-base">Room ID</Field.Label>
           <Input
             className="font-mono text-sm sm:text-base"
@@ -63,40 +64,18 @@ export const JoinRoomSection = ({
             placeholder="XXXX-XXXX"
             required
           />
-          <Field.Error className="text-red-500 text-sm" match="valueMissing">
+          <Field.Error className="text-sm text-red-500" match="valueMissing">
             Room ID is required
           </Field.Error>
-          <Field.Error className="text-red-500 text-sm" match="patternMismatch">
+          <Field.Error className="text-sm text-red-500" match="patternMismatch">
             Invalid room ID
           </Field.Error>
         </Field.Root>
-        <Field.Root
-          className="flex flex-col space-y-1.5"
-          name="name"
-          validate={(value) =>
-            String(value).trim().length > NAME_MAX_LENGTH
-              ? `Name must not exceed ${NAME_MAX_LENGTH} characters`
-              : null
-          }
-        >
-          <Field.Label className="text-sm sm:text-base">Name</Field.Label>
-          <Input
-            autoComplete="name"
-            className="text-sm sm:text-base"
-            disabled={isDisabled}
-            maxLength={NAME_MAX_LENGTH}
-            placeholder="Enter your name"
-            required
-          />
-          <Field.Error className="text-red-500 text-sm" match="valueMissing">
-            Name is required
-          </Field.Error>
-          <Field.Error className="text-red-500 text-sm" match="customError" />
-        </Field.Root>
+        <NameField disabled={isDisabled} />
         <Button aria-busy={isSubmitting} disabled={isDisabled} type="submit">
           {isSubmitting && <Spinner />}
           {isSubmitting ? "Joining..." : "Join Room"}
-          {!isSubmitting && <ArrowRight aria-hidden="true" />}
+          {!isSubmitting && <ArrowRightIcon aria-hidden="true" />}
         </Button>
         {error && (
           <p className="text-destructive text-xs" role="alert">
