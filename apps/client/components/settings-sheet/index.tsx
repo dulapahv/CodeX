@@ -107,14 +107,11 @@ const SettingsSheet = forwardRef<SettingsSheetRef, SettingsSheetProps>(
               aria-labelledby="editor-section"
               monaco={monaco}
             />
-            <div className="top-16 space-y-2">
-              <h4 className="text-xs leading-none select-none">Settings</h4>
-              <EditorConfig
-                aria-labelledby="editor-section"
-                editor={editor}
-                monaco={monaco}
-              />
-            </div>
+            <EditorConfig
+              aria-labelledby="editor-section"
+              editor={editor}
+              monaco={monaco}
+            />
           </div>
         </SheetContent>
       </Sheet>

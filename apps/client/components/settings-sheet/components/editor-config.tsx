@@ -1,10 +1,7 @@
 /**
- * Editor configuration component for Monaco editor settings.
- * Features:
- * - Settings search and filtering
- * - Import/export settings
- * - Real-time setting updates
- * - Settings persistence
+ * The editor settings list. Common settings come first, then every other
+ * setting in collapsible sections, with search across names and descriptions.
+ * Only changed settings are saved, and they can be imported or exported.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -16,34 +13,48 @@ import {
   MagnifyingGlassIcon,
 } from "@phosphor-icons/react";
 import type * as monacoEditor from "monaco-editor";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, useMemo, useRef, useState } from "react";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-import { SELECT_OPTIONS } from "../constants";
-import type { EditorOption } from "../types";
-import { exportSettings, formatTitle, importSettings } from "../utils";
+import {
+  getSections,
+  getSettingDefinitions,
+  getSettingValue,
+  isSameValue,
+  type SettingDefinition,
+  type SettingSection,
+} from "../catalog";
+import {
+  cleanSettings,
+  type EditorSettings,
+  readStoredSettings,
+  toEditorOptions,
+  withoutSettingValue,
+  withSettingValue,
+  writeStoredSettings,
+} from "../storage";
+import { exportSettings } from "../utils";
+import { SettingRow } from "./setting-row";
+
+const DEFAULT_OPEN_SECTIONS = ["common"];
 
 interface EditorConfigProps {
   className?: string;
@@ -51,295 +62,89 @@ interface EditorConfigProps {
   monaco: Monaco;
 }
 
+const matchesSearch = (setting: SettingDefinition, query: string) =>
+  setting.title.toLowerCase().includes(query) ||
+  setting.key.toLowerCase().includes(query) ||
+  setting.description.toLowerCase().includes(query);
+
 export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
+  const definitions = useMemo(() => getSettingDefinitions(monaco), [monaco]);
+  const sections = useMemo(() => getSections(definitions), [definitions]);
+  const [settings, setSettings] = useState<EditorSettings>(() =>
+    cleanSettings(readStoredSettings(), definitions)
+  );
   const [search, setSearch] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<
-    monacoEditor.editor.IEditorOptions &
-      monacoEditor.editor.IGlobalEditorOptions
-  >(() => {
-    try {
-      const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
-      return savedSettings ? JSON.parse(savedSettings) : {};
-    } catch (error) {
-      console.error("Failed to load saved settings:", error);
-      return {};
-    }
-  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  interface EditorOptionsInternal extends monacoEditor.editor.IEditorOptions {
-    _values: unknown[];
-  }
+  const saveSettings = (next: EditorSettings) => {
+    setSettings(next);
+    writeStoredSettings(next);
+  };
 
-  useEffect(() => {
-    // Load saved settings from localStorage and apply them
-    const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
-    let storedSettings = {};
+  const changeSetting = (setting: SettingDefinition, value: unknown) => {
+    editor.updateOptions(toEditorOptions(setting.key, value));
+    saveSettings(
+      isSameValue(value, setting.defaultValue)
+        ? withoutSettingValue(settings, setting.key)
+        : withSettingValue(settings, setting.key, value)
+    );
+  };
 
-    if (savedSettings) {
-      try {
-        storedSettings = JSON.parse(savedSettings);
-        editor.updateOptions(storedSettings);
-      } catch (error) {
-        console.error("Failed to load saved settings:", error);
-      }
+  const importFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) {
+      return;
     }
-
-    // Get current editor options to fill in any missing settings
-    // @ts-expect-error - Monaco editor internal API
-    const currentValues = (editor.getOptions() as EditorOptionsInternal)
-      ._values;
-    const optionKeys = Object.keys(monaco.editor.EditorOption).filter((key) =>
-      Number.isNaN(Number(key))
-    );
-
-    // Merge stored settings with current editor values
-    const mergedSettings = optionKeys.reduce(
-      (acc, key, index) => {
-        // Skip if we already have this setting
-        if (key in storedSettings) {
-          return acc;
+    try {
+      const imported = cleanSettings(
+        JSON.parse(await file.text()),
+        definitions
+      );
+      // Settings missing from the file go back to their defaults
+      for (const setting of definitions) {
+        const value = getSettingValue(imported, setting.key);
+        const current = getSettingValue(settings, setting.key);
+        if (value !== undefined || current !== undefined) {
+          editor.updateOptions(
+            toEditorOptions(setting.key, value ?? setting.defaultValue)
+          );
         }
-
-        const value = currentValues[index];
-
-        // Only include valid values
-        if (value !== null && value !== undefined) {
-          if (typeof value === "object" && "enabled" in value) {
-            // @ts-expect-error - Monaco editor internal API
-            acc[key] = { enabled: value.enabled };
-          } else if (typeof value !== "object") {
-            // @ts-expect-error - Monaco editor internal API
-            acc[key] = value;
-          }
-        }
-
-        return acc;
-      },
-      { ...storedSettings }
-    );
-
-    setSettings(mergedSettings);
-  }, [editor, monaco.editor.EditorOption]);
-
-  const editorOptions = useMemo(() => {
-    const options: Record<string, EditorOption> = {};
-    // @ts-expect-error - Monaco editor internal API
-    const values = (editor.getOptions() as EditorOptionsInternal)._values;
-
-    Object.keys(monaco.editor.EditorOption)
-      .filter((key) => Number.isNaN(Number(key)))
-      .forEach((key, index) => {
-        const value = values[index];
-        if (value === undefined) {
-          return;
-        }
-
-        // Handle objects with 'enabled' property (like minimap)
-        if (typeof value === "object" && value !== null && "enabled" in value) {
-          options[`${key}.enabled`] = {
-            currentValue: value.enabled,
-            title: formatTitle(key),
-            type: "boolean",
-          };
-          return;
-        }
-
-        // Skip other objects or unsupported types
-        if (typeof value === "object" || value === null) {
-          return;
-        }
-
-        const type = typeof value;
-        // if (!['boolean', 'string', 'number'].includes(type)) return;
-
-        const resolveOptionType = ():
-          | "boolean"
-          | "number"
-          | "select"
-          | "string"
-          | "text" => {
-          if (type === "boolean") {
-            return "boolean";
-          }
-          if (type === "number") {
-            return "number";
-          }
-          if (
-            type === "string" &&
-            typeof value === "string" &&
-            ["on", "off"].includes(value)
-          ) {
-            return "select";
-          }
-          if (SELECT_OPTIONS[key]) {
-            return "select";
-          }
-          return "text";
-        };
-
-        options[key] = {
-          currentValue: value,
-          options:
-            type !== "boolean" && type !== "number"
-              ? SELECT_OPTIONS[key] || ["on", "off"]
-              : undefined,
-          title: formatTitle(key),
-          type: resolveOptionType(),
-        };
-      });
-
-    return options;
-  }, [editor, monaco.editor.EditorOption]);
-
-  const filteredSettings = useMemo(() => {
-    const searchLower = search.toLowerCase();
-    return Object.entries(editorOptions).filter(([_key, option]) =>
-      option.title.toLowerCase().includes(searchLower)
-    );
-  }, [search, editorOptions]);
-
-  const updateSetting = useCallback(
-    (key: string, value: unknown) => {
-      // For boolean settings that use .enabled format
-      if (key.endsWith(".enabled")) {
-        const mainKey = key.replace(".enabled", "");
-        const newSettings = {
-          ...settings,
-          [mainKey]: { enabled: value },
-        };
-
-        editor.updateOptions({
-          [mainKey]: { enabled: value },
-        });
-
-        setSettings(newSettings);
-        localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(newSettings));
-        return;
       }
+      saveSettings(imported);
+      setImportError(null);
+    } catch {
+      setImportError("Couldn't import settings. Check that it's a JSON file.");
+    }
+  };
 
-      // For all other settings
-      const newSettings = {
-        ...settings,
-        [key]: value,
-      };
+  const renderSetting = (setting: SettingDefinition) => {
+    const saved = getSettingValue(settings, setting.key);
+    return (
+      <SettingRow
+        isModified={saved !== undefined}
+        key={setting.key}
+        onChange={(value) => changeSetting(setting, value)}
+        onReset={() => changeSetting(setting, setting.defaultValue)}
+        setting={setting}
+        value={saved ?? setting.defaultValue}
+      />
+    );
+  };
 
-      editor.updateOptions({ [key]: value });
-      setSettings(newSettings);
-      localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(newSettings));
-    },
-    [editor, settings]
-  );
-
-  const handleImportClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  const renderSetting = useCallback(
-    ([key, option]: [string, EditorOption]) => {
-      const id = `setting-${key}`;
-
-      // Helper to get boolean value regardless of format
-      const getBooleanValue = (settingKey: string) => {
-        // @ts-expect-error - Monaco editor internal API
-        const setting = settings[settingKey.replace(".enabled", "")];
-        if (typeof setting === "object" && setting !== null) {
-          return setting.enabled;
-        }
-        return setting;
-      };
-
-      // Get value based on type
-      const getValue = () => {
-        if (option.type === "boolean") {
-          return getBooleanValue(key);
-        }
-        // @ts-expect-error - Monaco editor internal API
-        return settings[key];
-      };
-
-      const value = getValue();
-
-      switch (option.type) {
-        case "boolean":
-          return (
-            <div
-              className="flex items-center justify-between gap-4 pt-4 pb-3"
-              key={key}
-            >
-              <Label className="text-sm font-medium" htmlFor={id}>
-                {option.title}
-              </Label>
-              <Switch
-                aria-label={option.title}
-                checked={!!value}
-                id={id}
-                onCheckedChange={(checked) => updateSetting(key, checked)}
-              />
-            </div>
-          );
-
-        case "select":
-          return (
-            <div className="space-y-2 py-4" key={key}>
-              <Label className="text-sm font-medium" htmlFor={id}>
-                {option.title}
-              </Label>
-              <Select
-                onValueChange={(selected) => updateSetting(key, selected)} // Ensure string value with fallback
-                value={value ? String(value) : null}
-              >
-                <SelectTrigger className="w-full" id={id}>
-                  <SelectValue placeholder={`Select ${option.title}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {option.options?.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          );
-
-        case "number":
-          return (
-            <div className="space-y-2 py-4" key={key}>
-              <Label className="text-sm font-medium" htmlFor={id}>
-                {option.title}
-              </Label>
-              <Input
-                aria-label={option.title}
-                className="max-w-[calc(100%-50%)]"
-                id={id} // Provide fallback for undefined
-                onChange={(e) => updateSetting(key, Number(e.target.value))}
-                type="number"
-                value={value ?? ""}
-              />
-            </div>
-          );
-
-        default:
-          return (
-            <div className="space-y-2 py-4" key={key}>
-              <Label className="text-sm font-medium" htmlFor={id}>
-                {option.title}
-              </Label>
-              <Input
-                aria-label={option.title}
-                id={id}
-                onChange={(e) => updateSetting(key, e.target.value)} // Convert to string and provide fallback
-                type="text"
-                value={String(value ?? "")}
-              />
-            </div>
-          );
-      }
-    },
-    [settings, updateSetting]
-  );
+  const query = search.trim().toLowerCase();
+  const results: SettingSection[] = query
+    ? sections
+        .slice(1)
+        .map((section) => ({
+          ...section,
+          settings: section.settings.filter((setting) =>
+            matchesSearch(setting, query)
+          ),
+        }))
+        .filter((section) => section.settings.length > 0)
+    : [];
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: grouping editor configuration controls
@@ -352,7 +157,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         <InputGroup className="flex-1">
           <InputGroupInput
             aria-label="Search editor settings"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Search settings..."
             type="search"
             value={search}
@@ -366,7 +171,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             render={
               <Button
                 aria-label="Import settings"
-                onClick={handleImportClick}
+                onClick={() => fileInputRef.current?.click()}
                 size="icon"
                 variant="outline"
               >
@@ -381,9 +186,7 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
             render={
               <Button
                 aria-label="Export settings"
-                onClick={() =>
-                  exportSettings(settings as Record<string, unknown>)
-                }
+                onClick={() => exportSettings(settings)}
                 size="icon"
                 variant="outline"
               >
@@ -394,13 +197,10 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
           <TooltipContent className="mr-1">Export Settings</TooltipContent>
         </Tooltip>
         <input
-          accept=".json"
+          accept=".json,application/json"
           aria-label="Import settings file"
           className="hidden"
-          onChange={(e) => {
-            setImportError(null);
-            importSettings(editor, setSettings, e, setImportError);
-          }}
+          onChange={importFile}
           ref={fileInputRef}
           type="file"
         />
@@ -411,21 +211,46 @@ export function EditorConfig({ monaco, editor, className }: EditorConfigProps) {
         </p>
       )}
 
-      <div className="divide-y">
-        {filteredSettings.length > 0 ? (
-          filteredSettings.map(renderSetting)
-        ) : (
-          <div
-            aria-live="polite"
-            className="flex items-center justify-center py-8 text-center"
-            role="status"
-          >
-            <p className="text-muted-foreground text-sm">
-              {search ? "No settings found." : "No settings available."}
+      {query ? (
+        <div aria-live="polite">
+          {results.length === 0 ? (
+            <p className="text-muted-foreground py-8 text-center text-sm">
+              No settings found.
             </p>
-          </div>
-        )}
-      </div>
+          ) : (
+            results.map((section) => (
+              <section aria-label={section.title} key={section.id}>
+                <h4 className="text-muted-foreground pt-3 text-xs font-medium">
+                  {section.title}
+                </h4>
+                <div className="divide-y">
+                  {section.settings.map(renderSetting)}
+                </div>
+              </section>
+            ))
+          )}
+        </div>
+      ) : (
+        <Accordion defaultValue={DEFAULT_OPEN_SECTIONS} multiple>
+          {sections.map((section) => (
+            <AccordionItem key={section.id} value={section.id}>
+              <AccordionTrigger className="text-sm">
+                <span className="flex items-baseline gap-2">
+                  {section.title}
+                  <span className="text-muted-foreground text-xs font-normal">
+                    {section.settings.length}
+                  </span>
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="divide-y">
+                  {section.settings.map(renderSetting)}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
     </div>
   );
 }

@@ -16,8 +16,8 @@ import type { Monaco } from "@monaco-editor/react";
 import type * as monacoEditor from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
 import type { Dispatch, RefObject, SetStateAction } from "react";
+import { loadEditorOptions } from "@/components/settings-sheet/storage";
 import type { StatusBarCursorPosition } from "@/components/status-bar";
-import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
 import { storage } from "@/lib/services/storage";
 
 const SCROLL_EMIT_INTERVAL = 50;
@@ -141,21 +141,7 @@ export const handleOnMount = (
 ): void => {
   editor.focus();
 
-  editor.updateOptions({
-    cursorSmoothCaretAnimation: "on",
-    fontFamily: "GeistMono, Consolas, 'Courier New', monospace",
-  });
-
-  const savedSettings = localStorage.getItem(EDITOR_SETTINGS_KEY);
-
-  if (savedSettings) {
-    try {
-      const parsed = JSON.parse(savedSettings) as Record<string, unknown>;
-      editor.updateOptions(parsed);
-    } catch (error) {
-      console.error("Failed to load saved settings:", error);
-    }
-  }
+  editor.updateOptions(loadEditorOptions(monaco, editor));
 
   editor.getModel()?.setEOL(monaco.editor.EndOfLineSequence.LF);
 

@@ -1,75 +1,22 @@
 /**
- * Utility functions for editor settings management.
- * Features:
- * - Settings export to JSON
- * - Title case formatting
- * - Settings file handling
+ * Downloads the changed editor settings as a JSON file, in the same shape
+ * Monaco takes, so the file can be imported again or reused elsewhere.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type * as monaco from "monaco-editor";
-import type { ChangeEvent } from "react";
+import type { EditorSettings } from "./storage";
 
-import { EDITOR_SETTINGS_KEY } from "@/lib/constants";
-
-const CAMEL_CASE_BOUNDARY_PATTERN = /[A-Z]/gu;
-const FIRST_CHARACTER_PATTERN = /^./u;
-
-// Convert camelCase to Title Case
-export const formatTitle = (key: string): string =>
-  key
-    .replace(CAMEL_CASE_BOUNDARY_PATTERN, " $&")
-    .replace(FIRST_CHARACTER_PATTERN, (str) => str.toUpperCase());
-
-export const exportSettings = (settings: Record<string, unknown>) => {
-  try {
-    const blob = new Blob([JSON.stringify(settings, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "codex-editor-settings.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Failed to export settings:", error);
-  }
-};
-
-export const importSettings = (
-  editor: monaco.editor.IStandaloneCodeEditor,
-  setSettings: (settings: Record<string, unknown>) => void,
-  event: ChangeEvent<HTMLInputElement>,
-  onError: (message: string) => void
-) => {
-  const file = event.target.files?.[0];
-  if (!file) {
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const content = e.target?.result as string;
-      const imported = JSON.parse(content);
-
-      if (typeof imported !== "object" || imported === null) {
-        throw new Error("Invalid settings format");
-      }
-
-      editor.updateOptions(imported);
-      setSettings(imported);
-      localStorage.setItem(EDITOR_SETTINGS_KEY, JSON.stringify(imported));
-    } catch (error) {
-      console.error("Failed to import settings:", error);
-      onError("Failed to import settings. Please check the file format.");
-    }
-  };
-
-  reader.readAsText(file);
-  event.target.value = "";
+export const exportSettings = (settings: EditorSettings) => {
+  const blob = new Blob([JSON.stringify(settings, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "codex-editor-settings.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 };
