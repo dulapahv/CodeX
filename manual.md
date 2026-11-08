@@ -57,7 +57,6 @@
   - [Process timed out](#process-timed-out)
   - [Process stopped because its output was too long](#process-stopped-because-its-output-was-too-long)
   - [No code to execute](#no-code-to-execute)
-  - [Error parsing markdown](#error-parsing-markdown)
   - [Please check the information and try again](#please-check-the-information-and-try-again)
   - [Failed to import settings. Please check the file format](#failed-to-import-settings-please-check-the-file-format)
   - [Parsing of the Following Markdown Structure Failed](#parsing-of-the-following-markdown-structure-failed)
@@ -187,10 +186,10 @@ The interface is divided into several sections, each section contains multiple p
 
 1. **Left Most Panel - Notepad**
 
-   - Rich text formatting toolbar (Bold, Italic, Underline, etc.)
-   - Block type selector for different content types
-   - Collaborative note-taking area
-   - Table and media insertion tools
+   - Rich text toolbar with fonts, font size, text and background colors, alignment, and formatting such as bold, italic, and underline
+   - Block type selector, an `Insert` menu, and a `/` menu for inserting blocks
+   - Collaborative note-taking area with everyone's cursors
+   - Images, GIFs, drawings, embeds, tables, code blocks, equations, polls, dates, columns, collapsible sections, callouts, and sticky notes
 
 2. **Center Left Panel - Code Editor**
 
@@ -303,10 +302,14 @@ You can configure the code editor as well as its theme to suit your preferences 
   <img src="docs/images/settings-button.png" alt="Settings Button" width="150"/>
 </div>
 
+- The `Common` section lists the settings people change most, such as font size, tab size, word wrap, line numbers and the minimap. Every other setting is grouped into sections you can expand, such as `Cursor`, `Suggestions` and `Display`
+- Search matches setting names and descriptions
+- A changed setting is marked with a bar on its left. Click the reset button next to its name to put it back to the default
+- Number and text settings apply when you press `Enter` or leave the field
 - To import settings, click on the `Import Settings` button and upload a JSON file
-- To export settings, click on the `Export Settings` button to download a JSON file
+- To export settings, click on the `Export Settings` button to download a JSON file. It holds only the settings you changed
 
-The settings are persisted across sessions and are stored in your browser's local storage.
+Only the settings you change are saved, in your browser's local storage, so the rest keep following the editor's defaults.
 
 <div align="center">
   <img src="docs/images/editor-settings.png" alt="Editor Settings" width="400"/>
@@ -343,7 +346,7 @@ Follow Mode allows users to track another participant's actions in real-time by 
   <img src="docs/images/run-code-button.png" alt="Run Code Button" width="200"/>
 </div>
 
-You can execute code directly from the editor using the `Run Code` button in the top bar. The output will be displayed in the [Shared Terminal](#shared-terminal).
+You can execute code directly from the editor using the `Run Code` button in the top bar. The output will be displayed in the [Shared Terminal](#shared-terminal). The button is disabled while the editor is empty or while someone else's code is running, and while your own code runs it becomes `Cancel`.
 
 For a list of supported execution languages, refer to the [Supported Execution Languages](#supported-execution-languages) section.
 
@@ -370,12 +373,14 @@ Empty lines are ignored. You can also use `'` and `"` in your arguments and inpu
 
 ### Reading the Output
 
-Each result in the [Shared Terminal](#shared-terminal) starts with the language, its version, and how long the run took, for example `Python v3.10.0 (ran in 43ms using 7.6 MB)`.
+Each run in the [Shared Terminal](#shared-terminal) starts with the time, the language and its version, and who ran it, for example `18:35:33.760 Python 3.10.0 · Alice`. Your program's output follows, with error output in red.
+
+The last line says how the run ended, how long it took and the most memory it used, for example `Process exited with code 0 · ran in 43ms · 7.6 MB`.
 
 - `compiled in` appears for compiled languages such as C, C++, and Rust
-- `ran in` is how long your program itself ran, and `using` is the most memory it used
+- `ran in` is how long your program itself ran
 
-If your program doesn't finish normally, the last line says why:
+If your program doesn't finish normally, the last line is red and says why:
 
 | Message                                                 | Meaning                                                                          |
 | ------------------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -388,7 +393,7 @@ If your program doesn't finish normally, the last line says why:
 
 ## Shared Terminal
 
-The Shared Terminal allows you to execute commands and view the output in real-time. The terminal is shared among all participants in the room, and anyone who joins later sees the room's 50 most recent results.
+The Shared Terminal shows the output of code runs in real time. The terminal is shared among all participants in the room, and anyone who joins later sees the room's 50 most recent results. While code is running, the terminal shows who is running it, and a cancelled run shows as `Run stopped`.
 
 At the upper right corner of the terminal panel, you can [Download Output](#download-output) or [Clear Output](#clear-output).
 
@@ -400,15 +405,12 @@ At the upper right corner of the terminal panel, you can [Download Output](#down
 
 File name will be `codex-terminal-<date>--<time>.txt`, for example `codex-terminal-06-01-2025--17-37-28.txt`
 
-- Terminal output will not contain CodeX welcome message
 - Example output file:
 
     ```txt
-    [18:35:33.060]
-    🚀 Executing code...
-
-    [18:35:33.760] - python v3.10.0 (ran in 43ms using 7.6 MB)
+    [18:35:33.760] Python 3.10.0 · Alice
     Hello World
+    Process exited with code 0 · ran in 43ms · 7.6 MB
     ```
 
 ### Clear Output
@@ -455,12 +457,9 @@ To disconnect your GitHub account:
 
 2. Click on `Open from GitHub`
    - If you are not connected to GitHub, you will be prompted to connect your account
-   - If the current code editor is not empty, a confirmation dialog will appear asking if you want to replace the current code with the file from GitHub
-      <div align="center">
-        <img src="docs/images/open-file-confirmation.png" alt="Open File Confirmation" width="400"/>
-      </div>
 3. Select the repository, branch, and file you want to open
-4. The file will be loaded into the editor
+4. Click `Open`. If the editor already has code, you're asked to confirm first, as the file replaces the code for everyone in the room
+5. The file will be loaded into the editor
 
 <div align="center">
   <img src="docs/images/open-from-github.png" alt="Open from Github" width="400"/>
@@ -739,7 +738,7 @@ For a list of pre-installed libraries and what loads each one, refer to the [Pre
 
 ## Notepad
 
-The Notepad panel allows you to take notes in a rich text format. It supports markdown syntax for text formatting and organization.
+The Notepad panel allows you to take notes together in a rich text format. Everyone's edits merge as they type, and you can see where others are writing by their named cursors. It supports markdown syntax for text formatting and organization.
 
 <div align="center">
   <img src="docs/images/notepad.png" alt="Notepad" width="400"/>
@@ -747,21 +746,37 @@ The Notepad panel allows you to take notes in a rich text format. It supports ma
 
 ### Notepad Features
 
+- Type `/` to open a menu of blocks to insert, such as headings, lists, tables, images, and callouts. Type to filter it, or type a size such as `/3x4` to insert a table with 3 rows and 4 columns
+- Use the `Insert` menu in the toolbar for media (image, GIF, drawing, and YouTube, X, or Figma embeds), blocks (table, code block, divider, collapsible section, equation, poll, date, and column layouts), and notes (callouts and sticky notes)
+- Change the font, font size, text color, and background color of selected text from the toolbar. The `Aa` menu has lowercase, uppercase, capitalize, superscript, subscript, highlight, ruby annotations, and clear formatting
+- Align blocks left, center, right, justify, start, or end, or indent and outdent them, from the alignment menu
+- Select text to show a small formatting bar above it
+- Click an image to select it, then drag the handles on its sides to resize it, or click `Add caption` to write a caption under it
+- Click the arrow next to a collapsible section's title to open or close it. Each person opens and closes sections for themselves
+- Press `Enter` on an empty last line to leave a callout, sticky note, or collapsible section
+- Double-click an equation, or hover over it and click the pencil, to edit it. Hover over a drawing and click `Edit` to change it
+- Click an option in a poll to vote. Votes are shared with everyone in the room
+- Hover over a block and drag the handle on its left to move it, or click `+` to add a block below it
+- Put the caret in a link to open, edit, or remove it. `Ctrl + click` (`⌘ + click` on macOS) opens a link directly
+- Put the caret in a table cell and click the arrow in its corner to add or remove rows and columns
+- Hover over a code block to change its language or copy its code
+- Undo and redo only affect your own edits, not other people's
+
 For a list of supported notepad features, markdown syntax, and shortcuts, refer to the [Notepad Features and Markdown Syntax](#notepad-features-and-markdown-syntax) section.
 
 ### Markdown Support
 
-You can switch between `rich text` and `source` modes in the Notepad to view and edit markdown syntax.
+You can switch between `rich text` and `source` modes in the Notepad with the `Source mode` button to view and edit markdown syntax. Changes made in source mode apply to the shared note shortly after you stop typing, and only the blocks you changed are replaced, so other people can keep editing the rest.
 
 <div align="center">
   <img src="docs/images/markdown-support.png" alt="Markdown Support" width="400"/>
 </div>
 
-In case of an error parsing markdown, you can switch to `source` mode to fix the error. Refer to the [Error parsing markdown](#error-parsing-markdown) section.
+Markdown the Notepad doesn't recognize is kept as plain text.
 
 ### Limitations of Notepad
 
-Notepad, unlike the code editor, is not optimized for real-time updates and may be slow on low-end devices when handling large amounts of text.
+Notes are saved and shown in source mode as markdown, so anything markdown can't express, such as empty lines between blocks, isn't kept when you save a note or edit it in source mode.
 
 ### Saving and Opening Notes
 
@@ -774,14 +789,15 @@ You can save notes to your local device or open existing notes in the Notepad.
 #### Saving Notes
 
 1. Click on the `Save note` button in the Notepad
-2. Enter the note name and click `Save`
 
-Notes are saved in markdown format with the `.md` extension.
+Notes are saved in markdown format as `codex-note-<date and time>.md`.
 
 #### Opening Notes
 
 1. Click on the `Open note` button in the Notepad
 2. Select the note you want to open
+
+Opening a note replaces the note for everyone in the room. If the note isn't empty, you're asked to confirm once you've chosen the file.
 
 For a list of supported file formats, refer to the [Notepad Features](#notepad-features) section.
 
@@ -886,19 +902,6 @@ CodeX reconnects automatically when the connection drops and catches up on any e
 **To resolve this issue:**
 
 - Write code in the editor
-
-### Error parsing markdown
-
-**This issue can be caused by:**
-
-- Incorrect markdown syntax
-- Incorrect markdown commands
-
-**To resolve this issue:**
-
-1. Switch to `source` mode in the Notepad
-2. Correct the markdown syntax or commands
-3. Switch back to `rich text` mode to see if the error disappears
 
 ### Please check the information and try again
 
@@ -1324,28 +1327,49 @@ Each library loads only when your code contains one of the words in the last col
 
 ### Notepad Features and Markdown Syntax
 
-| Feature               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Shortcut / Markdown Code                                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Open Note             | Open a text file in the Notepad. Supports `txt`, `md`, `mdx`, `xbl`, `xsl`, `vtt`, `text`, `xslt`, `ehtml`, `sh`, `html`, `ics`, `mjs`, `js`, `shtml`, `xml`, `csv`, `css`, `shtm`, `htm`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |                                                                                                                         |
-| Save Note             | Save the current note as a markdown (`md`) file                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                         |
-| Undo                  | Undo the last action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `ctrl + z`                                                                                                              |
-| Redo                  | Redo the last undone action                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `ctrl + y` or `ctrl + shift + z`                                                                                        |
-| Bold                  | Make selected text bold                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `ctrl + b` or `**text**`                                                                                                |
-| Italic                | Make selected text italic                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `ctrl + i` or `*text*`                                                                                                  |
-| Underline             | Underline selected text                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `ctrl + u` or `<u>text</u>`                                                                                             |
-| Inline code format    | Format selected text as inline code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | \`text\`                                                                                                                |
-| Strikethrough         | Strike through selected text                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `~~text~~`                                                                                                              |
-| Superscript           | Format selected text as superscript                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `<sup>text</sup>`                                                                                                       |
-| Subscript             | Format selected text as subscript                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `<sub>text</sub>`                                                                                                       |
-| Bulletted list        | Create a bulletted list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `* List item`                                                                                                           |
-| Numbered list         | Create a numbered list                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `1. List item`                                                                                                          |
-| Check list            | Create a checklist                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `* [ ] List item`                                                                                                       |
-| Select block type     | Select block type for selected text. Supports paragraphs (`p`), headings (`h1` to `h6`), and blockquote (`blockquote`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `# Heading 1`, `## Heading 2`, `### Heading 3`, `#### Heading 4`, `##### Heading 5`, `###### Heading 6`, `> Blockquote` |
-| Create link           | Create a hyperlink                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `[Hyperlink Text](url "Title")`                                                                                         |
-| Insert image          | Insert an image. Supports only image URLs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `![Alt Text](image-url "title")` or `<img height="..." width="..." alt="..." src="...">`                                |
-| Insert table          | Insert a table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                         |
-| Insert thematic break | Insert a thematic break                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `***`                                                                                                                   |
-| Insert code block     | Insert a code block. Supports languages: `apl`, `asn1`, `asterisk`, `brainfuck`, `c`, `cpp`, `csharp`, `ceylon`, `clojure`, `gss`, `cmake`, `cobol`, `coffeescript`, `commonlisp`, `crystal`, `css`, `cypher`, `cython`, `d`, `dart`, `django`, `dockerfile`, `diff`, `dtd`, `dylan`, `ebnf`, `ecl`, `eiffel`, `elixir`, `elm`, `erlang`, `factor`, `fcl`, `forth`, `fortran`, `fsharp`, `gas`, `gherkin`, `go`, `groovy`, `haml`, `handlebars`, `haskell`, `haxe`, `html`, `http`, `idl`, `java`, `js`, `jsx`, `jinja2`, `julia`, `kotlin`, `less`, `livescript`, `lua`, `md`, `mathematica`, `mbox`, `mirc`, `modelica`, `mscgen`, `mumps`, `nginx`, `nsis`, `ntriples`, `objc`, `ocaml`, `octave`, `oz`, `pascal`, `pegjs`, `perl`, `pgp`, `php`, `pig`, `powershell`, `properties`, `protobuf`, `pug`, `puppet`, `python`, `q`, `r`, `rpm`, `rst`, `ruby`, `rust`, `sas`, `sass`, `spreadsheet`, `scala`, `scheme`, `scss`, `shell`, `sieve`, `slim`, `smalltalk`, `smarty`, `solr`, `soy`, `stylus`, `sql`, `sparql`, `squirrel`, `swift`, `stex`, `tcl`, `textile`, `tiddlywiki`, `tiki`, `toml`, `tornado`, `troff`, `tsx`, `ttcn`, `turtle`, `twig`, `vb`, `vbscript`, `velocity`, `verilog`, `vhdl`, `vue`, `webidl`, `wast`, `xml`, `xquery`, `yacas`, `yaml`, `z80` | \`\`\`[language] [code]\`\`\`                                                                                           |
-| Insert admonition     | Insert an admonition. Supports `note`, `tip`, `danger`, `info`, `caution`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `:::note [text] :::`                                                                                                    |
-| Rich text mode        | Switch to rich text mode                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                                                                                                         |
-| Source mode           | Switch to source mode (markdown)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |                                                                                                                         |
+Shortcuts use `Ctrl` on Windows and Linux and `⌘` on macOS.
+
+| Feature | Description | Shortcut / Markdown Code |
+| --- | --- | --- |
+| Open note | Open a markdown or text file in the Notepad, replacing the note for everyone. Supports `md`, `mdx`, `markdown`, `txt`, and other text files |  |
+| Save note | Save the current note as a markdown (`md`) file |  |
+| Undo | Undo your last edit | `ctrl + z` |
+| Redo | Redo your last undone edit | `ctrl + y` (Windows, Linux) or `⌘ + shift + z` (macOS) |
+| Insert menu | Open a menu of blocks to insert at the caret | `/` |
+| Bold | Make selected text bold | `ctrl + b` or `**text**` |
+| Italic | Make selected text italic | `ctrl + i` or `*text*` |
+| Underline | Underline selected text | `ctrl + u` or `<u>text</u>` |
+| Strikethrough | Strike through selected text | `ctrl + shift + x` or `~~text~~` |
+| Inline code | Format selected text as inline code | `ctrl + e` or \`text\` |
+| Highlight | Highlight selected text | `ctrl + shift + h` or `==text==` |
+| Superscript | Format selected text as superscript | `<sup>text</sup>` |
+| Subscript | Format selected text as subscript | `<sub>text</sub>` |
+| Clear formatting | Remove all formatting from selected text | `ctrl + \` |
+| Block type | Change the block at the caret. Supports text, headings 1 to 6, lists, quote, and code block | `# Heading 1` to `###### Heading 6`, `> Quote` |
+| Bulleted list | Create a bulleted list | `- List item` |
+| Numbered list | Create a numbered list | `1. List item` |
+| Checklist | Create a checklist. Click a box to tick it | `[ ] List item` or `- [ ] List item` |
+| Indent | Indent or outdent a list item | `tab` / `shift + tab` |
+| Link | Add a link to selected text, or remove the link at the caret | `ctrl + k` or `[Link text](url)` |
+| Image | Insert an image from a web address or upload one up to 1 MB. Drag its side handles to resize it and click `Add caption` to caption it | `![Alt text](image-url)`, or `<img src="image-url" alt="Alt text" width="320" data-caption="Caption">` for a sized or captioned image |
+| GIF | Insert an animated GIF from a web address or upload one | `![Alt text](gif-url)` |
+| Drawing | Insert or edit a drawing made with Excalidraw | Saved as an `excalidraw` code block |
+| Embed | Embed a YouTube video, X post, or Figma file from its link | `<iframe src="embed-url"></iframe>` |
+| Font | Change the font of selected text, including Geist and Geist Mono | `<span style="font-family: Georgia">text</span>` |
+| Font size | Change the font size of selected text with `-` and `+`, or type a size from 8 to 96 | `<span style="font-size: 24px">text</span>` |
+| Text color | Change the color of selected text | `<span style="color: #ef4444">text</span>` |
+| Background color | Change the background color of selected text | `<span style="background-color: #eab30859">text</span>` |
+| Text case | Show selected text in lowercase, uppercase, or capitalized | `<span style="text-transform: uppercase">text</span>` |
+| Ruby annotation | Add a small reading above selected text | `<ruby>漢字<rt>かんじ</rt></ruby>` |
+| Alignment | Align the block at the caret left, center, right, justify, start, or end | `<div align="center">` around blocks |
+| Equation | Insert a LaTeX equation, inline or as its own block | `$x^2$` inline, or `$$` on the lines before and after a block equation |
+| Date | Insert a date. Click it to pick another date | `<time datetime="2026-11-08">Nov 8, 2026</time>` |
+| Poll | Insert a poll that everyone in the room can vote in | Saved as a `poll` code block |
+| Columns layout | Split blocks into 2, 3, or 4 columns | `<div data-columns="1fr 1fr">` with a `<div data-column>` for each column |
+| Collapsible section | Insert a section with a title that can be opened and closed | `<details open><summary>Title</summary> ... </details>` |
+| Sticky note | Insert a sticky note. Supports `yellow`, `pink`, `green`, `blue`, `purple` | `<div data-sticky="yellow">` around blocks |
+| Table | Insert a table by picking its size from a grid. The first row is the header | `/3x4`, or a markdown table |
+| Divider | Insert a horizontal line | `---` |
+| Code block | Insert a code block with syntax highlighting. Supports `bash`, `c`, `clojure`, `cobol`, `cpp`, `crystal`, `csharp`, `css`, `d`, `dart`, `diff`, `dockerfile`, `elixir`, `erlang`, `fortran`, `fsharp`, `gdscript`, `go`, `graphql`, `groovy`, `haskell`, `haxe`, `html`, `http`, `ini`, `java`, `javascript`, `json`, `jsx`, `julia`, `kotlin`, `latex`, `lisp`, `lua`, `makefile`, `markdown`, `matlab`, `nasm`, `nginx`, `nim`, `objectivec`, `ocaml`, `odin`, `pascal`, `perl`, `php`, `powershell`, `prolog`, `protobuf`, `python`, `r`, `racket`, `ruby`, `rust`, `sass`, `scala`, `scheme`, `scss`, `solidity`, `sql`, `swift`, `tcl`, `toml`, `tsx`, `typescript`, `v`, `vbnet`, `verilog`, `vhdl`, `wasm`, `xml`, `yaml`, `zig`, and plain text | \`\`\`[language] then a space |
+| Callout | Insert a callout. Supports `note`, `tip`, `info`, `caution`, `danger` | `:::note` then a space, or `:::note [text] :::` in markdown |
+| Source mode | Switch between rich text and markdown source |  |
