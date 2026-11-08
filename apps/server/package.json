@@ -23,7 +23,7 @@
     "yjs": "13.6.33"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261030.1",
+    "@cloudflare/workers-types": "^5.20261108.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "@types/ws": "^8.18.2",
@@ -34,7 +34,7 @@
     "ts-jest": "^29.4.15",
     "ts-node": "^10.9.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "wrangler": "^4.156.0",
-    "ws": "^8.22.0"
+    "wrangler": "^4.158.0",
+    "ws": "^8.22.2"
   }
 }
