@@ -595,7 +595,11 @@
   @apply absolute -top-[19px] left-0 z-10 h-[19px] px-1 font-sans text-xs leading-[19px] font-medium whitespace-nowrap;
 }
 
-.notepad-cursor-name[data-below="true"] {
+.notepad-cursor[data-below="true"]::before {
+  @apply top-full translate-y-0;
+}
+
+.notepad-cursor[data-below="true"] > .notepad-cursor-name {
   @apply top-full;
 }
 

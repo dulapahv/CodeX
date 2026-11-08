@@ -193,7 +193,7 @@ const styleCursorLabels = (binding: Binding) => {
     }
     const { caret, name } = selection;
     name.style.color = getTextColor(cursor.color);
-    name.dataset.below = String(caret.offsetTop < LABEL_HEIGHT);
+    caret.dataset.below = String(caret.offsetTop < LABEL_HEIGHT);
     const position = `${caret.style.top},${caret.style.left}`;
     if (caret.dataset.position !== position) {
       caret.dataset.position = position;
