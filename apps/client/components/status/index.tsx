@@ -20,7 +20,8 @@ import type { BetterStackResponse, ServiceStatus } from "./types";
 
 type MonitorStatus = BetterStackResponse["data"]["attributes"]["status"];
 
-const REFRESH_INTERVAL = 15_000; // 15 seconds
+// Better Stack checks the server every few minutes, so polling faster adds nothing
+const REFRESH_INTERVAL = 60_000;
 
 const getServerStatus = (status: MonitorStatus | null): ServiceStatus => {
   if (!status) {

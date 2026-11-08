@@ -12,9 +12,17 @@ import { NextResponse } from "next/server";
 import type { BetterStackResponse } from "@/components/status/types";
 import { KASCA_SERVER_MONITOR_ID } from "@/lib/constants";
 
-// export const runtime = 'edge';
+// Better Stack only checks the server every few minutes, so a short-lived
+// copy answers most requests without calling its API again
+const CACHE_DURATION_MS = 30_000;
+
+let cached: { expiresAt: number; status: string | null } | null = null;
 
 export async function GET() {
+  if (cached && cached.expiresAt > Date.now()) {
+    return NextResponse.json({ status: cached.status });
+  }
+
   try {
     const response = await fetch(
       `https://uptime.betterstack.com/api/v2/monitors/${KASCA_SERVER_MONITOR_ID}`,
@@ -30,7 +38,9 @@ export async function GET() {
     }
 
     const { data } = (await response.json()) as BetterStackResponse;
-    return NextResponse.json({ status: data?.attributes.status ?? null });
+    const status = data?.attributes.status ?? null;
+    cached = { expiresAt: Date.now() + CACHE_DURATION_MS, status };
+    return NextResponse.json({ status });
   } catch (error) {
     console.error("Error fetching server status:", error);
     return NextResponse.json(
