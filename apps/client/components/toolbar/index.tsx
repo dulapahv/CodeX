@@ -11,7 +11,14 @@
 
 import type { Monaco } from "@monaco-editor/react";
 import type * as monacoEditor from "monaco-editor";
-import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AboutDialog, type AboutDialogRef } from "@/components/about-dialog";
 import {
   COLLABORATIVE_REDO_ACTION_ID,
@@ -22,10 +29,7 @@ import {
   OpenFromRepositoryDialog,
   type OpenFromRepositoryDialogRef,
 } from "@/components/open-from-repository-dialog";
-import {
-  OpenPromptDialog,
-  type OpenPromptDialogRef,
-} from "@/components/open-prompt-dialog";
+import { ReplacePromptDialog } from "@/components/replace-prompt-dialog";
 import {
   SaveToRepositoryDialog,
   type SaveToRepositoryDialogRef,
@@ -40,7 +44,12 @@ import { REPO_URL } from "@/lib/constants";
 import { DesktopMenu } from "./components/desktop-menu";
 import { MobileMenu } from "./components/mobile-menu";
 import type { ToolbarActions } from "./types";
-import { getShortcutPlatform, openLocal, saveLocal } from "./utils";
+import {
+  getShortcutPlatform,
+  openLocalFile,
+  pickLocalFile,
+  saveLocal,
+} from "./utils";
 
 interface ToolbarProps {
   editor: monacoEditor.editor.IStandaloneCodeEditor | null;
@@ -70,14 +79,29 @@ const Toolbar = ({
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const openFromRepositoryDialogRef = useRef<OpenFromRepositoryDialogRef>(null);
-  const openPromptDialogRef1 = useRef<OpenPromptDialogRef>(null);
-  const openPromptDialogRef2 = useRef<OpenPromptDialogRef>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [isReplacePromptOpen, setIsReplacePromptOpen] = useState(false);
   const saveToRepositoryDialogRef = useRef<SaveToRepositoryDialogRef>(null);
   const settingsSheetRef = useRef<SettingsSheetRef>(null);
   const leaveDialogRef = useRef<LeaveDialogRef>(null);
   const aboutDialogRef = useRef<AboutDialogRef>(null);
 
   const platform = getShortcutPlatform();
+
+  // Asks only once a file is picked and there's code it would replace
+  const openLocal = useCallback(() => {
+    if (!(monaco && editor)) {
+      return;
+    }
+    pickLocalFile((file) => {
+      if (editor.getModel()?.getValue()) {
+        setPendingFile(file);
+        setIsReplacePromptOpen(true);
+      } else {
+        openLocalFile(monaco, editor, file);
+      }
+    });
+  }, [monaco, editor]);
 
   useEffect(() => {
     // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard shortcut handler requires many branches
@@ -87,11 +111,7 @@ const Toolbar = ({
           switch (event.key) {
             case "O":
               event.preventDefault();
-              if (editor?.getModel()?.getValue()) {
-                openPromptDialogRef2.current?.openDialog();
-              } else {
-                openFromRepositoryDialogRef.current?.openDialog();
-              }
+              openFromRepositoryDialogRef.current?.openDialog();
               break;
             case "S":
               event.preventDefault();
@@ -102,6 +122,10 @@ const Toolbar = ({
           }
         } else {
           switch (event.key) {
+            case "o":
+              event.preventDefault();
+              openLocal();
+              break;
             case "q":
               event.preventDefault();
               leaveDialogRef.current?.openDialog();
@@ -128,7 +152,7 @@ const Toolbar = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [monaco, editor]);
+  }, [monaco, editor, openLocal]);
 
   if (!(monaco && editor)) {
     return null;
@@ -185,20 +209,8 @@ const Toolbar = ({
     moveLineDown: runEditorAction("editor.action.moveLinesDownAction"),
     moveLineUp: runEditorAction("editor.action.moveLinesUpAction"),
     nextProblem: runEditorAction("editor.action.marker.nextInFiles"),
-    openLocal: () => {
-      if (editor.getModel()?.getValue()) {
-        openPromptDialogRef1.current?.openDialog();
-      } else {
-        openLocal(monaco, editor);
-      }
-    },
-    openRepository: () => {
-      if (editor.getModel()?.getValue()) {
-        openPromptDialogRef2.current?.openDialog();
-      } else {
-        openFromRepositoryDialogRef.current?.openDialog();
-      }
-    },
+    openLocal,
+    openRepository: () => openFromRepositoryDialogRef.current?.openDialog(),
     organizeImports: runEditorAction("editor.action.organizeImports"),
     outdentLine: runEditorAction("editor.action.outdentLines"),
     paste: runEditorAction("editor.action.clipboardPasteAction"),
@@ -272,13 +284,18 @@ const Toolbar = ({
         monaco={monaco}
         ref={openFromRepositoryDialogRef}
       />
-      <OpenPromptDialog
-        callback={() => openLocal(monaco, editor)}
-        ref={openPromptDialogRef1}
-      />
-      <OpenPromptDialog
-        callback={() => openFromRepositoryDialogRef.current?.openDialog()}
-        ref={openPromptDialogRef2}
+      <ReplacePromptDialog
+        confirmLabel="Replace code"
+        description="This replaces the editor's code for everyone in the room. Save the current code first if you want to keep it."
+        onCancel={() => setIsReplacePromptOpen(false)}
+        onConfirm={() => {
+          setIsReplacePromptOpen(false);
+          if (pendingFile) {
+            openLocalFile(monaco, editor, pendingFile);
+          }
+        }}
+        open={isReplacePromptOpen}
+        title={`Replace the code with ${pendingFile?.name ?? "this file"}?`}
       />
       <SaveToRepositoryDialog editor={editor} ref={saveToRepositoryDialogRef} />
       <SettingsSheet editor={editor} monaco={monaco} ref={settingsSheetRef} />

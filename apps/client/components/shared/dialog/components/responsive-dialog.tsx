@@ -54,6 +54,8 @@ export const ResponsiveDialog = ({
         <DialogContent
           className={cn(
             "flex flex-col gap-4 sm:max-w-2xl",
+            // Base UI draws no backdrop for a dialog opened on top of this one, so dim it instead
+            "after:pointer-events-none after:absolute after:inset-0 after:bg-black/30 after:opacity-0 after:transition-opacity after:duration-100 data-nested-dialog-open:after:opacity-100 supports-backdrop-filter:data-nested-dialog-open:after:backdrop-blur-xs",
             fullHeight && "h-[90vh]"
           )}
         >

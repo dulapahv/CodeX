@@ -7,6 +7,7 @@
 import type { Monaco } from "@monaco-editor/react";
 import type * as monacoEditor from "monaco-editor";
 import { forwardRef, useState } from "react";
+import { ReplacePromptDialog } from "@/components/replace-prompt-dialog";
 import { RepoBrowser } from "@/components/repo-browser";
 import {
   type ExtendedTreeDataItem,
@@ -23,6 +24,7 @@ import { ProviderTabs } from "@/components/shared/git/components/provider-tabs";
 import { useProviderChoice } from "@/components/shared/git/hooks/use-provider-choice";
 import { getDisplayPath } from "@/components/shared/git/utils/get-display-path";
 import { requestJson } from "@/components/shared/git/utils/request";
+import { loadIntoEditor } from "@/components/toolbar/utils";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { PROVIDER_LABELS, type ProviderId } from "@/lib/git-providers/types";
@@ -46,6 +48,11 @@ const OpenFromRepositoryDialog = forwardRef<
   const [branch, setBranch] = useState("");
   const [isFetchingContent, setIsFetchingContent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<{
+    content: string;
+    name: string;
+  } | null>(null);
+  const [isReplacePromptOpen, setIsReplacePromptOpen] = useState(false);
 
   const resetSelection = () => {
     setRepo("");
@@ -84,27 +91,27 @@ const OpenFromRepositoryDialog = forwardRef<
         `/api/${provider}/file?${new URLSearchParams({ path, ref: branch, repo })}`
       );
 
-      // Try to detect language from file extension
-      const extension = fileName.split(".").pop() || "";
-      const language = monaco.languages
-        .getLanguages()
-        .find((lang) =>
-          lang.extensions?.some((ext) => ext.replace(".", "") === extension)
-        );
-
-      // Set content and language (default to plaintext)
-      editor.setValue(content);
-      const model = editor.getModel();
-      if (model) {
-        monaco.editor.setModelLanguage(model, language?.id || "plaintext");
+      // Asks first when the file would replace code someone wrote
+      if (editor.getModel()?.getValue()) {
+        setPendingFile({ content, name: fileName });
+        setIsReplacePromptOpen(true);
+        return;
       }
-
+      loadIntoEditor(monaco, editor, fileName, content);
       closeDialog();
     } catch (fetchError) {
       setError(parseError(fetchError));
     } finally {
       setIsFetchingContent(false);
     }
+  };
+
+  const replacePendingFile = () => {
+    setIsReplacePromptOpen(false);
+    if (monaco && editor && pendingFile) {
+      loadIntoEditor(monaco, editor, pendingFile.name, pendingFile.content);
+    }
+    closeDialog();
   };
 
   const content = (
@@ -128,6 +135,14 @@ const OpenFromRepositoryDialog = forwardRef<
           provider={provider}
         />
       )}
+      <ReplacePromptDialog
+        confirmLabel="Replace code"
+        description="This replaces the editor's code for everyone in the room. Save the current code first if you want to keep it."
+        onCancel={() => setIsReplacePromptOpen(false)}
+        onConfirm={replacePendingFile}
+        open={isReplacePromptOpen}
+        title={`Replace the code with ${pendingFile?.name ?? "this file"}?`}
+      />
     </ProviderTabs>
   );
 

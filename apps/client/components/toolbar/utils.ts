@@ -108,56 +108,64 @@ function getFileExtension(languageId: string, monaco: Monaco): string {
 }
 
 /**
- * Opens a local file and sets its content in the Monaco editor
- * @param monaco - Monaco instance for language detection
- * @param editor - Monaco editor instance
- * @throws Error if editor is null or file reading fails
+ * Asks the user to pick a local file
+ * @param onPick - Called with the chosen file, unless the picker is cancelled
  */
-export const openLocal = (
-  monaco: Monaco,
-  editor: monacoEditor.editor.IStandaloneCodeEditor | null
-): void => {
-  // Create input element
+export const pickLocalFile = (onPick: (file: File) => void): void => {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "*.*";
-
-  // Handle file selection
-  input.onchange = (e: Event) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!(file && editor)) {
-      return;
+  input.onchange = () => {
+    const file = input.files?.[0];
+    if (file) {
+      onPick(file);
     }
-
-    // Create file reader
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-
-      // Try to detect language from file extension
-      const extension = file.name.split(".").pop() || "";
-      const languages = monaco.languages.getLanguages();
-      const language = languages.find((lang) =>
-        lang.extensions?.some((ext) => ext.replace(".", "") === extension)
-      );
-
-      // Set content and language (default to plaintext)
-      editor.setValue(content);
-      const model = editor.getModel();
-      if (model) {
-        monaco.editor.setModelLanguage(model, language?.id || "plaintext");
-      }
-    };
-
-    reader.onerror = () => {
-      console.error("Failed to read file:", reader.error);
-    };
-
-    reader.readAsText(file);
   };
-
-  // Trigger file dialog
   input.click();
+};
+
+/**
+ * Replaces the editor's content and picks the language from the file name
+ * @param monaco - Monaco instance for language detection
+ * @param editor - Monaco editor instance
+ * @param fileName - Name of the file, used to detect its language
+ * @param content - The file's text
+ */
+export const loadIntoEditor = (
+  monaco: Monaco,
+  editor: monacoEditor.editor.IStandaloneCodeEditor,
+  fileName: string,
+  content: string
+): void => {
+  const extension = fileName.split(".").pop() || "";
+  const language = monaco.languages
+    .getLanguages()
+    .find((lang) =>
+      lang.extensions?.some((ext) => ext.replace(".", "") === extension)
+    );
+
+  editor.setValue(content);
+  const model = editor.getModel();
+  if (model) {
+    monaco.editor.setModelLanguage(model, language?.id || "plaintext");
+  }
+};
+
+/**
+ * Reads a local file into the Monaco editor
+ * @param monaco - Monaco instance for language detection
+ * @param editor - Monaco editor instance
+ * @param file - The file to open
+ */
+export const openLocalFile = async (
+  monaco: Monaco,
+  editor: monacoEditor.editor.IStandaloneCodeEditor,
+  file: File
+): Promise<void> => {
+  try {
+    loadIntoEditor(monaco, editor, file.name, await file.text());
+  } catch (error) {
+    console.error("Failed to read file:", parseError(error));
+  }
 };
 
 /**
