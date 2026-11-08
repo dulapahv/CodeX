@@ -29,47 +29,49 @@ interface ShowcaseImage {
 
 const showcaseImages: ShowcaseImage[] = [
   {
-    alt: "Real-time collaboration",
+    alt: "Five people editing the same file, each with a named cursor and selection",
     description:
-      "Code together in real-time with cursor sharing, highlighting, and follow mode",
+      "Code together with live cursors, selections, and follow mode, so you always see who is where",
     icon: <CodeIcon className="size-4" />,
     src: "/images/showcase/collaborate.png",
     title: "Real-time Collaboration",
   },
   {
-    alt: "Shared terminal",
+    alt: "Shared terminal showing a failed run by Priya and a successful run by Mia",
     description:
-      "Execute code and see results together with over 80 supported languages",
+      "Run code in over 80 languages and see each result, who ran it, and how long it took",
     icon: <TerminalWindowIcon className="size-4" />,
     src: "/images/showcase/terminal.png",
     title: "Shared Terminal",
   },
   {
-    alt: "Live preview",
+    alt: "Landing page code beside its live preview",
     description:
-      "Preview UI changes instantly with loaded libraries like Tailwind CSS, and more",
+      "Preview HTML as you type, with Tailwind CSS, Alpine.js, GSAP, Chart.js, and more loaded on demand",
     icon: <LayoutIcon className="size-4" />,
     src: "/images/showcase/live-preview.png",
     title: "Live Preview",
   },
   {
-    alt: "GitHub integrated",
-    description: "Save your work and open files from your repositories",
+    alt: "Saving a file to a repository with a commit message",
+    description:
+      "Open and save files in your GitHub, GitLab, Bitbucket, and Codeberg repositories",
     icon: <GitPullRequestIcon className="size-4" />,
     src: "/images/showcase/github.png",
-    title: "GitHub Integrated",
+    title: "Git Integration",
   },
   {
-    alt: "Shared notepad",
+    alt: "Shared notepad with formatting toolbar, date, callout, checklist, and poll",
     description:
-      "Take notes together in real-time with rich text and markdown support",
+      "Plan together in rich text with tables, polls, equations, drawings, and markdown",
     icon: <NotebookIcon className="size-4" />,
     src: "/images/showcase/notepad.png",
     title: "Shared Notepad",
   },
   {
-    alt: "Video and voice",
-    description: "Communicate with your team using video and voice chat",
+    alt: "Video call with six participants and call controls",
+    description:
+      "Talk face to face with built-in video, voice, and screen sharing",
     icon: <VideoCameraIcon className="size-4" />,
     src: "/images/showcase/video.png",
     title: "Video & Voice",
