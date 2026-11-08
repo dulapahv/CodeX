@@ -1,10 +1,7 @@
 /**
- * Terminal output component that displays execution results.
- * Features:
- * - Timestamped output
- * - Color-coded messages
- * - Execution time and memory display
- * - Error output handling
+ * One entry in the shared terminal. A run shows a muted header with the
+ * language and who ran it, the program's output, then how it ended. Notices
+ * such as a stopped run are a single muted line.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -15,49 +12,49 @@ import { cn } from "@/lib/utils";
 
 import {
   describeExit,
-  formatExecutionDetails,
   formatTimestamp,
-  getMessageColor,
+  getRunFooter,
+  getRunTitle,
+  isRunError,
+  isRunOutput,
 } from "../utils";
+
+const OUTPUT_CLASS = "break-all whitespace-pre-wrap";
 
 interface OutputProps {
   result: ExecutionResult;
 }
 
 const Output = ({ result }: OutputProps) => {
-  const timestamp = new Date(result.timestamp ?? Date.now());
-  const messageColor = getMessageColor(result.type);
-  const language = String(result.language);
-  const exit = describeExit(result);
+  const timestamp = formatTimestamp(new Date(result.timestamp ?? Date.now()));
+  const { stderr, stdout } = result.run;
+  const isRun = isRunOutput(result);
+  const hasOutput = Boolean(stdout || stderr);
 
   return (
-    <div>
-      <div className="flex">
-        <span className="text-muted-foreground mr-4">
-          [{formatTimestamp(timestamp)}]
-        </span>
-        <div className="flex-1">
-          {result.type === "output" && (
-            <div className="text-muted-foreground">
-              {`${language.charAt(0).toUpperCase()}${language.slice(1)} v${result.version}${formatExecutionDetails(result)}`}
-            </div>
-          )}
-
-          {result.run.stdout && (
-            <div className={cn("break-all whitespace-pre-wrap", messageColor)}>
-              {result.run.stdout}
-            </div>
-          )}
-
-          {result.run.stderr && (
-            <div className="break-all whitespace-pre-wrap text-red-500">
-              Error: {result.run.stderr}
-            </div>
-          )}
-
-          {exit && <div className="text-red-500">{exit}</div>}
-        </div>
+    <div className="space-y-1">
+      <div className="text-muted-foreground flex gap-3 pr-16 text-xs">
+        <time className="shrink-0 tabular-nums">{timestamp}</time>
+        <span className="min-w-0 truncate">{getRunTitle(result)}</span>
       </div>
+
+      {isRun && stdout && <div className={OUTPUT_CLASS}>{stdout}</div>}
+      {(isRun || isRunError(result)) && stderr && (
+        <div className={cn(OUTPUT_CLASS, "text-red-500")}>{stderr}</div>
+      )}
+      {isRun && !hasOutput && (
+        <div className="text-muted-foreground italic">No output</div>
+      )}
+      {isRun && (
+        <div
+          className={cn(
+            "text-xs",
+            describeExit(result) ? "text-red-500" : "text-muted-foreground"
+          )}
+        >
+          {getRunFooter(result)}
+        </div>
+      )}
     </div>
   );
 };

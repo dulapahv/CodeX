@@ -13,7 +13,13 @@ import type { ExecutionResult } from "@codex/types/terminal";
 import type { Monaco } from "@monaco-editor/react";
 import { PlayIcon, StopCircleIcon } from "@phosphor-icons/react";
 import type * as monacoEditor from "monaco-editor";
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { usePresenceSelector, useRoom } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
@@ -40,8 +46,24 @@ const RunButton = ({
   const [isLocalRunning, setIsLocalRunning] = useState(false);
   const [args, setArgs] = useState<string[]>([]);
   const [stdin, setStdin] = useState("");
+  const [isEditorEmpty, setIsEditorEmpty] = useState(true);
 
-  // Only the person running can cancel; everyone else waits for them
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+    const update = () => setIsEditorEmpty(!editor.getValue().trim());
+    update();
+    const subscription = editor.onDidChangeModelContent(update);
+    return () => subscription.dispose();
+  }, [editor]);
+
+  const userName = usePresenceSelector(
+    (states) => states.get(room.clientId)?.user?.name,
+    Object.is
+  );
+
+  // Only the person running can cancel, everyone else waits for them
   const isOtherRunning = usePresenceSelector(
     (states) =>
       [...states].some(
@@ -53,8 +75,9 @@ const RunButton = ({
 
   const reporter: RunReporter = {
     report: (result) => {
-      setOutput((previous) => [...previous, result]);
-      room.send({ result, type: "terminal" });
+      const signed = { ...result, runBy: userName };
+      setOutput((previous) => [...previous, signed]);
+      room.send({ result: signed, type: "terminal" });
     },
     setRunning: (running) => {
       setIsLocalRunning(running);
@@ -78,7 +101,9 @@ const RunButton = ({
             isRunning && "bg-red-600 hover:bg-red-700",
             className
           )}
-          disabled={!editor || (isOtherRunning && !isLocalRunning)}
+          disabled={
+            !editor || (!isLocalRunning && (isOtherRunning || isEditorEmpty))
+          }
           onClick={
             isLocalRunning
               ? () => cancelExecution(abortControllerRef, reporter)

@@ -34,6 +34,8 @@ export interface ExecutionResult {
   compile?: ExecutionStage;
   language: string;
   run: ExecutionStage;
+  /** Name of the person who ran the code, as the room knew them */
+  runBy?: string;
   timestamp?: Date;
   type?: ExecutionResultType;
   version: string;

@@ -1,10 +1,7 @@
 /**
- * Utility functions for formatting terminal output.
- * Features:
- * - Execution time and memory formatting
- * - Exit reason descriptions
- * - Timestamp formatting
- * - Message type coloring
+ * Formats a run for the shared terminal and its downloaded log. A run is a
+ * header naming the language and who ran it, the program's output, and a
+ * footer with how it ended, how long it took and the memory it used.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -43,9 +40,9 @@ const SIGNALS_BY_EXIT_CODE = new Map([
 const didCompileFail = (result: ExecutionResult) =>
   result.compile !== undefined && result.compile.code !== 0;
 
-export const formatExecutionDetails = (result: ExecutionResult) => {
+export const getRunDetails = (result: ExecutionResult): string[] => {
   if (didCompileFail(result)) {
-    return "";
+    return [];
   }
 
   const details: string[] = [];
@@ -56,12 +53,12 @@ export const formatExecutionDetails = (result: ExecutionResult) => {
 
   const { memory, wall_time: runTime } = result.run;
   if (typeof runTime === "number") {
-    const usage =
-      typeof memory === "number" ? ` using ${formatMemory(memory)}` : "";
-    details.push(`ran in ${formatExecutionTime(runTime)}${usage}`);
+    details.push(`ran in ${formatExecutionTime(runTime)}`);
   }
-
-  return details.length > 0 ? ` (${details.join(", ")})` : "";
+  if (typeof memory === "number") {
+    details.push(formatMemory(memory));
+  }
+  return details;
 };
 
 export const describeExit = (result: ExecutionResult) => {
@@ -105,40 +102,52 @@ export const formatTimestamp = (date: Date) =>
     second: "2-digit",
   });
 
-export const getMessageColor = (type?: ExecutionResultType) => {
-  switch (type) {
-    case ExecutionResultType.WARNING:
-      return "text-yellow-500";
-    case ExecutionResultType.ERROR:
-      return "text-red-500";
-    case ExecutionResultType.INFO:
-      return "text-blue-500";
-    default:
-      return "";
+const SEPARATOR = " · ";
+
+const capitalize = (text: string) =>
+  text.charAt(0).toUpperCase() + text.slice(1);
+
+export const isRunOutput = (result: ExecutionResult) =>
+  result.type === ExecutionResultType.OUTPUT;
+
+export const isRunError = (result: ExecutionResult) =>
+  result.type === ExecutionResultType.ERROR;
+
+// Who ran it is left out of entries saved before names were added
+export const getRunTitle = (result: ExecutionResult) => {
+  let title = result.run.stdout;
+  if (isRunOutput(result)) {
+    title = `${capitalize(String(result.language))} ${result.version}`;
+  } else if (isRunError(result)) {
+    title = "Couldn't run the code";
   }
+  return result.runBy ? `${title}${SEPARATOR}${result.runBy}` : title;
+};
+
+export const getRunFooter = (result: ExecutionResult) => {
+  const exit =
+    describeExit(result) ??
+    (result.run.code === 0 ? "Process exited with code 0" : "Process finished");
+  return [exit, ...getRunDetails(result)].join(SEPARATOR);
 };
 
 const formatLogEntry = (result: ExecutionResult): string => {
-  const timestamp = formatTimestamp(result.timestamp ?? new Date());
+  const timestamp = formatTimestamp(new Date(result.timestamp ?? Date.now()));
+  const lines = [`[${timestamp}] ${getRunTitle(result)}`];
 
-  // Add execution details if available
-  const executionDetails =
-    result.type === ExecutionResultType.OUTPUT
-      ? ` - ${result.language} v${result.version}${formatExecutionDetails(result)}`
-      : "";
-
-  const exit = describeExit(result);
-  const exitLine = exit ? `\n${exit}` : "";
-
-  // For error messages
-  if (result.run.stderr) {
-    return `[${timestamp}]${executionDetails}\n${result.run.stdout || "Error:"} ${result.run.stderr}${exitLine}`;
+  if (isRunError(result)) {
+    lines.push(result.run.stderr);
+  } else if (isRunOutput(result)) {
+    const { stderr, stdout } = result.run;
+    if (stdout.trimEnd() || stderr.trimEnd()) {
+      lines.push(...[stdout.trimEnd(), stderr.trimEnd()].filter(Boolean));
+    } else {
+      lines.push("No output");
+    }
+    lines.push(getRunFooter(result));
   }
 
-  // For regular output
-  const message = result.run.stdout ? result.run.stdout.trimEnd() : "No output";
-
-  return `[${timestamp}]${executionDetails}\n${message}${exitLine}`;
+  return lines.join("\n");
 };
 
 export const handleDownloadLogs = (results: ExecutionResult[]) => {

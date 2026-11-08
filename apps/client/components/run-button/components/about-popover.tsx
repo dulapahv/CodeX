@@ -8,7 +8,7 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { InfoIcon } from "@phosphor-icons/react";
+import { InfoIcon, WarningIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -70,7 +70,10 @@ const AboutPopover = () => (
               </a>
               .
             </p>
-            <p>⚠️ Rate limited to 5 requests per second</p>
+            <p className="flex items-center gap-1.5">
+              <WarningIcon aria-hidden="true" className="size-4 shrink-0" />
+              Rate limited to 5 requests per second
+            </p>
           </div>
         </div>
 

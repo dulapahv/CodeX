@@ -19,7 +19,7 @@ import type { RefObject } from "react";
 import { executeCode as executeCodeAction } from "@/actions/execute";
 import { parseError } from "@/lib/utils";
 
-// Where a run's results and running state go: this terminal and the room
+// Where a run's results and running state go, this terminal and the room
 export interface RunReporter {
   report: (result: ExecutionResult) => void;
   setRunning: (isRunning: boolean) => void;
@@ -40,7 +40,7 @@ export const cancelExecution = (
         output: "",
         signal: null,
         stderr: "",
-        stdout: "🛑 Code execution cancelled",
+        stdout: "Run stopped",
       },
       timestamp: endTime,
       type: ExecutionResultType.WARNING,
@@ -64,7 +64,6 @@ export const executeCode = async (
     return;
   }
 
-  const startTime = new Date();
   reporter.setRunning(true);
 
   // Create new AbortController for this execution
@@ -73,39 +72,10 @@ export const executeCode = async (
   try {
     const code = editor.getValue();
 
+    // The run button is disabled while the editor is empty
     if (!code.trim()) {
-      const res = {
-        language: "system",
-        run: {
-          code: 0,
-          output: "",
-          signal: null,
-          stderr: "",
-          stdout: "⚠️ No code to execute",
-        },
-        timestamp: new Date(),
-        type: ExecutionResultType.WARNING,
-        version: "1.0.0",
-      };
-      reporter.report(res);
       return;
     }
-
-    const res = {
-      language: "system",
-      run: {
-        code: 0,
-        output: "",
-        signal: null,
-        stderr: "",
-        stdout: "🚀 Executing code...",
-      },
-      timestamp: startTime,
-      type: ExecutionResultType.INFO,
-      version: "1.0.0",
-    };
-
-    reporter.report(res);
 
     const model = editor.getModel();
     const currentLanguageId = model?.getLanguageId();

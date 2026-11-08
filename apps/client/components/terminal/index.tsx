@@ -4,7 +4,7 @@
  * - Output history display
  * - Auto-scroll behavior
  * - Download/clear logs
- * - Welcome message
+ * - Who is running code right now
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -22,8 +22,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { EmptyState } from "./components/empty-state";
 import { Output } from "./components/output";
-import { WelcomeMsg } from "./components/welcome-msg";
+import { RunningStatus, useRunningNames } from "./components/running-status";
 import { handleDownloadLogs } from "./utils";
 
 interface TerminalProps {
@@ -33,6 +34,8 @@ interface TerminalProps {
 
 const Terminal = ({ results, setResults }: TerminalProps) => {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const runningNames = useRunningNames();
+  const isRunning = runningNames.length > 0;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,7 +44,7 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, [results]);
+  }, [results, isRunning]);
 
   return (
     <div className="relative h-full bg-[color:var(--panel-background)]">
@@ -90,10 +93,11 @@ const Terminal = ({ results, setResults }: TerminalProps) => {
       </div>
       <div className="h-full overflow-y-auto p-4" ref={terminalRef}>
         <div className="*:border-muted-foreground/40 flex flex-col divide-y font-mono text-sm whitespace-pre-wrap *:py-2">
-          <WelcomeMsg />
+          {results.length === 0 && !isRunning && <EmptyState />}
           {results.map((result, index) => (
             <Output key={index} result={result} />
           ))}
+          {isRunning && <RunningStatus names={runningNames} />}
         </div>
       </div>
     </div>
