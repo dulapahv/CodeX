@@ -1,56 +1,82 @@
 /**
- * Open note button component that handles markdown file loading.
- * Features:
- * - File input handling
- * - Markdown content reading
- * - Socket-based sync
+ * Opens a markdown file into the shared note, replacing it for everyone.
+ * Once a file is picked, it asks first if the note has anything in it.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ROOM_DOC } from "@codex/types/realtime";
-import { ButtonWithTooltip, type MDXEditorMethods } from "@mdxeditor/editor";
+import { $convertFromMarkdownString } from "@lexical/markdown";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FolderIcon } from "@phosphor-icons/react";
-import type { RefObject } from "react";
+import { $getRoot, $isParagraphNode } from "lexical";
+import { useState } from "react";
 
-import { useRoom } from "@/lib/realtime/room-context";
+import { ReplacePromptDialog } from "@/components/replace-prompt-dialog";
 
-import { replaceText } from "../utils";
+import { NOTEPAD_TRANSFORMERS } from "../markdown";
+import { ToolbarButton } from "./toolbar-button";
 
-interface MarkdownEditorProps {
-  markdownEditorRef: RefObject<MDXEditorMethods | null>;
-}
+const NOTE_FILE_TYPES = ".md,.mdx,.markdown,.txt,text/*";
 
-const OpenNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => {
-  const room = useRoom();
+const $isNoteEmpty = () => {
+  const root = $getRoot();
+  const first = root.getFirstChild();
+  return (
+    root.getChildrenSize() <= 1 &&
+    (!first || ($isParagraphNode(first) && first.isEmpty()))
+  );
+};
+
+const OpenNoteBtn = () => {
+  const [editor] = useLexicalComposerContext();
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+
+  const openFile = async (file: File) => {
+    const markdown = await file.text();
+    editor.update(() =>
+      $convertFromMarkdownString(markdown, NOTEPAD_TRANSFORMERS)
+    );
+  };
+
+  const pickNote = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = NOTE_FILE_TYPES;
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        return;
+      }
+      if (editor.getEditorState().read($isNoteEmpty)) {
+        openFile(file);
+        return;
+      }
+      setPendingFile(file);
+      setIsPromptOpen(true);
+    };
+    input.click();
+  };
 
   return (
-    <ButtonWithTooltip
-      aria-label="Open note"
-      className="!flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
-      onClick={() => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".md,.mdx,text/*";
-        input.onchange = (e) => {
-          const file = (e.target as HTMLInputElement).files?.[0];
-          if (!file) {
-            return;
+    <>
+      <ToolbarButton label="Open note" onClick={pickNote}>
+        <FolderIcon />
+      </ToolbarButton>
+      <ReplacePromptDialog
+        confirmLabel="Replace note"
+        description="This replaces the note for everyone in the room. Save the current note first if you want to keep it."
+        onCancel={() => setIsPromptOpen(false)}
+        onConfirm={() => {
+          setIsPromptOpen(false);
+          if (pendingFile) {
+            openFile(pendingFile);
           }
-          const reader = new FileReader();
-          reader.onload = () => {
-            const markdown = reader.result as string;
-            markdownEditorRef.current?.setMarkdown(markdown);
-            replaceText(room.doc.getText(ROOM_DOC.notes), markdown);
-          };
-          reader.readAsText(file);
-        };
-        input.click();
-      }}
-      title="Open note"
-    >
-      <FolderIcon className="size-[18px]" />
-    </ButtonWithTooltip>
+        }}
+        open={isPromptOpen}
+        title={`Replace the note with ${pendingFile?.name ?? "this file"}?`}
+      />
+    </>
   );
 };
 

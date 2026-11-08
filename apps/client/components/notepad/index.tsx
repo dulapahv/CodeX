@@ -1,10 +1,6 @@
 /**
- * Main notepad component that provides collaborative Markdown editing.
- * Features:
- * - Real-time collaborative editing
- * - Rich text formatting tools
- * - Markdown syntax support
- * - Image and table insertion
+ * The room's shared notepad, loaded once the room has synced so it opens on
+ * the current notes.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -19,8 +15,7 @@ import { useRoom } from "@/lib/realtime/room-context";
 import { EditorSkeleton } from "./components/editor-skeleton";
 
 const DynamicNotepadMain = dynamic(
-  () =>
-    import("./components/notepad-main").then((mod) => mod.MarkdownEditorMain),
+  () => import("./components/notepad-main").then((mod) => mod.NotepadMain),
   {
     loading: () => <EditorSkeleton />,
     ssr: false,

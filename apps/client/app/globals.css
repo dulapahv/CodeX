@@ -277,53 +277,6 @@
   background-color: oklch(0.439 0 0);
 }
 
-@utility dark-editor {
-  --accentBase: oklch(0.194 0.025 256.492);
-  --accentBgSubtle: oklch(0.213 0.03 261.252);
-  --accentBg: oklch(0.274 0.066 253.932);
-  --accentBgHover: oklch(0.32 0.097 252.347);
-  --accentBgActive: oklch(0.367 0.106 250.701);
-  --accentLine: oklch(0.416 0.113 252.006);
-  --accentBorder: oklch(0.474 0.122 253.088);
-  --accentBorderHover: oklch(0.541 0.14 253.175);
-  --accentSolid: oklch(0.649 0.193 251.78);
-  --accentSolidHover: oklch(0.688 0.169 251.404);
-  --accentText: oklch(0.764 0.126 249.464);
-  --accentTextContrast: oklch(0.907 0.051 238.448);
-
-  --baseBase: var(--mauve-1);
-  --baseBgSubtle: var(--mauve-2);
-  --baseBg: var(--mauve-3);
-  --baseBgHover: var(--mauve-4);
-  --baseBgActive: var(--mauve-5);
-  --baseLine: var(--mauve-6);
-  --baseBorder: var(--mauve-7);
-  --baseBorderHover: var(--mauve-8);
-  --baseSolid: var(--mauve-9);
-  --baseSolidHover: var(--mauve-10);
-  --baseText: var(--mauve-11);
-  --baseTextContrast: var(--mauve-12);
-
-  --admonitionTipBg: oklch(0.316 0.059 223.704);
-  --admonitionTipBorder: oklch(0.557 0.099 221.112);
-
-  --admonitionInfoBg: oklch(0.319 0.053 150.3);
-  --admonitionInfoBorder: oklch(0.523 0.097 148.317);
-
-  --admonitionCautionBg: oklch(0.296 0.063 73.879);
-  --admonitionCautionBorder: oklch(0.536 0.096 73.435);
-
-  --admonitionDangerBg: oklch(0.289 0.095 14.33);
-  --admonitionDangerBorder: oklch(0.544 0.146 21.762);
-
-  --admonitionNoteBg: var(--mauve-4);
-  --admonitionNoteBorder: var(--mauve-8);
-  --basePageBg: var(--panel-background);
-
-  color: var(--foreground);
-  background: var(--basePageBg);
-}
-
 @keyframes cursorLabelFadeOut {
   from {
     opacity: 1;
@@ -334,181 +287,410 @@
   }
 }
 
-.mdxeditor-diff-source-wrapper > div[class*="_markdownParseError_"] {
-  @apply h-fit!;
+/* Notepad */
+
+.notepad-content {
+  @apply text-base leading-7 break-words;
 }
 
-[class*="_dialogOverlay_"] {
-  @apply bg-[color:var(--panel-background)];
+.notepad-content > :first-child {
+  @apply mt-0;
 }
 
-[class*="_primaryButton_"] {
-  @apply cursor-pointer! border-0! bg-[color:var(--toolbar-accent)]! text-[color:var(--panel-text-accent)]! transition-all! hover:brightness-90;
+.notepad-content mark {
+  @apply bg-transparent text-inherit;
 }
 
-[class*="_secondaryButton_"] {
-  @apply bg-secondary! text-foreground! cursor-pointer! border-0! transition-all! hover:brightness-90;
+.notepad-paragraph {
+  @apply my-1;
 }
 
-[class*="_toolbarButton_"] {
-  @apply hover:bg-foreground/10! cursor-pointer! transition-all!;
+.notepad-h1 {
+  @apply mt-6 mb-2 text-3xl font-extrabold;
 }
 
-[class*="_toolbarToggleItem_"] {
-  @apply hover:bg-foreground/10! cursor-pointer! transition-all!;
+.notepad-h2 {
+  @apply mt-5 mb-2 text-2xl font-bold;
 }
 
-[class*="_toolbarToggleItem_"][data-state="on"] {
-  @apply bg-[color:var(--panel-background)]!;
+.notepad-h3 {
+  @apply mt-4 mb-2 text-xl font-bold;
 }
 
-[class*="_editImageToolbar_"] svg {
-  @apply size-4 text-white;
+.notepad-h4 {
+  @apply mt-3 mb-1 text-lg font-semibold;
 }
 
-[class*="_editImageToolbar_"] button {
-  @apply animate-fade-in bg-black/60 p-1 transition-all hover:bg-black/50;
+.notepad-h5 {
+  @apply mt-3 mb-1 text-base font-semibold;
 }
 
-[class*="_imageWrapper_"] [class*="_editImageToolbar_"] {
-  @apply hidden bg-transparent;
+.notepad-h6 {
+  @apply text-foreground/70 mt-3 mb-1 text-base font-semibold;
 }
 
-[class*="_imageWrapper_"]:hover [class*="_editImageToolbar_"] {
-  @apply inline-flex! bg-transparent;
+.notepad-quote {
+  @apply border-foreground/30 text-foreground/70 my-2 border-l-4 pl-4;
 }
 
-[class*="_codeMirrorWrapper_"] {
-  @apply my-1! p-0!;
+.notepad-link {
+  @apply text-primary hover:text-primary/80 cursor-pointer underline underline-offset-4;
 }
 
-.mdxeditor-popup-container > div {
-  @apply shadow-lg!;
+.notepad-bold {
+  @apply font-bold;
 }
 
-.mdxeditor-popup-container [data-radix-select-viewport] {
-  max-height: 55vh !important;
-  scrollbar-width: auto;
+.notepad-italic {
+  @apply italic;
 }
 
-.mdxeditor-popup-container [data-radix-select-viewport]::-webkit-scrollbar {
-  display: block;
+.notepad-underline {
+  @apply underline underline-offset-2;
 }
 
-[class*="_editorRoot_"][class*="_editorRoot_"] {
-  --radius-base: 0px;
-  --radius-small: 0px;
-  --radius-medium: 0px;
-  --radius-large: 0px;
-  --radius-full: 0px;
+.notepad-strikethrough {
+  @apply line-through;
 }
 
-[class*="_codeMirrorToolbar_"] {
-  @apply static! justify-end border-b border-[color:var(--baseLine)] bg-transparent!;
+.notepad-underline-strikethrough {
+  text-decoration-line: underline line-through;
 }
 
-[class*="_codeMirrorToolbar_"] * {
-  @apply h-6 cursor-pointer;
+.notepad-inline-code {
+  @apply border-foreground/15 bg-foreground/10 border px-1 py-px font-mono text-[0.875em];
 }
 
-[class*="_codeMirrorToolbar_"] svg {
-  @apply text-foreground size-4;
+.notepad-highlight {
+  @apply bg-yellow-300/60 dark:bg-yellow-400/30;
 }
 
-[class*="_codeMirrorToolbar_"] > button {
-  @apply hover:bg-foreground/10 p-1 hover:transition-all;
+.notepad-subscript,
+.notepad-superscript {
+  @apply text-[0.75em];
 }
 
-[class*="_codeMirrorToolbar_"]
-  [class*="_tooltipTrigger_"]
-  [class*="_selectTrigger_"] {
-  @apply bg-background text-foreground w-fit;
+.notepad-ul {
+  @apply my-1 list-disc pl-6;
 }
 
-.cm-editor {
-  @apply bg-background;
+.notepad-ul .notepad-ul {
+  @apply list-[circle];
 }
 
-.cm-content {
-  @apply text-sm;
+.notepad-ul .notepad-ul .notepad-ul {
+  @apply list-[square];
 }
 
-.cm-content *::selection {
-  @apply text-inherit!;
+.notepad-ol {
+  @apply my-1 list-decimal pl-6;
 }
 
-.cm-gutterElement {
-  @apply text-foreground;
+.notepad-ol-2,
+.notepad-ol-5 {
+  @apply list-[lower-alpha];
 }
 
-.cm-activeLineGutter {
-  @apply bg-secondary!;
+.notepad-ol-3 {
+  @apply list-[lower-roman];
 }
 
-.mdxeditor-source-editor > .cm-editor {
-  @apply bg-white;
+.notepad-list-item {
+  @apply my-0.5 pl-1;
 }
 
-.mdxeditor-source-editor .cm-gutterElement {
-  @apply text-inherit;
+.notepad-nested-list-item {
+  @apply list-none;
 }
 
-.mdxeditor-source-editor .cm-activeLineGutter {
-  @apply bg-black/10!;
+.notepad-ul.notepad-checklist {
+  @apply list-none pl-0;
 }
 
-[class*="_tableColumnEditorTrigger_"] {
-  @apply hover:bg-foreground/10! cursor-pointer! p-0! align-middle transition-all!;
+.notepad-list-item-checked,
+.notepad-list-item-unchecked {
+  @apply relative list-none pl-7 outline-none;
 }
 
-[class*="_tableEditor_"] {
-  @apply h-auto!;
+.notepad-list-item-checked::before,
+.notepad-list-item-unchecked::before {
+  content: "";
+  @apply border-foreground/40 absolute top-1.5 left-0 size-4 cursor-pointer border;
 }
 
-[class*="_tableToolsColumn_"] {
-  @apply align-middle;
+.notepad-list-item-checked {
+  @apply text-foreground/50 line-through;
 }
 
-[class*="_tableToolsColumn_"] > button > svg {
-  @apply size-5!;
+.notepad-list-item-checked::before {
+  @apply border-primary bg-primary;
 }
 
-[class*="_iconButton_"] {
-  @apply cursor-pointer!;
+.notepad-list-item-checked::after {
+  content: "";
+  @apply border-primary-foreground pointer-events-none absolute top-2.5 left-1.5 h-2 w-1 rotate-45 border-r-2 border-b-2;
 }
 
-[class*="_toolCell_"] > button {
-  @apply mx-0! px-0!;
+.notepad-code {
+  tab-size: 2;
+  @apply border-foreground/10 bg-foreground/5 relative my-2 block overflow-x-auto border pt-9 pr-3 pb-2 pl-14 font-mono text-[13px] leading-6 whitespace-pre;
 }
 
-[class*="_addColumnButton_"] {
-  @apply cursor-pointer!;
+.notepad-code::before {
+  content: attr(data-gutter);
+  @apply border-foreground/10 text-foreground/40 absolute inset-y-0 left-0 w-11 border-r pt-9 pr-2 pb-2 text-right whitespace-pre-wrap select-none;
 }
 
-[class*="_addRowButton_"] {
-  @apply cursor-pointer!;
+.notepad-code::after {
+  content: attr(data-language);
+  @apply border-foreground/10 text-foreground/50 pointer-events-none absolute inset-x-0 top-0 h-7 border-b pt-1 pr-3 text-right font-sans text-[11px] select-none;
 }
 
-[class*="_actionButton_"] {
-  @apply cursor-pointer!;
+.notepad-token-comment {
+  @apply text-zinc-500 italic dark:text-zinc-400;
 }
 
-[class*="_tableColumnEditorPopoverContent_"] {
-  @apply overflow-hidden! p-0!;
+.notepad-token-keyword {
+  @apply text-purple-700 dark:text-purple-400;
 }
 
-[class*="_linkDialogPopoverContent_"] {
-  @apply overflow-hidden! p-0!;
+.notepad-token-string,
+.notepad-token-inserted {
+  @apply text-green-700 dark:text-green-400;
 }
 
-[class*="_linkDialogPopoverContent_"] > button {
-  @apply hover:bg-foreground/10! transition-all!;
+.notepad-token-function {
+  @apply text-blue-700 dark:text-blue-400;
 }
 
-[class*="_linkDialogPreviewAnchor_"] {
-  @apply px-2 transition-all!;
+.notepad-token-number {
+  @apply text-amber-700 dark:text-amber-400;
 }
 
-[class*="_tableColumnEditorToolbar_"] button:not([data-state="on"]) {
-  @apply hover:bg-foreground/10! transition-all!;
+.notepad-token-property,
+.notepad-token-variable,
+.notepad-token-deleted {
+  @apply text-red-700 dark:text-red-400;
+}
+
+.notepad-token-operator {
+  @apply text-cyan-700 dark:text-cyan-400;
+}
+
+.notepad-token-punctuation {
+  @apply text-foreground/70;
+}
+
+.notepad-table-wrapper {
+  @apply my-2 overflow-x-auto;
+}
+
+.notepad-table {
+  @apply border-collapse;
+}
+
+.notepad-table-cell {
+  @apply border-foreground/20 relative min-w-24 border px-2 py-1 text-left align-top outline-none;
+}
+
+.notepad-table-cell .notepad-paragraph {
+  @apply my-0;
+}
+
+.notepad-table-cell-header {
+  @apply bg-foreground/5 font-semibold;
+}
+
+.notepad-table-cell-selected {
+  @apply bg-primary/15;
+}
+
+.notepad-table-selection *::selection {
+  @apply bg-transparent;
+}
+
+.notepad-table-selected {
+  @apply outline-primary outline-2;
+}
+
+.notepad-hr {
+  @apply bg-foreground/20 my-3 box-content h-px cursor-pointer border-0 bg-clip-content py-1;
+}
+
+.notepad-hr-selected {
+  @apply outline-primary outline-2;
+}
+
+.notepad-callout {
+  @apply relative my-2 border-l-4 px-4 pt-7 pb-2;
+}
+
+.notepad-callout::before {
+  content: attr(data-label);
+  @apply pointer-events-none absolute top-2 left-4 text-xs font-semibold tracking-wide uppercase select-none;
+}
+
+.notepad-callout > :first-child {
+  @apply mt-0;
+}
+
+.notepad-callout > :last-child {
+  @apply mb-0;
+}
+
+.notepad-callout[data-kind="note"] {
+  @apply border-foreground/30 bg-foreground/5;
+}
+
+.notepad-callout[data-kind="note"]::before {
+  @apply text-foreground/60;
+}
+
+.notepad-callout[data-kind="tip"] {
+  @apply border-sky-500 bg-sky-500/10;
+}
+
+.notepad-callout[data-kind="tip"]::before {
+  @apply text-sky-700 dark:text-sky-400;
+}
+
+.notepad-callout[data-kind="info"] {
+  @apply border-emerald-500 bg-emerald-500/10;
+}
+
+.notepad-callout[data-kind="info"]::before {
+  @apply text-emerald-700 dark:text-emerald-400;
+}
+
+.notepad-callout[data-kind="caution"] {
+  @apply border-amber-500 bg-amber-500/10;
+}
+
+.notepad-callout[data-kind="caution"]::before {
+  @apply text-amber-700 dark:text-amber-400;
+}
+
+.notepad-callout[data-kind="danger"] {
+  @apply border-red-500 bg-red-500/10;
+}
+
+.notepad-callout[data-kind="danger"]::before {
+  @apply text-red-700 dark:text-red-400;
+}
+
+.notepad-cursor {
+  background-color: var(--lexical-cursor-color);
+  @apply pointer-events-none absolute w-0.5!;
+}
+
+.notepad-cursor::before {
+  content: "";
+  background-color: var(--lexical-cursor-color);
+  @apply absolute top-0 left-0 size-1.5 -translate-y-full;
+}
+
+.notepad-cursor-name {
+  background-color: var(--lexical-cursor-color);
+  animation: cursorLabelFadeOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) 2.7s forwards;
+  @apply absolute -top-[19px] left-0 z-10 h-[19px] px-1 font-sans text-xs leading-[19px] font-medium whitespace-nowrap;
+}
+
+.notepad-cursor-name[data-below="true"] {
+  @apply top-full;
+}
+
+.notepad-layout {
+  @apply my-2 grid gap-3;
+}
+
+.notepad-layout-item {
+  @apply border-foreground/15 min-w-0 border border-dashed px-3 py-1;
+}
+
+.notepad-collapsible {
+  @apply border-foreground/15 my-2 border;
+}
+
+.notepad-collapsible-title {
+  @apply relative py-1 pr-3 pl-7 font-semibold;
+}
+
+.notepad-collapsible-title::before {
+  content: "";
+  @apply border-l-foreground/60 absolute top-3 left-2.5 size-0 cursor-pointer border-y-[5px] border-l-[7px] border-y-transparent transition-transform;
+}
+
+.notepad-collapsible[data-open] > .notepad-collapsible-title::before {
+  @apply rotate-90;
+}
+
+.notepad-collapsible-title:has(> br:only-child)::after {
+  content: "Title";
+  @apply text-muted-foreground pointer-events-none absolute top-1 left-7 font-normal;
+}
+
+.notepad-collapsible-content {
+  @apply border-foreground/10 border-t px-3 py-1;
+}
+
+.notepad-collapsible:not([data-open]) > .notepad-collapsible-content {
+  @apply hidden;
+}
+
+.notepad-sticky {
+  --foreground: oklch(0.205 0 0);
+  @apply my-2 px-4 py-3 text-[color:var(--foreground)] shadow-md;
+}
+
+.notepad-sticky > :first-child {
+  @apply mt-0;
+}
+
+.notepad-sticky > :last-child {
+  @apply mb-0;
+}
+
+.notepad-sticky[data-color="yellow"] {
+  @apply bg-yellow-200;
+}
+
+.notepad-sticky[data-color="pink"] {
+  @apply bg-pink-200;
+}
+
+.notepad-sticky[data-color="green"] {
+  @apply bg-lime-200;
+}
+
+.notepad-sticky[data-color="blue"] {
+  @apply bg-sky-200;
+}
+
+.notepad-sticky[data-color="purple"] {
+  @apply bg-violet-200;
+}
+
+.notepad-equation-inline {
+  @apply cursor-default px-0.5 align-baseline;
+}
+
+.notepad-ruby {
+  @apply relative inline-block;
+}
+
+.notepad-ruby::before {
+  content: attr(data-annotation);
+  @apply text-muted-foreground pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 text-[0.5em] leading-none whitespace-nowrap select-none;
+}
+
+.notepad-date {
+  @apply border-foreground/20 bg-foreground/5 hover:bg-foreground/10 inline-flex items-center gap-1 border px-1.5 align-baseline text-[0.9em] leading-6;
+}
+
+.dark .notepad-drawing {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+.notepad-image-caption {
+  @apply text-muted-foreground placeholder:text-muted-foreground/60 focus:bg-foreground/5 bg-transparent px-1 py-0.5 text-center text-sm leading-5 outline-none;
 }

@@ -18,8 +18,11 @@ export const ROOM_PARTY = "room";
 export const ROOM_DOC = {
   code: "code",
   meta: "meta",
-  notes: "notes",
+  notes: "notepad",
 } as const;
+
+// Markdown notes from before the notepad moved to Lexical, read once to seed it
+export const LEGACY_NOTES_DOC = "notes";
 
 export const META_LANGUAGE = "language";
 export const DEFAULT_LANGUAGE = "python";
@@ -56,9 +59,20 @@ export interface PresenceMedia {
   };
 }
 
+// The notepad caret, in the shape Lexical's Yjs binding reads and writes
+export interface NotepadPresence {
+  anchorPos: unknown;
+  awarenessData: object;
+  color: string;
+  focusing: boolean;
+  focusPos: unknown;
+  name: string;
+}
+
 export interface Presence {
   cursor?: Cursor;
   media: PresenceMedia;
+  notepad?: NotepadPresence;
   pointer?: Pointer;
   running?: boolean;
   scroll?: Scroll;

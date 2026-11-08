@@ -1,41 +1,42 @@
 /**
- * Save note button component that handles markdown file download.
- * Features:
- * - Markdown content export
- * - Timestamped filenames
- * - Blob handling
+ * Downloads the note as a timestamped markdown file.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { ButtonWithTooltip, type MDXEditorMethods } from "@mdxeditor/editor";
+import { $convertToMarkdownString } from "@lexical/markdown";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { DownloadSimpleIcon } from "@phosphor-icons/react";
-import type { RefObject } from "react";
 
-interface MarkdownEditorProps {
-  markdownEditorRef: RefObject<MDXEditorMethods | null>;
-}
+import { NOTEPAD_TRANSFORMERS } from "../markdown";
+import { ToolbarButton } from "./toolbar-button";
 
-const SaveNoteBtn = ({ markdownEditorRef }: MarkdownEditorProps) => (
-  <ButtonWithTooltip
-    aria-label="Save note"
-    className="!ml-0 !flex !size-7 !items-center !justify-center [&>span]:flex [&>span]:w-fit"
-    onClick={() => {
-      const markdown = markdownEditorRef.current?.getMarkdown() ?? "";
-      const blob = new Blob([markdown], {
-        type: "text/markdown",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `codex-note-${new Date().toLocaleString("en-GB").replace(/[/:, ]/gu, "-")}.md`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }}
-    title="Save note"
-  >
-    <DownloadSimpleIcon className="size-[18px]" />
-  </ButtonWithTooltip>
-);
+const FILENAME_UNSAFE_CHARACTERS = /[/:, ]/gu;
+
+const SaveNoteBtn = () => {
+  const [editor] = useLexicalComposerContext();
+
+  const saveNote = () => {
+    const markdown = editor
+      .getEditorState()
+      .read(() => $convertToMarkdownString(NOTEPAD_TRANSFORMERS));
+    const url = URL.createObjectURL(
+      new Blob([markdown], { type: "text/markdown" })
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `codex-note-${new Date()
+      .toLocaleString("en-GB")
+      .replace(FILENAME_UNSAFE_CHARACTERS, "-")}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <ToolbarButton label="Save note" onClick={saveNote}>
+      <DownloadSimpleIcon />
+    </ToolbarButton>
+  );
+};
 
 export { SaveNoteBtn };

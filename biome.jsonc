@@ -69,6 +69,18 @@
           }
         }
       }
+    },
+    {
+      // Lexical nodes override base class methods whose answer doesn't
+      // depend on the instance
+      "includes": ["apps/client/components/notepad/nodes/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useThisInClassMethods": "off"
+          }
+        }
+      }
     }
   ]
 }

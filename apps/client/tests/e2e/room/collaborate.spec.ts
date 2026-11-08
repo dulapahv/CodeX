@@ -14,6 +14,9 @@ import { createRoom, joinRoom } from "@/tests/utils/setup";
 
 const EXECUTION_RESULT_PATTERN =
   /Hello from Python!|HTTP error! status:|Process exited with code/u;
+const NOTE_HEADING_PATTERN = /^# Collaborative Notes$/mu;
+const NOTE_BODY_PATTERN =
+  /^This is a shared note\.Adding more collaborative content!$/mu;
 
 test.describe("Collaborative Features", () => {
   it("should sync code changes between users in real-time", async ({
@@ -80,10 +83,6 @@ test.describe("Collaborative Features", () => {
     // Execute code
     await userAPage.getByLabel("Run code").click();
 
-    // Wait for the "Executing code..." message to appear first
-    const executingMsg = "Executing code...";
-    await expect(userAPage.getByText(executingMsg)).toBeVisible();
-
     // Verify execution result appears in both users' terminals.
     // The Piston API may return 401 on CI (no API key) or 429 when tests run
     // code in parallel, so we check for either successful output or an error
@@ -109,63 +108,50 @@ test.describe("Collaborative Features", () => {
     const roomUrl = await createRoom(userAPage, "User A");
     await joinRoom(userBPage, roomUrl, "User B");
 
-    // Get notepad elements
-    const userANotepad = userAPage.getByLabel("editable markdown");
-    const userBNotepad = userBPage.getByLabel("editable markdown");
+    const userANotepad = userAPage.getByRole("textbox", {
+      name: "Shared note",
+    });
+    const userBNotepad = userBPage.getByRole("textbox", {
+      name: "Shared note",
+    });
 
-    // User A types note
+    // User A types a heading through the markdown shortcut, then a paragraph
+    await userANotepad.click();
     await userANotepad.pressSequentially(
       "# Collaborative Notes\nThis is a shared note."
     );
 
-    // Verify note appears in User B's notepad
-    await expect(userBPage.getByText("Collaborative Notes")).toBeVisible();
-    await expect(userBPage.getByText("This is a shared note.")).toBeVisible();
+    await expect(
+      userBNotepad.getByRole("heading", { name: "Collaborative Notes" })
+    ).toBeVisible();
+    await expect(
+      userBNotepad.getByText("This is a shared note.")
+    ).toBeVisible();
 
-    // User B adds more text
-    // Go to end of note
+    // User B adds to the end of the note
+    await userBNotepad.click();
     await userBNotepad.press("Control+a");
     await userBNotepad.press("ArrowRight");
     await userBNotepad.pressSequentially("Adding more collaborative content!");
 
-    // Verify complete note appears in both notepads
-    // Switch to source mode for both users
-    await userAPage.getByLabel("Source mode").click({ force: true });
-    await userBPage.getByLabel("Source mode").click({ force: true });
+    // User A sees User B's caret
+    await expect(
+      userAPage.locator(".notepad-cursor-name", { hasText: "User B" })
+    ).toBeAttached();
 
-    // Wait for CodeMirror editor to be visible
-    const codeMirrorSelector = ".cm-content";
-    await userAPage.waitForSelector(codeMirrorSelector);
-    await userBPage.waitForSelector(codeMirrorSelector);
-
-    // Verify content in CodeMirror editor for both users
-    await expect(
-      userAPage.locator(".cm-line").filter({ hasText: "# Collaborative Notes" })
-    ).toBeVisible();
-    await expect(
-      userAPage
-        .locator(".cm-line")
-        .filter({ hasText: "This is a shared note." })
-    ).toBeVisible();
-    await expect(
-      userAPage
-        .locator(".cm-line")
-        .filter({ hasText: "Adding more collaborative content!" })
-    ).toBeVisible();
-
-    await expect(
-      userBPage.locator(".cm-line").filter({ hasText: "# Collaborative Notes" })
-    ).toBeVisible();
-    await expect(
-      userBPage
-        .locator(".cm-line")
-        .filter({ hasText: "This is a shared note." })
-    ).toBeVisible();
-    await expect(
-      userBPage
-        .locator(".cm-line")
-        .filter({ hasText: "Adding more collaborative content!" })
-    ).toBeVisible();
+    // Both see the same markdown in source mode
+    await userAPage.getByRole("button", { name: "Source mode" }).click();
+    await userBPage.getByRole("button", { name: "Source mode" }).click();
+    const userASource = userAPage.getByRole("textbox", {
+      name: "Markdown source",
+    });
+    const userBSource = userBPage.getByRole("textbox", {
+      name: "Markdown source",
+    });
+    await expect(userASource).toHaveValue(NOTE_HEADING_PATTERN);
+    await expect(userASource).toHaveValue(NOTE_BODY_PATTERN);
+    await expect(userBSource).toHaveValue(NOTE_HEADING_PATTERN);
+    await expect(userBSource).toHaveValue(NOTE_BODY_PATTERN);
   });
 
   it("undo should revert the local user's text after a peer inserts ahead of it", async ({

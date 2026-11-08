@@ -295,7 +295,7 @@ pnpm --filter server test:socket
   - [Monaco Editor](https://microsoft.github.io/monaco-editor/) (code editor)
   - [Yjs](https://yjs.dev) (CRDT for conflict-free code synchronization)
   - [y-partyserver](https://github.com/cloudflare/partykit/tree/main/packages/y-partyserver) (Yjs provider for the realtime connection)
-  - [MDXEditor](https://mdxeditor.dev/) (notepad)
+  - [Lexical](https://lexical.dev/) (notepad)
   - [PartyTracks](https://github.com/cloudflare/partykit/tree/main/packages/partytracks) (video, voice and screen sharing)
   - [Radix Form](https://www.radix-ui.com/primitives/docs/components/form) (form validation)
 - **Backend:**

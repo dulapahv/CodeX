@@ -19,11 +19,7 @@ const nextConfig: NextConfig = {
     // inlineCss: true,
     cssChunking: "graph",
     externalDir: true,
-    optimizePackageImports: [
-      "@mdxeditor/editor",
-      "@monaco-editor/react",
-      "monaco-editor",
-    ],
+    optimizePackageImports: ["@monaco-editor/react", "monaco-editor"],
     // Lets e2e tests answer the server's outgoing fetches. Never enable in
     // production: requests could then steer those fetches.
     testProxy: process.env.NEXT_TEST_PROXY === "true",
