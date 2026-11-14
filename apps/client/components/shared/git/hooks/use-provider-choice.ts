@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
-  type GitConnections,
+  type KnownConnections,
   useGitConnections,
 } from "@/hooks/use-git-connections";
 import {
@@ -36,13 +36,29 @@ const rememberProvider = (provider: ProviderId) => {
   }
 };
 
-const getPreferredProvider = (connections: GitConnections | null) =>
-  readLastProvider() ??
-  PROVIDER_IDS.find((provider) => connections?.[provider]?.user) ??
-  "github";
+// Waits only on the providers that decide it, so a slow one further down the
+// list doesn't hold the dialog up
+const getPreferredProvider = (
+  connections: KnownConnections
+): ProviderId | null => {
+  const lastProvider = readLastProvider();
+  if (lastProvider) {
+    return lastProvider;
+  }
+  for (const provider of PROVIDER_IDS) {
+    const connection = connections[provider];
+    if (!connection) {
+      return null;
+    }
+    if (connection.user) {
+      return provider;
+    }
+  }
+  return "github";
+};
 
 export const useProviderChoice = (isOpen: boolean) => {
-  const { connections, isLoading } = useGitConnections(isOpen);
+  const { connections } = useGitConnections(isOpen);
   const [chosen, setChosen] = useState<ProviderId | null>(null);
 
   useEffect(() => {
@@ -56,14 +72,15 @@ export const useProviderChoice = (isOpen: boolean) => {
     rememberProvider(providerId);
   }, []);
 
-  const provider = chosen ?? getPreferredProvider(connections);
-  const connection = connections?.[provider];
+  const preferred = chosen ?? getPreferredProvider(connections);
+  const provider = preferred ?? "github";
+  const connection = connections[provider];
 
   return {
     choose,
     configured: connection?.configured ?? true,
     connections,
-    isLoading,
+    isLoading: preferred === null || connection === undefined,
     provider,
     user: connection?.user ?? null,
   };

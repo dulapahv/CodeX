@@ -11,7 +11,7 @@ import { useState } from "react";
 
 import { ProviderLogo } from "@/components/shared/git/components/provider-logo";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   type GitConnection,
   useGitConnections,
@@ -24,7 +24,6 @@ import {
 
 interface ConnectionRowProps {
   connection: GitConnection | undefined;
-  isLoading: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
   provider: ProviderId;
@@ -32,17 +31,22 @@ interface ConnectionRowProps {
 
 const ConnectionAction = ({
   connection,
-  isLoading,
   onConnect,
   onDisconnect,
   provider,
 }: ConnectionRowProps) => {
   const label = PROVIDER_LABELS[provider];
 
-  if (isLoading) {
-    return <Spinner aria-label={`Checking ${label} connection`} />;
+  if (!connection) {
+    return (
+      <Skeleton
+        aria-label={`Checking ${label} connection`}
+        className="h-7 w-20"
+        role="status"
+      />
+    );
   }
-  if (!connection?.configured) {
+  if (!connection.configured) {
     return (
       <Button disabled size="sm" variant="outline">
         Not available
@@ -85,21 +89,21 @@ const ConnectionRow = (props: ConnectionRowProps) => {
         <ProviderLogo className="size-5" provider={provider} />
         <div className="min-w-0">
           <p className="text-sm font-medium">{PROVIDER_LABELS[provider]}</p>
-          {user && (
-            <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
-              {user.avatarUrl && hasAvatar && (
-                <Image
-                  alt=""
-                  className="rounded-full"
-                  height={16}
-                  onError={() => setHasAvatar(false)}
-                  src={user.avatarUrl}
-                  width={16}
-                />
-              )}
-              <span className="truncate">{user.username}</span>
-            </p>
-          )}
+          <div className="text-muted-foreground flex h-4 items-center gap-1.5 text-xs">
+            {!connection && <Skeleton className="h-3 w-24" />}
+            {connection && !user && "Not connected"}
+            {user?.avatarUrl && hasAvatar && (
+              <Image
+                alt=""
+                className="rounded-full"
+                height={16}
+                onError={() => setHasAvatar(false)}
+                src={user.avatarUrl}
+                width={16}
+              />
+            )}
+            {user && <span className="truncate">{user.username}</span>}
+          </div>
         </div>
       </div>
       <ConnectionAction {...props} />
@@ -108,15 +112,13 @@ const ConnectionRow = (props: ConnectionRowProps) => {
 };
 
 export const RepositoryConnections = ({ isOpen }: { isOpen: boolean }) => {
-  const { connections, isLoading, connect, disconnect } =
-    useGitConnections(isOpen);
+  const { connections, connect, disconnect } = useGitConnections(isOpen);
 
   return (
     <ul aria-label="Repository connections" className="flex flex-col gap-3">
       {PROVIDER_IDS.map((provider) => (
         <ConnectionRow
-          connection={connections?.[provider]}
-          isLoading={isLoading}
+          connection={connections[provider]}
           key={provider}
           onConnect={() => connect(provider)}
           onDisconnect={() => disconnect(provider)}
