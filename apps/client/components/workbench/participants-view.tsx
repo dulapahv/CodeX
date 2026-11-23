@@ -55,7 +55,7 @@ export const ParticipantsView = () => {
           const openFileName = getOpenFileName(user.id);
           return (
             <li
-              className="hover:bg-wb-hover group flex h-10 items-center gap-2 pr-2 pl-5 text-[13px]"
+              className="hover:bg-wb-hover flex h-10 items-center gap-2 pr-2 pl-5 text-[13px]"
               key={user.id}
             >
               <Avatar
@@ -83,10 +83,7 @@ export const ParticipantsView = () => {
               )}
               {!isSelf && (
                 <WorkbenchAction
-                  className={cn(
-                    "shrink-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-                    isFollowed && "text-wb-accent opacity-100"
-                  )}
+                  className={cn("shrink-0", isFollowed && "text-wb-accent")}
                   isPressed={isFollowed}
                   label={
                     isFollowed
