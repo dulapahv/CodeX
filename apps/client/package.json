@@ -55,6 +55,7 @@
     "react-resizable-panels": "^4.20.0",
     "require-in-the-middle": "^8.0.1",
     "rxjs": "^7.8.2",
+    "sonner": "^2.0.8",
     "use-debounce": "^10.1.1",
     "webrtc-adapter": "^9.0.6",
     "y-partyserver": "2.2.0",
