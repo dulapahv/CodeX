@@ -12,11 +12,13 @@ import { useId } from "react";
 
 import { RepositoryConnections } from "@/components/settings-sheet/components/repository-connections";
 import { Button } from "@/components/ui/button";
+import { useRoomAccess } from "@/lib/realtime/room-context";
 
 import { useWorkbench } from "./workbench-provider";
 
 export const RepositoryView = () => {
   const { actions } = useWorkbench();
+  const { canEdit } = useRoomAccess();
   const accountsId = useId();
 
   return (
@@ -28,7 +30,7 @@ export const RepositoryView = () => {
         </p>
         <Button
           className="bg-wb-accent hover:bg-wb-accent/90 h-7 w-full text-xs text-white"
-          disabled={!actions}
+          disabled={!(actions && canEdit)}
           onClick={actions?.openRepository}
         >
           <GitForkIcon aria-hidden="true" className="size-4" />

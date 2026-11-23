@@ -11,7 +11,14 @@ import type {
   Presence,
   ServerMessage,
 } from "@codex/types/realtime";
-import { CLIENT_ID_PARAM, ROOM_DOC, ROOM_PARTY } from "@codex/types/realtime";
+import {
+  BROWSER_ID_PARAM,
+  CLIENT_ID_PARAM,
+  HOST_KEY_PARAM,
+  ROOM_DOC,
+  ROOM_PARTY,
+  ROOM_TOKEN_PARAM,
+} from "@codex/types/realtime";
 import * as encoding from "lib0/encoding";
 import WebSocket from "ws";
 import YProvider from "y-partyserver/provider";
@@ -29,6 +36,8 @@ interface AwarenessChange {
 }
 
 export interface TestPeer {
+  // The latest access message, and the room token the server gave this peer
+  access: () => Extract<ServerMessage, { type: "access" }> | undefined;
   readonly clientId: number;
   readonly closeCodes: number[];
   readonly doc: Y.Doc;
@@ -48,31 +57,61 @@ export interface TestPeer {
   ) => void;
   setPresence: (patch: Partial<Presence>) => void;
   readonly text: Y.Text;
+  token: () => string | undefined;
   waitForClose: () => Promise<number>;
 }
+
+const lastOfType = <T extends ServerMessage["type"]>(
+  messages: ServerMessage[],
+  type: T
+) =>
+  messages.findLast(
+    (message): message is Extract<ServerMessage, { type: T }> =>
+      message.type === type
+  );
 
 export const settle = (ms = 1000) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-export const createRoomId = async (): Promise<string> => {
+export const createRoom = async () => {
   const response = await fetch(`${SERVER_URL}/rooms`, { method: "POST" });
-  const { roomId } = (await response.json()) as { roomId: string };
-  return roomId;
+  return (await response.json()) as { hostToken: string; roomId: string };
 };
 
-export const roomStatus = async (roomId: string): Promise<number> =>
-  (await fetch(`${SERVER_URL}/rooms/${roomId}`)).status;
+export const createRoomId = async (): Promise<string> =>
+  (await createRoom()).roomId;
+
+export interface Seat {
+  browser?: string;
+  hostKey?: string;
+  token?: string;
+}
+
+const seatParams = ({ browser, hostKey, token }: Seat) => ({
+  ...(browser && { [BROWSER_ID_PARAM]: browser }),
+  ...(hostKey && { [HOST_KEY_PARAM]: hostKey }),
+  ...(token && { [ROOM_TOKEN_PARAM]: token }),
+});
+
+// The check the join form makes, so it can say why someone can't join
+export const roomStatus = async (
+  roomId: string,
+  seat: Seat = {}
+): Promise<number> => {
+  const query = new URLSearchParams(seatParams(seat)).toString();
+  return (await fetch(`${SERVER_URL}/rooms/${roomId}?${query}`)).status;
+};
 
 export const connectPeer = async (
   roomId: string,
   name: string,
-  { waitForSync = true } = {}
+  { waitForSync = true, ...seat }: Seat & { waitForSync?: boolean } = {}
 ): Promise<TestPeer> => {
   const server = new URL(SERVER_URL);
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
     disableBc: true,
-    params: { [CLIENT_ID_PARAM]: String(doc.clientID) },
+    params: { [CLIENT_ID_PARAM]: String(doc.clientID), ...seatParams(seat) },
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
     WebSocketPolyfill: WebSocket as unknown as typeof globalThis.WebSocket,
@@ -122,6 +161,7 @@ export const connectPeer = async (
   }
 
   return {
+    access: () => lastOfType(messages, "access"),
     clientId: doc.clientID,
     closeCodes,
     doc,
@@ -185,6 +225,7 @@ export const connectPeer = async (
       provider.awareness.setLocalState({ ...current, ...patch });
     },
     text: doc.getText(ROOM_DOC.code),
+    token: () => lastOfType(messages, "token")?.token,
 
     waitForClose: () =>
       new Promise((resolve) => {
@@ -197,11 +238,14 @@ export const connectPeer = async (
   };
 };
 
+// The peer creates the room, so it's the host
 export const createRoomPeer = async (
-  name: string
+  name: string,
+  { browser }: { browser?: string } = {}
 ): Promise<[TestPeer, string]> => {
-  const roomId = await createRoomId();
-  return [await connectPeer(roomId, name), roomId];
+  const { hostToken, roomId } = await createRoom();
+  const seat = { browser, hostKey: hostToken, token: hostToken };
+  return [await connectPeer(roomId, name, seat), roomId];
 };
 
 export const calculateStats = (samples: number[]) => {

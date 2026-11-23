@@ -54,7 +54,11 @@ import {
 } from "@/components/toolbar/utils";
 import { useFollowUserId } from "@/hooks/use-follow-user-id";
 import { REPO_URL } from "@/lib/constants";
-import { useRoomConnection } from "@/lib/realtime/room-context";
+import {
+  useRoomAccess,
+  useRoomConnection,
+  VIEW_ONLY_MESSAGE,
+} from "@/lib/realtime/room-context";
 
 import { CommandPalette, PALETTE_ACTION_ID } from "./command-palette";
 import { readLayout, writeLayout } from "./layout-storage";
@@ -151,6 +155,15 @@ export const WorkbenchProvider = ({
   const [platform] = useState(getShortcutPlatform);
   const files = useRoomFiles(editor, monaco, connection);
   const { activeFile, addFiles, openFile, renameFile } = files;
+  const { canEdit } = useRoomAccess();
+
+  // Viewers see the code but can't change it
+  useEffect(() => {
+    editor?.updateOptions({
+      readOnly: !canEdit,
+      readOnlyMessage: { value: VIEW_ONLY_MESSAGE },
+    });
+  }, [canEdit, editor]);
 
   const openFromRepositoryDialogRef = useRef<OpenFromRepositoryDialogRef>(null);
   const saveToRepositoryDialogRef = useRef<SaveToRepositoryDialogRef>(null);
@@ -259,6 +272,12 @@ export const WorkbenchProvider = ({
       editor.focus();
       editor.trigger("keyboard", actionId, null);
     };
+    // Menus show these as unavailable to viewers, and shortcuts do nothing
+    const whenEditing = (run: () => void) => () => {
+      if (canEdit) {
+        run();
+      }
+    };
 
     return {
       about: () => aboutDialogRef.current?.openDialog(),
@@ -310,13 +329,15 @@ export const WorkbenchProvider = ({
       },
       moveLineDown: runEditorAction("editor.action.moveLinesDownAction"),
       moveLineUp: runEditorAction("editor.action.moveLinesUpAction"),
-      newFile: () => {
+      newFile: whenEditing(() => {
         showView("explorer");
         setCreatingFile(true);
-      },
+      }),
       nextProblem: runEditorAction("editor.action.marker.nextInFiles"),
-      openLocal,
-      openRepository: () => openFromRepositoryDialogRef.current?.openDialog(),
+      openLocal: whenEditing(openLocal),
+      openRepository: whenEditing(() =>
+        openFromRepositoryDialogRef.current?.openDialog()
+      ),
       organizeImports: runEditorAction("editor.action.organizeImports"),
       outdentLine: runEditorAction("editor.action.outdentLines"),
       paste: runEditorAction("editor.action.clipboardPasteAction"),
@@ -327,11 +348,11 @@ export const WorkbenchProvider = ({
       refactor: runEditorAction("editor.action.refactor"),
       removeBrackets: runEditorAction("editor.action.removeBrackets"),
       removeLineComment: runEditorAction("editor.action.removeCommentLine"),
-      renameFile: () => {
+      renameFile: whenEditing(() => {
         if (activeFile) {
           setRenamingFileId(activeFile.id);
         }
-      },
+      }),
       renameSymbol: runEditorAction("editor.action.rename"),
       replace: runEditorAction("editor.action.startFindReplaceAction"),
       saveLocal: () => {
@@ -384,6 +405,7 @@ export const WorkbenchProvider = ({
     editor,
     connection,
     activeFile,
+    canEdit,
     openLocal,
     showLeave,
     showPalette,

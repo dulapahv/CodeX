@@ -64,6 +64,7 @@ import {
   useRoomMessage,
   useRoomUsers,
 } from "@/lib/realtime/room-context";
+import { hostKeys, seats } from "@/lib/realtime/room-tokens";
 import { storage } from "@/lib/services/storage";
 import { cn } from "@/lib/utils";
 
@@ -126,14 +127,19 @@ export default function Room() {
       return;
     }
 
-    const room = connectToRoom(
-      roomId.replace(DASH_PATTERN, "").toUpperCase(),
-      name
-    );
+    const id = roomId.replace(DASH_PATTERN, "").toUpperCase();
+    const room = connectToRoom(id, name);
     storage.setUserId(String(room.clientId));
     setConnection(room);
 
     const stopListening = room.onEnd((reason) => {
+      // The seat still holds after a lock or another tab taking over
+      if (reason === "removed") {
+        seats.forget(id);
+      } else if (reason === "not-found" || reason === "terminated") {
+        seats.forget(id);
+        hostKeys.forget(id);
+      }
       storage.clear();
       sessionStorage.setItem(ROOM_ENDED_KEY, reason);
       router.replace("/");

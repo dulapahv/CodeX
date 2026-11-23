@@ -21,7 +21,11 @@ import {
   useState,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { usePresenceSelector, useRoom } from "@/lib/realtime/room-context";
+import {
+  usePresenceSelector,
+  useRoom,
+  useRoomAccess,
+} from "@/lib/realtime/room-context";
 import {
   getFileText,
   type RoomFile,
@@ -37,6 +41,8 @@ import {
   type RunFiles,
   type RunReporter,
 } from "./utils";
+
+const VIEWER_RUN_LABEL = "Viewers can't run code";
 
 interface RunButtonProps {
   className?: string;
@@ -58,6 +64,8 @@ const RunButton = ({
   className,
 }: RunButtonProps) => {
   const room = useRoom();
+  // The room keeps a viewer's runs to themselves, so they can't run at all
+  const { canEdit } = useRoomAccess();
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isLocalRunning, setIsLocalRunning] = useState(false);
   const [args, setArgs] = useState<string[]>([]);
@@ -132,6 +140,9 @@ const RunButton = ({
             if (isLocalRunning) {
               return "Cancel execution";
             }
+            if (!canEdit) {
+              return VIEWER_RUN_LABEL;
+            }
             return isOtherRunning ? "Code is running" : "Run code";
           })()}
           className={cn(
@@ -140,7 +151,8 @@ const RunButton = ({
             className
           )}
           disabled={
-            !editor || (!isLocalRunning && (isOtherRunning || isEditorEmpty))
+            !editor ||
+            (!isLocalRunning && (isOtherRunning || isEditorEmpty || !canEdit))
           }
           onClick={
             isLocalRunning
@@ -156,6 +168,7 @@ const RunButton = ({
                     getRunFiles()
                   )
           }
+          title={canEdit ? undefined : VIEWER_RUN_LABEL}
           variant="ghost"
         >
           {isRunning ? (
@@ -176,7 +189,7 @@ const RunButton = ({
         </Button>
 
         <ArgsInputPopover
-          disabled={isRunning || !editor}
+          disabled={isRunning || !editor || !canEdit}
           onArgsChange={setArgs}
           onStdinChange={setStdin}
         />

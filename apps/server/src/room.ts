@@ -8,8 +8,12 @@
  */
 
 import {
+  BROWSER_ID_PARAM,
   CLIENT_ID_PARAM,
   CloseCode,
+  HOST_KEY_PARAM,
+  ROOM_TOKEN_PARAM,
+  type RoomRole,
   type ServerMessage,
   TERMINAL_HISTORY_LIMIT,
 } from "@codex/types/realtime";
@@ -44,6 +48,37 @@ const MESSAGE_QUERY_AWARENESS = 3;
 const AWARENESS_IDS_KEY = "__ypsAwarenessIds";
 const MEDIA_TOKEN_KEY = "mediaToken";
 const CLIENT_ID_KEY = "clientId";
+const ROLE_KEY = "role";
+const ROOM_TOKEN_KEY = "roomToken";
+const BROWSER_KEY = "browser";
+// Who's who in storage, so it outlasts connections and hibernation
+const HOST_TOKEN_KEY = "access:hostToken";
+const LOCKED_KEY = "access:locked";
+const MEMBER_PREFIX = "member:";
+const BANNED_PREFIX = "banned:";
+
+const REFUSALS = {
+  locked: [CloseCode.ROOM_LOCKED, "Room locked"],
+  removed: [CloseCode.REMOVED, "Removed by the host"],
+} as const;
+
+// Who someone is in the room. A null token is someone new, who gets one as
+// they connect.
+type Seat =
+  | { role: RoomRole; token: string | null }
+  | { refused: keyof typeof REFUSALS };
+
+interface SeatClaim {
+  browser: string | null;
+  hostKey: string | null;
+  token: string | null;
+}
+
+const claimFrom = (params: URLSearchParams): SeatClaim => ({
+  browser: params.get(BROWSER_ID_PARAM),
+  hostKey: params.get(HOST_KEY_PARAM),
+  token: params.get(ROOM_TOKEN_PARAM),
+});
 // The clock of the client's latest presence, kept with the connection since
 // the presence itself is lost to hibernation
 const PRESENCE_CLOCK_KEY = "presenceClock";
@@ -61,6 +96,24 @@ const awarenessIdsOf = (connection: Connection): number[] => {
 const clientIdOf = (connection: Connection) => {
   const id = stateOf(connection)?.[CLIENT_ID_KEY];
   return typeof id === "number" ? id : undefined;
+};
+
+// Missing for connections from before roles
+const roleOf = (connection: Connection): RoomRole | undefined => {
+  const role = stateOf(connection)?.[ROLE_KEY];
+  return role === "editor" || role === "host" || role === "viewer"
+    ? role
+    : undefined;
+};
+
+const roomTokenOf = (connection: Connection) => {
+  const token = stateOf(connection)?.[ROOM_TOKEN_KEY];
+  return typeof token === "string" ? token : undefined;
+};
+
+const browserOf = (connection: Connection) => {
+  const browser = stateOf(connection)?.[BROWSER_KEY];
+  return typeof browser === "string" ? browser : undefined;
 };
 
 const parseClientId = (value: string | null) => {
@@ -108,15 +161,26 @@ export class Room extends YServer {
     return Boolean(this.env.SFU_APP_ID && this.env.SFU_APP_TOKEN);
   }
 
-  // RPC from the Worker: claim this room ID, false if it is already taken
-  async create(): Promise<boolean> {
+  // RPC from the Worker. Claims this room ID and returns the host's token,
+  // or null if the ID is already taken
+  async create(): Promise<string | null> {
     if (await this.exists()) {
-      return false;
+      return null;
     }
-    await this.ctx.storage.put(CREATED_AT_KEY, Date.now());
+    const hostToken = crypto.randomUUID();
+    await this.ctx.storage.put({
+      [CREATED_AT_KEY]: Date.now(),
+      [HOST_TOKEN_KEY]: hostToken,
+    });
     // Wiped like an emptied room if nobody ever joins
     await this.ctx.storage.setAlarm(Date.now() + this.graceMs);
-    return true;
+    return hostToken;
+  }
+
+  // RPC from the Worker, for the join form to say why someone can't join
+  async checkSeat(claim: SeatClaim): Promise<"locked" | "open" | "removed"> {
+    const seat = await this.findSeat(claim);
+    return "refused" in seat ? seat.refused : "open";
   }
 
   // RPC from the Worker
@@ -191,6 +255,20 @@ export class Room extends YServer {
       }, 0);
       return;
     }
+    const params = new URL(ctx.request.url).searchParams;
+    const claim = claimFrom(params);
+    const seat = await this.findSeat(claim);
+    if ("refused" in seat) {
+      const [code, reason] = REFUSALS[seat.refused];
+      setTimeout(() => {
+        connection.close(code, reason);
+      }, 0);
+      return;
+    }
+    const seatToken = seat.token ?? (await this.issueToken());
+    // One connection for each seat, so a duplicated tab can't make a second
+    // host. This one has no seat yet, so it stays.
+    this.closeSeat(seatToken, CloseCode.REPLACED, "Opened in another tab");
     await this.ctx.storage.deleteAlarm();
 
     super.onConnect(connection, ctx);
@@ -198,18 +276,23 @@ export class Room extends YServer {
     // Connection state is persisted with the WebSocket, so the token
     // survives hibernation. y-partyserver merges its own keys into it.
     const token = crypto.randomUUID();
-    const clientId = parseClientId(
-      new URL(ctx.request.url).searchParams.get(CLIENT_ID_PARAM)
-    );
     connection.setState((previous: ConnectionState) => ({
       ...previous,
-      [CLIENT_ID_KEY]: clientId,
+      [CLIENT_ID_KEY]: parseClientId(params.get(CLIENT_ID_PARAM)),
       [MEDIA_TOKEN_KEY]: token,
+      [BROWSER_KEY]: claim.browser ?? undefined,
+      [ROLE_KEY]: seat.role,
+      [ROOM_TOKEN_KEY]: seatToken,
     }));
     this.sendCustomMessage(
       connection,
       serialize({ enabled: this.mediaEnabled, token, type: "media" })
     );
+    this.sendCustomMessage(
+      connection,
+      serialize({ token: seatToken, type: "token" })
+    );
+    await this.broadcastAccess();
 
     this.sendCustomMessage(
       connection,
@@ -265,6 +348,11 @@ export class Room extends YServer {
   ) {
     this.announceDeparture(connection);
     super.onClose(connection, code, reason, wasClean);
+    // Everyone else can edit, so only a host or viewer leaving changes access
+    const role = roleOf(connection);
+    if (role === "host" || role === "viewer") {
+      await this.broadcastAccess(connection);
+    }
 
     const hasOthers = [...this.getConnections()].some(
       (other) => other.id !== connection.id
@@ -282,27 +370,220 @@ export class Room extends YServer {
     await this.ctx.storage.deleteAll();
   }
 
+  // Viewers can't change the shared document
+  // biome-ignore lint/style/useThisInClassMethods: y-partyserver calls this override on the instance
+  isReadOnly(connection: Connection) {
+    return roleOf(connection) === "viewer";
+  }
+
   onCustomMessage(connection: Connection, raw: string) {
     const message = parseClientMessage(raw);
     if (!message) {
       return;
     }
+    const role = roleOf(connection);
 
+    if (message.type === "terminal") {
+      if (role === "viewer") {
+        return;
+      }
+      this.broadcastCustomMessage(serialize(message), connection);
+      this.storeTerminalResult(message.result).catch((error: unknown) => {
+        console.error("Failed to store terminal output:", error);
+      });
+      return;
+    }
+
+    if (role !== "host") {
+      return;
+    }
+    let task: Promise<void>;
     switch (message.type) {
-      case "terminal":
-        this.broadcastCustomMessage(serialize(message), connection);
-        this.storeTerminalResult(message.result).catch((error: unknown) => {
-          console.error("Failed to store terminal output:", error);
-        });
+      case "lock":
+        task = this.setLocked(message.locked);
+        break;
+      case "make-host":
+        task = this.makeHost(message.clientId);
+        break;
+      case "remove":
+        task = this.remove(message.clientId);
+        break;
+      case "set-role":
+        task = this.setRole(message.clientId, message.role);
         break;
       case "terminate":
-        this.terminate().catch((error: unknown) => {
-          console.error("Failed to terminate room:", error);
-        });
+        task = this.terminate();
         break;
       default:
-        break;
+        return;
     }
+    task.catch((error: unknown) => {
+      console.error(`Failed to handle ${message.type}:`, error);
+    });
+  }
+
+  private async findSeat({
+    browser,
+    hostKey,
+    token,
+  }: SeatClaim): Promise<Seat> {
+    const hostToken = await this.ctx.storage.get<string>(HOST_TOKEN_KEY);
+    if (hostToken && token === hostToken) {
+      return { role: "host", token };
+    }
+    // The host's browser takes the host's seat back only while it's empty,
+    // so another tab there joins as someone else
+    if (hostToken && hostKey === hostToken && !this.isSeatTaken(hostToken)) {
+      return { role: "host", token: hostToken };
+    }
+    if (browser && (await this.ctx.storage.get(`${BANNED_PREFIX}${browser}`))) {
+      return { refused: "removed" };
+    }
+    if (token) {
+      const role = await this.ctx.storage.get<RoomRole>(
+        `${MEMBER_PREFIX}${token}`
+      );
+      if (role) {
+        return { role, token };
+      }
+    }
+    if (await this.ctx.storage.get(LOCKED_KEY)) {
+      return { refused: "locked" };
+    }
+    return { role: "editor", token: null };
+  }
+
+  private async issueToken() {
+    const token = crypto.randomUUID();
+    await this.ctx.storage.put(`${MEMBER_PREFIX}${token}`, "editor");
+    return token;
+  }
+
+  private isSeatTaken(token: string) {
+    return [...this.getConnections()].some(
+      (connection) => roomTokenOf(connection) === token
+    );
+  }
+
+  private closeSeat(token: string, code: number, reason: string) {
+    for (const connection of this.getConnections()) {
+      if (roomTokenOf(connection) === token) {
+        connection.close(code, reason);
+      }
+    }
+  }
+
+  // The person's seat becomes the host's, so they keep it through reloads.
+  // The old host's seat stays, as an editor's.
+  private async makeHost(clientId: number) {
+    const connections = [...this.getConnections()];
+    const target = connections.find(
+      (connection) => clientIdOf(connection) === clientId
+    );
+    const token = target && roomTokenOf(target);
+    const oldToken = await this.ctx.storage.get<string>(HOST_TOKEN_KEY);
+    if (!(token && oldToken) || roleOf(target) === "host") {
+      return;
+    }
+    await this.ctx.storage.put({
+      [HOST_TOKEN_KEY]: token,
+      [`${MEMBER_PREFIX}${oldToken}`]: "editor",
+    });
+    await this.ctx.storage.delete(`${MEMBER_PREFIX}${token}`);
+    for (const connection of connections) {
+      const seat = roomTokenOf(connection);
+      if (seat === token || seat === oldToken) {
+        connection.setState((previous: ConnectionState) => ({
+          ...previous,
+          [ROLE_KEY]: seat === token ? "host" : "editor",
+        }));
+      }
+    }
+    await this.broadcastAccess();
+  }
+
+  // Closes the person's tabs and keeps their browser out from now on. A
+  // host's other tabs can be removed, but never the host's browser.
+  private async remove(clientId: number) {
+    const connections = [...this.getConnections()];
+    const target = connections.find(
+      (connection) => clientIdOf(connection) === clientId
+    );
+    if (!target || roleOf(target) === "host") {
+      return;
+    }
+    const token = roomTokenOf(target);
+    const browser = browserOf(target);
+    const isHostBrowser = connections.some(
+      (connection) =>
+        roleOf(connection) === "host" && browserOf(connection) === browser
+    );
+    const bannedBrowser = browser && !isHostBrowser ? browser : undefined;
+
+    if (token) {
+      await this.ctx.storage.delete(`${MEMBER_PREFIX}${token}`);
+    }
+    if (bannedBrowser) {
+      await this.ctx.storage.put(`${BANNED_PREFIX}${bannedBrowser}`, true);
+    }
+    const [code, reason] = REFUSALS.removed;
+    for (const connection of connections) {
+      if (
+        (token && roomTokenOf(connection) === token) ||
+        (bannedBrowser && browserOf(connection) === bannedBrowser)
+      ) {
+        connection.close(code, reason);
+      }
+    }
+  }
+
+  private async setLocked(locked: boolean) {
+    await this.ctx.storage.put(LOCKED_KEY, locked);
+    await this.broadcastAccess();
+  }
+
+  // The role stays with the person's token, so it holds in every tab they
+  // have open and when they come back
+  private async setRole(clientId: number, role: "editor" | "viewer") {
+    const target = [...this.getConnections()].find(
+      (connection) => clientIdOf(connection) === clientId
+    );
+    const token = target && roomTokenOf(target);
+    if (!token || roleOf(target) === "host") {
+      return;
+    }
+    await this.ctx.storage.put(`${MEMBER_PREFIX}${token}`, role);
+    for (const connection of this.getConnections()) {
+      if (roomTokenOf(connection) === token) {
+        connection.setState((previous: ConnectionState) => ({
+          ...previous,
+          [ROLE_KEY]: role,
+        }));
+      }
+    }
+    await this.broadcastAccess();
+  }
+
+  private async broadcastAccess(leaving?: Connection) {
+    const hostIds: number[] = [];
+    const viewerIds: number[] = [];
+    for (const connection of this.getConnections()) {
+      const clientId = clientIdOf(connection);
+      if (clientId === undefined || connection.id === leaving?.id) {
+        continue;
+      }
+      const role = roleOf(connection);
+      if (role === "host") {
+        hostIds.push(clientId);
+      } else if (role === "viewer") {
+        viewerIds.push(clientId);
+      }
+    }
+    const locked = (await this.ctx.storage.get<boolean>(LOCKED_KEY)) ?? false;
+    this.broadcastCustomMessage(
+      serialize({ hostIds, locked, type: "access", viewerIds }),
+      leaving
+    );
   }
 
   // Everyone echoes the presence they hear, so a client speaks only for

@@ -1,6 +1,7 @@
 /**
  * Notifications in the corner, like VS Code's: people joining and leaving,
- * changes others make to the files, and runs finishing out of sight.
+ * changes others make to the files, the host changing what you can do, and
+ * runs finishing out of sight.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -16,6 +17,7 @@ import { isRunError, isRunOutput } from "@/components/terminal/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { useCurrentUserId } from "@/hooks/use-current-user-id";
 import {
+  useRoomAccess,
   useRoomConnection,
   useRoomMessage,
   useRoomUsers,
@@ -103,6 +105,41 @@ const useArrivals = () => {
   }, [currentUserId, users]);
 };
 
+// When the host changes what this person can do. The room is locked or not
+// by the host's own hand, so the host isn't told.
+const useAccessChanges = () => {
+  const { canEdit, isHost, isKnown, isLocked } = useRoomAccess();
+  const previousRef = useRef<{
+    canEdit: boolean;
+    isHost: boolean;
+    isLocked: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!isKnown) {
+      return;
+    }
+    const previous = previousRef.current;
+    previousRef.current = { canEdit, isHost, isLocked };
+    if (!previous) {
+      return;
+    }
+    if (!previous.isHost && isHost) {
+      toast("You're now the host");
+    }
+    if (previous.canEdit !== canEdit) {
+      toast(canEdit ? "The host let you edit" : "The host made you view only");
+    }
+    if (previous.isLocked !== isLocked && !isHost) {
+      toast(
+        isLocked
+          ? "The host locked the room, so new people can't join"
+          : "The host unlocked the room"
+      );
+    }
+  }, [canEdit, isHost, isKnown, isLocked]);
+};
+
 // Only runs nobody can see finish, since the terminal shows the rest
 const useRunResults = () => {
   const { layout, showPanelView } = useWorkbench();
@@ -132,6 +169,7 @@ const useRunResults = () => {
 export const RoomNotifications = () => {
   useFileActivity();
   useArrivals();
+  useAccessChanges();
   useRunResults();
 
   // Sonner keeps toasts that haven't timed out and shows them again in the

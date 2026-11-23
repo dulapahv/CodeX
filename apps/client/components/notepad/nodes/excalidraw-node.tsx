@@ -7,6 +7,7 @@
  */
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { PencilSimpleIcon } from "@phosphor-icons/react";
 import {
   DecoratorNode,
@@ -39,23 +40,26 @@ const ExcalidrawView = ({
   svg: string;
 }) => {
   const [editor] = useLexicalComposerContext();
+  const isEditable = useLexicalEditable();
   const edit = () =>
     editor.dispatchCommand(OPEN_EXCALIDRAW_DIALOG_COMMAND, nodeKey);
 
   return (
     <BlockFrame
       actions={
-        <ToolbarButton className="size-6" label="Edit drawing" onClick={edit}>
-          <PencilSimpleIcon />
-        </ToolbarButton>
+        isEditable && (
+          <ToolbarButton className="size-6" label="Edit drawing" onClick={edit}>
+            <PencilSimpleIcon />
+          </ToolbarButton>
+        )
       }
       nodeKey={nodeKey}
     >
       <button
         className="block max-w-full cursor-default"
         data-selectable
-        onDoubleClick={edit}
-        title="Double-click to edit"
+        onDoubleClick={isEditable ? edit : undefined}
+        title={isEditable ? "Double-click to edit" : undefined}
         type="button"
       >
         {svg ? (

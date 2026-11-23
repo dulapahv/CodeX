@@ -30,10 +30,14 @@ import {
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useRoomActions } from "@/hooks/use-room-actions";
+import { useRoomAccess } from "@/lib/realtime/room-context";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_TITLE = "Are you sure you want to leave this room?";
 const DEFAULT_DESCRIPTION =
-  "You can rejoin this room using the same Room ID. If all participants leave, the room will be kept for 5 minutes before being deleted. Use Terminate Room to delete it immediately.";
+  "You can rejoin this room using the same Room ID. If all participants leave, the room will be kept for 5 minutes before being deleted.";
+// Only the host can terminate the room
+const HOST_DESCRIPTION = `${DEFAULT_DESCRIPTION} Use Terminate Room to delete it immediately.`;
 
 interface LeaveDialogRef {
   closeDialog: () => void;
@@ -45,6 +49,8 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { handleLeaveRoom, handleTerminateRoom } = useRoomActions();
+  const { isHost } = useRoomAccess();
+  const description = isHost ? HOST_DESCRIPTION : DEFAULT_DESCRIPTION;
 
   const openDialog = useCallback(() => setIsOpen(true), []);
   const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -61,16 +67,23 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{DEFAULT_TITLE}</DialogTitle>
-            <DialogDescription>{DEFAULT_DESCRIPTION}</DialogDescription>
+            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex w-full items-center justify-between sm:justify-between">
-            <Button
-              aria-label="Terminate room immediately"
-              onClick={handleTerminateRoom}
-              variant="destructive"
-            >
-              Terminate Room
-            </Button>
+          <DialogFooter
+            className={cn(
+              "flex w-full items-center",
+              isHost ? "justify-between sm:justify-between" : "sm:justify-end"
+            )}
+          >
+            {isHost && (
+              <Button
+                aria-label="Terminate room immediately"
+                onClick={handleTerminateRoom}
+                variant="destructive"
+              >
+                Terminate Room
+              </Button>
+            )}
             <div className="flex gap-2">
               <DialogClose
                 render={
@@ -97,19 +110,21 @@ const LeaveDialog = forwardRef<LeaveDialogRef>((_props, ref) => {
       <DrawerContent aria-label="Leave room drawer" role="alertdialog">
         <DrawerHeader className="pb-4">
           <DrawerTitle>{DEFAULT_TITLE}</DrawerTitle>
-          <DrawerDescription>{DEFAULT_DESCRIPTION}</DrawerDescription>
+          <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
           <Button aria-label="Confirm leaving room" onClick={handleLeaveRoom}>
             Leave
           </Button>
-          <Button
-            aria-label="Terminate room immediately"
-            onClick={handleTerminateRoom}
-            variant="destructive"
-          >
-            Terminate Room
-          </Button>
+          {isHost && (
+            <Button
+              aria-label="Terminate room immediately"
+              onClick={handleTerminateRoom}
+              variant="destructive"
+            >
+              Terminate Room
+            </Button>
+          )}
           <DrawerClose
             render={
               <Button

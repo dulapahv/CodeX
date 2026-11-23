@@ -8,6 +8,7 @@
 import "katex/dist/katex.min.css";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { PencilSimpleIcon } from "@phosphor-icons/react";
 import katex from "katex";
@@ -57,6 +58,7 @@ const EquationView = ({
   nodeKey,
 }: EquationPayload & { nodeKey: NodeKey }) => {
   const [editor] = useLexicalComposerContext();
+  const isEditable = useLexicalEditable();
   const [isSelected] = useLexicalNodeSelection(nodeKey);
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -81,8 +83,8 @@ const EquationView = ({
           isSelected && "outline-primary outline-2 outline-offset-1"
         )}
         data-selectable
-        onDoubleClick={edit}
-        title="Double-click to edit"
+        onDoubleClick={isEditable ? edit : undefined}
+        title={isEditable ? "Double-click to edit" : undefined}
         type="button"
       >
         <span ref={ref} />
@@ -93,17 +95,23 @@ const EquationView = ({
   return (
     <BlockFrame
       actions={
-        <ToolbarButton className="size-6" label="Edit equation" onClick={edit}>
-          <PencilSimpleIcon />
-        </ToolbarButton>
+        isEditable && (
+          <ToolbarButton
+            className="size-6"
+            label="Edit equation"
+            onClick={edit}
+          >
+            <PencilSimpleIcon />
+          </ToolbarButton>
+        )
       }
       nodeKey={nodeKey}
     >
       <button
         className="block w-full cursor-default overflow-x-auto py-1"
         data-selectable
-        onDoubleClick={edit}
-        title="Double-click to edit"
+        onDoubleClick={isEditable ? edit : undefined}
+        title={isEditable ? "Double-click to edit" : undefined}
         type="button"
       >
         <span ref={ref} />

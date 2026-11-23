@@ -20,7 +20,14 @@ import * as Y from "yjs";
 
 import { BASE_SERVER_URL } from "@/lib/constants";
 
-export type EndReason = "not-found" | "terminated";
+import { getSeatClaim, hostKeys, seats } from "./room-tokens";
+
+export type EndReason =
+  | "locked"
+  | "not-found"
+  | "removed"
+  | "replaced"
+  | "terminated";
 
 // From the room's `media` message: whether video is set up, and the token
 // that lets this connection use the SFU proxy
@@ -28,6 +35,10 @@ export interface MediaAccess {
   enabled: boolean;
   token: string;
 }
+
+// The room's `access` message, saying who hosts, who can only view, and
+// whether newcomers are kept out
+export type RoomAccess = Omit<MessageOf<"access">, "type">;
 
 type MessageOf<T extends ServerMessage["type"]> = Extract<
   ServerMessage,
@@ -39,6 +50,8 @@ export interface RoomConnection {
   readonly clientId: number;
   destroy: () => void;
   readonly doc: Y.Doc;
+  // Null until the server's first `access` message
+  getAccess: () => RoomAccess | null;
   // Null until the server's first `media` message; replaced on reconnect
   getMediaAccess: () => MediaAccess | null;
   // Everyone's presence keyed by Yjs client ID; a new Map after each change
@@ -53,11 +66,15 @@ export interface RoomConnection {
   readonly roomId: string;
   send: (message: ClientMessage) => void;
   setPresence: (patch: Partial<Presence>) => void;
+  subscribeAccess: (listener: () => void) => () => void;
   subscribeMediaAccess: (listener: () => void) => () => void;
   subscribePresence: (listener: () => void) => () => void;
 }
 
 const END_REASONS: Record<number, EndReason> = {
+  [CloseCode.REMOVED]: "removed",
+  [CloseCode.REPLACED]: "replaced",
+  [CloseCode.ROOM_LOCKED]: "locked",
   [CloseCode.ROOM_NOT_FOUND]: "not-found",
   [CloseCode.TERMINATED]: "terminated",
 };
@@ -77,11 +94,32 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
   const server = new URL(BASE_SERVER_URL);
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
+    connect: false,
     disableBc: true,
-    params: { [CLIENT_ID_PARAM]: String(doc.clientID) },
+    // Read on every reconnect, so it carries the seat the room gave us
+    params: () => ({
+      [CLIENT_ID_PARAM]: String(doc.clientID),
+      ...getSeatClaim(roomId),
+    }),
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
   });
+  // Opened on the next tick, so a connection destroyed straight away, as in
+  // React's dev double mount, never reaches the room. That one would share
+  // this tab's seat, and could take it from the connection that stays.
+  let isDestroyed = false;
+  const connectTimer = setTimeout(() => {
+    // connect() reads the params first, and then opens the socket even if
+    // the connection was destroyed meanwhile
+    provider
+      .connect()
+      .then(() => {
+        if (isDestroyed) {
+          provider.disconnect();
+        }
+      })
+      .catch(() => undefined);
+  }, 0);
 
   const presence: Presence = {
     media: { camera: false, mic: false, screen: false, speaker: true },
@@ -93,7 +131,9 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
   const endHandlers = new Set<(reason: EndReason) => void>();
   const presenceListeners = new Set<() => void>();
   const mediaAccessListeners = new Set<() => void>();
+  const accessListeners = new Set<() => void>();
   let mediaAccess: MediaAccess | null = null;
+  let access: RoomAccess | null = null;
 
   const readStates = () =>
     new Map(provider.awareness.getStates()) as Map<number, Presence>;
@@ -117,6 +157,20 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
       for (const listener of mediaAccessListeners) {
         listener();
       }
+    } else if (message.type === "access") {
+      const { hostIds, locked, viewerIds } = message;
+      access = { hostIds, locked, viewerIds };
+      // A tab made the host keeps its seat as this browser's host key, so
+      // the host's seat can be taken back after closing it
+      const seat = seats.get(roomId);
+      if (seat && hostIds.includes(doc.clientID)) {
+        hostKeys.save(roomId, seat);
+      }
+      for (const listener of accessListeners) {
+        listener();
+      }
+    } else if (message.type === "token") {
+      seats.save(roomId, message.token);
     }
     for (const handler of messageHandlers) {
       handler(message);
@@ -139,14 +193,19 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
     clientId: doc.clientID,
 
     destroy: () => {
+      clearTimeout(connectTimer);
+      isDestroyed = true;
       messageHandlers.clear();
       endHandlers.clear();
       presenceListeners.clear();
       mediaAccessListeners.clear();
+      accessListeners.clear();
       provider.destroy();
       doc.destroy();
     },
     doc,
+
+    getAccess: () => access,
 
     getMediaAccess: () => mediaAccess,
 
@@ -185,6 +244,11 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
     setPresence: (patch) => {
       const current = provider.awareness.getLocalState() as Presence | null;
       provider.awareness.setLocalState({ ...(current ?? presence), ...patch });
+    },
+
+    subscribeAccess: (listener) => {
+      accessListeners.add(listener);
+      return () => accessListeners.delete(listener);
     },
 
     subscribeMediaAccess: (listener) => {

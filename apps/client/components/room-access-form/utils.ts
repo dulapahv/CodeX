@@ -11,7 +11,12 @@
 
 import type { ChangeEvent } from "react";
 
-import { createRoomId, roomExists } from "@/lib/realtime/rooms";
+import { hostKeys, seats } from "@/lib/realtime/room-tokens";
+import {
+  checkRoom,
+  createRoomOnServer,
+  type RoomCheck,
+} from "@/lib/realtime/rooms";
 import { storage } from "@/lib/services/storage";
 
 const DASH_PATTERN = /-/gu;
@@ -20,16 +25,26 @@ const ROOM_ID_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{4}$/u;
 
 // Creates a room and returns its ID formatted for display ("ABCD-EFGH")
 export const createRoom = async (name: string): Promise<string> => {
-  const roomId = await createRoomId();
+  const { hostToken, roomId } = await createRoomOnServer();
+  // This tab is the host, and this browser can take the host's seat back
+  seats.save(roomId, hostToken);
+  hostKeys.save(roomId, hostToken);
   storage.setUsername(name);
   return formatRoomId(roomId);
 };
 
+const CHECK_ERRORS: Record<Exclude<RoomCheck, "open">, string> = {
+  locked: "This room is locked. Ask the host to unlock it so you can join.",
+  "not-found": "Room does not exist. Please check the room ID and try again.",
+  removed: "The host removed you from this room.",
+};
+
+// Checked first, so someone who can't join is told so here instead of
+// seeing the room before it sends them back
 export const joinRoom = async (roomId: string, name: string) => {
-  if (!(await roomExists(roomId.replace(DASH_PATTERN, "")))) {
-    throw new Error(
-      "Room does not exist. Please check the room ID and try again."
-    );
+  const check = await checkRoom(roomId.replace(DASH_PATTERN, ""));
+  if (check !== "open") {
+    throw new Error(CHECK_ERRORS[check]);
   }
   storage.setUsername(name);
 };

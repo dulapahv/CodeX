@@ -7,10 +7,13 @@
 
 "use client";
 
+import { useRoomAccess } from "@/lib/realtime/room-context";
+
 import { useWorkbench } from "./workbench-provider";
 
 export const EditorEmptyState = () => {
   const { actions, platform, showView } = useWorkbench();
+  const { canEdit } = useRoomAccess();
   const modKey = platform === "mac" ? "⌘" : "Ctrl";
 
   const entries = [
@@ -20,12 +23,17 @@ export const EditorEmptyState = () => {
       shortcut: `${modKey}+Shift+P`,
     },
     { label: "Show Explorer", onClick: () => showView("explorer") },
-    { label: "New File", onClick: actions?.newFile },
-    {
-      label: "Open from Local",
-      onClick: actions?.openLocal,
-      shortcut: `${modKey}+O`,
-    },
+    // Viewers can't add files
+    ...(canEdit
+      ? [
+          { label: "New File", onClick: actions?.newFile },
+          {
+            label: "Open from Local",
+            onClick: actions?.openLocal,
+            shortcut: `${modKey}+O`,
+          },
+        ]
+      : []),
   ];
 
   return (

@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   usePresenceSelector,
+  useRoomAccess,
   useRoomConnection,
 } from "@/lib/realtime/room-context";
 import { MAIN_FILE_ID, type RoomFile } from "@/lib/realtime/room-files";
@@ -85,6 +86,8 @@ const Viewers = ({ names }: { names: string[] }) => {
 
 interface FileRowProps {
   canDelete: boolean;
+  // Viewers can only open and download files
+  canEdit: boolean;
   file: RoomFile;
   isActive: boolean;
   isRenaming: boolean;
@@ -95,6 +98,7 @@ interface FileRowProps {
 
 const FileRow = ({
   canDelete,
+  canEdit,
   file,
   isActive,
   isRenaming,
@@ -153,6 +157,9 @@ const FileRow = ({
               )}
               onClick={() => onAction("open")}
               onKeyDown={(event) => {
+                if (!canEdit) {
+                  return;
+                }
                 if (event.key === "F2") {
                   event.preventDefault();
                   onAction("rename");
@@ -170,14 +177,18 @@ const FileRow = ({
           }
         />
         <ContextMenuContent className="w-56">
-          <ContextMenuItem
-            onClick={() => {
-              pendingActionRef.current = "newFile";
-            }}
-          >
-            New File…
-          </ContextMenuItem>
-          <ContextMenuSeparator />
+          {canEdit && (
+            <>
+              <ContextMenuItem
+                onClick={() => {
+                  pendingActionRef.current = "newFile";
+                }}
+              >
+                New File…
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+            </>
+          )}
           <ContextMenuItem
             onClick={() => {
               pendingActionRef.current = "open";
@@ -185,14 +196,16 @@ const FileRow = ({
           >
             Open
           </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => {
-              pendingActionRef.current = "rename";
-            }}
-          >
-            Rename…
-            <ContextMenuShortcut>F2</ContextMenuShortcut>
-          </ContextMenuItem>
+          {canEdit && (
+            <ContextMenuItem
+              onClick={() => {
+                pendingActionRef.current = "rename";
+              }}
+            >
+              Rename…
+              <ContextMenuShortcut>F2</ContextMenuShortcut>
+            </ContextMenuItem>
+          )}
           <ContextMenuItem
             onClick={() => {
               pendingActionRef.current = "download";
@@ -200,28 +213,44 @@ const FileRow = ({
           >
             Download
           </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem
-            disabled={!canDelete}
-            onClick={() => {
-              pendingActionRef.current = "delete";
-            }}
-            variant="destructive"
-          >
-            Delete
-            <ContextMenuShortcut>Delete</ContextMenuShortcut>
-          </ContextMenuItem>
+          {canEdit && (
+            <>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                disabled={!canDelete}
+                onClick={() => {
+                  pendingActionRef.current = "delete";
+                }}
+                variant="destructive"
+              >
+                Delete
+                <ContextMenuShortcut>Delete</ContextMenuShortcut>
+              </ContextMenuItem>
+            </>
+          )}
         </ContextMenuContent>
       </ContextMenu>
     </li>
   );
 };
 
+const LIST_CLASS = "min-h-0 flex-1 overflow-y-auto pb-2";
+
 // The file list, with a menu for the space around the files. A file's own
 // menu stops the right-click from reaching this one.
 const ExplorerMenu = ({ children }: { children: ReactNode }) => {
   const { actions, setCreatingFile } = useWorkbench();
+  const { canEdit } = useRoomAccess();
   const isCreatingRef = useRef(false);
+
+  // Everything in the menu adds files, which viewers can't do
+  if (!canEdit) {
+    return (
+      <ul aria-label="Files" className={LIST_CLASS}>
+        {children}
+      </ul>
+    );
+  }
 
   return (
     <ContextMenu
@@ -233,7 +262,7 @@ const ExplorerMenu = ({ children }: { children: ReactNode }) => {
       }}
     >
       <ContextMenuTrigger
-        className="min-h-0 flex-1 overflow-y-auto pb-2"
+        className={LIST_CLASS}
         onDoubleClick={(event) => {
           // Only the empty space below the files
           if (event.target === event.currentTarget) {
@@ -266,6 +295,7 @@ const ExplorerMenu = ({ children }: { children: ReactNode }) => {
 
 export const ExplorerView = () => {
   const { files, isCreatingFile, setCreatingFile } = useWorkbench();
+  const { canEdit } = useRoomAccess();
   const room = useRoomConnection();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<RoomFile | null>(null);
@@ -304,7 +334,7 @@ export const ExplorerView = () => {
       label="Drop files to add them"
     >
       <ExplorerMenu>
-        {isCreatingFile && (
+        {isCreatingFile && canEdit && (
           <li className="flex h-[22px] items-center gap-1.5 pr-2 pl-5">
             <FileIcon languageId="plaintext" />
             <NameBox
@@ -325,9 +355,10 @@ export const ExplorerView = () => {
         {files.files.map((file) => (
           <FileRow
             canDelete={canDelete}
+            canEdit={canEdit}
             file={file}
             isActive={file.id === files.activeFile?.id}
-            isRenaming={file.id === renamingId}
+            isRenaming={canEdit && file.id === renamingId}
             key={file.id}
             onAction={(action) => runAction(file, action)}
             onRenameEnd={() => setRenamingId(null)}

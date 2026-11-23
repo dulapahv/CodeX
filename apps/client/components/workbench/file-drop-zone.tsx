@@ -10,6 +10,7 @@
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
 
 import { readLocalFiles } from "@/components/toolbar/utils";
+import { useRoomAccess } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 import { useWorkbench } from "./workbench-provider";
@@ -30,6 +31,9 @@ export const FileDropZone = ({
   label,
 }: FileDropZoneProps) => {
   const { importFiles } = useWorkbench();
+  // Viewers can't add files, but a drop still mustn't open the file in place
+  // of the room
+  const { canEdit } = useRoomAccess();
   const [isOver, setIsOver] = useState(false);
   // Entering a child fires before leaving its parent, so count the depth
   const depthRef = useRef(0);
@@ -46,7 +50,7 @@ export const FileDropZone = ({
         if (hasFiles(event)) {
           event.preventDefault();
           depthRef.current += 1;
-          setIsOver(true);
+          setIsOver(canEdit);
         }
       }}
       onDragLeaveCapture={(event) => {
@@ -61,7 +65,7 @@ export const FileDropZone = ({
         if (hasFiles(event)) {
           event.preventDefault();
           event.stopPropagation();
-          event.dataTransfer.dropEffect = "copy";
+          event.dataTransfer.dropEffect = canEdit ? "copy" : "none";
         }
       }}
       onDropCapture={async (event) => {
@@ -71,6 +75,9 @@ export const FileDropZone = ({
         event.preventDefault();
         event.stopPropagation();
         reset();
+        if (!canEdit) {
+          return;
+        }
         // The drop's files can only be read during the event
         const dropped = [...event.dataTransfer.files];
         importFiles(await readLocalFiles(dropped));

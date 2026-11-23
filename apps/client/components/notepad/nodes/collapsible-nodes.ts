@@ -132,8 +132,9 @@ export class CollapsibleTitleNode extends ElementNode {
     const element = document.createElement("div");
     addClassNamesToElement(element, config.theme.collapsibleTitle);
     element.addEventListener("click", (event) => {
+      // Open or closed is part of the shared note, which viewers can't change
       const { left } = element.getBoundingClientRect();
-      if (event.clientX - left > TOGGLE_AREA) {
+      if (event.clientX - left > TOGGLE_AREA || !editor.isEditable()) {
         return;
       }
       event.preventDefault();

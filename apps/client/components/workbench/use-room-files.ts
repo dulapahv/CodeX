@@ -20,6 +20,7 @@ import {
 } from "@/components/code-editor/service/file-models";
 import type { FileContent } from "@/components/toolbar/utils";
 import type { RoomConnection } from "@/lib/realtime/room-connection";
+import { useRoomAccess, VIEW_ONLY_MESSAGE } from "@/lib/realtime/room-context";
 import {
   createFile as createFileInDoc,
   deleteFile as deleteFileInDoc,
@@ -83,6 +84,8 @@ export interface RoomFiles {
   deleteFile: (id: string) => void;
   fileModels: FileModels | null;
   files: RoomFile[];
+  /** Moves a tab in front of another, or to the end when that's null */
+  moveTab: (id: string, beforeId: string | null) => void;
   openFile: (id: string) => void;
   openIds: string[];
   /** Returns why the name can't be used, if it can't */
@@ -101,6 +104,8 @@ export const useRoomFiles = (
   const [files, setFiles] = useState<RoomFile[]>([]);
   const [tabs, setTabs] = useState(NO_TABS);
   const [fileModels, setFileModels] = useState<FileModels | null>(null);
+  // The server ignores a viewer's changes, so they'd only show on their screen
+  const { canEdit } = useRoomAccess();
   const hasOpenedFirstRef = useRef(false);
   const shouldFocusRef = useRef(true);
   const pendingRevealRef = useRef<{
@@ -194,6 +199,15 @@ export const useRoomFiles = (
     setTabs((current) => closeTabs(current, new Set([id])));
   }, []);
 
+  const moveTab = useCallback((id: string, beforeId: string | null) => {
+    setTabs((current) => {
+      const openIds = current.openIds.filter((openId) => openId !== id);
+      const index = beforeId === null ? -1 : openIds.indexOf(beforeId);
+      openIds.splice(index === -1 ? openIds.length : index, 0, id);
+      return { ...current, openIds };
+    });
+  }, []);
+
   const revealInFile = useCallback(
     (id: string, range: monaco.IRange) => {
       pendingRevealRef.current = { id, range };
@@ -225,7 +239,7 @@ export const useRoomFiles = (
 
   const createFile = useCallback(
     (name: string) => {
-      const error = getNameError(name);
+      const error = canEdit ? getNameError(name) : VIEW_ONLY_MESSAGE;
       if (error || !(room && monacoInstance)) {
         return error;
       }
@@ -238,12 +252,12 @@ export const useRoomFiles = (
       openFile(id);
       return null;
     },
-    [getNameError, monacoInstance, openFile, room]
+    [canEdit, getNameError, monacoInstance, openFile, room]
   );
 
   const renameFile = useCallback(
     (id: string, name: string) => {
-      const error = getNameError(name, id);
+      const error = canEdit ? getNameError(name, id) : VIEW_ONLY_MESSAGE;
       const file = room ? readFiles(room.doc).find((f) => f.id === id) : null;
       if (error || !(room && monacoInstance && file)) {
         return error;
@@ -257,7 +271,7 @@ export const useRoomFiles = (
       }
       return null;
     },
-    [getNameError, monacoInstance, room]
+    [canEdit, getNameError, monacoInstance, room]
   );
 
   const deleteFile = useCallback(
@@ -265,32 +279,32 @@ export const useRoomFiles = (
       const roomFiles = room ? readFiles(room.doc) : [];
       const file = roomFiles.find((f) => f.id === id);
       // A room always keeps one file to write in
-      if (!(room && file) || roomFiles.length <= 1) {
+      if (!(canEdit && room && file) || roomFiles.length <= 1) {
         return;
       }
       deleteFileInDoc(room.doc, id);
       shareActivity(room.doc, getActor(), `deleted ${file.name}`);
     },
-    [room]
+    [canEdit, room]
   );
 
   // The name follows the language too, unless another file has that name
   const setLanguage = useCallback(
     (id: string, language: string) => {
       const file = room ? readFiles(room.doc).find((f) => f.id === id) : null;
-      if (!(room && monacoInstance && file)) {
+      if (!(canEdit && room && monacoInstance && file)) {
         return;
       }
       const renamed = renameForLanguage(monacoInstance, file.name, language);
       const name = getNameError(renamed, id) ? file.name : renamed;
       updateFile(room.doc, id, { language, name });
     },
-    [getNameError, monacoInstance, room]
+    [canEdit, getNameError, monacoInstance, room]
   );
 
   const addFiles = useCallback(
     (items: FileContent[]) => {
-      if (!(room && monacoInstance)) {
+      if (!(canEdit && room && monacoInstance)) {
         return [];
       }
       const added: FileContent[] = [];
@@ -314,12 +328,12 @@ export const useRoomFiles = (
       }
       return taken;
     },
-    [getNameError, monacoInstance, openFile, room]
+    [canEdit, getNameError, monacoInstance, openFile, room]
   );
 
   const replaceFiles = useCallback(
     (items: FileContent[]) => {
-      if (!room) {
+      if (!(canEdit && room)) {
         return;
       }
       let lastId: string | null = null;
@@ -344,7 +358,7 @@ export const useRoomFiles = (
         openFile(lastId);
       }
     },
-    [fileModels, openFile, room]
+    [canEdit, fileModels, openFile, room]
   );
 
   const activeFile = useMemo(
@@ -361,6 +375,7 @@ export const useRoomFiles = (
       deleteFile,
       fileModels,
       files,
+      moveTab,
       openFile,
       openIds: tabs.openIds,
       renameFile,
@@ -376,6 +391,7 @@ export const useRoomFiles = (
       deleteFile,
       fileModels,
       files,
+      moveTab,
       openFile,
       renameFile,
       replaceFiles,

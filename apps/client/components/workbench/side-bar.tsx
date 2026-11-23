@@ -9,6 +9,7 @@
 import { FilePlusIcon, FolderOpenIcon } from "@phosphor-icons/react";
 import { type ReactNode, useId } from "react";
 
+import { useRoomAccess } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 import { ExplorerView } from "./explorer-view";
@@ -20,6 +21,7 @@ import { useWorkbench } from "./workbench-provider";
 
 export const SideBar = ({ notepad }: { notepad: ReactNode }) => {
   const { actions, layout, setCreatingFile } = useWorkbench();
+  const { canEdit } = useRoomAccess();
   const { sideBarView } = layout;
   const headingId = useId();
 
@@ -29,7 +31,7 @@ export const SideBar = ({ notepad }: { notepad: ReactNode }) => {
       className="bg-wb-chrome text-wb-fg flex h-full flex-col"
     >
       <ViewHeader id={headingId} title={SIDE_BAR_VIEW_LABELS[sideBarView]}>
-        {sideBarView === "explorer" && (
+        {sideBarView === "explorer" && canEdit && (
           <>
             <WorkbenchAction
               disabled={!actions}

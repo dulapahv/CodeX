@@ -22,6 +22,9 @@ export const isValidName = (value: unknown): value is string =>
   value.length <= MAX_NAME_LENGTH &&
   !CONTROL_CHARACTER_PATTERN.test(value);
 
+export const isClientId = (value: unknown): value is number =>
+  typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+
 export const parseClientMessage = (raw: string): ClientMessage | null => {
   let message: unknown;
   try {
@@ -40,6 +43,20 @@ export const parseClientMessage = (raw: string): ClientMessage | null => {
         : null;
     case "terminate":
       return { type: "terminate" };
+    case "lock":
+      return typeof message.locked === "boolean"
+        ? { locked: message.locked, type: "lock" }
+        : null;
+    case "make-host":
+    case "remove":
+      return isClientId(message.clientId)
+        ? { clientId: message.clientId, type: message.type }
+        : null;
+    case "set-role":
+      return isClientId(message.clientId) &&
+        (message.role === "editor" || message.role === "viewer")
+        ? { clientId: message.clientId, role: message.role, type: "set-role" }
+        : null;
     default:
       return null;
   }

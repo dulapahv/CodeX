@@ -7,7 +7,7 @@
 
 "use client";
 
-import type { Presence, ServerMessage } from "@codex/types/realtime";
+import type { Presence, RoomRole, ServerMessage } from "@codex/types/realtime";
 import type { User } from "@codex/types/user";
 import {
   createContext,
@@ -98,6 +98,49 @@ const isSameUsers = (previous: User[], next: User[]) =>
 // Everyone in the room, including this client
 export const useRoomUsers = (): User[] =>
   usePresenceSelector(toUsers, isSameUsers);
+
+const getNoAccess = () => null;
+
+export const VIEW_ONLY_MESSAGE =
+  "You can only view this room. Ask the host if you'd like to edit.";
+
+export interface RoomAccessView {
+  canEdit: boolean;
+  isHost: boolean;
+  // False until the server first says, so a change can be told from the start
+  isKnown: boolean;
+  isLocked: boolean;
+  // Takes a user ID, the Yjs client ID as a string
+  roleOf: (userId: string) => RoomRole;
+}
+
+// What this person may do, and everyone's role. Until the server says,
+// everyone can edit, as on a server from before roles.
+export const useRoomAccess = (): RoomAccessView => {
+  const connection = useContext(RoomContext);
+  const access = useSyncExternalStore(
+    connection?.subscribeAccess ?? subscribeNothing,
+    connection?.getAccess ?? getNoAccess,
+    getNoAccess
+  );
+
+  const roleOf = (userId: string): RoomRole => {
+    const clientId = Number(userId);
+    if (access?.hostIds.includes(clientId)) {
+      return "host";
+    }
+    return access?.viewerIds.includes(clientId) ? "viewer" : "editor";
+  };
+  const ownRole = connection ? roleOf(String(connection.clientId)) : "editor";
+
+  return {
+    canEdit: ownRole !== "viewer",
+    isHost: ownRole === "host",
+    isKnown: access !== null,
+    isLocked: access?.locked ?? false,
+    roleOf,
+  };
+};
 
 export const useRoomMessage = <T extends ServerMessage["type"]>(
   type: T,

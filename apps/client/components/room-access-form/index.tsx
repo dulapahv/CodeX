@@ -31,6 +31,14 @@ interface RoomAccessFormProps {
   roomId: string;
 }
 
+const ENDED_MESSAGES: Record<string, string> = {
+  locked: "This room is locked. Ask the host to unlock it so you can join.",
+  "not-found": "This room no longer exists.",
+  removed: "The host removed you from this room.",
+  replaced: "This room is open in another tab.",
+  terminated: "This room has been terminated.",
+};
+
 const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
@@ -44,11 +52,7 @@ const RoomAccessForm = ({ roomId }: RoomAccessFormProps) => {
     const reason = sessionStorage.getItem(ROOM_ENDED_KEY);
     if (reason) {
       sessionStorage.removeItem(ROOM_ENDED_KEY);
-      setEndedMessage(
-        reason === "terminated"
-          ? "This room has been terminated."
-          : "This room no longer exists."
-      );
+      setEndedMessage(ENDED_MESSAGES[reason] ?? ENDED_MESSAGES["not-found"]);
     }
   }, []);
 

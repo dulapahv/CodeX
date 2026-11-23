@@ -24,6 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useWorkbench } from "@/components/workbench/workbench-provider";
+import { useRoomAccess } from "@/lib/realtime/room-context";
 import { cn } from "@/lib/utils";
 
 interface Language {
@@ -34,6 +35,8 @@ interface Language {
 
 const LanguageSelection = ({ className }: { className?: string }) => {
   const { files, monaco } = useWorkbench();
+  // The language belongs to the file, which viewers can't change
+  const { canEdit } = useRoomAccess();
   const [open, setOpen] = useState(false);
   const { activeFile } = files;
 
@@ -61,6 +64,7 @@ const LanguageSelection = ({ className }: { className?: string }) => {
             aria-expanded={open}
             aria-label="Select programming language"
             className={cn("h-full text-xs font-normal", className)}
+            disabled={!canEdit}
             role="combobox"
             variant="ghost"
           >

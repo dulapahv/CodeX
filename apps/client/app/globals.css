@@ -66,6 +66,7 @@
   --color-wb-hover: var(--wb-hover);
   --color-wb-active: var(--wb-active);
   --color-wb-accent: var(--wb-accent);
+  --color-wb-follow: var(--wb-follow);
 
   --animate-scale-up-center: scale-up-center 0.4s
     cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
@@ -200,6 +201,8 @@
   --wb-hover: color-mix(in oklab, var(--toolbar-foreground) 8%, transparent);
   --wb-active: color-mix(in oklab, var(--toolbar-foreground) 14%, transparent);
   --wb-accent: #005fb8;
+  /* Following someone, in the yellow CodeX has always used for it */
+  --wb-follow: #b88600;
   --toolbar-bg-primary: var(--wb-chrome);
   --toolbar-bg-secondary: var(--wb-chrome);
 }
@@ -244,6 +247,7 @@
     var(--toolbar-foreground)
   );
   --wb-accent: #0078d4;
+  --wb-follow: #f6d84f;
 }
 
 @layer base {

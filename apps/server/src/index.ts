@@ -7,8 +7,11 @@
  */
 
 import {
+  BROWSER_ID_PARAM,
+  HOST_KEY_PARAM,
   MEDIA_TOKEN_HEADER,
   ROOM_ID_HEADER,
+  ROOM_TOKEN_PARAM,
   SFU_PROXY_PATH,
 } from "@codex/types/realtime";
 import { getServerByName, routePartykitRequest } from "partyserver";
@@ -39,20 +42,41 @@ const createRoom = async (env: Env, origin: string | null) => {
     const roomId = generateRoomID();
     // biome-ignore lint/performance/noAwaitInLoops: only retries after a collision
     const room = await roomStub(env, roomId);
-    if (await room.create()) {
-      return json({ roomId }, origin, 201);
+    const hostToken = await room.create();
+    if (hostToken) {
+      return json({ hostToken, roomId }, origin, 201);
     }
   }
   return json({ error: "Couldn't create a room. Try again." }, origin, 503);
 };
 
-const checkRoom = async (env: Env, rawId: string, origin: string | null) => {
+const SEAT_ERRORS = {
+  locked: { error: "Room locked", status: 423 },
+  removed: { error: "Removed from the room", status: 403 },
+} as const;
+
+// Whether the room exists, and whether this person may join it now
+const checkRoom = async (
+  env: Env,
+  rawId: string,
+  params: URLSearchParams,
+  origin: string | null
+) => {
   const roomId = normalizeRoomId(decodeURIComponent(rawId));
-  const exists =
-    roomId !== null && (await (await roomStub(env, roomId)).exists());
-  return exists
-    ? json({ roomId }, origin)
-    : json({ error: "Room not found" }, origin, 404);
+  const room = roomId === null ? null : await roomStub(env, roomId);
+  if (!(room && (await room.exists()))) {
+    return json({ error: "Room not found" }, origin, 404);
+  }
+  const seat = await room.checkSeat({
+    browser: params.get(BROWSER_ID_PARAM),
+    hostKey: params.get(HOST_KEY_PARAM),
+    token: params.get(ROOM_TOKEN_PARAM),
+  });
+  if (seat === "open") {
+    return json({ roomId }, origin);
+  }
+  const { error, status } = SEAT_ERRORS[seat];
+  return json({ error }, origin, status);
 };
 
 const isSfuProxyPath = (pathname: string) =>
@@ -137,7 +161,7 @@ export default {
 
     const roomId = ROOM_PATH.exec(url.pathname)?.groups?.roomId;
     if (roomId !== undefined && request.method === "GET") {
-      return checkRoom(env, roomId, origin);
+      return checkRoom(env, roomId, url.searchParams, origin);
     }
 
     if (isSfuProxyPath(url.pathname)) {

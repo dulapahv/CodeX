@@ -6,26 +6,37 @@
 
 import { BASE_SERVER_URL } from "@/lib/constants";
 
-const NOT_FOUND = 404;
+import { getSeatClaim } from "./room-tokens";
 
-export const createRoomId = async (): Promise<string> => {
+export type RoomCheck = "locked" | "not-found" | "open" | "removed";
+
+const CHECK_STATUSES: Record<number, RoomCheck> = {
+  200: "open",
+  403: "removed",
+  404: "not-found",
+  423: "locked",
+};
+
+// The new room's ID, and the token that makes its creator the host
+export const createRoomOnServer = async () => {
   const response = await fetch(`${BASE_SERVER_URL}/rooms`, { method: "POST" });
   if (!response.ok) {
     throw new Error("Couldn't create a room. Please try again.");
   }
-  const { roomId } = (await response.json()) as { roomId: string };
-  return roomId;
+  return (await response.json()) as { hostToken: string; roomId: string };
 };
 
-export const roomExists = async (roomId: string): Promise<boolean> => {
-  const response = await fetch(
-    `${BASE_SERVER_URL}/rooms/${encodeURIComponent(roomId)}`
+// Whether this tab may join the room now, asked before it shows the room
+export const checkRoom = async (roomId: string): Promise<RoomCheck> => {
+  const claim = Object.entries(getSeatClaim(roomId)).filter(
+    (entry): entry is [string, string] => entry[1] !== undefined
   );
-  if (response.status === NOT_FOUND) {
-    return false;
-  }
-  if (!response.ok) {
+  const response = await fetch(
+    `${BASE_SERVER_URL}/rooms/${encodeURIComponent(roomId)}?${new URLSearchParams(claim)}`
+  );
+  const check = CHECK_STATUSES[response.status];
+  if (!check) {
     throw new Error("Couldn't reach the server. Please try again.");
   }
-  return true;
+  return check;
 };

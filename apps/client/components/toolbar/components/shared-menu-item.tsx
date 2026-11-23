@@ -16,7 +16,9 @@ import {
   MenubarShortcut,
 } from "@/components/ui/menubar";
 
-import type { MenuItem } from "../menu-config";
+import { useRoomAccess } from "@/lib/realtime/room-context";
+
+import { EDITING_ACTIONS, type MenuItem } from "../menu-config";
 import type { ToolbarActions } from "../types";
 
 interface SharedMenuItemProps {
@@ -33,6 +35,7 @@ export const SharedMenuItem = ({
   onSelect,
   hideShortcut,
 }: SharedMenuItemProps) => {
+  const { canEdit } = useRoomAccess();
   if (item === "separator") {
     return <MenubarSeparator />;
   }
@@ -52,7 +55,10 @@ export const SharedMenuItem = ({
   }
 
   return (
-    <MenubarItem onClick={() => onSelect(item.action)}>
+    <MenubarItem
+      disabled={!canEdit && EDITING_ACTIONS.has(item.action)}
+      onClick={() => onSelect(item.action)}
+    >
       {item.icon}
       {item.label}
       {!hideShortcut && item.shortcut && (

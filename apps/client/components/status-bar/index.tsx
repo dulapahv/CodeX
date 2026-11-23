@@ -12,6 +12,8 @@
 
 import {
   ArrowsLeftRightIcon,
+  EyeIcon,
+  LockSimpleIcon,
   NavigationArrowIcon,
   UsersIcon,
   WarningIcon,
@@ -46,7 +48,11 @@ import {
 } from "@/components/workbench/use-editor-state";
 import { useWorkbench } from "@/components/workbench/workbench-provider";
 import { useFollowUserId } from "@/hooks/use-follow-user-id";
-import { useRoomUsers } from "@/lib/realtime/room-context";
+import {
+  useRoomAccess,
+  useRoomUsers,
+  VIEW_ONLY_MESSAGE,
+} from "@/lib/realtime/room-context";
 import { storage } from "@/lib/services/storage";
 import { cn } from "@/lib/utils";
 
@@ -144,11 +150,40 @@ const FollowingItem = () => {
     >
       <NavigationArrowIcon
         aria-hidden="true"
-        className="size-3.5"
+        className="text-wb-follow size-3.5"
         weight="fill"
       />
       Following {followed.username}
     </StatusItem>
+  );
+};
+
+// Why a viewer can't type, and that newcomers are kept out of a locked room
+const AccessItems = () => {
+  const { showView } = useWorkbench();
+  const { canEdit, isLocked } = useRoomAccess();
+
+  return (
+    <>
+      {!canEdit && (
+        <StatusItem
+          onClick={() => showView("participants")}
+          tooltip={VIEW_ONLY_MESSAGE}
+        >
+          <EyeIcon aria-hidden="true" className="size-3.5" />
+          View only
+        </StatusItem>
+      )}
+      {isLocked && (
+        <StatusItem
+          onClick={() => showView("participants")}
+          tooltip="New people can't join"
+        >
+          <LockSimpleIcon aria-hidden="true" className="size-3.5" />
+          Locked
+        </StatusItem>
+      )}
+    </>
   );
 };
 
@@ -295,6 +330,7 @@ const StatusBar = () => {
           <UsersIcon aria-hidden="true" className="size-3.5" />
           {users.length}
         </StatusItem>
+        <AccessItems />
         <ProblemsItem />
         <RunningItem />
         <FollowingItem />

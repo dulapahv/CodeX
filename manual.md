@@ -19,6 +19,12 @@
   - [Room ID](#room-id)
   - [Invite Link](#invite-link)
   - [QR Code](#qr-code)
+- [Host Controls](#host-controls)
+  - [Who Can Edit](#who-can-edit)
+  - [Locking the Room](#locking-the-room)
+  - [Removing Someone](#removing-someone)
+  - [Making Someone Else the Host](#making-someone-else-the-host)
+  - [Leaving and Terminating the Room](#leaving-and-terminating-the-room)
 - [Files](#files)
   - [Opening and Adding Files](#opening-and-adding-files)
   - [Renaming and Deleting Files](#renaming-and-deleting-files)
@@ -109,7 +115,7 @@ To create a new coding session:
 1. On the homepage, locate the `Create a Room` section
 2. Enter your preferred display name in the `Name` field
 3. Click `+ Create Room` to start a new session
-4. You'll be automatically redirected to your coding room
+4. You'll be automatically redirected to your coding room, as its [host](#host-controls)
 
 <div align="center">
   <img src="docs/images/create-room.png" alt="Create a Room" width="400"/>
@@ -191,7 +197,8 @@ The icons down the left edge pick what the side bar shows. Click the icon that's
 2. **Notepad**
    - The room's shared notes, described below
 3. **Participants**
-   - Everyone in the room, the file each person has open, who is running code, and a button to [follow](#follow-mode) someone
+   - Everyone in the room, the file each person has open, who is running code, who is the host or can only view, and a button to [follow](#follow-mode) someone
+   - The host also decides here [who can edit](#who-can-edit), can [remove someone](#removing-someone) or [make them the host](#making-someone-else-the-host), and can [lock the room](#locking-the-room)
    - The number on the icon is how many people are in the room
 4. **Repository**
    - Open a file from, or save the code to, GitHub, GitLab, Bitbucket, or Codeberg, and connect or disconnect those accounts
@@ -213,7 +220,7 @@ At the bottom are `Leave Room` and the gear, which opens the command palette, [S
 
 2. **Center Left Panel - Code Editor**
 
-   - A tab for each file you have open. Everyone shares the files, but each person has their own tabs. Double-click a tab, or press `F2` on it, to rename the file. Middle-click a tab to close it
+   - A tab for each file you have open. Everyone shares the files, but each person has their own tabs. Drag a tab to move it. Double-click a tab, or press `F2` on it, to rename the file. Middle-click a tab to close it
    - The `Run Code` button on the right of the tab. For list of supported execution languages, refer to the [Supported Execution Languages](#supported-execution-languages) section
    - Main coding area with syntax highlighting
    - Line numbers
@@ -254,8 +261,9 @@ On the left:
 
 1. **Room ID:** click it to share the room
 2. **Participants:** how many people are in the room
-3. **Problems:** the number of errors and warnings. Click it to open the Problems tab
-4. **Running and Following:** who is running code, and who you're following. Click `Following` to stop
+3. **View only and Locked:** shown when you [can only view](#who-can-edit) the room, and when the room is [locked](#locking-the-room). Click either to open Participants
+4. **Problems:** the number of errors and warnings. Click it to open the Problems tab
+5. **Running and Following:** who is running code, and who you're following. Click `Following` to stop
 
 On the right:
 
@@ -284,7 +292,7 @@ To change the color theme, use `File > Color Theme…` or the gear. Move through
 
 #### Notifications
 
-Notifications appear at the lower right when someone joins or leaves, when someone else adds, creates, renames, or deletes a file, and when a run finishes while the terminal is hidden. A run notification has a `Show Terminal` button.
+Notifications appear at the lower right when someone joins or leaves, when someone else adds, creates, renames, or deletes a file, when the host changes what you can do, makes you the host, or locks the room, and when a run finishes while the terminal is hidden. A run notification has a `Show Terminal` button.
 
 ## Room Sharing
 
@@ -311,6 +319,40 @@ CodeX allows you to share your room with others using multiple methods:
 ### QR Code
 
 1. Click the `Share` button in the top bar
+
+## Host Controls
+
+Whoever creates a room is its host, marked `Host` in `Participants`. The host decides who can edit and who can join, and is the only one who can remove people or terminate the room.
+
+Each browser tab is one person in the room. The host stays the host after reloading the tab. If the host closes it and comes back in the same browser, they're the host again. While the host's tab is open, another tab in that browser joins as someone else. The room is open in one tab per person, so opening the same tab twice, such as by duplicating it, closes the older one.
+
+### Who Can Edit
+
+Everyone who joins can edit at first. In `Participants`, the host can click `...` beside someone and choose `Make View Only`, or `Let Edit` for a viewer. They get a notification when the host changes what they can do.
+
+A viewer:
+
+- Sees the code, the notes, the terminal, and everyone's cursors as they change, and can follow people
+- Can't type in the code or the notes, add, rename, or delete files, change a file's language, or run code
+- Sees `View only` in the status bar, and beside their name in `Participants`
+
+A viewer stays a viewer after reloading the tab.
+
+### Locking the Room
+
+In `Participants`, the host can click `Lock Room` to keep new people out. Everyone already in the room stays, and can reload their tab and come back. Anyone else who tries to join is told the room is locked before it opens. While it's locked, everyone sees `Locked` in the status bar and gets a notification, and `Invite People` is unavailable. Click `Unlock Room` to let people join again.
+
+### Removing Someone
+
+In `Participants`, the host can click `...` beside someone and choose `Remove from Room…`, then confirm. They leave the room straight away and are told the host removed them. They can't join the room again from the same browser, even once it's unlocked, so lock the room too if they might come back from another one.
+
+### Making Someone Else the Host
+
+In `Participants`, the host can click `...` beside someone and choose `Make Host…`, then confirm. They become the host, with everything above, and are told so. The old host stays in the room and can still edit. There's one host at a time.
+
+### Leaving and Terminating the Room
+
+Anyone can leave with `Leave Room` at the bottom of the activity bar. The room is kept for 5 minutes after everyone has left, so you can rejoin it with the same room ID. The host also sees `Terminate Room` there, which deletes the room straight away and sends everyone home.
 
 ## Files
 

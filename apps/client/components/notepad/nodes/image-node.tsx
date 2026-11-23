@@ -7,6 +7,7 @@
  */
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { addClassNamesToElement } from "@lexical/utils";
 import { ChatTextIcon } from "@phosphor-icons/react";
@@ -67,6 +68,7 @@ const ImageView = ({
   width,
 }: ImageViewProps) => {
   const [editor] = useLexicalComposerContext();
+  const isEditable = useLexicalEditable();
   const [isSelected] = useLexicalNodeSelection(nodeKey);
   const imageRef = useRef<HTMLImageElement>(null);
   const [isAddingCaption, setIsAddingCaption] = useState(false);
@@ -149,7 +151,7 @@ const ImageView = ({
           src={src}
           style={width ? { width } : undefined}
         />
-        {isSelected && (
+        {isSelected && isEditable && (
           <>
             {(["left", "right"] as const).map((side) => (
               <span
@@ -197,6 +199,7 @@ const ImageView = ({
             }
           }}
           placeholder="Write a caption"
+          readOnly={!isEditable}
           value={draftCaption}
         />
       )}

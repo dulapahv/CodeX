@@ -6,6 +6,7 @@
  */
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import {
   $getNodeByKey,
@@ -69,6 +70,8 @@ const PollView = ({
   question: string;
 }) => {
   const [editor] = useLexicalComposerContext();
+  // Viewers see the votes but can't vote or change the options
+  const isEditable = useLexicalEditable();
   const room = useRoom();
   const [draft, setDraft] = useState("");
   const voter = room.getPresence().get(room.clientId)?.user.name ?? "";
@@ -126,6 +129,7 @@ const PollView = ({
                   "border-foreground/20 hover:border-primary relative flex min-h-8 flex-1 items-center gap-2 overflow-hidden border px-2 text-left text-sm",
                   hasVoted && "border-primary"
                 )}
+                disabled={!isEditable}
                 onClick={() => toggleVote(option.id)}
                 title={option.votes.join(", ") || "No votes yet"}
                 type="button"
@@ -149,38 +153,42 @@ const PollView = ({
                   {option.votes.length}
                 </span>
               </button>
-              <ToolbarButton
-                className="size-7"
-                label={`Remove ${option.text}`}
-                onClick={() =>
-                  updateOptions((current) =>
-                    current.filter(({ id }) => id !== option.id)
-                  )
-                }
-              >
-                <XIcon />
-              </ToolbarButton>
+              {isEditable && (
+                <ToolbarButton
+                  className="size-7"
+                  label={`Remove ${option.text}`}
+                  onClick={() =>
+                    updateOptions((current) =>
+                      current.filter(({ id }) => id !== option.id)
+                    )
+                  }
+                >
+                  <XIcon />
+                </ToolbarButton>
+              )}
             </li>
           );
         })}
       </ul>
-      <form className="mt-2 flex gap-1" onSubmit={addOption}>
-        <Input
-          aria-label="New option"
-          className="h-8 flex-1"
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder="Add an option"
-          value={draft}
-        />
-        <ToolbarButton
-          className="size-8"
-          disabled={!draft.trim()}
-          label="Add option"
-          type="submit"
-        >
-          <PlusIcon />
-        </ToolbarButton>
-      </form>
+      {isEditable && (
+        <form className="mt-2 flex gap-1" onSubmit={addOption}>
+          <Input
+            aria-label="New option"
+            className="h-8 flex-1"
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="Add an option"
+            value={draft}
+          />
+          <ToolbarButton
+            className="size-8"
+            disabled={!draft.trim()}
+            label="Add option"
+            type="submit"
+          >
+            <PlusIcon />
+          </ToolbarButton>
+        </form>
+      )}
       <p className="text-muted-foreground mt-2 text-xs">
         {totalVotes === 1 ? "1 vote" : `${totalVotes} votes`}
       </p>

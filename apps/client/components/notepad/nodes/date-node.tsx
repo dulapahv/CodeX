@@ -6,6 +6,7 @@
  */
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { CalendarBlankIcon } from "@phosphor-icons/react";
 import {
   $getNodeByKey,
@@ -57,6 +58,7 @@ export type SerializedDateNode = Spread<
 
 const DateView = ({ date, nodeKey }: { date: string; nodeKey: NodeKey }) => {
   const [editor] = useLexicalComposerContext();
+  const isEditable = useLexicalEditable();
 
   const setDate = (value: string) => {
     if (!isIsoDate(value)) {
@@ -69,6 +71,15 @@ const DateView = ({ date, nodeKey }: { date: string; nodeKey: NodeKey }) => {
       }
     });
   };
+
+  if (!isEditable) {
+    return (
+      <span className="notepad-date">
+        <CalendarBlankIcon aria-hidden="true" />
+        {formatIsoDate(date)}
+      </span>
+    );
+  }
 
   return (
     <Popover>

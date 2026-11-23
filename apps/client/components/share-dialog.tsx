@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useRoomAccess } from "@/lib/realtime/room-context";
 
 interface ShareDialogProps {
   roomId: string;
@@ -146,6 +147,11 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
   ({ roomId }, ref) => {
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const [isOpen, setIsOpen] = useState(false);
+    // Sharing still works, but whoever gets the link waits for an unlock
+    const { isLocked } = useRoomAccess();
+    const description = isLocked
+      ? "The room is locked, so nobody new can join until the host unlocks it."
+      : "Anyone with this Room ID or Invite Link can collaborate in this room. Only share with people you trust.";
 
     const openDialog = useCallback(() => setIsOpen(true), []);
     const closeDialog = useCallback(() => setIsOpen(false), []);
@@ -192,10 +198,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
           <DialogContent className="sm:max-w-3xl">
             <DialogHeader>
               <DialogTitle>Share Room</DialogTitle>
-              <DialogDescription>
-                Anyone with this Room ID or Invite Link can collaborate in this
-                room. Only share with people you trust.
-              </DialogDescription>
+              <DialogDescription>{description}</DialogDescription>
             </DialogHeader>
             {content}
             <DialogFooter className="mt-6">
@@ -221,10 +224,7 @@ const ShareDialog = forwardRef<ShareDialogRef, ShareDialogProps>(
         <DrawerContent>
           <DrawerHeader className="pb-4">
             <DrawerTitle>Share Room</DrawerTitle>
-            <DrawerDescription>
-              Anyone with this Room ID or Invite Link can collaborate in this
-              room. Only share with people you trust.
-            </DrawerDescription>
+            <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">{content}</div>
           <DrawerFooter>

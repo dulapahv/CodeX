@@ -10,7 +10,10 @@
 import type * as monacoEditor from "monaco-editor";
 import { useRef, useState } from "react";
 
-import { createMenuConfig } from "@/components/toolbar/menu-config";
+import {
+  createMenuConfig,
+  EDITING_ACTIONS,
+} from "@/components/toolbar/menu-config";
 import type {
   ShortcutPlatform,
   ToolbarActions,
@@ -25,6 +28,7 @@ import {
   CommandList,
   CommandShortcut,
 } from "@/components/ui/command";
+import { useRoomAccess } from "@/lib/realtime/room-context";
 
 import type { WorkbenchLayout } from "./types";
 
@@ -105,14 +109,19 @@ const buildCommands = (
   actions: ToolbarActions,
   editor: Editor,
   layout: WorkbenchLayout,
-  platform: ShortcutPlatform
+  platform: ShortcutPlatform,
+  canEdit: boolean
 ) => {
   const commands: PaletteCommand[] = [];
   const labels = new Set<string>();
 
   for (const group of createMenuConfig(platform, layout)) {
     for (const item of group.items) {
-      if (item === "separator" || item.action === "commandPalette") {
+      if (
+        item === "separator" ||
+        item.action === "commandPalette" ||
+        (!canEdit && EDITING_ACTIONS.has(item.action))
+      ) {
         continue;
       }
       labels.add(normalize(item.label));
@@ -170,6 +179,7 @@ export const CommandPalette = ({
   platform,
 }: CommandPaletteProps) => {
   const pendingRef = useRef<PaletteCommand | null>(null);
+  const { canEdit } = useRoomAccess();
   const [wasOpen, setWasOpen] = useState(open);
   const [contents, setContents] = useState<PaletteContents>({
     commands: [],
@@ -182,7 +192,7 @@ export const CommandPalette = ({
     setWasOpen(open);
     if (open) {
       setContents({
-        commands: buildCommands(actions, editor, layout, platform),
+        commands: buildCommands(actions, editor, layout, platform, canEdit),
         recentIds: readRecent(),
       });
     }

@@ -6,6 +6,7 @@
  */
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { TrashIcon } from "@phosphor-icons/react";
 import { $getNodeByKey, type NodeKey } from "lexical";
@@ -29,6 +30,7 @@ const BlockFrame = ({
   nodeKey,
 }: BlockFrameProps) => {
   const [editor] = useLexicalComposerContext();
+  const isEditable = useLexicalEditable();
   const [isSelected] = useLexicalNodeSelection(nodeKey);
 
   const remove = () =>
@@ -45,12 +47,16 @@ const BlockFrame = ({
       )}
     >
       {children}
-      <div className="bg-popover/90 text-popover-foreground ring-foreground/10 absolute top-1 right-1 hidden items-center gap-0.5 p-0.5 shadow-sm ring-1 group-hover/block:flex">
-        {actions}
-        <ToolbarButton className="size-6" label="Remove" onClick={remove}>
-          <TrashIcon />
-        </ToolbarButton>
-      </div>
+      {(actions || isEditable) && (
+        <div className="bg-popover/90 text-popover-foreground ring-foreground/10 absolute top-1 right-1 hidden items-center gap-0.5 p-0.5 shadow-sm ring-1 group-hover/block:flex">
+          {actions}
+          {isEditable && (
+            <ToolbarButton className="size-6" label="Remove" onClick={remove}>
+              <TrashIcon />
+            </ToolbarButton>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -117,6 +117,14 @@ export interface MenuItem {
   type?: "checkbox";
 }
 
+// These change the room's files, which viewers can't do
+export const EDITING_ACTIONS: ReadonlySet<keyof ToolbarActions> = new Set([
+  "newFile",
+  "openLocal",
+  "openRepository",
+  "renameFile",
+]);
+
 export interface MenuGroup {
   items: (MenuItem | "separator")[];
   label: string;
