@@ -11,7 +11,8 @@ import type {
   Presence,
   ServerMessage,
 } from "@codex/types/realtime";
-import { ROOM_DOC, ROOM_PARTY } from "@codex/types/realtime";
+import { CLIENT_ID_PARAM, ROOM_DOC, ROOM_PARTY } from "@codex/types/realtime";
+import * as encoding from "lib0/encoding";
 import WebSocket from "ws";
 import YProvider from "y-partyserver/provider";
 import * as Y from "yjs";
@@ -19,6 +20,7 @@ import * as Y from "yjs";
 export const SERVER_URL = process.env.SERVER_URL ?? "http://localhost:3001";
 
 const SYNC_TIMEOUT_MS = 10_000;
+const MESSAGE_AWARENESS = 1;
 
 interface AwarenessChange {
   added: number[];
@@ -37,6 +39,13 @@ export interface TestPeer {
   nextPresenceUpdate: (fromClientId: number) => Promise<void>;
   presenceOf: (clientId: number) => Presence | undefined;
   send: (message: ClientMessage) => void;
+  // Presence for any client sent through this peer's connection, as each
+  // client echoes the presence it hears
+  sendPresenceFor: (
+    clientId: number,
+    clock: number,
+    presence: Presence
+  ) => void;
   setPresence: (patch: Partial<Presence>) => void;
   readonly text: Y.Text;
   waitForClose: () => Promise<number>;
@@ -63,6 +72,7 @@ export const connectPeer = async (
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
     disableBc: true,
+    params: { [CLIENT_ID_PARAM]: String(doc.clientID) },
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
     WebSocketPolyfill: WebSocket as unknown as typeof globalThis.WebSocket,
@@ -157,6 +167,18 @@ export const connectPeer = async (
       provider.awareness.getStates().get(clientId) as Presence | undefined,
 
     send: (message) => provider.sendMessage(JSON.stringify(message)),
+
+    sendPresenceFor: (clientId, clock, presence) => {
+      const update = encoding.createEncoder();
+      encoding.writeVarUint(update, 1);
+      encoding.writeVarUint(update, clientId);
+      encoding.writeVarUint(update, clock);
+      encoding.writeVarString(update, JSON.stringify(presence));
+      const message = encoding.createEncoder();
+      encoding.writeVarUint(message, MESSAGE_AWARENESS);
+      encoding.writeVarUint8Array(message, encoding.toUint8Array(update));
+      provider.ws?.send(encoding.toUint8Array(message));
+    },
 
     setPresence: (patch) => {
       const current = provider.awareness.getLocalState() as Presence;

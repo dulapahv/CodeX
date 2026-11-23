@@ -8,6 +8,7 @@
  */
 
 import {
+  CLIENT_ID_PARAM,
   CloseCode,
   type ServerMessage,
   TERMINAL_HISTORY_LIMIT,
@@ -19,7 +20,12 @@ import type { Connection, ConnectionContext, WSMessage } from "partyserver";
 import { YServer } from "y-partyserver";
 import * as Y from "yjs";
 
-import { filterAwarenessUpdate, parseClientMessage } from "./validate";
+import {
+  type AwarenessEntry,
+  encodeAwarenessRemoval,
+  filterAwarenessUpdate,
+  parseClientMessage,
+} from "./validate";
 
 const CREATED_AT_KEY = "meta:createdAt";
 const DOC_CHUNKS_KEY = "doc:chunks";
@@ -37,6 +43,10 @@ const MESSAGE_QUERY_AWARENESS = 3;
 // key in the connection state, which survives hibernation
 const AWARENESS_IDS_KEY = "__ypsAwarenessIds";
 const MEDIA_TOKEN_KEY = "mediaToken";
+const CLIENT_ID_KEY = "clientId";
+// The clock of the client's latest presence, kept with the connection since
+// the presence itself is lost to hibernation
+const PRESENCE_CLOCK_KEY = "presenceClock";
 
 type ConnectionState = Record<string, unknown> | null;
 
@@ -45,6 +55,35 @@ const stateOf = (connection: Connection) => connection.state as ConnectionState;
 const awarenessIdsOf = (connection: Connection): number[] => {
   const ids = stateOf(connection)?.[AWARENESS_IDS_KEY];
   return Array.isArray(ids) ? ids : [];
+};
+
+// Missing for clients from before they sent it
+const clientIdOf = (connection: Connection) => {
+  const id = stateOf(connection)?.[CLIENT_ID_KEY];
+  return typeof id === "number" ? id : undefined;
+};
+
+const parseClientId = (value: string | null) => {
+  const id = Number(value);
+  return value && Number.isSafeInteger(id) && id >= 0 ? id : undefined;
+};
+
+const rememberPresenceClock = (
+  connection: Connection,
+  entries: AwarenessEntry[]
+) => {
+  const own = entries.find(
+    ({ clientID }) => clientID === clientIdOf(connection)
+  );
+  if (!own) {
+    return;
+  }
+  // A client that removed itself has already told everyone
+  const clock = own.json === "null" ? undefined : own.clock;
+  connection.setState((previous: ConnectionState) => ({
+    ...previous,
+    [PRESENCE_CLOCK_KEY]: clock,
+  }));
 };
 
 const toBytes = (message: ArrayBuffer | ArrayBufferView): Uint8Array =>
@@ -159,8 +198,12 @@ export class Room extends YServer {
     // Connection state is persisted with the WebSocket, so the token
     // survives hibernation. y-partyserver merges its own keys into it.
     const token = crypto.randomUUID();
+    const clientId = parseClientId(
+      new URL(ctx.request.url).searchParams.get(CLIENT_ID_PARAM)
+    );
     connection.setState((previous: ConnectionState) => ({
       ...previous,
+      [CLIENT_ID_KEY]: clientId,
       [MEDIA_TOKEN_KEY]: token,
     }));
     this.sendCustomMessage(
@@ -197,18 +240,17 @@ export class Room extends YServer {
         return super.onMessage(connection, message);
       }
 
-      // Only accept presence for client IDs no other connection owns, so a
-      // client answering an awareness query can't claim someone else's state
-      const update = filterAwarenessUpdate(
+      const filtered = filterAwarenessUpdate(
         decoding.readVarUint8Array(decoder),
-        (clientID) => !this.isOwnedByOther(clientID, connection)
+        (clientID) => this.maySpeakFor(connection, clientID)
       );
-      if (!update) {
+      if (!filtered) {
         return;
       }
+      rememberPresenceClock(connection, filtered.entries);
       const encoder = encoding.createEncoder();
       encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
-      encoding.writeVarUint8Array(encoder, update);
+      encoding.writeVarUint8Array(encoder, filtered.update);
       return super.onMessage(connection, encoding.toUint8Array(encoder));
     } catch {
       // Malformed binary message: drop it
@@ -221,6 +263,7 @@ export class Room extends YServer {
     reason: string,
     wasClean: boolean
   ) {
+    this.announceDeparture(connection);
     super.onClose(connection, code, reason, wasClean);
 
     const hasOthers = [...this.getConnections()].some(
@@ -259,6 +302,42 @@ export class Room extends YServer {
         break;
       default:
         break;
+    }
+  }
+
+  // Everyone echoes the presence they hear, so a client speaks only for
+  // itself. An echo of someone who has left would otherwise bring them back.
+  private maySpeakFor(connection: Connection, clientID: number) {
+    const ownId = clientIdOf(connection);
+    if (ownId !== undefined && clientID !== ownId) {
+      return false;
+    }
+    return !this.isOwnedByOther(clientID, connection);
+  }
+
+  // Hibernation empties the room's presence, and then super.onClose finds
+  // nothing to remove and tells nobody the client left
+  private announceDeparture(connection: Connection) {
+    const clientID = clientIdOf(connection);
+    const clock = stateOf(connection)?.[PRESENCE_CLOCK_KEY];
+    if (
+      clientID === undefined ||
+      typeof clock !== "number" ||
+      this.document.awareness.getStates().has(clientID)
+    ) {
+      return;
+    }
+    const encoder = encoding.createEncoder();
+    encoding.writeVarUint(encoder, MESSAGE_AWARENESS);
+    encoding.writeVarUint8Array(
+      encoder,
+      encodeAwarenessRemoval(clientID, clock + 1)
+    );
+    const message = encoding.toUint8Array(encoder);
+    for (const other of this.getConnections()) {
+      if (other.id !== connection.id) {
+        other.send(message);
+      }
     }
   }
 

@@ -53,6 +53,27 @@ const isValidPresence = (state: unknown, json: string): boolean =>
     isRecord(state.user) &&
     isValidName(state.user.name));
 
+export interface AwarenessEntry {
+  clientID: number;
+  clock: number;
+  json: string;
+}
+
+const encodeAwarenessEntries = (entries: AwarenessEntry[]) => {
+  const encoder = encoding.createEncoder();
+  encoding.writeVarUint(encoder, entries.length);
+  for (const { clientID, clock, json } of entries) {
+    encoding.writeVarUint(encoder, clientID);
+    encoding.writeVarUint(encoder, clock);
+    encoding.writeVarString(encoder, json);
+  }
+  return encoding.toUint8Array(encoder);
+};
+
+// Tells everyone a client has gone, newer than its last presence
+export const encodeAwarenessRemoval = (clientID: number, clock: number) =>
+  encodeAwarenessEntries([{ clientID, clock, json: "null" }]);
+
 /**
  * Re-encodes an awareness update with only the entries `isAllowed` accepts
  * and whose presence is valid. Returns null when nothing is left.
@@ -60,8 +81,8 @@ const isValidPresence = (state: unknown, json: string): boolean =>
 export const filterAwarenessUpdate = (
   update: Uint8Array,
   isAllowed: (clientID: number) => boolean
-): Uint8Array | null => {
-  const kept: { clientID: number; clock: number; json: string }[] = [];
+): { entries: AwarenessEntry[]; update: Uint8Array } | null => {
+  const kept: AwarenessEntry[] = [];
   try {
     const decoder = decoding.createDecoder(update);
     const count = decoding.readVarUint(decoder);
@@ -80,13 +101,5 @@ export const filterAwarenessUpdate = (
   if (kept.length === 0) {
     return null;
   }
-
-  const encoder = encoding.createEncoder();
-  encoding.writeVarUint(encoder, kept.length);
-  for (const { clientID, clock, json } of kept) {
-    encoding.writeVarUint(encoder, clientID);
-    encoding.writeVarUint(encoder, clock);
-    encoding.writeVarString(encoder, json);
-  }
-  return encoding.toUint8Array(encoder);
+  return { entries: kept, update: encodeAwarenessEntries(kept) };
 };

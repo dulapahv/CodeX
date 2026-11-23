@@ -7,6 +7,7 @@
  */
 
 import {
+  CLIENT_ID_PARAM,
   type ClientMessage,
   CloseCode,
   type Presence,
@@ -77,6 +78,7 @@ export const connectToRoom = (roomId: string, name: string): RoomConnection => {
   const doc = new Y.Doc();
   const provider = new YProvider(server.host, roomId, doc, {
     disableBc: true,
+    params: { [CLIENT_ID_PARAM]: String(doc.clientID) },
     party: ROOM_PARTY,
     protocol: server.protocol === "https:" ? "wss" : "ws",
   });

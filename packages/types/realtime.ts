@@ -48,6 +48,10 @@ export const SFU_PROXY_PATH = "/partytracks";
 export const ROOM_ID_HEADER = "X-Room-Id";
 export const MEDIA_TOKEN_HEADER = "X-Media-Token";
 
+// A client connects with its Yjs client ID, and the room takes presence from
+// that connection for that ID only
+export const CLIENT_ID_PARAM = "clientId";
+
 // A track published to the Realtime SFU
 export interface TrackRef {
   sessionId: string;

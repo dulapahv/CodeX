@@ -3,6 +3,7 @@
  * Tests:
  * - Creating and looking up rooms
  * - Rejecting unknown rooms and invalid names
+ * - Keeping someone who left gone when others echo their presence
  * - Video access: media tokens and the SFU proxy's membership check
  * - Terminal history for late joiners
  * - Terminating a room, and wiping it after the grace period
@@ -104,6 +105,27 @@ describe("Room lifecycle", () => {
     await settle();
 
     expect(alice.presenceOf(bob.clientId)?.user.name).toBe("Bob");
+  });
+
+  it("doesn't bring back someone who left when another client echoes them", async () => {
+    const [alice, roomId] = await createRoomPeer("Alice");
+    track(alice);
+    const bob = await connectPeer(roomId, "Bob");
+    await settle();
+    const bobPresence = alice.presenceOf(bob.clientId);
+    bob.leave();
+    await settle();
+
+    // As after hibernation, when the room has forgotten Bob but Alice hasn't
+    if (bobPresence) {
+      alice.sendPresenceFor(bob.clientId, 100, bobPresence);
+    }
+    const carol = track(await connectPeer(roomId, "Carol"));
+    await settle();
+
+    expect(bobPresence?.user.name).toBe("Bob");
+    expect(carol.presenceOf(bob.clientId)).toBeUndefined();
+    expect(alice.presenceOf(bob.clientId)).toBeUndefined();
   });
 
   it("gives each connection its own media token", async () => {
