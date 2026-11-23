@@ -39,10 +39,15 @@ export const NameBox = ({
   // An empty box isn't an error until someone tries to use it
   const error = (name ? getFileNameError(name) : null) ?? submitError;
 
+  // A frame later, so the menu or palette that opened the box has handed
+  // focus back by then instead of taking it from the box, which cancels it
   useEffect(() => {
-    const dot = startName.lastIndexOf(".");
-    inputRef.current?.focus();
-    inputRef.current?.setSelectionRange(0, dot > 0 ? dot : startName.length);
+    const frame = requestAnimationFrame(() => {
+      const dot = startName.lastIndexOf(".");
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(0, dot > 0 ? dot : startName.length);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [startName]);
 
   const finish = (shouldSubmit: boolean, keepOpenOnError: boolean) => {

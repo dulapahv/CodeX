@@ -169,10 +169,7 @@ const FileRow = ({
             </button>
           }
         />
-        <ContextMenuContent
-          className="w-56"
-          finalFocus={() => pendingActionRef.current === null}
-        >
+        <ContextMenuContent className="w-56">
           <ContextMenuItem
             onClick={() => {
               pendingActionRef.current = "newFile";
@@ -247,10 +244,7 @@ const ExplorerMenu = ({ children }: { children: ReactNode }) => {
       >
         {children}
       </ContextMenuTrigger>
-      <ContextMenuContent
-        className="w-56"
-        finalFocus={() => !isCreatingRef.current}
-      >
+      <ContextMenuContent className="w-56">
         <ContextMenuItem
           disabled={!actions}
           onClick={() => {
