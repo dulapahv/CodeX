@@ -39,7 +39,7 @@ const NotepadMain = () => {
       contentEditable={null}
       extension={NotepadExtension}
     >
-      <div className="notepad text-foreground flex size-full flex-col bg-[color:var(--panel-background)]">
+      <div className="notepad text-foreground flex size-full flex-col">
         <ToolbarPlugin
           isSourceMode={isSourceMode}
           onToggleSourceMode={() => setIsSourceMode((value) => !value)}
@@ -58,7 +58,7 @@ const NotepadMain = () => {
                 aria-placeholder={PLACEHOLDER}
                 className="notepad-content min-h-full py-3 pr-4 pl-10 outline-none"
                 placeholder={
-                  <div className="text-muted-foreground pointer-events-none absolute top-3 left-10 text-base leading-7 select-none">
+                  <div className="text-muted-foreground pointer-events-none absolute top-3 right-4 left-10 text-base leading-7 select-none">
                     {PLACEHOLDER}
                   </div>
                 }

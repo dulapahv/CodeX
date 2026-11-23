@@ -58,6 +58,14 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-wb-editor: var(--wb-editor);
+  --color-wb-chrome: var(--wb-chrome);
+  --color-wb-border: var(--wb-border);
+  --color-wb-fg: var(--wb-fg);
+  --color-wb-muted: var(--wb-muted);
+  --color-wb-hover: var(--wb-hover);
+  --color-wb-active: var(--wb-active);
+  --color-wb-accent: var(--wb-accent);
 
   --animate-scale-up-center: scale-up-center 0.4s
     cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
@@ -169,13 +177,31 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  --toolbar-bg-primary: oklch(0.566 0.148 252.273);
-  --toolbar-bg-secondary: oklch(0.356 0 0);
   --toolbar-foreground: oklch(1 0 0);
   --toolbar-accent: oklch(0.566 0.148 252.273);
   --panel-text-accent: oklch(1 0 0);
   --panel-background: oklch(0.235 0 0);
-  --status-bar-text: oklch(1 0 0);
+
+  /* The room's frame takes its colours from the editor theme, the way a
+     VS Code theme colours the whole window */
+  --wb-editor: var(--panel-background);
+  --wb-fg: var(--toolbar-foreground);
+  --wb-chrome: color-mix(in oklab, var(--panel-background) 96%, black);
+  --wb-border: color-mix(
+    in oklab,
+    var(--panel-background) 89%,
+    var(--toolbar-foreground)
+  );
+  --wb-muted: color-mix(
+    in oklab,
+    var(--toolbar-foreground) 62%,
+    var(--panel-background)
+  );
+  --wb-hover: color-mix(in oklab, var(--toolbar-foreground) 8%, transparent);
+  --wb-active: color-mix(in oklab, var(--toolbar-foreground) 14%, transparent);
+  --wb-accent: #005fb8;
+  --toolbar-bg-primary: var(--wb-chrome);
+  --toolbar-bg-secondary: var(--wb-chrome);
 }
 
 .dark {
@@ -210,6 +236,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --wb-chrome: color-mix(in oklab, var(--panel-background) 80%, black);
+  --wb-border: color-mix(
+    in oklab,
+    var(--panel-background) 92%,
+    var(--toolbar-foreground)
+  );
+  --wb-accent: #0078d4;
 }
 
 @layer base {
@@ -227,6 +261,12 @@
 
 [data-slot="drawer-header"] {
   text-align: left;
+}
+
+/* Like VS Code's, the command palette leaves the room behind it as it is */
+:root:has([data-command-palette]) [data-slot="dialog-overlay"] {
+  background: transparent;
+  backdrop-filter: none;
 }
 
 /* Settings changes stay visible behind the sheet */

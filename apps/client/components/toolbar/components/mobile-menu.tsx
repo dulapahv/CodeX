@@ -26,21 +26,8 @@ import { createMenuConfig } from "../menu-config";
 import type { MenuProps } from "../types";
 import { SharedMenuItem } from "./shared-menu-item";
 
-const MobileMenu = ({
-  platform,
-  actions,
-  notepad,
-  terminal,
-  webcam,
-  livePreview,
-}: MenuProps) => {
-  const menuConfig = createMenuConfig(
-    platform,
-    notepad,
-    terminal,
-    webcam,
-    livePreview
-  );
+const MobileMenu = ({ platform, actions, layout }: MenuProps) => {
+  const menuConfig = createMenuConfig(platform, layout);
 
   const { restoreFocus, runPendingAction, selectAction } =
     useDeferredMenuAction(actions);
@@ -64,7 +51,10 @@ const MobileMenu = ({
       ref={menubarRef}
     >
       <MenubarMenu onOpenChangeComplete={runPendingAction}>
-        <MenubarTrigger aria-label="Open menu" className="px-2 py-1">
+        <MenubarTrigger
+          aria-label="Open menu"
+          className="hover:bg-wb-hover aria-expanded:bg-wb-active text-wb-fg px-2 py-1"
+        >
           <ListIcon className="size-5" />
         </MenubarTrigger>
         <MenubarContent className="ml-1" finalFocus={restoreFocus}>

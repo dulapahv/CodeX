@@ -33,6 +33,7 @@ import {
   BracketsCurlyIcon,
   BracketsRoundIcon,
   BracketsSquareIcon,
+  BrowserIcon,
   CaretDoubleDownIcon,
   CaretDoubleUpIcon,
   ChatCenteredTextIcon,
@@ -52,14 +53,17 @@ import {
   CursorTextIcon,
   DownloadSimpleIcon,
   EraserIcon,
+  ExportIcon,
   EyeIcon,
+  FilePlusIcon,
+  FilesIcon,
   FolderIcon,
   GearIcon,
+  GitBranchIcon,
   GitForkIcon,
   HashIcon,
   InfoIcon,
   KeyboardIcon,
-  LayoutIcon,
   LightbulbIcon,
   LinkIcon,
   MagicWandIcon,
@@ -70,7 +74,9 @@ import {
   NotebookIcon,
   PackageIcon,
   PaintBrushIcon,
+  PaletteIcon,
   PencilLineIcon,
+  PencilSimpleIcon,
   PlusSquareIcon,
   QuestionIcon,
   RowsIcon,
@@ -80,18 +86,24 @@ import {
   SelectionAllIcon,
   SelectionIcon,
   SelectionPlusIcon,
+  SidebarSimpleIcon,
   SignOutIcon,
   SortAscendingIcon,
   SortDescendingIcon,
   SparkleIcon,
+  SquareHalfBottomIcon,
   SwapIcon,
   TerminalWindowIcon,
   TextAaIcon,
   TextIndentIcon,
   TextOutdentIcon,
+  UsersIcon,
   VideoCameraIcon,
+  WarningIcon,
   WrenchIcon,
 } from "@phosphor-icons/react";
+
+import type { WorkbenchLayout } from "@/components/workbench/types";
 
 import type { ShortcutPlatform, ToolbarActions } from "./types";
 
@@ -112,10 +124,7 @@ export interface MenuGroup {
 
 export const createMenuConfig = (
   platform: ShortcutPlatform,
-  notepad: boolean,
-  terminal: boolean,
-  webcam: boolean,
-  livePreview: boolean
+  layout: WorkbenchLayout
 ) => {
   const modKey = platform === "mac" ? "⌘" : "Ctrl";
 
@@ -129,9 +138,15 @@ export const createMenuConfig = (
     {
       items: [
         {
+          action: "newFile",
+          icon: <FilePlusIcon className="size-4" />,
+          label: "New File…",
+        },
+        "separator",
+        {
           action: "openLocal",
           icon: <FolderIcon className="size-4" />,
-          label: "Open from Local",
+          label: "Open from Local…",
           shortcut: `${modKey}+O`,
         },
         {
@@ -154,10 +169,26 @@ export const createMenuConfig = (
         },
         "separator",
         {
+          action: "renameFile",
+          icon: <PencilSimpleIcon className="size-4" />,
+          label: "Rename File…",
+        },
+        {
+          action: "share",
+          icon: <ExportIcon className="size-4" />,
+          label: "Share Room…",
+        },
+        "separator",
+        {
           action: "settings",
           icon: <GearIcon className="size-4" />,
           label: "Settings",
           shortcut: `${modKey}+,`,
+        },
+        {
+          action: "colorTheme",
+          icon: <PaletteIcon className="size-4" />,
+          label: "Color Theme…",
         },
         "separator",
         {
@@ -420,8 +451,72 @@ export const createMenuConfig = (
         {
           action: "commandPalette",
           icon: <CommandIcon className="size-4" />,
-          label: "Command Palette",
-          shortcut: "F1",
+          label: "Command Palette…",
+          shortcut: `${modKey}+Shift+P`,
+        },
+        "separator",
+        {
+          action: "showExplorer",
+          icon: <FilesIcon className="size-4" />,
+          label: "Explorer",
+        },
+        {
+          action: "showNotepad",
+          icon: <NotebookIcon className="size-4" />,
+          label: "Notepad",
+        },
+        {
+          action: "showParticipants",
+          icon: <UsersIcon className="size-4" />,
+          label: "Participants",
+        },
+        {
+          action: "showRepository",
+          icon: <GitBranchIcon className="size-4" />,
+          label: "Repository",
+        },
+        "separator",
+        {
+          action: "showTerminal",
+          icon: <TerminalWindowIcon className="size-4" />,
+          label: "Terminal",
+          shortcut: "Ctrl+`",
+        },
+        {
+          action: "showProblems",
+          icon: <WarningIcon className="size-4" />,
+          label: "Problems",
+        },
+        "separator",
+        {
+          action: "toggleSideBar",
+          checked: layout.isSideBarOpen,
+          icon: <SidebarSimpleIcon className="size-4" />,
+          label: "Primary Side Bar",
+          shortcut: `${modKey}+B`,
+          type: "checkbox",
+        },
+        {
+          action: "togglePanel",
+          checked: layout.isPanelOpen,
+          icon: <SquareHalfBottomIcon className="size-4" />,
+          label: "Panel",
+          shortcut: `${modKey}+J`,
+          type: "checkbox",
+        },
+        {
+          action: "togglePreview",
+          checked: layout.isPreviewOpen,
+          icon: <BrowserIcon className="size-4" />,
+          label: "Live Preview",
+          type: "checkbox",
+        },
+        {
+          action: "toggleCall",
+          checked: layout.isCallOpen,
+          icon: <VideoCameraIcon className="size-4" />,
+          label: "Video Call",
+          type: "checkbox",
         },
         "separator",
         {
@@ -485,35 +580,6 @@ export const createMenuConfig = (
           icon: <KeyboardIcon className="size-4" />,
           label: "Toggle Tab Key Moves Focus",
           shortcut: keys(`${modKey}+M`, { mac: "Ctrl+Shift+M" }),
-        },
-        "separator",
-        {
-          action: "toggleNotepadPanel",
-          checked: notepad,
-          icon: <NotebookIcon className="size-4" />,
-          label: "Notepad",
-          type: "checkbox",
-        },
-        {
-          action: "toggleTerminalPanel",
-          checked: terminal,
-          icon: <TerminalWindowIcon className="size-4" />,
-          label: "Terminal",
-          type: "checkbox",
-        },
-        {
-          action: "toggleWebcamPanel",
-          checked: webcam,
-          icon: <VideoCameraIcon className="size-4" />,
-          label: "Webcam Stream",
-          type: "checkbox",
-        },
-        {
-          action: "toggleSandpackPanel",
-          checked: livePreview,
-          icon: <LayoutIcon className="size-4" />,
-          label: "Live Preview",
-          type: "checkbox",
         },
       ],
       label: "View",

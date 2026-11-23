@@ -15,6 +15,9 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The dev tools button can sit over a mobile drawer's buttons, which e2e
+  // tests then can't click
+  ...(process.env.NEXT_TEST_PROXY === "true" && { devIndicators: false }),
   experimental: {
     // inlineCss: true,
     cssChunking: "graph",

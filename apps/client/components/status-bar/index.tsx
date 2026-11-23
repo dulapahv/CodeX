@@ -1,98 +1,315 @@
 /**
- * Status bar component that displays editor information.
+ * The status bar along the bottom of the room, laid out like VS Code's.
  * Features:
- * - Current language display
- * - Cursor position tracking
- * - Selection feedback
+ * - Room indicator that opens sharing
+ * - Participants, problems, running code and following
+ * - Cursor position, indentation, encoding, line endings and language
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Monaco } from "@monaco-editor/react";
-import { TranslateIcon } from "@phosphor-icons/react";
-import type * as monacoEditor from "monaco-editor";
-import { memo } from "react";
+"use client";
 
+import {
+  ArrowsLeftRightIcon,
+  NavigationArrowIcon,
+  UsersIcon,
+  WarningIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
+import type * as monacoEditor from "monaco-editor";
+import { type ComponentProps, useEffect, useRef } from "react";
+
+import { useRunningNames } from "@/components/terminal/components/running-status";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  MARKER_SEVERITY,
+  useCursorPosition,
+  useIndentation,
+  useProblems,
+} from "@/components/workbench/use-editor-state";
+import { useWorkbench } from "@/components/workbench/workbench-provider";
+import { useFollowUserId } from "@/hooks/use-follow-user-id";
+import { useRoomUsers } from "@/lib/realtime/room-context";
+import { storage } from "@/lib/services/storage";
 import { cn } from "@/lib/utils";
 
 import { LanguageSelection } from "./components/language-select";
 
-interface StatusBarCursorPosition {
-  readonly column: number;
-  readonly line: number;
-  readonly selected?: number;
+type Editor = monacoEditor.editor.IStandaloneCodeEditor;
+
+const ITEM_CLASS =
+  "hover:bg-wb-hover focus-visible:bg-wb-active flex h-full items-center gap-1 px-1.5 whitespace-nowrap outline-none";
+
+const INDENT_SIZES = [2, 4, 8];
+
+interface StatusItemProps extends ComponentProps<"button"> {
+  tooltip?: string;
 }
 
-interface StatusBarProps {
-  className?: string;
-  readonly cursorPosition: StatusBarCursorPosition;
-  editor: monacoEditor.editor.IStandaloneCodeEditor | null;
-  monaco: Monaco | null;
-}
-
-const MemoizedLanguageLabel = memo(function MemoizedLanguagesIcon() {
-  return (
-    <span className="flex items-center gap-x-1">
-      <TranslateIcon aria-hidden="true" className="size-4" />
-      <span className="sr-only">Current language:</span>
-      Language:
-    </span>
+const StatusItem = ({ className, tooltip, ...props }: StatusItemProps) => {
+  const button = (
+    <button className={cn(ITEM_CLASS, className)} type="button" {...props} />
   );
-});
+  if (!tooltip) {
+    return button;
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger render={button} />
+      <TooltipContent side="top">{tooltip}</TooltipContent>
+    </Tooltip>
+  );
+};
 
-function formatCursorPosition({
-  line,
-  column,
-  selected,
-}: StatusBarCursorPosition): string {
-  const basePosition = `Ln ${line}, Col ${column}`;
-  return selected ? `${basePosition} (${selected} selected)` : basePosition;
-}
+const ProblemsItem = () => {
+  const { files, monaco, showPanelView } = useWorkbench();
+  const problems = useProblems(files.fileModels, monaco);
+  const errors = problems.filter(
+    ({ marker }) => marker.severity === MARKER_SEVERITY.error
+  ).length;
+  const warnings = problems.filter(
+    ({ marker }) => marker.severity === MARKER_SEVERITY.warning
+  ).length;
 
-const StatusBar = memo(function StatusBarComponent({
-  monaco,
-  editor,
-  cursorPosition,
-  className,
-}: StatusBarProps) {
-  if (!(monaco && editor)) {
+  return (
+    <StatusItem
+      aria-label={`${errors} errors, ${warnings} warnings`}
+      onClick={() => showPanelView("problems")}
+      tooltip="Problems"
+    >
+      <XCircleIcon aria-hidden="true" className="size-3.5" />
+      {errors}
+      <WarningIcon aria-hidden="true" className="ml-1 size-3.5" />
+      {warnings}
+    </StatusItem>
+  );
+};
+
+const RunningItem = () => {
+  const { showPanelView } = useWorkbench();
+  const names = useRunningNames();
+
+  if (names.length === 0) {
     return null;
   }
 
   return (
-    <section
-      aria-label="Editor status bar"
-      className={cn(
-        "animate-fade-in fixed inset-x-0 bottom-0 h-6 bg-[color:var(--toolbar-bg-primary)] py-1",
-        className
-      )}
-      role="status"
+    <StatusItem
+      onClick={() => showPanelView("terminal")}
+      tooltip="Show Terminal"
     >
-      <div
-        className={
-          "flex items-center justify-end gap-x-2 px-2 text-xs text-[color:var(--status-bar-text)]"
+      <Spinner className="size-3" />
+      Running ({names.join(", ")})
+    </StatusItem>
+  );
+};
+
+// Stops following someone who left, and shows who is being followed
+const FollowingItem = () => {
+  const users = useRoomUsers();
+  const followUserId = useFollowUserId();
+  const followed = users.find(({ id }) => id === followUserId);
+
+  useEffect(() => {
+    if (followUserId && !followed) {
+      storage.setFollowUserId(null);
+    }
+  }, [followUserId, followed]);
+
+  if (!followed) {
+    return null;
+  }
+
+  return (
+    <StatusItem
+      onClick={() => storage.setFollowUserId(null)}
+      tooltip="Stop following"
+    >
+      <NavigationArrowIcon
+        aria-hidden="true"
+        className="size-3.5"
+        weight="fill"
+      />
+      Following {followed.username}
+    </StatusItem>
+  );
+};
+
+const CursorItem = ({ editor }: { editor: Editor }) => {
+  const { actions } = useWorkbench();
+  const { column, line, selected } = useCursorPosition(editor);
+
+  return (
+    <StatusItem onClick={actions?.goToLine} tooltip="Go to Line/Column">
+      Ln {line}, Col {column}
+      {selected > 0 && ` (${selected} selected)`}
+    </StatusItem>
+  );
+};
+
+// Like VS Code's, this changes only this person's view of the code, while
+// Settings holds the defaults
+const IndentationItem = ({ editor }: { editor: Editor }) => {
+  const indentation = useIndentation(editor);
+  const pendingActionRef = useRef<string | null>(null);
+
+  if (!indentation) {
+    return null;
+  }
+
+  const { insertSpaces, tabSize } = indentation;
+  const label = insertSpaces ? `Spaces: ${tabSize}` : `Tab Size: ${tabSize}`;
+
+  const runPendingAction = (open: boolean) => {
+    const actionId = pendingActionRef.current;
+    if (open || !actionId) {
+      return;
+    }
+    pendingActionRef.current = null;
+    editor.focus();
+    editor.trigger("statusBar", actionId, null);
+  };
+
+  return (
+    <DropdownMenu onOpenChangeComplete={runPendingAction}>
+      <DropdownMenuTrigger
+        render={
+          <button
+            aria-label={`Indentation, ${label}`}
+            className={ITEM_CLASS}
+            type="button"
+          >
+            {label}
+          </button>
         }
-      >
-        <div className="flex items-center">
-          <MemoizedLanguageLabel />
-          <LanguageSelection
-            className="hover:bg-primary-foreground/10"
-            editor={editor}
-            monaco={monaco}
-          />
-        </div>
-        <div
-          aria-atomic="true"
-          aria-live="polite"
-          className="flex items-center"
+      />
+      <DropdownMenuContent align="end" className="w-60" side="top">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Indent Using</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            onValueChange={(value) =>
+              editor.getModel()?.updateOptions({
+                insertSpaces: value === "spaces",
+              })
+            }
+            value={insertSpaces ? "spaces" : "tabs"}
+          >
+            <DropdownMenuRadioItem value="spaces">Spaces</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="tabs">Tabs</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Size</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            onValueChange={(value) =>
+              editor.getModel()?.updateOptions({
+                indentSize: Number(value),
+                tabSize: Number(value),
+              })
+            }
+            value={String(tabSize)}
+          >
+            {INDENT_SIZES.map((size) => (
+              <DropdownMenuRadioItem key={size} value={String(size)}>
+                {size}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            pendingActionRef.current = "editor.action.indentationToSpaces";
+          }}
         >
-          {formatCursorPosition(cursorPosition)}
-        </div>
+          Convert Indentation to Spaces
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            pendingActionRef.current = "editor.action.indentationToTabs";
+          }}
+        >
+          Convert Indentation to Tabs
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            pendingActionRef.current = "editor.action.detectIndentation";
+          }}
+        >
+          Detect Indentation from Content
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const StatusBar = () => {
+  const { editor, files, monaco, roomId, showShare, showView } = useWorkbench();
+  const users = useRoomUsers();
+
+  return (
+    <section
+      aria-label="Status bar"
+      className="bg-wb-chrome border-wb-border text-wb-fg/80 flex h-[22px] shrink-0 items-stretch justify-between border-t text-xs"
+    >
+      <div className="flex min-w-0 items-stretch">
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                aria-label={`Room ${roomId}`}
+                className="bg-wb-accent flex h-full items-center gap-1 px-2 text-white outline-none hover:brightness-110 focus-visible:brightness-110"
+                onClick={showShare}
+                type="button"
+              >
+                <ArrowsLeftRightIcon aria-hidden="true" className="size-3.5" />
+                {roomId}
+              </button>
+            }
+          />
+          <TooltipContent side="top">Share this room</TooltipContent>
+        </Tooltip>
+        <StatusItem
+          aria-label={`${users.length} participants`}
+          onClick={() => showView("participants")}
+          tooltip="Participants"
+        >
+          <UsersIcon aria-hidden="true" className="size-3.5" />
+          {users.length}
+        </StatusItem>
+        <ProblemsItem />
+        <RunningItem />
+        <FollowingItem />
       </div>
+      {editor && monaco && files.activeFile && (
+        <div className="flex min-w-0 items-stretch">
+          <CursorItem editor={editor} />
+          <IndentationItem editor={editor} />
+          <span className="flex items-center px-1.5">UTF-8</span>
+          <span className="flex items-center px-1.5">LF</span>
+          <LanguageSelection className={ITEM_CLASS} />
+        </div>
+      )}
     </section>
   );
-});
+};
 
-StatusBar.displayName = "StatusBar";
-
-export { StatusBar, type StatusBarCursorPosition };
+export { StatusBar };

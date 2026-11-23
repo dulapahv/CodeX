@@ -22,22 +22,38 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { usePresenceSelector, useRoom } from "@/lib/realtime/room-context";
+import {
+  getFileText,
+  type RoomFile,
+  readFiles,
+} from "@/lib/realtime/room-files";
 import { cn } from "@/lib/utils";
 
 import { AboutPopover } from "./components/about-popover";
 import { ArgsInputPopover } from "./components/args-stdin-popover";
-import { cancelExecution, executeCode, type RunReporter } from "./utils";
+import {
+  cancelExecution,
+  executeCode,
+  type RunFiles,
+  type RunReporter,
+} from "./utils";
 
 interface RunButtonProps {
   className?: string;
   editor: monacoEditor.editor.IStandaloneCodeEditor | null;
+  /** The file that runs, with the room's other files beside it */
+  file: RoomFile;
   monaco: Monaco | null;
+  /** Called as a run starts, to bring up the terminal */
+  onRun?: () => void;
   setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
 }
 
 const RunButton = ({
   monaco,
   editor,
+  file,
+  onRun,
   setOutput,
   className,
 }: RunButtonProps) => {
@@ -54,8 +70,12 @@ const RunButton = ({
     }
     const update = () => setIsEditorEmpty(!editor.getValue().trim());
     update();
-    const subscription = editor.onDidChangeModelContent(update);
-    return () => subscription.dispose();
+    const contentChange = editor.onDidChangeModelContent(update);
+    const modelChange = editor.onDidChangeModel(update);
+    return () => {
+      contentChange.dispose();
+      modelChange.dispose();
+    };
   }, [editor]);
 
   const userName = usePresenceSelector(
@@ -73,6 +93,21 @@ const RunButton = ({
   );
   const isRunning = isLocalRunning || isOtherRunning;
 
+  // Read at the moment of running, so it's the code as it is now
+  const getRunFiles = (): RunFiles => {
+    const toRunFile = (roomFile: RoomFile) => ({
+      content: getFileText(room.doc, roomFile.id)?.toString() ?? "",
+      language: roomFile.language,
+      name: roomFile.name,
+    });
+    return {
+      entry: toRunFile(file),
+      others: readFiles(room.doc)
+        .filter(({ id }) => id !== file.id)
+        .map(toRunFile),
+    };
+  };
+
   const reporter: RunReporter = {
     report: (result) => {
       const signed = { ...result, runBy: userName };
@@ -80,14 +115,17 @@ const RunButton = ({
       room.send({ result: signed, type: "terminal" });
     },
     setRunning: (running) => {
+      if (running) {
+        onRun?.();
+      }
       setIsLocalRunning(running);
       room.setPresence({ running });
     },
   };
 
   return (
-    <div className="flex items-center gap-1">
-      <div className="animate-fade-in-top">
+    <div className="flex items-center gap-0.5">
+      <div className="flex items-center">
         <Button
           aria-busy={isRunning}
           aria-label={(() => {
@@ -97,8 +135,8 @@ const RunButton = ({
             return isOtherRunning ? "Code is running" : "Run code";
           })()}
           className={cn(
-            "h-7 bg-[color:var(--toolbar-accent)] bg-clip-border px-2 py-0 text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:!opacity-80 disabled:!opacity-50",
-            isRunning && "bg-red-600 hover:bg-red-700",
+            "text-wb-fg hover:bg-wb-hover hover:text-wb-fg h-6 gap-1 px-1.5 text-xs font-normal",
+            isRunning && "text-red-500 hover:text-red-500",
             className
           )}
           disabled={
@@ -114,23 +152,25 @@ const RunButton = ({
                     reporter,
                     abortControllerRef,
                     args,
-                    stdin
+                    stdin,
+                    getRunFiles()
                   )
           }
+          variant="ghost"
         >
           {isRunning ? (
             <>
               <StopCircleIcon aria-hidden="true" className="size-4" />
-              <span className="hidden sm:flex">Cancel</span>
+              Cancel
             </>
           ) : (
             <>
               <PlayIcon
                 aria-hidden="true"
-                className="size-4 text-green-600"
+                className="size-4 text-green-500"
                 weight="fill"
               />
-              <span className="hidden sm:flex">Run Code</span>
+              Run Code
             </>
           )}
         </Button>

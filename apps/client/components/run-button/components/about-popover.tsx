@@ -31,11 +31,11 @@ const AboutPopover = () => (
           <TooltipTrigger
             render={
               <Button
-                className="animate-fade-in-top size-7 p-0 hover:bg-transparent [&>svg]:transition-opacity [&>svg]:hover:opacity-70"
+                className="text-wb-fg hover:bg-wb-hover hover:text-wb-fg aria-expanded:bg-wb-active size-6"
                 size="icon"
                 variant="ghost"
               >
-                <InfoIcon className="size-4 text-[color:var(--panel-text)]" />
+                <InfoIcon className="size-4" />
                 <span className="sr-only">About code execution</span>
               </Button>
             }

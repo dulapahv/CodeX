@@ -16,7 +16,10 @@ import type { ExecutionResult } from "./terminal";
 export const ROOM_PARTY = "room";
 
 export const ROOM_DOC = {
+  // The first file's text, kept here so rooms from before multiple files
+  // keep their code
   code: "code",
+  files: "files",
   meta: "meta",
   notes: "notepad",
 } as const;
@@ -25,6 +28,10 @@ export const ROOM_DOC = {
 export const LEGACY_NOTES_DOC = "notes";
 
 export const META_LANGUAGE = "language";
+// Set once a room's single file has become its first file
+export const META_HAS_FILES = "hasFiles";
+// The latest change someone made to the files, shown to everyone else
+export const META_ACTIVITY = "activity";
 export const DEFAULT_LANGUAGE = "python";
 
 export const MAX_NAME_LENGTH = 64;
@@ -71,6 +78,8 @@ export interface NotepadPresence {
 
 export interface Presence {
   cursor?: Cursor;
+  // The file this person has open
+  file?: string;
   media: PresenceMedia;
   notepad?: NotepadPresence;
   pointer?: Pointer;

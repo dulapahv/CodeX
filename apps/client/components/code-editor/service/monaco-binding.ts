@@ -27,10 +27,10 @@ export const COLLABORATIVE_UNDO_ACTION_ID = "codex.collaborative-undo";
 export const COLLABORATIVE_REDO_ACTION_ID = "codex.collaborative-redo";
 
 /**
- * Bind a Y.Text to the editor's model.
+ * Bind a Y.Text to a Monaco model.
  *
  * @param ytext Shared text type backing the document
- * @param editor Monaco editor instance
+ * @param model The model showing that text
  * @param monacoInstance The Monaco namespace handed to `onMount`
  * @returns A function that detaches every listener this call registered
  *
@@ -39,14 +39,13 @@ export const COLLABORATIVE_REDO_ACTION_ID = "codex.collaborative-redo";
  * loads Monaco from a CDN at runtime, so importing `monaco-editor` here would
  * pull a second, different-versioned copy into the bundle.
  */
-export const bindMonacoToYText = (
+export const bindModelToYText = (
   ytext: Y.Text,
-  editor: monaco.editor.IStandaloneCodeEditor,
+  model: monaco.editor.ITextModel,
   monacoInstance: Monaco
 ): (() => void) => {
-  const model = editor.getModel();
   const { doc } = ytext;
-  if (!(model && doc)) {
+  if (!doc) {
     return noop;
   }
 
@@ -141,51 +140,19 @@ export const bindMonacoToYText = (
     }, LOCAL_ORIGIN);
   });
 
-  // Undo is driven from the document, not the model. Monaco's undo entries
-  // store the range an edit occupied when it was made, so a peer inserting
-  // ahead of that text leaves the entry pointing at the wrong characters.
-  // The CRDT tracks the actual operations, and restricting it to
-  // LOCAL_ORIGIN means this client can never undo a peer's edit.
-  const undoManager = new Y.UndoManager(ytext, {
-    captureTimeout: UNDO_CAPTURE_TIMEOUT_MS,
-    trackedOrigins: new Set([LOCAL_ORIGIN]),
-  });
-
-  // Monaco encodes a chord as a bitwise OR of its modifier and key constants;
-  // there is no non-bitwise form of this API.
-  const undoAction = editor.addAction({
-    id: COLLABORATIVE_UNDO_ACTION_ID,
-    keybindings: [
-      // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
-      monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyZ,
-    ],
-    label: "Undo",
-    run: () => {
-      undoManager.undo();
-    },
-  });
-
-  const redoAction = editor.addAction({
-    id: COLLABORATIVE_REDO_ACTION_ID,
-    keybindings: [
-      // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
-      monacoInstance.KeyMod.CtrlCmd |
-        monacoInstance.KeyMod.Shift |
-        monacoInstance.KeyCode.KeyZ,
-      // biome-ignore lint/suspicious/noBitwiseOperators: Monaco keybindings are bit flags
-      monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyY,
-    ],
-    label: "Redo",
-    run: () => {
-      undoManager.redo();
-    },
-  });
-
   return () => {
-    undoAction.dispose();
-    redoAction.dispose();
-    undoManager.destroy();
     contentDisposable.dispose();
     ytext.unobserve(observer);
   };
 };
+
+// Undo is driven from the document, not the model. Monaco's undo entries
+// store the range an edit occupied when it was made, so a peer inserting
+// ahead of that text leaves the entry pointing at the wrong characters.
+// The CRDT tracks the actual operations, and restricting it to
+// LOCAL_ORIGIN means this client can never undo a peer's edit.
+export const createUndoManager = (ytext: Y.Text) =>
+  new Y.UndoManager(ytext, {
+    captureTimeout: UNDO_CAPTURE_TIMEOUT_MS,
+    trackedOrigins: new Set([LOCAL_ORIGIN]),
+  });

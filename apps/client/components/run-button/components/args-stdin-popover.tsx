@@ -23,7 +23,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 interface ExecutionArgsProps {
   disabled?: boolean;
@@ -70,14 +69,12 @@ const ArgsInputPopover = ({
               render={
                 <Button
                   aria-label="Program arguments and input"
-                  className={cn(
-                    "relative size-7 border-l border-l-[color:var(--panel-text-accent)] bg-[color:var(--toolbar-accent)] bg-clip-border text-[color:var(--panel-text-accent)] transition-opacity hover:bg-[color:var(--toolbar-accent)] hover:text-[color:var(--panel-text-accent)] hover:!opacity-80 disabled:!opacity-50",
-                    disabled && "bg-red-600"
-                  )}
+                  className="text-wb-fg hover:bg-wb-hover hover:text-wb-fg aria-expanded:bg-wb-active relative h-6 w-5"
                   disabled={disabled}
                   size="icon"
+                  variant="ghost"
                 >
-                  <CaretDownIcon className="size-4" />
+                  <CaretDownIcon className="size-3.5" />
                   {hasInput && (
                     <span
                       aria-hidden="true"

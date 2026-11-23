@@ -42,6 +42,10 @@ const MAX_SUMMARY_LENGTH = 72;
 
 interface SaveToRepositoryDialogProps {
   editor: monaco.editor.IStandaloneCodeEditor | null;
+  /** The editor tab's file name, which the name field starts with */
+  getFileName?: () => string;
+  /** Called with the name a commit saved under, like Save As */
+  onSaved?: (fileName: string) => void;
 }
 
 type SaveToRepositoryDialogRef = DialogRef;
@@ -55,7 +59,7 @@ const getTargetFolder = (item: ExtendedTreeDataItem) =>
 const SaveToRepositoryDialog = forwardRef<
   SaveToRepositoryDialogRef,
   SaveToRepositoryDialogProps
->(({ editor }, ref) => {
+>(({ editor, getFileName, onSaved }, ref) => {
   const [fileName, setFileName] = useState("");
   const [commitSummary, setCommitSummary] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +76,7 @@ const SaveToRepositoryDialog = forwardRef<
     setRepo("");
     setBranch("");
     setSelectedItem(null);
-    setFileName("");
+    setFileName(getFileName?.() ?? "");
     setError(null);
     setCommitUrl(null);
   };
@@ -88,6 +92,12 @@ const SaveToRepositoryDialog = forwardRef<
   const { isLoading, provider, choose, user, configured } =
     useProviderChoice(isOpen);
   const label = PROVIDER_LABELS[provider];
+
+  useEffect(() => {
+    if (isOpen) {
+      setFileName(getFileName?.() ?? "");
+    }
+  }, [isOpen, getFileName]);
 
   useEffect(() => {
     const name = selectedItem?.type === itemType.FILE ? selectedItem.name : "";
@@ -130,6 +140,7 @@ const SaveToRepositoryDialog = forwardRef<
         }
       );
       setCommitUrl(result.url);
+      onSaved?.(name);
     } catch (commitError) {
       setError(`Failed to commit changes. ${parseError(commitError)}`);
     } finally {

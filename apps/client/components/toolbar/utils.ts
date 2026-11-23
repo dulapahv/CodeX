@@ -8,9 +8,6 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import type { Monaco } from "@monaco-editor/react";
-import type * as monacoEditor from "monaco-editor";
-
 import { parseError } from "@/lib/utils";
 
 import type { ShortcutPlatform } from "./types";
@@ -20,7 +17,6 @@ const ANDROID_PATTERN = /Android/u;
 const WINDOWS_PATTERN = /Win/u;
 const MAC_PATTERN = /Mac/u;
 const LINUX_PATTERN = /Linux/u;
-const LEADING_DOT_PATTERN = /^\./u;
 
 /**
  * Get the current operating system
@@ -74,142 +70,72 @@ export const getShortcutPlatform = (): ShortcutPlatform => {
   return os === "Windows" ? "windows" : "linux";
 };
 
-interface Language {
-  alias: string;
-  extensions: readonly string[];
-  id: string;
+export interface FileContent {
+  content: string;
+  name: string;
 }
 
 /**
- * Cache for Monaco languages to avoid repeated API calls
+ * Asks the user to pick one or more local files
+ * @param onPick - Called with the chosen files, unless the picker is cancelled
  */
-let languagesCache: Language[] | null = null;
-
-/**
- * Gets the file extension for a given language ID
- * @param languageId - The Monaco language identifier
- * @returns The preferred file extension including the dot, or '.txt' if none found
- */
-function getFileExtension(languageId: string, monaco: Monaco): string {
-  if (!languagesCache) {
-    languagesCache = monaco.languages.getLanguages().map(
-      (entry): Language => ({
-        alias: entry.aliases?.[0] ?? "Unknown",
-        extensions: entry.extensions ?? [],
-        id: entry.id,
-      })
-    );
-  }
-
-  const language = languagesCache.find((lang) => lang.id === languageId);
-  return language?.extensions[0]
-    ? `.${language.extensions[0].replace(LEADING_DOT_PATTERN, "")}`
-    : ".txt";
-}
-
-/**
- * Asks the user to pick a local file
- * @param onPick - Called with the chosen file, unless the picker is cancelled
- */
-export const pickLocalFile = (onPick: (file: File) => void): void => {
+export const pickLocalFiles = (onPick: (files: File[]) => void): void => {
   const input = document.createElement("input");
   input.type = "file";
+  input.multiple = true;
   input.onchange = () => {
-    const file = input.files?.[0];
-    if (file) {
-      onPick(file);
+    const files = [...(input.files ?? [])];
+    if (files.length > 0) {
+      onPick(files);
     }
   };
   input.click();
 };
 
-/**
- * Replaces the editor's content and picks the language from the file name
- * @param monaco - Monaco instance for language detection
- * @param editor - Monaco editor instance
- * @param fileName - Name of the file, used to detect its language
- * @param content - The file's text
- */
-export const loadIntoEditor = (
-  monaco: Monaco,
-  editor: monacoEditor.editor.IStandaloneCodeEditor,
-  fileName: string,
-  content: string
-): void => {
-  const extension = fileName.split(".").pop() || "";
-  const language = monaco.languages
-    .getLanguages()
-    .find((lang) =>
-      lang.extensions?.some((ext) => ext.replace(".", "") === extension)
-    );
-
-  editor.setValue(content);
-  const model = editor.getModel();
-  if (model) {
-    monaco.editor.setModelLanguage(model, language?.id || "plaintext");
-  }
-};
+// Images and other binary files hold null characters, which text never has
+const BINARY_MARKER = "\u0000";
 
 /**
- * Reads a local file into the Monaco editor
- * @param monaco - Monaco instance for language detection
- * @param editor - Monaco editor instance
- * @param file - The file to open
+ * Reads local files as text, skipping any that can't be read or aren't text
+ * @param files - The files to read
+ * @returns Each readable file's name and text
  */
-export const openLocalFile = async (
-  monaco: Monaco,
-  editor: monacoEditor.editor.IStandaloneCodeEditor,
-  file: File
-): Promise<void> => {
-  try {
-    loadIntoEditor(monaco, editor, file.name, await file.text());
-  } catch (error) {
-    console.error("Failed to read file:", parseError(error));
-  }
-};
-
-/**
- * Saves the current editor content to a local file
- * @param editor - Monaco editor instance
- * @param filename - Optional custom filename without extension
- * @throws Error if editor is null or getValue() fails
- */
-export const saveLocal = (
-  monaco: Monaco,
-  editor: monacoEditor.editor.IStandaloneCodeEditor | null,
-  filename = `codex-${new Date().toLocaleString("en-GB").replace(/[/:, ]/gu, "-")}`
-): void => {
-  if (!editor) {
-    throw new Error("Editor instance is required");
-  }
-
-  try {
-    const code = editor.getValue();
-    const model = editor.getModel();
-
-    if (!model) {
-      throw new Error("Editor model not found");
+export const readLocalFiles = async (files: File[]): Promise<FileContent[]> => {
+  const results = await Promise.allSettled(
+    files.map(async (file) => {
+      const content = await file.text();
+      if (content.includes(BINARY_MARKER)) {
+        throw new Error(`${file.name} isn't a text file`);
+      }
+      return { content, name: file.name };
+    })
+  );
+  for (const result of results) {
+    if (result.status === "rejected") {
+      console.error("Failed to read file:", parseError(result.reason));
     }
-
-    const extension = getFileExtension(model.getLanguageId(), monaco);
-    const fullFilename = `${filename}${extension}`;
-
-    // Create blob and download
-    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fullFilename;
-
-    // Append to body, click, and cleanup
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    throw new Error(`Failed to save file: ${parseError(error)}`, {
-      cause: error,
-    });
   }
+  return results
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+};
+
+/**
+ * Downloads text as a file
+ * @param content - The file's text
+ * @param fileName - Name to save it under
+ */
+export const saveLocal = (content: string, fileName: string): void => {
+  // A generic type, so browsers keep names like Dockerfile as they are
+  // instead of adding .txt
+  const blob = new Blob([content], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };

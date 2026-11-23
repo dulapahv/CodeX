@@ -3,7 +3,7 @@
  * Features:
  * - Real-time code synchronization
  * - Multi-cursor support
- * - Resizable panels for editor, terminal, preview
+ * - VS Code-style title bar, activity bar, side bar, panel and status bar
  * - Room-based collaboration
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
@@ -14,47 +14,44 @@
 import type { ExecutionResult } from "@codex/types/terminal";
 import type { User } from "@codex/types/user";
 import type { Monaco } from "@monaco-editor/react";
+import { XIcon } from "@phosphor-icons/react";
 import type { editor as MonacoEditor } from "monaco-editor";
 import { useParams, useRouter } from "next/navigation";
-import {
-  type Dispatch,
-  memo,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { usePanelRef } from "react-resizable-panels";
-import { useDebounce } from "use-debounce";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useDefaultLayout, usePanelRef } from "react-resizable-panels";
 
 import { CodeEditor } from "@/components/code-editor";
 import { CodeEditorSkeleton } from "@/components/code-editor/components/editor-skeleton";
-import { FollowUser } from "@/components/follow-user";
-import { LeaveButton } from "@/components/leave-button";
-import { LivePreview } from "@/components/live-preview";
 import { Notepad } from "@/components/notepad";
 import { EditorSkeleton } from "@/components/notepad/components/editor-skeleton";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { RemotePointers } from "@/components/remote-pointers";
-import { RunButton } from "@/components/run-button";
-import { SettingsButton } from "@/components/settings-button";
-import { ShareButton } from "@/components/share-button";
-import {
-  StatusBar,
-  type StatusBarCursorPosition,
-} from "@/components/status-bar";
-import { Terminal } from "@/components/terminal";
-import { Toolbar } from "@/components/toolbar";
-import { ToolbarSkeleton } from "@/components/toolbar/components/toolbar-skeleton";
+import { StatusBar } from "@/components/status-bar";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { UserList } from "@/components/user-list";
 import { WebcamStream } from "@/components/webcam-stream";
 import { CallProvider } from "@/components/webcam-stream/call-provider";
+import { ActivityBar } from "@/components/workbench/activity-bar";
+import { BottomPanel } from "@/components/workbench/bottom-panel";
+import { EditorEmptyState } from "@/components/workbench/editor-empty-state";
+import { EditorTitle } from "@/components/workbench/editor-title";
+import { FileDropZone } from "@/components/workbench/file-drop-zone";
+import { layoutStorage } from "@/components/workbench/layout-storage";
+import { LivePreviewPane } from "@/components/workbench/live-preview-pane";
+import { SideBar } from "@/components/workbench/side-bar";
+import { TitleBar } from "@/components/workbench/title-bar";
+import {
+  ViewHeader,
+  WorkbenchAction,
+} from "@/components/workbench/view-header";
+import {
+  type LayoutToggle,
+  useWorkbench,
+  WorkbenchProvider,
+} from "@/components/workbench/workbench-provider";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { ROOM_ENDED_KEY } from "@/lib/constants";
 import { initEditorTheme } from "@/lib/init-editor-theme";
@@ -72,82 +69,16 @@ import { cn } from "@/lib/utils";
 
 const DASH_PATTERN = /-/gu;
 
-const MemoizedToolbar = memo(function MemoizedToolbarComponent({
-  monaco,
-  editor,
-  roomId,
-  users,
-  setOutput,
-  showNotepad,
-  showTerminal,
-  showWebcam,
-  showLivePreview,
-  setShowNotepad,
-  setShowTerminal,
-  setShowWebcam,
-  setShowLivePreview,
-}: {
-  monaco: Monaco;
-  editor: MonacoEditor.IStandaloneCodeEditor;
-  roomId: string;
-  users: User[];
-  setOutput: Dispatch<SetStateAction<ExecutionResult[]>>;
-  showNotepad: boolean;
-  showTerminal: boolean;
-  showWebcam: boolean;
-  showLivePreview: boolean;
-  setShowNotepad: Dispatch<SetStateAction<boolean>>;
-  setShowTerminal: Dispatch<SetStateAction<boolean>>;
-  setShowWebcam: Dispatch<SetStateAction<boolean>>;
-  setShowLivePreview: Dispatch<SetStateAction<boolean>>;
-}) {
-  return (
-    <div className="fixed flex w-full items-center justify-between gap-x-2 bg-[color:var(--toolbar-bg-secondary)] p-1">
-      {/* biome-ignore lint/a11y/useSemanticElements: grouping toolbar controls without form semantics */}
-      <div
-        aria-label="Editor Toolbar"
-        className="animate-fade-in-top"
-        role="group"
-      >
-        <Toolbar
-          editor={editor}
-          monaco={monaco}
-          setShowLivePreview={setShowLivePreview}
-          setShowNotepad={setShowNotepad}
-          setShowTerminal={setShowTerminal}
-          setShowWebcam={setShowWebcam}
-          showLivePreview={showLivePreview}
-          showNotepad={showNotepad}
-          showTerminal={showTerminal}
-          showWebcam={showWebcam}
-        />
-      </div>
-      <RunButton editor={editor} monaco={monaco} setOutput={setOutput} />
-      <nav aria-label="Collaboration Tools">
-        <div className="flex items-center gap-x-1 sm:gap-x-2">
-          <UserList users={users} />
-          <ShareButton roomId={roomId} />
-          <FollowUser users={users} />
-          <SettingsButton editor={editor} monaco={monaco} />
-          <LeaveButton />
-        </div>
-      </nav>
-    </div>
-  );
-});
+// VS Code's smallest sizes. The side parts keep their width in pixels as the
+// window resizes, so only the editor grows and shrinks with it.
+const SIDE_BAR_MIN_WIDTH = 170;
+const PANEL_MIN_HEIGHT = 100;
+
+const HANDLE_CLASS =
+  "bg-wb-border after:z-10 after:transition-colors hover:after:bg-wb-accent data-[separator=active]:after:bg-wb-accent data-[separator=hover]:after:bg-wb-accent";
 
 const MemoizedNotepad = memo(function MemoizedNotepadComponent() {
   return <Notepad />;
-});
-
-const MemoizedTerminal = memo(function MemoizedTerminalComponent({
-  results,
-  setResults,
-}: {
-  results: ExecutionResult[];
-  setResults: Dispatch<SetStateAction<ExecutionResult[]>>;
-}) {
-  return <Terminal results={results} setResults={setResults} />;
 });
 
 const MemoizedWebcamStream = memo(function MemoizedWebcamStreamComponent({
@@ -158,34 +89,12 @@ const MemoizedWebcamStream = memo(function MemoizedWebcamStreamComponent({
   return <WebcamStream users={users} />;
 });
 
-const MemoizedLivePreview = memo(function MemoizedLivePreviewComponent({
-  value,
-}: {
-  value: string;
-}) {
-  return <LivePreview value={value} />;
-});
-
-const MemoizedStatusBar = memo(function MemoizedStatusBarComponent({
-  monaco,
-  editor,
-  cursorPosition,
-}: {
-  monaco: Monaco;
-  editor: MonacoEditor.IStandaloneCodeEditor;
-  cursorPosition: StatusBarCursorPosition;
-}) {
-  return (
-    <StatusBar
-      cursorPosition={cursorPosition}
-      editor={editor}
-      monaco={monaco}
-    />
-  );
-});
-
-const useTogglePanel = (isShown: boolean) => {
+// Opens and closes a panel with its part of the layout, and keeps the layout
+// in step when someone drags the panel shut or open
+const useLayoutPanel = (part: LayoutToggle) => {
+  const { layout, setPartOpen } = useWorkbench();
   const panelRef = usePanelRef();
+  const isShown = layout[part];
 
   useEffect(() => {
     if (isShown) {
@@ -195,7 +104,13 @@ const useTogglePanel = (isShown: boolean) => {
     }
   }, [isShown, panelRef]);
 
-  return panelRef;
+  const onResize = useCallback(
+    ({ asPercentage }: { asPercentage: number }) =>
+      setPartOpen(part, asPercentage > 0),
+    [part, setPartOpen]
+  );
+
+  return { isShown, onResize, panelRef };
 };
 
 export default function Room() {
@@ -247,29 +162,57 @@ const RoomWorkspace = ({
 }) => {
   useThemeColor();
 
-  const [showNotepad, setShowNotepad] = useState(true);
-  const [showTerminal, setShowTerminal] = useState(true);
-  const [showWebcam, setShowWebcam] = useState(true);
-  const [showLivePreview, setShowLivePreview] = useState(true);
-  const [code, setCode] = useState<string | null>(null);
-  const [debouncedCode] = useDebounce(code, 300);
   const [monaco, setMonaco] = useState<Monaco | null>(null);
   const [editor, setEditor] =
     useState<MonacoEditor.IStandaloneCodeEditor | null>(null);
-  const [cursorPosition, setCursorPosition] = useState<StatusBarCursorPosition>(
-    {
-      column: 1,
-      line: 1,
-      selected: 0,
-    }
-  );
 
+  useEffect(() => {
+    initEditorTheme();
+  }, []);
+
+  return (
+    <WorkbenchProvider editor={editor} monaco={monaco} roomId={roomId}>
+      <Workbench
+        isConnected={isConnected}
+        onEditorMount={setEditor}
+        onMonacoMount={setMonaco}
+      />
+    </WorkbenchProvider>
+  );
+};
+
+interface WorkbenchProps {
+  isConnected: boolean;
+  onEditorMount: (editor: MonacoEditor.IStandaloneCodeEditor) => void;
+  onMonacoMount: (monaco: Monaco) => void;
+}
+
+const Workbench = ({
+  isConnected,
+  onEditorMount,
+  onMonacoMount,
+}: WorkbenchProps) => {
+  const { files, setPartOpen } = useWorkbench();
   const users = useRoomUsers();
   const [output, setOutput] = useState<ExecutionResult[]>([]);
-  const notepadPanelRef = useTogglePanel(showNotepad);
-  const livePreviewPanelRef = useTogglePanel(showLivePreview);
-  const terminalPanelRef = useTogglePanel(showTerminal);
-  const webcamPanelRef = useTogglePanel(showWebcam);
+
+  const mainSizes = useDefaultLayout({
+    id: "codex-room-main",
+    storage: layoutStorage,
+  });
+  const centerSizes = useDefaultLayout({
+    id: "codex-room-center",
+    storage: layoutStorage,
+  });
+  const editorSizes = useDefaultLayout({
+    id: "codex-room-editor",
+    storage: layoutStorage,
+  });
+
+  const sideBar = useLayoutPanel("isSideBarOpen");
+  const preview = useLayoutPanel("isPreviewOpen");
+  const panel = useLayoutPanel("isPanelOpen");
+  const call = useLayoutPanel("isCallOpen");
 
   // History arrives on every (re)connect; only the first one seeds the
   // terminal, so output cleared locally stays cleared
@@ -284,166 +227,167 @@ const RoomWorkspace = ({
     setOutput((previous) => [...previous, result]);
   });
 
-  useEffect(() => {
-    initEditorTheme();
-  }, []);
-
-  const handleMonacoSetup = useCallback((monacoInstance: Monaco) => {
-    setMonaco(monacoInstance);
-  }, []);
-
-  const handleEditorSetup = useCallback(
-    (editorInstance: MonacoEditor.IStandaloneCodeEditor) => {
-      setEditor(editorInstance);
-    },
-    []
+  const handleShareStarted = useCallback(
+    () => setPartOpen("isPreviewOpen", true),
+    [setPartOpen]
   );
-
-  const handleShareStarted = useCallback(() => setShowLivePreview(true), []);
 
   return (
     <main
       aria-label="Code Editor Workspace"
-      className="flex h-full min-w-[821px] flex-col"
+      className="bg-wb-chrome text-wb-fg flex h-full min-w-[821px] flex-col"
     >
       {isConnected && <RemotePointers />}
-      <div
-        aria-label="Editor Controls"
-        className="h-9 flex-shrink-0"
-        role="toolbar"
-      >
-        {monaco && editor ? (
-          <MemoizedToolbar
-            editor={editor}
-            monaco={monaco}
-            roomId={roomId || ""}
-            setOutput={setOutput}
-            setShowLivePreview={setShowLivePreview}
-            setShowNotepad={setShowNotepad}
-            setShowTerminal={setShowTerminal}
-            setShowWebcam={setShowWebcam}
-            showLivePreview={showLivePreview}
-            showNotepad={showNotepad}
-            showTerminal={showTerminal}
-            showWebcam={showWebcam}
-            users={users}
-          />
-        ) : (
-          <ToolbarSkeleton />
-        )}
-      </div>
-      <CallProvider>
-        <ResizablePanelGroup
-          className="!h-[calc(100%-54px)]"
-          orientation="horizontal"
-        >
-          <ResizablePanel
-            aria-label="Notepad"
-            className="animate-fade-in-left border-muted-foreground border-t bg-[color:var(--panel-background)] [&>div]:h-full"
-            collapsible
-            defaultSize="20%"
-            minSize="10%"
-            panelRef={notepadPanelRef}
-            role="region"
+      <TitleBar />
+      <div className="flex min-h-0 flex-1">
+        <ActivityBar />
+        <CallProvider>
+          <ResizablePanelGroup
+            className="min-w-0 flex-1"
+            defaultLayout={mainSizes.defaultLayout}
+            onLayoutChanged={mainSizes.onLayoutChanged}
+            orientation="horizontal"
           >
-            {isConnected ? <MemoizedNotepad /> : <EditorSkeleton />}
-          </ResizablePanel>
-          <ResizableHandle
-            aria-label="Resize Handle"
-            className={cn("bg-muted-foreground", !showNotepad && "hidden")}
-          />
-
-          <ResizablePanel defaultSize="65%" minSize="10%">
-            <ResizablePanelGroup orientation="vertical">
-              <ResizablePanel
-                aria-label="Code Editor"
-                className="animate-fade-in z-[1]"
-                defaultSize="75%"
-                minSize="10%"
-                role="region"
-              >
-                <ResizablePanelGroup
-                  className="border-muted-foreground border-t"
-                  orientation="horizontal"
-                >
-                  <ResizablePanel defaultSize="60%" minSize="10%">
-                    {isConnected ? (
-                      <CodeEditor
-                        cursorPosition={setCursorPosition}
-                        editorRef={handleEditorSetup}
-                        monacoRef={handleMonacoSetup}
-                        setCode={setCode}
-                      />
-                    ) : (
-                      <CodeEditorSkeleton />
-                    )}
-                  </ResizablePanel>
-                  <ResizableHandle
-                    aria-label="Resize Handle"
-                    className={cn(
-                      "bg-muted-foreground",
-                      !showLivePreview && "hidden"
-                    )}
-                  />
-                  <ResizablePanel
-                    className={cn("animate-fade-in-right")}
-                    collapsible
-                    defaultSize="40%"
-                    minSize="10%"
-                    panelRef={livePreviewPanelRef}
-                  >
-                    <PreviewTabs onShareStarted={handleShareStarted}>
-                      <MemoizedLivePreview value={debouncedCode ?? ""} />
-                    </PreviewTabs>
-                  </ResizablePanel>
-                </ResizablePanelGroup>
-              </ResizablePanel>
-              <ResizableHandle
-                aria-label="Resize Handle"
-                className={cn("bg-muted-foreground", !showTerminal && "hidden")}
+            <ResizablePanel
+              collapsible
+              defaultSize="20%"
+              groupResizeBehavior="preserve-pixel-size"
+              id="side-bar"
+              minSize={SIDE_BAR_MIN_WIDTH}
+              onResize={sideBar.onResize}
+              panelRef={sideBar.panelRef}
+            >
+              <SideBar
+                notepad={isConnected ? <MemoizedNotepad /> : <EditorSkeleton />}
               />
-              <ResizablePanel
-                aria-label="Terminal"
-                className={cn("animate-fade-in-bottom")}
-                collapsible
-                defaultSize="25%"
-                minSize="10%"
-                panelRef={terminalPanelRef}
-                role="region"
+            </ResizablePanel>
+            <ResizableHandle
+              aria-label="Resize Handle"
+              className={cn(HANDLE_CLASS, !sideBar.isShown && "hidden")}
+            />
+
+            <ResizablePanel defaultSize="65%" id="center" minSize="10%">
+              <ResizablePanelGroup
+                defaultLayout={centerSizes.defaultLayout}
+                onLayoutChanged={centerSizes.onLayoutChanged}
+                orientation="vertical"
               >
-                <MemoizedTerminal results={output} setResults={setOutput} />
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-          <ResizableHandle
-            aria-label="Resize Handle"
-            className={cn("bg-muted-foreground", !showWebcam && "hidden")}
-          />
-          <ResizablePanel
-            aria-label="Webcam Stream"
-            className="animate-fade-in-right border-muted-foreground border-t"
-            collapsible
-            defaultSize="15%"
-            minSize="10%"
-            panelRef={webcamPanelRef}
-            role="region"
-          >
-            {isConnected && <MemoizedWebcamStream users={users} />}
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </CallProvider>
-      {monaco && editor ? (
-        <MemoizedStatusBar
-          cursorPosition={cursorPosition}
-          editor={editor}
-          monaco={monaco}
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className="fixed inset-x-0 bottom-0 h-6 bg-[color:var(--toolbar-bg-primary)]"
-        />
-      )}
+                <ResizablePanel
+                  aria-label="Code Editor"
+                  defaultSize="75%"
+                  id="editor-area"
+                  minSize="10%"
+                  role="region"
+                >
+                  <ResizablePanelGroup
+                    defaultLayout={editorSizes.defaultLayout}
+                    onLayoutChanged={editorSizes.onLayoutChanged}
+                    orientation="horizontal"
+                  >
+                    <ResizablePanel defaultSize="60%" id="editor" minSize="10%">
+                      <div className="bg-wb-editor flex h-full flex-col">
+                        <EditorTitle setOutput={setOutput} />
+                        <FileDropZone
+                          className="min-h-0 flex-1"
+                          label="Drop files to add them to the room"
+                        >
+                          {isConnected && (
+                            // Hidden until the room's files load, so nothing
+                            // typed lands in the editor's empty starting file
+                            <div
+                              className={cn(
+                                "size-full",
+                                !files.fileModels && "invisible"
+                              )}
+                            >
+                              <CodeEditor
+                                editorRef={onEditorMount}
+                                monacoRef={onMonacoMount}
+                              />
+                            </div>
+                          )}
+                          {!files.fileModels && (
+                            <div className="absolute inset-0">
+                              <CodeEditorSkeleton />
+                            </div>
+                          )}
+                          {files.fileModels && !files.activeFile && (
+                            <EditorEmptyState />
+                          )}
+                        </FileDropZone>
+                      </div>
+                    </ResizablePanel>
+                    <ResizableHandle
+                      aria-label="Resize Handle"
+                      className={cn(HANDLE_CLASS, !preview.isShown && "hidden")}
+                    />
+                    <ResizablePanel
+                      collapsible
+                      defaultSize="40%"
+                      id="preview"
+                      minSize="10%"
+                      onResize={preview.onResize}
+                      panelRef={preview.panelRef}
+                    >
+                      <PreviewTabs onShareStarted={handleShareStarted}>
+                        <LivePreviewPane />
+                      </PreviewTabs>
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </ResizablePanel>
+                <ResizableHandle
+                  aria-label="Resize Handle"
+                  className={cn(HANDLE_CLASS, !panel.isShown && "hidden")}
+                />
+                <ResizablePanel
+                  aria-label="Terminal"
+                  collapsible
+                  defaultSize="25%"
+                  groupResizeBehavior="preserve-pixel-size"
+                  id="panel"
+                  minSize={PANEL_MIN_HEIGHT}
+                  onResize={panel.onResize}
+                  panelRef={panel.panelRef}
+                  role="region"
+                >
+                  <BottomPanel results={output} setResults={setOutput} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+
+            <ResizableHandle
+              aria-label="Resize Handle"
+              className={cn(HANDLE_CLASS, !call.isShown && "hidden")}
+            />
+            <ResizablePanel
+              aria-label="Webcam Stream"
+              collapsible
+              defaultSize="15%"
+              groupResizeBehavior="preserve-pixel-size"
+              id="call"
+              minSize={SIDE_BAR_MIN_WIDTH}
+              onResize={call.onResize}
+              panelRef={call.panelRef}
+              role="region"
+            >
+              <div className="bg-wb-chrome flex h-full flex-col">
+                <ViewHeader title="Video Call">
+                  <WorkbenchAction
+                    label="Close Video Call"
+                    onClick={() => setPartOpen("isCallOpen", false)}
+                  >
+                    <XIcon />
+                  </WorkbenchAction>
+                </ViewHeader>
+                <div className="min-h-0 flex-1">
+                  {isConnected && <MemoizedWebcamStream users={users} />}
+                </div>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </CallProvider>
+      </div>
+      <StatusBar />
     </main>
   );
 };

@@ -15,9 +15,8 @@ import type { Scroll } from "@codex/types/scroll";
 import type { Monaco } from "@monaco-editor/react";
 import type * as monacoEditor from "monaco-editor";
 import themeList from "monaco-themes/themes/themelist.json";
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { RefObject } from "react";
 import { loadEditorOptions } from "@/components/settings-sheet/storage";
-import type { StatusBarCursorPosition } from "@/components/status-bar";
 import { storage } from "@/lib/services/storage";
 
 const SCROLL_EMIT_INTERVAL = 50;
@@ -35,8 +34,8 @@ declare function require(id: string): any;
 // ts.ModuleDetectionKind.Force, which Monaco doesn't export
 const MODULE_DETECTION_FORCE = 3;
 
-// The editor holds a single file, so imports and their types never resolve
-const SINGLE_FILE_DIAGNOSTICS = [
+// Packages aren't installed, so importing one never resolves
+const PACKAGE_IMPORT_DIAGNOSTICS = [
   2307, // Cannot find module or its type declarations
   2792, // Cannot find module
   7016, // Could not find a declaration file for module
@@ -54,8 +53,8 @@ const UNTYPED_JAVASCRIPT_DIAGNOSTICS = [
 ];
 
 /**
- * Tune diagnostics for a lone file: hide errors that only come from having no
- * project around it, keep the ones the code would really fail on.
+ * Tune diagnostics for a room's files: hide errors that only come from having
+ * no installed packages, keep the ones the code would really fail on.
  * @param monaco Monaco instance.
  */
 const configureDiagnostics = (monaco: Monaco): void => {
@@ -64,13 +63,16 @@ const configureDiagnostics = (monaco: Monaco): void => {
     {
       checkJs: false,
       defaults: typescript.typescriptDefaults,
-      ignored: SINGLE_FILE_DIAGNOSTICS,
+      ignored: PACKAGE_IMPORT_DIAGNOSTICS,
     },
     {
       // Catches undeclared names and typos before the code is run
       checkJs: true,
       defaults: typescript.javascriptDefaults,
-      ignored: [...SINGLE_FILE_DIAGNOSTICS, ...UNTYPED_JAVASCRIPT_DIAGNOSTICS],
+      ignored: [
+        ...PACKAGE_IMPORT_DIAGNOSTICS,
+        ...UNTYPED_JAVASCRIPT_DIAGNOSTICS,
+      ],
     },
   ];
 
@@ -84,6 +86,9 @@ const configureDiagnostics = (monaco: Monaco): void => {
       moduleDetection: MODULE_DETECTION_FORCE,
     });
     defaults.addExtraLib(NODE_GLOBALS, "ts:codex/node-globals.d.ts");
+    // Every file in the room counts, not only the one open, so imports
+    // between them resolve
+    defaults.setEagerModelSync(true);
     defaults.setDiagnosticsOptions({
       diagnosticCodesToIgnore: ignored,
       noSemanticValidation: false,
@@ -126,7 +131,6 @@ export const handleBeforeMount = (monaco: Monaco): void => {
  * @param editor Monaco editor instance
  * @param monaco Monaco instance
  * @param disposablesRef Collected Monaco disposables to clean up on unmount
- * @param setCursorPosition Status bar cursor position setter
  * @param publish Shares this user's cursor and scroll with the room
  *
  * @remarks
@@ -136,7 +140,6 @@ export const handleOnMount = (
   editor: monacoEditor.editor.IStandaloneCodeEditor,
   monaco: Monaco,
   disposablesRef: RefObject<monacoEditor.IDisposable[]>,
-  setCursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>,
   publish: (patch: Partial<Presence>) => void
 ): void => {
   editor.focus();
@@ -146,12 +149,6 @@ export const handleOnMount = (
   editor.getModel()?.setEOL(monaco.editor.EndOfLineSequence.LF);
 
   const cursorSelectionDisposable = editor.onDidChangeCursorSelection((e) => {
-    setCursorPosition({
-      column: e.selection.positionColumn,
-      line: e.selection.positionLineNumber,
-      selected: editor.getModel()?.getValueLengthInRange(e.selection) || 0,
-    });
-
     // Remote edits shift this cursor too; peers already track that through
     // their own decorations, so echoing it back would only multiply traffic.
     if (e.reason === monaco.editor.CursorChangeReason.RecoverFromMarkers) {

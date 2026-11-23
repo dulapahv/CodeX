@@ -138,7 +138,7 @@ const WebcamStream = ({ users }: WebcamStreamProps) => {
   };
 
   return (
-    <div className="flex h-full flex-col gap-2 bg-[color:var(--panel-background)] p-2">
+    <div className="flex h-full flex-col gap-2 p-2">
       <div className="min-h-0 flex-1 overflow-y-auto">
         <VideoGrid
           cameraOn={cameraOn}

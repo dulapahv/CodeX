@@ -22,21 +22,8 @@ import { createMenuConfig } from "../menu-config";
 import type { MenuProps } from "../types";
 import { SharedMenuItem } from "./shared-menu-item";
 
-const DesktopMenu = ({
-  platform,
-  actions,
-  notepad,
-  terminal,
-  webcam,
-  livePreview,
-}: MenuProps) => {
-  const menuConfig = createMenuConfig(
-    platform,
-    notepad,
-    terminal,
-    webcam,
-    livePreview
-  );
+const DesktopMenu = ({ platform, actions, layout }: MenuProps) => {
+  const menuConfig = createMenuConfig(platform, layout);
 
   const { restoreFocus, runPendingAction, selectAction } =
     useDeferredMenuAction(actions);
@@ -66,7 +53,7 @@ const DesktopMenu = ({
           loopFocus
           onOpenChangeComplete={runPendingAction}
         >
-          <MenubarTrigger className="hover:bg-accent hover:text-accent-foreground px-2 py-1 font-normal transition-colors">
+          <MenubarTrigger className="hover:bg-wb-hover aria-expanded:bg-wb-active text-wb-fg h-6 px-2 py-0 text-[13px] font-normal">
             {group.label}
           </MenubarTrigger>
           <MenubarContent className="ml-1 w-auto" finalFocus={restoreFocus}>

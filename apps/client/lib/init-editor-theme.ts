@@ -19,8 +19,6 @@ const DEFAULT_THEMES = {
       "--panel-background": "#fffffe",
       "--panel-text-accent": "#fff",
       "--toolbar-accent": "#2678ca",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-bg-secondary": "#dddddd",
       "--toolbar-foreground": "#000",
     },
   },
@@ -30,8 +28,6 @@ const DEFAULT_THEMES = {
       "--panel-background": "#1e1e1e",
       "--panel-text-accent": "#fff",
       "--toolbar-accent": "#2678ca",
-      "--toolbar-bg-primary": "#2678ca",
-      "--toolbar-bg-secondary": "#3c3c3c",
       "--toolbar-foreground": "#fff",
     },
   },
@@ -100,7 +96,6 @@ export const initEditorTheme = () => {
       const themeConfig =
         DEFAULT_THEMES[savedTheme as keyof typeof DEFAULT_THEMES];
       setCSSVariables(themeConfig.variables);
-      setCSSVariables({ "--status-bar-text": "#fff" });
 
       // Set document classes for dark mode
       if (savedTheme === "vs-dark") {
@@ -136,17 +131,10 @@ export const initEditorTheme = () => {
             0,
             7
           ),
-          "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
           "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
             0,
             7
           ),
-          "--toolbar-bg-primary": themeData.colors[
-            "editor.selectionBackground"
-          ].slice(0, 7),
-          "--toolbar-bg-secondary": themeData.colors[
-            "editor.selectionBackground"
-          ].slice(0, 7),
           "--toolbar-foreground": themeData.colors["editor.foreground"].slice(
             0,
             7
@@ -168,7 +156,6 @@ export const initEditorTheme = () => {
     const themeConfig =
       DEFAULT_THEMES[defaultTheme as keyof typeof DEFAULT_THEMES];
     setCSSVariables(themeConfig.variables);
-    setCSSVariables({ "--status-bar-text": "#fff" });
 
     // Set document classes
     if (defaultTheme === "vs-dark") {
@@ -202,7 +189,6 @@ export const applyEditorTheme = (key: string, value: string) => {
   if (key in DEFAULT_THEMES) {
     const themeConfig = DEFAULT_THEMES[key as keyof typeof DEFAULT_THEMES];
     setCSSVariables(themeConfig.variables);
-    setCSSVariables({ "--status-bar-text": "#fff" });
 
     // Set document classes
     if (key === "vs-dark") {
@@ -232,17 +218,10 @@ export const applyEditorTheme = (key: string, value: string) => {
           0,
           7
         ),
-        "--status-bar-text": themeData.base === "vs-dark" ? "dark" : "light",
         "--toolbar-accent": themeData.colors["editorCursor.foreground"].slice(
           0,
           7
         ),
-        "--toolbar-bg-primary": themeData.colors[
-          "editor.selectionBackground"
-        ].slice(0, 7),
-        "--toolbar-bg-secondary": themeData.colors[
-          "editor.selectionBackground"
-        ].slice(0, 7),
         "--toolbar-foreground": themeData.colors["editor.foreground"].slice(
           0,
           7
@@ -272,4 +251,26 @@ export const applyEditorTheme = (key: string, value: string) => {
     console.error("Failed to determine theme mode:", error);
     return "dark";
   }
+};
+
+export interface EditorThemeOption {
+  isDark: boolean;
+  key: string;
+  name: string;
+}
+
+let themeOptions: EditorThemeOption[] | null = null;
+
+// Every theme the editor offers, with whether it's dark, worked out once
+export const getEditorThemes = (): EditorThemeOption[] => {
+  themeOptions ??= [
+    { isDark: false, key: "light", name: DEFAULT_THEMES.light.name },
+    { isDark: true, key: "vs-dark", name: DEFAULT_THEMES["vs-dark"].name },
+    ...Object.entries(themeList).map(([key, name]) => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const themeData = require(`monaco-themes/themes/${name}.json`);
+      return { isDark: themeData.base === "vs-dark", key, name };
+    }),
+  ];
+  return themeOptions;
 };

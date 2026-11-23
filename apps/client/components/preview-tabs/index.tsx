@@ -9,7 +9,12 @@
 "use client";
 
 import type { Presence, TrackRef } from "@codex/types/realtime";
-import { ArrowsOutIcon } from "@phosphor-icons/react";
+import {
+  ArrowsOutIcon,
+  BrowserIcon,
+  MonitorIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +24,12 @@ import {
   useRemoteTrack,
 } from "@/components/webcam-stream/call-provider";
 import { TrackVideo } from "@/components/webcam-stream/components/track-video";
+import {
+  EDITOR_TAB_CLASS,
+  EDITOR_TAB_LIST_CLASS,
+} from "@/components/workbench/tab-styles";
+import { WorkbenchAction } from "@/components/workbench/view-header";
+import { useWorkbench } from "@/components/workbench/workbench-provider";
 import {
   usePresenceSelector,
   useRoomConnection,
@@ -85,6 +96,7 @@ interface PreviewTabsProps {
 
 export const PreviewTabs = ({ children, onShareStarted }: PreviewTabsProps) => {
   const room = useRoomConnection();
+  const { setPartOpen } = useWorkbench();
   const sharers = usePresenceSelector((states: Map<number, Presence>) => {
     const list: Sharer[] = [];
     for (const [clientId, state] of states) {
@@ -120,22 +132,32 @@ export const PreviewTabs = ({ children, onShareStarted }: PreviewTabsProps) => {
 
   return (
     <Tabs
-      className="size-full gap-0"
+      className="bg-wb-editor size-full gap-0"
       onValueChange={(value) => setSelected(String(value))}
       value={current}
     >
-      {sharers.length > 0 && (
-        <TabsList className="w-full justify-start" variant="line">
-          <TabsTrigger className="flex-none" value={PREVIEW_TAB}>
+      <div className="bg-wb-chrome flex h-9 shrink-0 shadow-[inset_0_-1px_var(--wb-border)]">
+        <TabsList className={EDITOR_TAB_LIST_CLASS}>
+          <TabsTrigger className={EDITOR_TAB_CLASS} value={PREVIEW_TAB}>
+            <BrowserIcon aria-hidden="true" className="text-sky-500" />
             Live Preview
           </TabsTrigger>
           {sharers.map(({ id, isSelf, name }) => (
-            <TabsTrigger className="flex-none" key={id} value={id}>
+            <TabsTrigger className={EDITOR_TAB_CLASS} key={id} value={id}>
+              <MonitorIcon aria-hidden="true" className="text-emerald-500" />
               {isSelf ? "Your screen" : `${name}'s screen`}
             </TabsTrigger>
           ))}
         </TabsList>
-      )}
+        <div className="ml-auto flex items-center px-1.5">
+          <WorkbenchAction
+            label="Close Live Preview"
+            onClick={() => setPartOpen("isPreviewOpen", false)}
+          >
+            <XIcon />
+          </WorkbenchAction>
+        </div>
+      </div>
       {/* Kept mounted so switching tabs doesn't reload the preview */}
       <TabsContent className="min-h-0" keepMounted value={PREVIEW_TAB}>
         {children}

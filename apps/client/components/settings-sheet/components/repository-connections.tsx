@@ -84,18 +84,23 @@ const ConnectionRow = (props: ConnectionRowProps) => {
   const [hasAvatar, setHasAvatar] = useState(true);
 
   return (
-    <li className="flex items-center justify-between gap-4">
+    // Where it's narrow, the button wraps under the name
+    <li className="flex flex-wrap items-center justify-between gap-y-2">
       <div className="flex min-w-0 items-center gap-3">
-        <ProviderLogo className="size-5" provider={provider} />
+        <ProviderLogo className="size-5 shrink-0" provider={provider} />
         <div className="min-w-0">
-          <p className="text-sm font-medium">{PROVIDER_LABELS[provider]}</p>
+          <p className="truncate text-sm font-medium">
+            {PROVIDER_LABELS[provider]}
+          </p>
           <div className="text-muted-foreground flex h-4 items-center gap-1.5 text-xs">
             {!connection && <Skeleton className="h-3 w-24" />}
-            {connection && !user && "Not connected"}
+            {connection && !user && (
+              <span className="truncate">Not connected</span>
+            )}
             {user?.avatarUrl && hasAvatar && (
               <Image
                 alt=""
-                className="rounded-full"
+                className="shrink-0 rounded-full"
                 height={16}
                 onError={() => setHasAvatar(false)}
                 src={user.avatarUrl}
@@ -106,7 +111,9 @@ const ConnectionRow = (props: ConnectionRowProps) => {
           </div>
         </div>
       </div>
-      <ConnectionAction {...props} />
+      <div className="ml-8">
+        <ConnectionAction {...props} />
+      </div>
     </li>
   );
 };

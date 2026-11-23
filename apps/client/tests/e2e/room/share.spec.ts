@@ -65,9 +65,12 @@ test.describe("Room Sharing", () => {
     const roomUrl = await createRoom(userAPage, "User A");
     await joinRoom(userBPage, roomUrl, "User B");
 
-    await expect(userAPage.getByText("User A")).toBeVisible();
-    await expect(userAPage.getByText("User B")).toBeVisible();
-    await expect(userBPage.getByText("User A")).toBeVisible();
-    await expect(userBPage.getByText("User B")).toBeVisible();
+    // In the video call, since a notification also says "User B joined"
+    const userACall = userAPage.getByRole("region", { name: "Webcam Stream" });
+    const userBCall = userBPage.getByRole("region", { name: "Webcam Stream" });
+    await expect(userACall.getByText("User A")).toBeVisible();
+    await expect(userACall.getByText("User B")).toBeVisible();
+    await expect(userBCall.getByText("User A")).toBeVisible();
+    await expect(userBCall.getByText("User B")).toBeVisible();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Dialog for opening a file from a connected git provider into the editor.
+ * Dialog for adding a file from a connected git provider to the room.
  *
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
@@ -24,9 +24,9 @@ import { ProviderTabs } from "@/components/shared/git/components/provider-tabs";
 import { useProviderChoice } from "@/components/shared/git/hooks/use-provider-choice";
 import { getDisplayPath } from "@/components/shared/git/utils/get-display-path";
 import { requestJson } from "@/components/shared/git/utils/request";
-import { loadIntoEditor } from "@/components/toolbar/utils";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useWorkbench } from "@/components/workbench/workbench-provider";
 import { PROVIDER_LABELS, type ProviderId } from "@/lib/git-providers/types";
 import { parseError } from "@/lib/utils";
 
@@ -41,6 +41,7 @@ const OpenFromRepositoryDialog = forwardRef<
   OpenFromRepositoryDialogRef,
   OpenFromRepositoryDialogProps
 >(({ monaco, editor }, ref) => {
+  const { addFiles, replaceFiles } = useWorkbench().files;
   const [selectedItem, setSelectedItem] = useState<ExtendedTreeDataItem | null>(
     null
   );
@@ -91,13 +92,13 @@ const OpenFromRepositoryDialog = forwardRef<
         `/api/${provider}/file?${new URLSearchParams({ path, ref: branch, repo })}`
       );
 
-      // Asks first when the file would replace code someone wrote
-      if (editor.getModel()?.getValue()) {
+      // Asks first when a file with the same name is already in the room
+      const taken = addFiles([{ content, name: fileName }]);
+      if (taken.length > 0) {
         setPendingFile({ content, name: fileName });
         setIsReplacePromptOpen(true);
         return;
       }
-      loadIntoEditor(monaco, editor, fileName, content);
       closeDialog();
     } catch (fetchError) {
       setError(parseError(fetchError));
@@ -108,8 +109,8 @@ const OpenFromRepositoryDialog = forwardRef<
 
   const replacePendingFile = () => {
     setIsReplacePromptOpen(false);
-    if (monaco && editor && pendingFile) {
-      loadIntoEditor(monaco, editor, pendingFile.name, pendingFile.content);
+    if (pendingFile) {
+      replaceFiles([pendingFile]);
     }
     closeDialog();
   };
@@ -136,12 +137,12 @@ const OpenFromRepositoryDialog = forwardRef<
         />
       )}
       <ReplacePromptDialog
-        confirmLabel="Replace code"
-        description="This replaces the editor's code for everyone in the room. Save the current code first if you want to keep it."
+        confirmLabel="Replace"
+        description="A file with this name is already in the room. Replacing it changes it for everyone."
         onCancel={() => setIsReplacePromptOpen(false)}
         onConfirm={replacePendingFile}
         open={isReplacePromptOpen}
-        title={`Replace the code with ${pendingFile?.name ?? "this file"}?`}
+        title={`Replace ${pendingFile?.name ?? "this file"}?`}
       />
     </ProviderTabs>
   );

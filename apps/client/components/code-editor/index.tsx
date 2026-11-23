@@ -9,25 +9,18 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
-import { type Presence, ROOM_DOC } from "@codex/types/realtime";
+import type { Presence } from "@codex/types/realtime";
 import Editor, { loader, type Monaco } from "@monaco-editor/react";
 import type * as monacoEditor from "monaco-editor";
 import { useTheme } from "next-themes";
-import {
-  type Dispatch,
-  memo,
-  type SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import type { StatusBarCursorPosition } from "@/components/status-bar";
+import { memo, useEffect, useRef, useState } from "react";
+import { useWorkbench } from "@/components/workbench/workbench-provider";
 import { useRoom } from "@/lib/realtime/room-context";
+import { MAIN_FILE_ID } from "@/lib/realtime/room-files";
 
 import { CodeEditorSkeleton } from "./components/editor-skeleton";
 import * as cursorService from "./service/cursor-service";
 import * as editorService from "./service/editor-service";
-import { bindMonacoToYText } from "./service/monaco-binding";
 import * as scrollService from "./service/scroll-service";
 
 // The editor is fetched from this CDN, while the monaco-editor package only
@@ -47,21 +40,18 @@ interface AwarenessChange {
 }
 
 interface CodeEditorProps {
-  cursorPosition: Dispatch<SetStateAction<StatusBarCursorPosition>>;
   editorRef: (editor: monacoEditor.editor.IStandaloneCodeEditor) => void;
   monacoRef: (monaco: Monaco) => void;
-  setCode: (code: string) => void;
 }
 
 const CodeEditor = memo(function CodeEditorComponent({
   monacoRef,
   editorRef,
-  cursorPosition,
-  setCode,
 }: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
 
   const room = useRoom();
+  const { fileModels } = useWorkbench().files;
 
   const [theme, setTheme] = useState<string>("vs-dark");
 
@@ -89,60 +79,94 @@ const CodeEditor = memo(function CodeEditorComponent({
     editorInstanceRef.current?.updateOptions({ theme });
   }, [theme]);
 
-  // Show other users' cursors, and follow a user's scroll when asked to
+  // Show the cursors of people on the same file, and follow a user's scroll
+  // when asked to
   useEffect(() => {
     const editor = editorInstanceRef.current;
-    if (!(isMonacoReady && editor)) {
+    if (!(isMonacoReady && editor && fileModels)) {
       return;
     }
 
     // Presence also changes for pointer moves, so skip unchanged cursors
     const lastSeen = new Map<number, string>();
 
+    const removeCursor = (clientId: number) => {
+      lastSeen.delete(clientId);
+      cursorService.removeCursor(String(clientId), cursorDecorationsRef);
+    };
+
+    const getShownFileId = () => {
+      const model = editor.getModel();
+      return model ? fileModels.getFileId(model) : null;
+    };
+
+    const showCursor = (
+      clientId: number,
+      state: Presence | undefined,
+      shownFileId: string | null
+    ) => {
+      // People from before multiple files were always in the first file
+      const isOnShownFile =
+        shownFileId !== null && (state?.file ?? MAIN_FILE_ID) === shownFileId;
+      if (!(state?.cursor && isOnShownFile)) {
+        if (lastSeen.has(clientId)) {
+          removeCursor(clientId);
+        }
+        return;
+      }
+      const key = JSON.stringify([state.user.name, state.cursor, state.scroll]);
+      if (lastSeen.get(clientId) === key) {
+        return;
+      }
+      lastSeen.set(clientId, key);
+      cursorService.updateCursor(
+        String(clientId),
+        state.user.name,
+        state.cursor,
+        editorInstanceRef,
+        monacoInstanceRef,
+        cursorDecorationsRef
+      );
+      if (state.scroll) {
+        scrollService.updateScroll(
+          editorInstanceRef,
+          String(clientId),
+          state.scroll
+        );
+      }
+    };
+
     const handleChange = ({ added, updated, removed }: AwarenessChange) => {
       const states = room.awareness.getStates() as Map<number, Presence>;
+      const shownFileId = getShownFileId();
       for (const clientId of removed) {
-        lastSeen.delete(clientId);
-        cursorService.removeCursor(String(clientId), cursorDecorationsRef);
+        removeCursor(clientId);
       }
       for (const clientId of [...added, ...updated]) {
-        const state = states.get(clientId);
-        if (clientId === room.clientId || !state?.cursor) {
-          continue;
-        }
-        const key = JSON.stringify([
-          state.user.name,
-          state.cursor,
-          state.scroll,
-        ]);
-        if (lastSeen.get(clientId) === key) {
-          continue;
-        }
-        lastSeen.set(clientId, key);
-        cursorService.updateCursor(
-          String(clientId),
-          state.user.name,
-          state.cursor,
-          editorInstanceRef,
-          monacoInstanceRef,
-          cursorDecorationsRef
-        );
-        if (state.scroll) {
-          scrollService.updateScroll(
-            editorInstanceRef,
-            String(clientId),
-            state.scroll
-          );
+        if (clientId !== room.clientId) {
+          showCursor(clientId, states.get(clientId), shownFileId);
         }
       }
     };
 
-    room.awareness.on("change", handleChange);
-    handleChange({
-      added: [...room.awareness.getStates().keys()],
-      removed: [],
-      updated: [],
+    const showEveryone = () =>
+      handleChange({
+        added: [...room.awareness.getStates().keys()],
+        removed: [],
+        updated: [],
+      });
+
+    // Cursors belong to the file they were drawn on, so they're cleared
+    // before the editor changes file and drawn again after
+    const stopClearing = fileModels.onWillShow(() => {
+      for (const clientId of [...lastSeen.keys()]) {
+        removeCursor(clientId);
+      }
     });
+    const modelChange = editor.onDidChangeModel(showEveryone);
+
+    room.awareness.on("change", handleChange);
+    showEveryone();
     const labelHover = cursorService.showLabelOnHover(
       editor,
       cursorDecorationsRef
@@ -150,23 +174,14 @@ const CodeEditor = memo(function CodeEditorComponent({
 
     return () => {
       room.awareness.off("change", handleChange);
+      stopClearing();
+      modelChange.dispose();
       labelHover.dispose();
+      for (const clientId of [...lastSeen.keys()]) {
+        removeCursor(clientId);
+      }
     };
-  }, [isMonacoReady, room]);
-
-  // Bind the editor to the room's shared code once Monaco exists
-  useEffect(() => {
-    const editor = editorInstanceRef.current;
-    const monacoInstance = monacoInstanceRef.current;
-    if (!(isMonacoReady && editor && monacoInstance)) {
-      return;
-    }
-    return bindMonacoToYText(
-      room.doc.getText(ROOM_DOC.code),
-      editor,
-      monacoInstance
-    );
-  }, [isMonacoReady, room]);
+  }, [fileModels, isMonacoReady, room]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -200,7 +215,6 @@ const CodeEditor = memo(function CodeEditorComponent({
       editor,
       monaco,
       disposablesRef,
-      cursorPosition,
       room.setPresence
     );
 
@@ -212,8 +226,9 @@ const CodeEditor = memo(function CodeEditorComponent({
     <Editor
       beforeMount={editorService.handleBeforeMount}
       defaultLanguage="python"
+      // The room's files own their models, so the editor leaves them be
+      keepCurrentModel
       loading={<CodeEditorSkeleton />}
-      onChange={(value: string | undefined) => setCode(value || "")}
       onMount={handleEditorMount}
       theme={theme}
     />

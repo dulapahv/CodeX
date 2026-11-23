@@ -37,7 +37,7 @@ export class Storage {
     this.notify();
   }
 
-  // Subscribe to user ID changes, for useSyncExternalStore
+  // Subscribe to user ID and follow changes, for useSyncExternalStore
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
     return () => {
@@ -69,6 +69,7 @@ export class Storage {
   // Set the user ID to follow
   setFollowUserId(followUserId: string | null): void {
     this.data.followUserId = followUserId;
+    this.notify();
   }
 
   // Get all storage data

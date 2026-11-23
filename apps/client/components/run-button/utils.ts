@@ -52,13 +52,27 @@ export const cancelExecution = (
   }
 };
 
+export interface RunFiles {
+  /** The open file, which is the one that runs */
+  entry: RunFile;
+  /** The room's other files, there for the open one to import or read */
+  others: RunFile[];
+}
+
+export interface RunFile {
+  content: string;
+  language: string;
+  name: string;
+}
+
 export const executeCode = async (
   monaco: Monaco | null,
   editor: monacoEditor.editor.IStandaloneCodeEditor | null,
   reporter: RunReporter,
   abortControllerRef: RefObject<AbortController | null>,
   args: string[],
-  stdin: string
+  stdin: string,
+  files: RunFiles
 ) => {
   if (!(monaco && editor)) {
     return;
@@ -70,18 +84,12 @@ export const executeCode = async (
   abortControllerRef.current = new AbortController();
 
   try {
-    const code = editor.getValue();
+    const code = files.entry.content;
 
     // The run button is disabled while the editor is empty
     if (!code.trim()) {
       return;
     }
-
-    const model = editor.getModel();
-    const currentLanguageId = model?.getLanguageId();
-    const language = monaco.languages
-      .getLanguages()
-      .find((lang) => lang.id === currentLanguageId);
 
     const abortPromise = new Promise<never>((_, reject) => {
       abortControllerRef.current?.signal.addEventListener("abort", () => {
@@ -93,7 +101,9 @@ export const executeCode = async (
       executeCodeAction({
         args,
         code,
-        language: language?.id ?? "",
+        fileName: files.entry.name,
+        files: files.others.map(({ content, name }) => ({ content, name })),
+        language: files.entry.language,
         stdin,
       }),
       abortPromise,

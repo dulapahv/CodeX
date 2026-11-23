@@ -8,14 +8,21 @@
     - [Using an Invite Link](#using-an-invite-link)
     - [Scanning QR Code](#scanning-qr-code)
   - [User Interface Overview](#user-interface-overview)
-    - [Top Bar](#top-bar)
+    - [Title Bar](#title-bar)
+    - [Activity Bar and Side Bar](#activity-bar-and-side-bar)
     - [Main Work Area (Split into Panels)](#main-work-area-split-into-panels)
     - [Bottom Panel](#bottom-panel)
     - [Status Bar](#status-bar)
+    - [Command Palette and Shortcuts](#command-palette-and-shortcuts)
+    - [Notifications](#notifications)
 - [Room Sharing](#room-sharing)
   - [Room ID](#room-id)
   - [Invite Link](#invite-link)
   - [QR Code](#qr-code)
+- [Files](#files)
+  - [Opening and Adding Files](#opening-and-adding-files)
+  - [Renaming and Deleting Files](#renaming-and-deleting-files)
+  - [Running Code with Several Files](#running-code-with-several-files)
 - [Code Editor](#code-editor)
   - [Cursor](#cursor)
   - [Text Selection](#text-selection)
@@ -148,35 +155,48 @@ There are three ways to join an existing room:
 
 ### User Interface Overview
 
-Once you enter a room, you'll see several key interface elements.
-The interface is divided into several sections, each section contains multiple panels.
+Once you enter a room, you'll see a layout that works like VS Code. Its colors follow the editor theme you pick in [Settings](#code-editor-settings).
 
 - Panels can be resized by dragging the dividers
-- Panels can be hidden/shown using toolbar buttons (`view > panel name`)
+- Panels can be hidden or shown from the `View` menu, the layout buttons at the right of the title bar, or the [command palette](#command-palette-and-shortcuts)
+- Your layout is remembered in this browser: panel sizes, which panels are open, and which side bar view you had
 
 <div align="center">
   <img src="docs/images/interface-overview.png" alt="Interface Overview" width="800"/>
 </div>
 
-#### Top Bar
+#### Title Bar
 
 <div align="center">
-  <img src="docs/images/top-bar.png" alt="Top Bar" width="800"/>
+  <img src="docs/images/top-bar.png" alt="Title Bar" width="800"/>
 </div>
 
 1. **Menu Bar**
    - Contains File, Edit, Selection, View, Go, Code, and Help menus
-2. **Run Code Button**
-   - Execute your code directly from the editor
-   - For list of supported execution languages, refer to the [Supported Execution Languages](#supported-execution-languages) section
+2. **Search Box**
+   - Shows the room ID. Click it to open the [command palette](#command-palette-and-shortcuts)
 3. **User List**
    - Displays the list of users in the room
 4. **Share Button**
    - Share your room with others via a link or QR code
-5. **Follow User**
-   - Opens a dropdown to follow another user's actions
-6. **Settings**
-   - Connect to GitHub, and adjust editor settings
+5. **Layout Buttons**
+   - Show or hide the side bar, the bottom panel, the live preview, and the video call
+
+#### Activity Bar and Side Bar
+
+The icons down the left edge pick what the side bar shows. Click the icon that's already showing to hide the side bar.
+
+1. **Explorer**
+   - The room's [files](#files). A dot beside a file shows who else has it open
+2. **Notepad**
+   - The room's shared notes, described below
+3. **Participants**
+   - Everyone in the room, the file each person has open, who is running code, and a button to [follow](#follow-mode) someone
+   - The number on the icon is how many people are in the room
+4. **Repository**
+   - Open a file from, or save the code to, GitHub, GitLab, Bitbucket, or Codeberg, and connect or disconnect those accounts
+
+At the bottom are `Leave Room` and the gear, which opens the command palette, [Settings](#code-editor-settings), this manual, and About.
 
 #### Main Work Area (Split into Panels)
 
@@ -184,7 +204,7 @@ The interface is divided into several sections, each section contains multiple p
   <img src="docs/images/main-work-area.png" alt="Main Work Area" width="800"/>
 </div>
 
-1. **Left Most Panel - Notepad**
+1. **Side Bar - Notepad**
 
    - Rich text toolbar with fonts, font size, text and background colors, alignment, and formatting such as bold, italic, and underline
    - Block type selector, an `Insert` menu, and a `/` menu for inserting blocks
@@ -193,17 +213,20 @@ The interface is divided into several sections, each section contains multiple p
 
 2. **Center Left Panel - Code Editor**
 
+   - A tab for each file you have open. Everyone shares the files, but each person has their own tabs. Double-click a tab, or press `F2` on it, to rename the file. Middle-click a tab to close it
+   - The `Run Code` button on the right of the tab. For list of supported execution languages, refer to the [Supported Execution Languages](#supported-execution-languages) section
    - Main coding area with syntax highlighting
    - Line numbers
    - Real-time collaboration
    - Multi-cursor support
 
-3. **Right Right Panel - Live Preview**
-   - Live preview of code output
+3. **Center Right Panel - Live Preview**
+   - Live preview of the open HTML file, or `index.html` while you edit a stylesheet or script
    - UI rendering for web development
    - Real-time updates
+   - Shared screens open as tabs next to it
 
-4. **Right Most Panel - Video & Voice Communication**
+4. **Right Most Panel - Video Call**
    - Video and voice communication controls
    - Toggle camera, microphone, and audio settings
    - See and hear other participants
@@ -215,11 +238,11 @@ The interface is divided into several sections, each section contains multiple p
 </div>
 
 1. **Terminal**
-
-- Shared terminal with welcome message
-- Command output display
-- Download and clear outputs options
-- Color-coded text output
+   - Shared output of every code run, with who ran it
+   - Download and clear buttons at its upper right corner
+2. **Problems**
+   - Errors and warnings the editor finds in every file, for languages it checks such as JavaScript, TypeScript, HTML, CSS, and JSON, grouped by file
+   - Click one to open its file and jump to it
 
 #### Status Bar
 
@@ -227,11 +250,41 @@ The interface is divided into several sections, each section contains multiple p
   <img src="docs/images/status-bar.png" alt="Status Bar" width="800"/>
 </div>
 
-1. **Language Selector:**
-   - Shows current programming language (e.g., "HTML")
-   - For list of supported editor languages, refer to the [Supported Editor Languages](#supported-editor-languages) section
-2. **Line and Column Indicator:**
-   - Shows cursor position in the editor
+On the left:
+
+1. **Room ID:** click it to share the room
+2. **Participants:** how many people are in the room
+3. **Problems:** the number of errors and warnings. Click it to open the Problems tab
+4. **Running and Following:** who is running code, and who you're following. Click `Following` to stop
+
+On the right:
+
+1. **Line and Column:** shows the cursor position. Click it to go to a line
+2. **Indentation:** shows `Spaces` or `Tab Size`. Click it to switch between spaces and tabs, change the size, or convert the code's indentation. This changes only your own view, while [Settings](#code-editor-settings) holds your defaults
+3. **Encoding and Line Endings:** the code is always `UTF-8` with `LF` line endings
+4. **Language Selector:** shows the open file's language. Click it to change it for everyone. The file's extension changes to match, such as `main.py` to `main.js`, unless another file already has that name. For list of supported editor languages, refer to the [Supported Editor Languages](#supported-editor-languages) section
+
+#### Command Palette and Shortcuts
+
+The command palette lists every menu command and the editor's own commands, with their shortcuts. Open it with `Ctrl+Shift+P` or `F1` (`Cmd+Shift+P` on macOS), or click the search box in the title bar, then type to search. Commands you used recently are at the top.
+
+| Shortcut                  | Action                        |
+| ------------------------- | ----------------------------- |
+| `Ctrl+Shift+P` or `F1`    | Open the command palette      |
+| `Ctrl+B`                  | Show or hide the side bar     |
+| `Ctrl+J`                  | Show or hide the bottom panel |
+| ``Ctrl+` ``               | Show or hide the terminal     |
+| `Ctrl+,`                  | Open settings                 |
+| `Ctrl+O` / `Ctrl+Shift+O` | Open from local / repository  |
+| `Ctrl+S` / `Ctrl+Shift+S` | Save to local / repository    |
+
+On macOS, use `Cmd` in place of `Ctrl`, except for ``Ctrl+` ``.
+
+To change the color theme, use `File > Color Theme…` or the gear. Move through the list to try each theme, press `Enter` to keep one, or `Escape` to go back to the one you had.
+
+#### Notifications
+
+Notifications appear at the lower right when someone joins or leaves, when someone else adds, creates, renames, or deletes a file, and when a run finishes while the terminal is hidden. A run notification has a `Show Terminal` button.
 
 ## Room Sharing
 
@@ -258,6 +311,31 @@ CodeX allows you to share your room with others using multiple methods:
 ### QR Code
 
 1. Click the `Share` button in the top bar
+
+## Files
+
+A room can hold several files, which everyone shares. Open the `Explorer` from the activity bar to see them. A new room starts with one file, such as `main.py`.
+
+### Opening and Adding Files
+
+- Click a file in the Explorer to open it in a tab. Each person has their own tabs, so people can work in different files
+- Create a file with the `New File` button at the top of the Explorer, by right-clicking in the Explorer, by double-clicking the empty space in the Explorer or beside the tabs, or with `File > New File…`, then type its name. The extension sets its language
+- Add files from your computer with `File > Open from Local…` (`Ctrl+O`), the folder button at the top of the Explorer, or by dragging them onto the editor or the Explorer. You can add several at once
+- Add a file from a repository with `File > Open from repository…`, described in [Opening Files from GitHub](#opening-files-from-github)
+
+If a file with the same name is already in the room, you're asked before it's replaced. Images and other files that aren't text are skipped.
+
+### Renaming and Deleting Files
+
+- Right-click a file in the Explorer for `Rename…`, `Download`, and `Delete`. With a file selected, `F2` renames it and `Delete` deletes it
+- You can also rename the open file by double-clicking its tab, or with `File > Rename File…`
+- Deleting asks first, as it deletes the file for everyone and can't be undone. A room always keeps at least one file
+
+### Running Code with Several Files
+
+`Run Code` runs the open file, with the room's other files beside it. So a Python file can `import` another file in the room, and a program can read a data file such as `data.json`.
+
+The [Live Preview](#live-preview) shows the open HTML file, or `index.html` while you edit a stylesheet or script. Stylesheets and scripts it links to, such as `<link rel="stylesheet" href="styles.css">` or `<script src="script.js"></script>`, are taken from the room's files.
 
 ## Code Editor
 
@@ -296,11 +374,7 @@ Each participant's cursor is displayed with a unique color. The color is generat
 
 ### Code Editor Settings
 
-You can configure the code editor as well as its theme to suit your preferences by going to `Settings` in the upper right corner of the top bar.
-
-<div align="center">
-  <img src="docs/images/settings-button.png" alt="Settings Button" width="150"/>
-</div>
+You can configure the code editor as well as its theme to suit your preferences in Settings. Open it from the gear at the bottom of the activity bar, from `File > Settings`, or with `Ctrl+,`. To try themes quickly, use `File > Color Theme…`.
 
 - The `Common` section lists the settings people change most, such as font size, tab size, word wrap, line numbers and the minimap. Every other setting is grouped into sections you can expand, such as `Cursor`, `Suggestions` and `Display`
 - Search matches setting names and descriptions
@@ -321,19 +395,9 @@ Follow Mode allows users to track another participant's actions in real-time by 
 
 ### Enabling Follow Mode
 
-1. Click on the Follow User button in the upper right corner of the top bar
-
-    <div align="center">
-      <img src="docs/images/follow-mode-button.png" alt="Follow Mode Button" width="200"/>
-    </div>
-
-2. Select or search for the user you want to follow
-
-    <div align="center">
-      <img src="docs/images/follow-mode.png" alt="Follow Mode Button" width="300"/>
-    </div>
-
-3. Your editor view will now sync with the selected user's actions
+1. Open `Participants` from the activity bar, or click the participant count in the status bar
+2. Click the arrow next to the person you want to follow
+3. Your editor view will now sync with their actions, and the status bar shows `Following` and their name. Click it, or the arrow again, to stop
 
 ### Limitations
 
@@ -458,14 +522,13 @@ To disconnect your GitHub account:
 2. Click on `Open from GitHub`
    - If you are not connected to GitHub, you will be prompted to connect your account
 3. Select the repository, branch, and file you want to open
-4. Click `Open`. If the editor already has code, you're asked to confirm first, as the file replaces the code for everyone in the room
-5. The file will be loaded into the editor
+4. Click `Open`. The file is added to the room and opens in a tab. If a file with the same name is already in the room, you're asked before it's replaced
 
 <div align="center">
   <img src="docs/images/open-from-github.png" alt="Open from Github" width="400"/>
 </div>
 
-CodeX will automatically detect the language of the file and switch the editor's language mode accordingly. Other users' editors will also automatically switch to the same language mode.
+CodeX detects the file's language from its name, for everyone in the room.
 
 ### Saving Files to GitHub
 
@@ -517,7 +580,7 @@ For a list of pre-installed libraries and what loads each one, refer to the [Pre
 
 ### Limitations of Live Preview
 
-- Only HTML code is supported
+- Only HTML is rendered. Stylesheets and scripts are taken from the room's files when the HTML links to them by name, and other files, such as images, can't be linked
 - External libraries you add yourself are downloaded again on every update because the preview runs in an isolated sandbox, while pre-installed libraries are downloaded once per session
 - React is loaded as v18 because React 19 no longer ships a build that works in a `<script>` tag. JSX needs a build step, so use [htm](https://github.com/developit/htm) or `React.createElement` instead (see [Example 3](#example-3-react-with-htm-recharts-and-canvas-confetti))
 
@@ -1203,7 +1266,7 @@ Menu items not listed here, such as `UPPERCASE` or `Sort Lines Ascending`, have 
 
 | Action                | Windows            | macOS           | Linux              |
 | --------------------- | ------------------ | --------------- | ------------------ |
-| Open from Local       | `Ctrl + O`         | `⌘ + O`         | `Ctrl + O`         |
+| Open from Local…      | `Ctrl + O`         | `⌘ + O`         | `Ctrl + O`         |
 | Open from repository… | `Ctrl + Shift + O` | `⌘ + Shift + O` | `Ctrl + Shift + O` |
 | Save to Local         | `Ctrl + S`         | `⌘ + S`         | `Ctrl + S`         |
 | Save to repository…   | `Ctrl + Shift + S` | `⌘ + Shift + S` | `Ctrl + Shift + S` |

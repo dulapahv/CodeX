@@ -8,16 +8,15 @@
  * By Dulapah Vibulsanti (https://dulapahv.dev)
  */
 
+import type { WorkbenchLayout } from "@/components/workbench/types";
+
 /** Platforms whose Monaco keybindings differ, matching Monaco's own detection */
 export type ShortcutPlatform = "linux" | "mac" | "windows";
 
 export interface MenuProps {
   actions: ToolbarActions;
-  livePreview: boolean;
-  notepad: boolean;
+  layout: WorkbenchLayout;
   platform: ShortcutPlatform;
-  terminal: boolean;
-  webcam: boolean;
 }
 
 export interface ToolbarActions {
@@ -35,6 +34,8 @@ export interface ToolbarActions {
   addNextOccurrence: () => void;
   /** Change all occurrences of current word */
   changeAllOccurrences: () => void;
+  /** Pick the colour theme */
+  colorTheme: () => void;
   /** Open command palette */
   commandPalette: () => void;
   /** Copy selection */
@@ -97,9 +98,11 @@ export interface ToolbarActions {
   moveLineDown: () => void;
   /** Move current line up */
   moveLineUp: () => void;
+  /** Create a file for everyone */
+  newFile: () => void;
   /** Go to next problem */
   nextProblem: () => void;
-  /** Open from local device */
+  /** Open files from the local device */
   openLocal: () => void;
   /** Open from a git provider */
   openRepository: () => void;
@@ -123,6 +126,8 @@ export interface ToolbarActions {
   removeBrackets: () => void;
   /** Remove line comment */
   removeLineComment: () => void;
+  /** Rename the file for everyone */
+  renameFile: () => void;
   /** Rename symbol */
   renameSymbol: () => void;
   /** Open find and replace dialog */
@@ -139,8 +144,22 @@ export interface ToolbarActions {
   selectToBracket: () => void;
   /** Open settings panel */
   settings: () => void;
+  /** Open the share dialog */
+  share: () => void;
+  /** Show the files in the side bar */
+  showExplorer: () => void;
   /** Show hover */
   showHover: () => void;
+  /** Show the notepad in the side bar */
+  showNotepad: () => void;
+  /** Show the participants in the side bar */
+  showParticipants: () => void;
+  /** Show the problems in the panel */
+  showProblems: () => void;
+  /** Show the repository view in the side bar */
+  showRepository: () => void;
+  /** Show the terminal in the panel */
+  showTerminal: () => void;
   /** Shrink smart selection */
   shrinkSelection: () => void;
   /** Sort lines ascending */
@@ -151,20 +170,20 @@ export interface ToolbarActions {
   titleCase: () => void;
   /** Toggle block comment */
   toggleBlockComment: () => void;
+  /** Toggle the video call */
+  toggleCall: () => void;
   /** Toggle fold */
   toggleFold: () => void;
   /** Toggle line comment */
   toggleLineComment: () => void;
-  /** Toggle notepad panel */
-  toggleNotepadPanel: () => void;
-  /** Toggle Sandpack panel */
-  toggleSandpackPanel: () => void;
+  /** Toggle the panel below the editor */
+  togglePanel: () => void;
+  /** Toggle the live preview */
+  togglePreview: () => void;
+  /** Toggle the side bar */
+  toggleSideBar: () => void;
   /** Toggle whether Tab moves focus instead of indenting */
   toggleTabFocusMode: () => void;
-  /** Toggle terminal panel */
-  toggleTerminalPanel: () => void;
-  /** Toggle webcam stream panel */
-  toggleWebcamPanel: () => void;
   /** Trigger parameter hints */
   triggerParameterHints: () => void;
   /** Trigger suggestions */

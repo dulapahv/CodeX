@@ -11,7 +11,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const EditorSkeleton = () => (
-  <div className="flex size-full flex-col bg-[color:var(--panel-background)]">
+  <div className="flex size-full flex-col">
     {/* Top toolbar skeleton */}
     <div className="flex items-center justify-between bg-[color:var(--toolbar-bg-secondary)] p-2">
       <div className="flex items-center gap-2">
