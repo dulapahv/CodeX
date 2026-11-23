@@ -134,6 +134,15 @@ export const RoomNotifications = () => {
   useArrivals();
   useRunResults();
 
+  // Sonner keeps toasts that haven't timed out and shows them again in the
+  // next room, so this room's go when it closes
+  useEffect(
+    () => () => {
+      toast.dismiss();
+    },
+    []
+  );
+
   return (
     <Toaster
       offset={{ bottom: 32, right: 12 }}
