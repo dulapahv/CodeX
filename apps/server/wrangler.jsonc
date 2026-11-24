@@ -10,8 +10,26 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room"] }],
   "vars": {
-    "ROOM_GRACE_MS": "300000"
+    "ROOM_GRACE_MS": "300000",
+    // Local servers pass RATE_LIMITS:off, since tests make rooms quickly
+    // from one address
+    "RATE_LIMITS": "on"
   },
+  // For each address in each Cloudflare location, so a script can't run up
+  // the room server's usage. Generous enough for a class on one network.
+  // The namespace IDs must not be used by another Worker on the account.
+  "ratelimits": [
+    {
+      "name": "ROOM_CREATE_LIMITER",
+      "namespace_id": "4101",
+      "simple": { "limit": 20, "period": 60 }
+    },
+    {
+      "name": "ROOM_JOIN_LIMITER",
+      "namespace_id": "4102",
+      "simple": { "limit": 120, "period": 60 }
+    }
+  ],
   // Realtime SFU app and TURN key for video.
   "secrets": {
     "required": [

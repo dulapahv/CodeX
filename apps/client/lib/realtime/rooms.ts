@@ -10,6 +10,11 @@ import { getSeatClaim } from "./room-tokens";
 
 export type RoomCheck = "locked" | "not-found" | "open" | "removed";
 
+// The server limits how often one network can create, check and join rooms
+const TOO_MANY_REQUESTS = 429;
+const TOO_MANY_MESSAGE =
+  "Too many tries from your network. Please wait a minute and try again.";
+
 const CHECK_STATUSES: Record<number, RoomCheck> = {
   200: "open",
   403: "removed",
@@ -20,6 +25,9 @@ const CHECK_STATUSES: Record<number, RoomCheck> = {
 // The new room's ID, and the token that makes its creator the host
 export const createRoomOnServer = async () => {
   const response = await fetch(`${BASE_SERVER_URL}/rooms`, { method: "POST" });
+  if (response.status === TOO_MANY_REQUESTS) {
+    throw new Error(TOO_MANY_MESSAGE);
+  }
   if (!response.ok) {
     throw new Error("Couldn't create a room. Please try again.");
   }
@@ -34,6 +42,9 @@ export const checkRoom = async (roomId: string): Promise<RoomCheck> => {
   const response = await fetch(
     `${BASE_SERVER_URL}/rooms/${encodeURIComponent(roomId)}?${new URLSearchParams(claim)}`
   );
+  if (response.status === TOO_MANY_REQUESTS) {
+    throw new Error(TOO_MANY_MESSAGE);
+  }
   const check = CHECK_STATUSES[response.status];
   if (!check) {
     throw new Error("Couldn't reach the server. Please try again.");

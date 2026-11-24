@@ -66,6 +66,7 @@
 - [Troubleshooting](#troubleshooting)
   - [Follow Mode not working](#follow-mode-not-working)
   - [Code is not Syncing Between Users](#code-is-not-syncing-between-users)
+  - [Too many tries from your network](#too-many-tries-from-your-network)
   - [This language is not supported or the execution server is down](#this-language-is-not-supported-or-the-execution-server-is-down)
   - [Process timed out](#process-timed-out)
   - [Process stopped because its output was too long](#process-stopped-because-its-output-was-too-long)
@@ -963,6 +964,19 @@ CodeX reconnects automatically when the connection drops and catches up on any e
 1. Save your work, either by saving to local or GitHub
 2. Refresh the page and rejoin the room with the same Room ID. The room keeps the code and notes that reached the server.
 3. If it still doesn't sync, leave the room and create a new room
+
+### Too many tries from your network
+
+**This issue can be caused by:**
+
+- Creating more than 20 rooms, or joining or checking rooms more than 120 times, in a minute from the same network
+
+These limits keep scripts from flooding the room server. People sharing one network, such as a class or an office, count together.
+
+**To resolve this issue:**
+
+1. Wait a minute, then try again
+2. If you're still in a room, it reconnects by itself once the minute is up
 
 ### This language is not supported or the execution server is down
 

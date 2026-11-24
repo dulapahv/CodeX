@@ -18,6 +18,7 @@ import { getServerByName, routePartykitRequest } from "partyserver";
 import { routePartyTracksRequest } from "partytracks/server";
 
 import { corsHeaders, isAllowedOrigin } from "./cors";
+import { isOverLimit, tooManyRequests } from "./rate-limit";
 import { generateRoomID } from "./utils/generate-room-id";
 import { normalizeRoomId } from "./utils/normalize-room-id";
 
@@ -156,12 +157,16 @@ export default {
     }
 
     if (url.pathname === "/rooms" && request.method === "POST") {
-      return createRoom(env, origin);
+      return (await isOverLimit(env, request, "create"))
+        ? tooManyRequests(corsHeaders(origin))
+        : createRoom(env, origin);
     }
 
     const roomId = ROOM_PATH.exec(url.pathname)?.groups?.roomId;
     if (roomId !== undefined && request.method === "GET") {
-      return checkRoom(env, roomId, url.searchParams, origin);
+      return (await isOverLimit(env, request, "join"))
+        ? tooManyRequests(corsHeaders(origin))
+        : checkRoom(env, roomId, url.searchParams, origin);
     }
 
     if (isSfuProxyPath(url.pathname)) {
@@ -175,7 +180,7 @@ export default {
     }
 
     const response = await routePartykitRequest(request, env, {
-      onBeforeConnect: (_request, lobby) => {
+      onBeforeConnect: async (_request, lobby) => {
         const isRoom =
           lobby.className === "Room" &&
           normalizeRoomId(lobby.name) === lobby.name;
@@ -184,6 +189,9 @@ export default {
         }
         if (!isRoom) {
           return new Response("Not found", { status: 404 });
+        }
+        if (await isOverLimit(env, request, "join")) {
+          return tooManyRequests(corsHeaders(origin));
         }
       },
       // Rooms are only reachable over WebSocket
